@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Pole Inspection Imagery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14139-pole-inspection-analysis"
   },
   "description": "An asset manager uses an AI model to analyze drone imagery of thousands of utility poles to identify defects.",
   "industry": "Utilities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add a Person to a Tour Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14005-add-person-to-tour-booking"
   },
   "description": "A customer who booked a walking tour for two people wants to add a third person.",
   "industry": "Tourism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Cell Bank Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12846-manage-cell-bank-inventory"
   },
   "description": "A scientist needs to retrieve a vial from the master cell bank for use in an experiment and document the process.",
   "industry": "Pharmaceuticals and Life Sciences",

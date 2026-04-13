@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue a Letter of Credit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11266-manage-investment-in-letter-of-credit"
   },
   "description": "A corporate client needs to issue a standby letter of credit (L/C) to a supplier as a guarantee of payment.",
   "industry": "Finance",

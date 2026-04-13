@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Credit Memo from a Vendor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00080-handle-credit-memo-from-vendor"
   },
   "description": "A vendor has issued a credit memo for returned goods. The AP clerk needs to apply this credit to the vendor's account.",
   "industry": "Accounting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Multi-Turn Recursive Workflow: Level 5",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "interactive-complexity-044-multi-turn-recursive-workflow-level-5"
   },
   "description": "A deep, multi-step workflow requiring state persistence and recursive error handling.",
   "industry": "Meta-Industry",

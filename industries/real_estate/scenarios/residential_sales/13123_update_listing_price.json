@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Listing Price Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13123-update-listing-price"
   },
   "description": "A seller has agreed to lower the price of their listed property. The agent needs to update the MLS and marketing materials.",
   "industry": "Real Estate",

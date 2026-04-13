@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Industrial Process Electrification Study",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11187-industrial-electrification-study"
   },
   "description": "An industrial customer wants to replace their natural gas-fired process heaters with electric alternatives to decarbonize.",
   "industry": "Energy",

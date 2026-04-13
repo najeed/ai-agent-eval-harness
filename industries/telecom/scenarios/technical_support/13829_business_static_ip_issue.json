@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advanced Diagnostics - Static IP Not Routing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13829-business-static-ip-issue"
   },
   "description": "A business customer reports that the static IP address for their server is unreachable from the internet.",
   "industry": "Telecom",

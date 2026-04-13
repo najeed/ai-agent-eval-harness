@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Vendor Invoice Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00017-handle-vendor-invoice-dispute"
   },
   "description": "A vendor calls to inquire about an unpaid invoice. The system shows the invoice is on hold due to a price discrepancy.",
   "industry": "Accounting",

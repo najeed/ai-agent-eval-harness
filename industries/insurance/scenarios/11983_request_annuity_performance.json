@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Annuity Performance History",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11983-request-annuity-performance"
   },
   "description": "A variable annuity holder wants to see the historical performance of their investment subaccounts.",
   "industry": "Insurance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an Inpatient Discharge",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11304-process-inpatient-discharge"
   },
   "description": "A unit clerk needs to process the discharge for a patient who has been cleared to go home.",
   "industry": "Healthcare",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Footage for a Criminal Investigation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13545-review-footage-for-a-criminal-investigation"
   },
   "description": "Police request video footage from a specific intersection for a time period following a reported robbery.",
   "industry": "Smart Cities",

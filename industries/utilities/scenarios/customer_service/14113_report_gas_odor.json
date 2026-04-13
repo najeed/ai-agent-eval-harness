@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Natural Gas Odor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14113-report-gas-odor"
   },
   "description": "A customer calls reporting the smell of natural gas (rotten eggs) inside their home. This is a critical safety scenario.",
   "industry": "Utilities",

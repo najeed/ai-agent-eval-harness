@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Purchase Order-Backed Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00001-process-po-invoice"
   },
   "description": "An accountant receives a standard invoice from a supplier that has a corresponding purchase order and goods receipt note.",
   "industry": "Accounting",

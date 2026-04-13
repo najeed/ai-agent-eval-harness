@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Modify a Subscription Item",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13421-modify-subscription-item"
   },
   "description": "A customer wants to swap an item in their upcoming monthly subscription box for a different one.",
   "industry": "Retail",

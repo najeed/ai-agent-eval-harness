@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process New Employee Access Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12937-process-new-employee-access"
   },
   "description": "A new operations manager has been hired. The security admin needs to set up their access credentials for the port's systems.",
   "industry": "Ports",

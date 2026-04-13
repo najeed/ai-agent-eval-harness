@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reconcile Home Medications",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11336-reconcile-home-medications"
   },
   "description": "A nurse is admitting a new patient and needs to reconcile the medications the patient takes at home with the medications being ordered in the hospital.",
   "industry": "Healthcare",

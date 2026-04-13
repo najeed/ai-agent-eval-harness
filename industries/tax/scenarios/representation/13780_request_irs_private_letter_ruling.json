@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request an IRS Private Letter Ruling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13780-request-irs-private-letter-ruling"
   },
   "description": "A company is about to undertake a complex transaction with unclear tax consequences and wants a binding ruling from the IRS in advance.",
   "industry": "Tax",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Sets Up Parental Controls",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12543-manage-parental-controls"
   },
   "description": "A user wants to set up parental controls on their streaming account to restrict content for their children.",
   "industry": "Media and Entertainment",

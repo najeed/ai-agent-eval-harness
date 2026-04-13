@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue Permit for Hot Work",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12711-manage-refinery-permit-to-work"
   },
   "description": "An operations supervisor needs to issue a permit to work for a maintenance crew performing welding (hot work) inside a process unit.",
   "industry": "Oil and Gas",

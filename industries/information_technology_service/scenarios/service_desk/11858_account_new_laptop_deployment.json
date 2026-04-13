@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Account - New Laptop Deployment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11858-account-new-laptop-deployment"
   },
   "description": "A user's old laptop has failed and a new one needs to be deployed to them.",
   "industry": "Information Technology Service",

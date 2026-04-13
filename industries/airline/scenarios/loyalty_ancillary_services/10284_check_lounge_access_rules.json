@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Lounge Access Rules",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10284-check-lounge-access-rules"
   },
   "description": "A frequent flyer with elite status wants to bring two guests into the airport lounge. The lounge agent must check the rules.",
   "industry": "Airline",

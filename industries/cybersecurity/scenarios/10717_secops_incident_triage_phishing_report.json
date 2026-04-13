@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User-Reported Phishing Triage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10717-secops-incident-triage-phishing-report"
   },
   "description": "A SOC analyst receives an email reported by a user as suspicious and must determine if it is malicious.",
   "industry": "Cybersecurity",

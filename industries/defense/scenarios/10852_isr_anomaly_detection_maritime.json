@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Maritime 'Dark Vessel' Anomaly Detection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10852-isr-anomaly-detection-maritime"
   },
   "description": "An analyst must identify 'dark vessels' (ships that have turned off their AIS transponders) in a high-traffic shipping lane.",
   "industry": "Defense",

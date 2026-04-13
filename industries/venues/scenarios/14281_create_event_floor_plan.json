@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create an Event Floor Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14281-create-event-floor-plan"
   },
   "description": "An event planner is working with a client to design the floor plan for a trade show with 50 exhibitor booths.",
   "industry": "Venues",

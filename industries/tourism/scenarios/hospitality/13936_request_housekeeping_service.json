@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Housekeeping Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13936-request-housekeeping-service"
   },
   "description": "An in-house guest requests extra towels and for their trash to be emptied.",
   "industry": "Tourism",

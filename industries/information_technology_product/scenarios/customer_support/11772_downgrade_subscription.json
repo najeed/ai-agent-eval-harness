@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Downgrade Subscription Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11772-downgrade-subscription"
   },
   "description": "A customer wants to downgrade from the 'Enterprise' plan to the 'Pro' plan to save costs.",
   "industry": "Information Technology Product",

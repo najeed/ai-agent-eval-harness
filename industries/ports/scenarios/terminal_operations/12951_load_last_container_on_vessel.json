@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Load the Last Container on a Vessel",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12951-load-last-container-on-vessel"
   },
   "description": "Cargo operations are nearly complete. The foreman must supervise the loading of the final container and hatch cover.",
   "industry": "Ports",

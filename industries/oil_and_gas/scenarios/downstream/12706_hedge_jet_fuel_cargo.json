@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Hedge Physical Jet Fuel Cargo",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12706-hedge-jet-fuel-cargo"
   },
   "description": "A trader has just purchased a physical cargo of jet fuel for delivery in three months and needs to hedge the price risk.",
   "industry": "Oil and Gas",

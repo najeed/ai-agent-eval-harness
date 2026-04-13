@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Materials from Warehouse",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12304-request-materials-from-warehouse"
   },
   "description": "A line operator is running low on a specific component and needs to request more from the central warehouse.",
   "industry": "Manufacturing",

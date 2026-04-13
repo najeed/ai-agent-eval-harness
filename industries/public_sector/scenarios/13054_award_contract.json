@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Award a Contract",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13054-award-contract"
   },
   "description": "The procurement department is ready to officially award a contract to the winning bidder.",
   "industry": "Public Sector",

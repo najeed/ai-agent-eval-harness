@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Final Project Billing and Archiving",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00196-final-billing-and-archiving"
   },
   "description": "An agent must perform the final administrative tasks for a completed project.",
   "industry": "Consulting",

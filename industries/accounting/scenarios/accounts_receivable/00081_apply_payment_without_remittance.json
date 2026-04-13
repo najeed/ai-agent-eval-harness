@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply a Payment Without Remittance Advice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00081-apply-payment-without-remittance"
   },
   "description": "A check has been received from a customer with no remittance advice. An AI tool must predict which invoices the payment is likely for.",
   "industry": "Accounting",

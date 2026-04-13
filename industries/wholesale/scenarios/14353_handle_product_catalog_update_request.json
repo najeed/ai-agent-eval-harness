@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Product Catalog Update Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14353-handle-product-catalog-update-request"
   },
   "description": "A retailer notices that a product in the online catalog has an incorrect description. They report it to customer support.",
   "industry": "Wholesale",

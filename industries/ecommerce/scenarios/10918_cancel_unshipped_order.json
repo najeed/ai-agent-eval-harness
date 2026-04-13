@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel an Unshipped Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10918-cancel-unshipped-order"
   },
   "description": "A customer calls to cancel an order they placed an hour ago.",
   "industry": "Ecommerce",

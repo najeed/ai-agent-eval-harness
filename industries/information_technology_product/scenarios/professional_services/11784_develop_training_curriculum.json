@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop Custom Training Curriculum",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11784-develop-training-curriculum"
   },
   "description": "A new enterprise customer has purchased a custom training package. A consultant must develop the curriculum.",
   "industry": "Information Technology Product",

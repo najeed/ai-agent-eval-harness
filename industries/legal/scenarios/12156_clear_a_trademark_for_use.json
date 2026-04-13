@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Clear a Trademark for Use",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12156-clear-a-trademark-for-use"
   },
   "description": "A client wants to use a new name for a product. An IP attorney needs to conduct a full trademark search to assess the risk of infringement.",
   "industry": "Legal",

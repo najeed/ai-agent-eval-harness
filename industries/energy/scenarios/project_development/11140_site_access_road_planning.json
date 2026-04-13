@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Wind Farm Site Access Road Planning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11140-site-access-road-planning"
   },
   "description": "A civil engineer must plan the route for an access road to a remote wind farm site, minimizing environmental impact and cost.",
   "industry": "Energy",

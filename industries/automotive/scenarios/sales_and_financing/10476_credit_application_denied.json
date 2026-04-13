@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Credit Application Denied",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10476-credit-application-denied"
   },
   "description": "A customer's credit application was denied. The agent must deliver the news and explain the next steps.",
   "industry": "Automotive",

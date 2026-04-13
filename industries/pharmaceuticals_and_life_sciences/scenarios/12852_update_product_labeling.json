@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Product Labeling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12852-update-product-labeling"
   },
   "description": "Following the identification of a new safety signal, the company must update the product's official labeling (prescribing information).",
   "industry": "Pharmaceuticals and Life Sciences",

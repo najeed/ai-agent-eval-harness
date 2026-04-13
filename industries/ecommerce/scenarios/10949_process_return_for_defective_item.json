@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Return for a Defective Item",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10949-process-return-for-defective-item"
   },
   "description": "A customer reports that a product stopped working within the warranty period and wants a replacement.",
   "industry": "Ecommerce",

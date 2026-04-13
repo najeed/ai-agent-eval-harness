@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "PCI DSS Compliance Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10715-grc-compliance-audit-pci"
   },
   "description": "A GRC analyst must gather evidence to demonstrate compliance with a specific PCI DSS requirement for an upcoming audit.",
   "industry": "Cybersecurity",

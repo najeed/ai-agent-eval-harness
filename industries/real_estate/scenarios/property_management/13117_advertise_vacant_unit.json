@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advertise a Vacant Rental Unit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13117-advertise-vacant-unit"
   },
   "description": "A rental unit will become vacant next month. The property manager needs to create and post a rental advertisement.",
   "industry": "Real Estate",

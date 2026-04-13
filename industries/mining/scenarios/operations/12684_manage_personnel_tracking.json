@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Underground Personnel Tracking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12684-manage-personnel-tracking"
   },
   "description": "In an emergency, a control room operator must use the personnel tracking system to find the location of every person underground.",
   "industry": "Mining",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Concession Staff Break",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14238-manage-concession-staff-break"
   },
   "description": "A concession stand worker needs to take their scheduled 30-minute break during a busy event.",
   "industry": "Venues",

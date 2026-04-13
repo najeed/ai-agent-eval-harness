@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cross-sell - Add a Line to Family Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13843-add-a-line-to-family-plan"
   },
   "description": "An existing customer on a family plan wants to add a new line for their child.",
   "industry": "Telecom",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Suspected Duplicate Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00040-handle-duplicate-invoice"
   },
   "description": "An invoice is entered into the system, which flags it as a potential duplicate of an invoice already processed.",
   "industry": "Accounting",

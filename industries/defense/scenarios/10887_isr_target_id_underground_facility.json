@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Underground Facility Identification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10887-isr-target-id-underground-facility"
   },
   "description": "An analyst must use a combination of thermal imagery and measurement and signature intelligence (MASINT) to identify a hidden underground facility.",
   "industry": "Defense",

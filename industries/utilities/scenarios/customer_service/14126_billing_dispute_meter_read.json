@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Billing Dispute - Incorrect Meter Read",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14126-billing-dispute-meter-read"
   },
   "description": "A customer believes their bill is wrong because the meter read was estimated, not actual.",
   "industry": "Utilities",

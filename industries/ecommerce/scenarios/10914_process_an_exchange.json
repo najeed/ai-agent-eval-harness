@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Size Exchange",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10914-process-an-exchange"
   },
   "description": "A customer ordered a shirt that doesn't fit and wants to exchange it for a different size.",
   "industry": "Ecommerce",

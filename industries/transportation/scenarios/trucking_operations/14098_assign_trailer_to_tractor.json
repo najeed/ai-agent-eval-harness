@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assign a Trailer to a Tractor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14098-assign-trailer-to-tractor"
   },
   "description": "A driver needs to pick up a pre-loaded trailer from a yard. A dispatcher must assign the specific trailer to the driver's tractor.",
   "industry": "Transportation",

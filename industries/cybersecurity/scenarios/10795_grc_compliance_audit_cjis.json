@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "CJIS Compliance Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10795-grc-compliance-audit-cjis"
   },
   "description": "An analyst for a police department must audit their systems to ensure compliance with the FBI's Criminal Justice Information Services (CJIS) security policy.",
   "industry": "Cybersecurity",

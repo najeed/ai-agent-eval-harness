@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assign Referees to Games",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13620-assign-referees-to-games"
   },
   "description": "A league administrator needs to assign referees to all games for the upcoming week, ensuring no conflicts of interest.",
   "industry": "Sports",

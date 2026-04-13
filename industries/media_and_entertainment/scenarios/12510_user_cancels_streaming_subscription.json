@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Cancels Streaming Subscription",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12510-user-cancels-streaming-subscription"
   },
   "description": "A user wants to cancel their monthly streaming subscription. The agent must process the cancellation and attempt a retention offer.",
   "industry": "Media and Entertainment",

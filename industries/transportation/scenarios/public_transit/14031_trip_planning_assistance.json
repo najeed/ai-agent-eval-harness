@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Trip Planning Assistance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14031-trip-planning-assistance"
   },
   "description": "A tourist calls the customer service line for help planning a trip from their hotel to a museum using public transit.",
   "industry": "Transportation",

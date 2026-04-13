@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Wind Turbine Blade Leading Edge Erosion Repair",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11190-blade-leading-edge-erosion-repair"
   },
   "description": "Drone inspections have revealed significant leading-edge erosion on several wind turbine blades, which reduces aerodynamic efficiency and energy production.",
   "industry": "Energy",

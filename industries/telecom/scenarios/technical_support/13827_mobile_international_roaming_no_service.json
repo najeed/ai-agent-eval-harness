@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Mobile Troubleshooting - No Service While Roaming",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13827-mobile-international-roaming-no-service"
   },
   "description": "A customer traveling internationally reports having no service, despite having a roaming plan.",
   "industry": "Telecom",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Return with Dividend Income",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13726-prepare-return-with-1099-div"
   },
   "description": "A taxpayer received Form 1099-DIV for dividends from stocks.",
   "industry": "Tax",

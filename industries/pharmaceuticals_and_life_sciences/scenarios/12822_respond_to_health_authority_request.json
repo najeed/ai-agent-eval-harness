@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to Health Authority Information Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12822-respond-to-health-authority-request"
   },
   "description": "A regulatory specialist has received an information request from the FDA regarding a pending submission and must coordinate the response.",
   "industry": "Pharmaceuticals and Life Sciences",

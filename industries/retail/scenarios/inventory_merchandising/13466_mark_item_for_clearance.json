@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Mark an Item for Clearance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13466-mark-item-for-clearance"
   },
   "description": "An item is being discontinued and needs to be marked down for clearance.",
   "industry": "Retail",

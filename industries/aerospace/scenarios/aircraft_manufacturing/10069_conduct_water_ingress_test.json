@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct a Water Ingress Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10069-conduct-water-ingress-test"
   },
   "description": "After an aircraft is fully assembled, it must be tested to ensure the fuselage, windows, and doors are properly sealed against rain.",
   "industry": "Aerospace",

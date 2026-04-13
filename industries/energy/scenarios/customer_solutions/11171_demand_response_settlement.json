@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Demand Response Event Settlement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11171-demand-response-settlement"
   },
   "description": "After a demand response event, a program manager needs to calculate the performance and payments for participating customers.",
   "industry": "Energy",

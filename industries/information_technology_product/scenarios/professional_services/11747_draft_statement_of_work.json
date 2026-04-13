@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft Statement of Work (SOW)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11747-draft-statement-of-work"
   },
   "description": "Following a successful discovery phase, a consultant needs to draft an SOW for a standard implementation project.",
   "industry": "Information Technology Product",

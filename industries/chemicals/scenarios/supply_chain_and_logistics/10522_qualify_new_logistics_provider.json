@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Qualify New Logistics Provider",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10522-qualify-new-logistics-provider"
   },
   "description": "A logistics manager needs to add a new freight carrier to the system, including their certifications for handling hazardous materials.",
   "industry": "Chemicals",

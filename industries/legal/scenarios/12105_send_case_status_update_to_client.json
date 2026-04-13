@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Case Status Update to Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12105-send-case-status-update-to-client"
   },
   "description": "A partner asks a paralegal to send a status update to a client on a litigation matter.",
   "industry": "Legal",

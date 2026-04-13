@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Make a Restaurant Reservation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11506-restaurant-reservation"
   },
   "description": "A hotel guest wants to make a reservation for two people at the hotel's steakhouse tonight.",
   "industry": "Hospitality",

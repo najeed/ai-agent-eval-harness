@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Scale-Up Production Batch",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10558-scale-up-production-batch"
   },
   "description": "A product that was made in a small pilot-plant reactor now needs to be scheduled for its first full-scale production run.",
   "industry": "Chemicals",

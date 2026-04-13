@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Lost Child Protocol",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13648-manage-lost-child-protocol"
   },
   "description": "A parent reports their child is missing at the stadium. The security team must execute the 'lost child' protocol.",
   "industry": "Sports",

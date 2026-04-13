@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Value Chain Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00144-value-chain-analysis"
   },
   "description": "An agent must analyze a client's business processes to map them to Porter's Value Chain framework.",
   "industry": "Consulting",

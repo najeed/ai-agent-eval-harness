@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Ad Creative in a Live Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12469-update-ad-creative"
   },
   "description": "An ad creative is experiencing fatigue (declining performance). A manager needs to swap it out with a new one.",
   "industry": "Marketing and Advertising",

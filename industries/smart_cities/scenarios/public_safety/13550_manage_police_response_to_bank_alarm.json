@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Police Response to Bank Alarm",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13550-manage-police-response-to-bank-alarm"
   },
   "description": "A silent alarm is triggered at a downtown bank. An operator must coordinate the police response.",
   "industry": "Smart Cities",

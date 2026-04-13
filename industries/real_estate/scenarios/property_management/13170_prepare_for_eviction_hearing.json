@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare for an Eviction Hearing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13170-prepare-for-eviction-hearing"
   },
   "description": "A PM has filed for eviction against a tenant for non-payment of rent and must prepare the file for the court hearing.",
   "industry": "Real Estate",

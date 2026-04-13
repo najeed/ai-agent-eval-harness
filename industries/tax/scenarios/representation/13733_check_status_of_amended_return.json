@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Status of Amended Return",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13733-check-status-of-amended-return"
   },
   "description": "A taxpayer filed an amended return (Form 1040-X) several months ago and wants to know its status.",
   "industry": "Tax",

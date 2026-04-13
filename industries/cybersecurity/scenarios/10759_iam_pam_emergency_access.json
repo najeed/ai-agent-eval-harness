@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Emergency 'Break Glass' Access",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10759-iam-pam-emergency-access"
   },
   "description": "A critical system is down, and the normal administrator is unavailable. A different administrator needs emergency 'break glass' access to fix it.",
   "industry": "Cybersecurity",

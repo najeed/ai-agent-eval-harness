@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track a Building Permit Application",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13507-track-a-building-permit-application"
   },
   "description": "A citizen calls to check the status of their building permit application. An operator must look it up and provide an update.",
   "industry": "Smart Cities",

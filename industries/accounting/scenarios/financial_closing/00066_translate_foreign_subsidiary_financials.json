@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Translate Foreign Subsidiary Financials",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00066-translate-foreign-subsidiary-financials"
   },
   "description": "For consolidation, the financial statements of a European subsidiary (in EUR) need to be translated into the parent company's reporting currency (USD).",
   "industry": "Accounting",

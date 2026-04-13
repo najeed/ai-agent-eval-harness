@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deploy New Software Version",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11724-deploy-new-version"
   },
   "description": "A new version of the application has passed all tests and is ready to be deployed to production.",
   "industry": "Information Technology Product",

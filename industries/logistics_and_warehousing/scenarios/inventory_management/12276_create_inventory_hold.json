@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create an Inventory Hold for Quality Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12276-create-inventory-hold"
   },
   "description": "A batch of newly received items must be held in a quarantine status until the quality assurance team can inspect and release it.",
   "industry": "Logistics and Warehousing",

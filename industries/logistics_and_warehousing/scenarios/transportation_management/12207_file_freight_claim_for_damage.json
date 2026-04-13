@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File Freight Claim for Damage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12207-file-freight-claim-for-damage"
   },
   "description": "A shipment was delivered with visible damage. A claims specialist must file a claim with the carrier.",
   "industry": "Logistics and Warehousing",

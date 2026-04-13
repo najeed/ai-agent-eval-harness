@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Use AR for Remote Assistance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12372-use-ar-for-remote-assistance"
   },
   "description": "A junior technician is struggling with a complex repair and uses an Augmented Reality (AR) headset to get help from a senior expert.",
   "industry": "Manufacturing",

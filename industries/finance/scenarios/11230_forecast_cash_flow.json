@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Forecast Short-Term Corporate Cash Flow",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11230-forecast-cash-flow"
   },
   "description": "A treasury analyst needs to create a 13-week cash flow forecast for the company.",
   "industry": "Finance",

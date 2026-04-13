@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document in Anesthesia Record",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11334-document-in-anesthesia-record"
   },
   "description": "An anesthesiologist is monitoring a patient during surgery and needs to document events in the electronic anesthesia record.",
   "industry": "Healthcare",

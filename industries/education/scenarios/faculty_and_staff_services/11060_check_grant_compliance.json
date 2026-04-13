@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check for Grant Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11060-check-grant-compliance"
   },
   "description": "A grant administrator is conducting an audit and needs to confirm that all personnel paid from a specific grant have completed their mandatory effort reporting.",
   "industry": "Education",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Answer Product Comparison Question",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13451-answer-product-comparison-question"
   },
   "description": "A customer in the store is trying to decide between two different models of a coffee maker and asks an associate for help.",
   "industry": "Retail",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Major Track Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14097-handle-track-outage"
   },
   "description": "A bridge washout has closed a main rail line for an extended period. A manager must re-route all affected trains.",
   "industry": "Transportation",

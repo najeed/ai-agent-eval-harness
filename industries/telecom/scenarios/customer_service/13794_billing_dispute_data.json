@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Billing Dispute - Data Overage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13794-billing-dispute-data"
   },
   "description": "An agent must resolve a customer's claim of being overcharged due to unexpected data usage fees.",
   "industry": "Telecom",

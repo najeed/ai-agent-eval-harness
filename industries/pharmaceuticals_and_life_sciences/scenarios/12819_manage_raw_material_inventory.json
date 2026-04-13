@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Raw Material Inventory and Release",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12819-manage-raw-material-inventory"
   },
   "description": "A supply chain coordinator must manage the inventory of an active pharmaceutical ingredient (API), including receiving, testing, and release for production.",
   "industry": "Pharmaceuticals and Life Sciences",

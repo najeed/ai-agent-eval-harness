@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Return and Destruction of Clinical Supplies",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12883-return-and-destroy-clinical-supplies"
   },
   "description": "At the end of a clinical trial, a supply manager must arrange for unused investigational product to be returned from all sites and destroyed.",
   "industry": "Pharmaceuticals and Life Sciences",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Backup - Perform Disaster Recovery Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11836-backup-dr-test"
   },
   "description": "A technician is performing a scheduled disaster recovery test for a client.",
   "industry": "Information Technology Service",

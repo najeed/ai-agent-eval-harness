@@ -36,7 +36,7 @@ This script uses faker libraries to create a `records.csv` with industry-specifi
 All scenarios are validated at load time against `schemas/scenario.schema.json`. Your scenario **must** include these required fields:
 
 **Scenario level:**
-- `scenario_id`, `title`, `description`, `use_case`, `core_function`, `industry`, `tasks`
+- `id`, `title`, `description`, `use_case`, `core_function`, `industry`, `tasks`
 - (Optional) `initial_state`, `policies`
 
 **Task level** (each item in `tasks`):

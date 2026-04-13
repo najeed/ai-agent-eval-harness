@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Suspected Child Abuse or Neglect",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13018-report-child-abuse-neglect"
   },
   "description": "A citizen is calling a hotline to make a report of suspected child abuse.",
   "industry": "Public Sector",

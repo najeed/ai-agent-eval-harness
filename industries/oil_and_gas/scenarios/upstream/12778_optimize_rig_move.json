@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Optimize Rig Move",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12778-optimize-rig-move"
   },
   "description": "A logistics specialist plans the move of a drilling rig from one well pad to another, aiming to minimize time and cost.",
   "industry": "Oil and Gas",

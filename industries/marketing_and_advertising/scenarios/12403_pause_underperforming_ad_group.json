@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pause Underperforming Ad Group",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12403-pause-underperforming-ad-group"
   },
   "description": "While reviewing a live Google Ads campaign, an account manager notices one ad group has a very high cost-per-conversion and needs to pause it.",
   "industry": "Marketing and Advertising",

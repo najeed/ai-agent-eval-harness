@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About a Tax Refund Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13031-inquire-about-tax-refund"
   },
   "description": "A citizen who filed their income taxes wants to check the status of their refund.",
   "industry": "Public Sector",

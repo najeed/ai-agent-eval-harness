@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboard a New Vendor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11535-onboard-new-vendor"
   },
   "description": "The hotel is switching to a new local bakery for its morning pastries and needs to set them up as a vendor.",
   "industry": "Hospitality",

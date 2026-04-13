@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Negotiate a Letter of Intent (LOI)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13212-negotiate-loi"
   },
   "description": "A tenant client wants to lease an office space. The agent must draft and negotiate the LOI with the landlord's broker.",
   "industry": "Real Estate",

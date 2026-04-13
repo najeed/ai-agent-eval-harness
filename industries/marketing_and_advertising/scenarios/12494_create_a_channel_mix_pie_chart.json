@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Channel Mix Pie Chart",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12494-create-a-channel-mix-pie-chart"
   },
   "description": "An analyst needs to create a pie chart that shows the percentage of website traffic coming from each marketing channel.",
   "industry": "Marketing and Advertising",

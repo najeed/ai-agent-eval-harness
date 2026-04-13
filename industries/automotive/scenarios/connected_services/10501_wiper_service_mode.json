@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "How to Put Wipers in Service Mode",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10501-wiper-service-mode"
   },
   "description": "A customer wants to replace their windshield wipers but cannot lift them from the windshield because they are tucked under the hood.",
   "industry": "Automotive",

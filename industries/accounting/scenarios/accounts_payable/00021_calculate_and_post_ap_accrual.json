@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate and Post a Goods Received Not Invoiced (GRNI) Accrual",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00021-calculate-and-post-ap-accrual"
   },
   "description": "For month-end close, an accountant needs to create an accrual for goods that have been received but for which no supplier invoice has been processed yet.",
   "industry": "Accounting",

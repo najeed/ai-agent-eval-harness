@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Tax Impact of New Equipment Purchase",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13723-analyze-tax-impact-of-new-equipment-purchase"
   },
   "description": "A business is considering buying a new piece of equipment and wants to know the tax benefits, such as Section 179 deduction.",
   "industry": "Tax",

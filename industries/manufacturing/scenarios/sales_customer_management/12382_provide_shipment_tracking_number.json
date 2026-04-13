@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide a Shipment Tracking Number",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12382-provide-shipment-tracking-number"
   },
   "description": "A customer is asking for the tracking number for their recent shipment.",
   "industry": "Manufacturing",

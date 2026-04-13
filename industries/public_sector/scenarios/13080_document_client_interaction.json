@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document a Client Interaction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13080-document-client-interaction"
   },
   "description": "A social worker needs to log a phone call with a client in the case management system.",
   "industry": "Public Sector",

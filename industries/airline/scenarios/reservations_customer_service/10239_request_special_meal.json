@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Special Meal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10239-request-special-meal"
   },
   "description": "A passenger with dietary restrictions needs to request a vegetarian meal for their long-haul flight.",
   "industry": "Airline",

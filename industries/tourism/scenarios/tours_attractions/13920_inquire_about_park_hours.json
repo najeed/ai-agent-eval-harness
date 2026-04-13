@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About Theme Park Hours",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13920-inquire-about-park-hours"
   },
   "description": "A visitor wants to know the opening and closing times for Disneyland on an upcoming Saturday.",
   "industry": "Tourism",

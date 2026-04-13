@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Renew a Library Book",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11071-renew-library-book"
   },
   "description": "A student needs to renew a library book they have checked out.",
   "industry": "Education",

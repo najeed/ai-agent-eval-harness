@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Locked Keys in Car",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10411-remote-unlock-vehicle"
   },
   "description": "A customer calls because they have locked their keys inside their vehicle and need it unlocked remotely.",
   "industry": "Automotive",

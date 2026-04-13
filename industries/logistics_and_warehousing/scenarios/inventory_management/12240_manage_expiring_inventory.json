@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Expiring Inventory (FEFO)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12240-manage-expiring-inventory"
   },
   "description": "In a food-grade warehouse, an operator picking an order must be directed to pick the batch with the earliest expiration date first.",
   "industry": "Logistics and Warehousing",

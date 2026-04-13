@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track In-Transit Shipment for Customer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12199-track-in-transit-shipment"
   },
   "description": "A customer service agent receives a call asking for the status of an in-transit shipment. The agent must locate the shipment and provide an ETA.",
   "industry": "Logistics and Warehousing",

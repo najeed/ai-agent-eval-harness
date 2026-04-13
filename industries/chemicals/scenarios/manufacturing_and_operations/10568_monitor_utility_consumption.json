@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Plant Utility Consumption",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10568-monitor-utility-consumption"
   },
   "description": "A plant manager wants to review the consumption of key utilities (steam, nitrogen, electricity) for the past month to track efficiency.",
   "industry": "Chemicals",

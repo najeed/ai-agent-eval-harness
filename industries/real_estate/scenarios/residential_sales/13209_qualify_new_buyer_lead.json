@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Qualify a New Buyer Lead",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13209-qualify-new-buyer-lead"
   },
   "description": "A new lead comes in from the website. The agent needs to make initial contact and determine if the buyer is pre-approved for a loan.",
   "industry": "Real Estate",

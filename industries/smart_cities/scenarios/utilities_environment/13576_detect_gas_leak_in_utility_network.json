@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Detect Gas Leak in Utility Network",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13576-detect-gas-leak-in-utility-network"
   },
   "description": "A methane sensor in a gas utility pipeline reports a significant leak. An operator must initiate an emergency response.",
   "industry": "Smart Cities",

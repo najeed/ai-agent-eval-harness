@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Negotiate Annual Pricing with a Supplier",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14332-negotiate-pricing-with-supplier"
   },
   "description": "It's time for the annual price negotiation with a key supplier. A procurement manager must negotiate for better terms.",
   "industry": "Wholesale",

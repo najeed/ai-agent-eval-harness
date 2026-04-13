@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage the Trade Deadline",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13670-manage-trade-deadline"
   },
   "description": "On the league's trade deadline day, an administrator must process all last-minute trades before the cutoff time.",
   "industry": "Sports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Start New Electric Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14110-start-electric-service"
   },
   "description": "A customer is moving into a new apartment and needs to start electric service in their name.",
   "industry": "Utilities",

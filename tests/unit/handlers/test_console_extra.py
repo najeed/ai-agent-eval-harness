@@ -44,10 +44,10 @@ def test_list_runs_parse_exception(client, tmp_path):
 def test_evaluate_background_thread(client, tmp_path):
     # Setup isolated scenario
     scenario_path = tmp_path / "test.json"
-    scenario_path.write_text(json.dumps({"scenario_id": "test"}), encoding="utf-8")
+    scenario_path.write_text(json.dumps({"id": "test"}), encoding="utf-8")
 
     with (
-        patch("eval_runner.loader.load_scenario", return_value={"scenario_id": "test"}),
+        patch("eval_runner.loader.load_scenario", return_value={"id": "test"}),
         patch("eval_runner.engine.run_evaluation", new_callable=MagicMock) as mock_eval,
         patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path),
     ):
@@ -57,7 +57,7 @@ def test_evaluate_background_thread(client, tmp_path):
 
         mock_eval.side_effect = dummy_run
 
-        res = client.post("/api/evaluate", json={"path": "test.json"})
+        res = client.post("/api/v1/evaluate", json={"path": "test.json"})
         assert res.status_code == 200
         assert res.json["status"] == "started"
 
@@ -77,7 +77,7 @@ def test_save_scenario_exception(client, tmp_path):
         patch("eval_runner.console.routes.config.PROJECT_ROOT", tmp_path),
         patch("builtins.open", side_effect=Exception("Disk full")),
     ):
-        res = client.post("/api/scenarios", json={"scenario_id": "test", "industry": "fin"})
+        res = client.post("/api/scenarios", json={"id": "test", "industry": "fin"})
         assert res.status_code == 500
         assert "Disk full" in res.json["error"]
 

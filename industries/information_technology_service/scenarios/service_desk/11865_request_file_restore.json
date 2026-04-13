@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request - Restore File from Backup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11865-request-file-restore"
   },
   "description": "A user accidentally deleted a folder from a network share an hour ago and needs it restored.",
   "industry": "Information Technology Service",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Account - Request for Local Admin Rights",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11866-request-admin-rights"
   },
   "description": "A developer is requesting temporary local administrator rights on their laptop to install a development tool.",
   "industry": "Information Technology Service",

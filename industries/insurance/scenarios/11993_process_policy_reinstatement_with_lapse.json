@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Reinstatement with a Lapse in Coverage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11993-process-policy-reinstatement-with-lapse"
   },
   "description": "A customer's policy cancelled for non-payment more than 30 days ago and they now want to reinstate, which will create a lapse in coverage.",
   "industry": "Insurance",

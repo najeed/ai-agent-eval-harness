@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "IoT Device Vulnerability Scan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10785-vuln-mgmt-scanning-iot"
   },
   "description": "An analyst must assess the security of a new IoT device (e.g., a smart camera) before it is approved for corporate use.",
   "industry": "Cybersecurity",

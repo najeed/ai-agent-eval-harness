@@ -7,7 +7,7 @@ description: "Authoritative specification for cryptographic evaluation integrity
 The Forensic Trust Protocol v3.0.0 (Forensic Standard) extends the base Trust Protocol to provide immutable evidence for every sidecar artifact generated during an evaluation attempt.
 
 # 2. Schema
-The VC v3 manifest follows the [Industrial Forensic JSON Schema](file:///c:/Users/najee/OneDrive/Documents/Projects/spec/vc/vc.schema.json).
+The VC v3 manifest follows the [Industrial Forensic JSON Schema](/spec/vc/vc.schema.json).
 
 ## Key Extensions
 - **`evidence_ledger`**: A map of SHA-256 hashes for all physical artifacts (e.g. `terminal.log`, `database.sqlite`).
@@ -24,7 +24,14 @@ To ensure forensic performance and prevent bloat, artifacts are gathered via the
     - **Whitelisted Extensions**: `.jsonl`, `.log`, `.json`, `.png`, `.jpg`, `.pdf`, `.csv`, `.db`, `.sqlite`, `.txt`, `.parquet`, `.yaml`, `.yml`, `.sql`, `.patch`, `.diff`, `.zip`, `.tar.gz`, `.tgz`, `.html`, `.svg`
     - **Supported Aliases**: `.jpeg` -> `.jpg`, `.stdout`/`.stderr`/`.err` -> `.log`, `.sqlite3`/`.db3` -> `.db`.
 
-# 3. Cryptographic Requirements
+# 3. Industrial Gating & Identity (AES v1.5.0)
+To ensure audit-grade forensic stability, the protocol enforces strict identity resolution rules:
+
+- **Zero-Inference Policy**: The `run_id` MUST be explicitly provided during certification. Speculative inference from parent directory names is prohibited unless reconciled against an authoritative vault.
+- **Vault Affinity**: Verification is ONLY permitted for traces residing in an industrial vault (`/runs/<run_id>/run.jsonl`) or the authoritative master log (`/runs/run.jsonl`). Traces found in shared temporary or non-compliant directories are considered corrupted.
+- **Path Portability**: All evidence ledgers MUST use site-relative paths to the vault root, ensuring manifests are portable across distinct storage backends.
+
+# 4. Cryptographic Requirements
 - **Algorithm**: ED25519 (Asymmetric) / SHA-256 (Hashing).
 - **Deterministic Signing**: Signatures MUST be computed by excluding the `provenance_chain` from the payload to allow for multi-party appending without invalidating existing signatures.
 

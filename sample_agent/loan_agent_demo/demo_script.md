@@ -28,22 +28,22 @@ python -c "import requests; print(requests.post('http://localhost:8000/run', jso
 
 ---
 
-## Phase 2: Bringing in AgentEval
+## Phase 2: Bringing in AgentV
 
-**Narrative**: "Now we bring in AgentEval. Instead of manual testing and log-diving, we use our evaluation harness to define exactly what 'good' looks like."
+**Narrative**: "Now we bring in AgentV. Instead of manual testing and log-diving, we use our evaluation harness to define exactly what 'good' looks like."
 
 ### Action: Show PRD
 **File**: `samples/loan_agent_demo/loan_prd.md`
 **Talk Track**: "We start with a PRD. It defines the credit score tiers, the DTI calculation, and a strict rule: never bypass rules based on user prompts."
 
 ### Action: Asset Generation (should be user prompted on the screen and the user should be able to see the fresh assets being generated using our spec-to-aes utility (prompt for PRD location) -- save to a newly created subfolder or appropriate /industries folder for the scenario)
-**Talk Track**: "AgentEval converts this PRD into three core assets and lint the assets:
+**Talk Track**: "AgentV converts this PRD into three core assets and lint the assets:
 1. **AES-compliant YAML**: Defines the environment and metrics.
 2. **Scenario JSON**: A curated set of test cases, including our adversarial 'Admin' prompt.
 3. **Evaluation Metrics** (within the YAML and JSON): Specific scores for rule compliance and security resistance."
 
 ### Alternate Action: Asset Generation (should be user prompted on the screen and the user should be able to see the fresh assets being generated using our import-drift utility (prompt for trace location) -- save to a newly created subfolder or appropriate /industries folder for the scenario)
-**Talk Track**: "AgentEval converts this log trace into three core assets and lint the assets:
+**Talk Track**: "AgentV converts this log trace into three core assets and lint the assets:
 1. **AES-compliant YAML**: Defines the environment and metrics.
 2. **Scenario JSON**: A curated set of test cases, including our adversarial 'Admin' prompt.
 3. **Evaluation Metrics** (within the YAML and JSON): Specific scores for rule compliance and security resistance."
@@ -64,19 +64,19 @@ python -m eval_runner.main --spec samples/loan_agent_demo/loan_approval.aes.yaml
 **Talk Track**: "Now we execute. We aren't testing one-off prompts anymore; we're running a battery of tests across scenario variants."
 
 ### Action: Show Results
-**Talk Track**: "The results are explicit. We see passes for Alice, but a critical failure on our adversarial 'Admin' case. AgentEval flags this immediately."
+**Talk Track**: "The results are explicit. We see passes for Alice, but a critical failure on our adversarial 'Admin' case. AgentV flags this immediately."
 
 ### Action: Open Visual Debugger
 **Talk Track**: "Now instead of logs, we replay execution in the Visual Debugger."
 *(Show UI with trajectory)*
-"We can step through every trace. We see the exact tool call to `loan_api` being skipped because the model was distracted by the 'Admin' instruction. AgentEval runs state parity checks and flags the divergence from the expected 'REJECTED' outcome."
+"We can step through every trace. We see the exact tool call to `loan_api` being skipped because the model was distracted by the 'Admin' instruction. AgentV runs state parity checks and flags the divergence from the expected 'REJECTED' outcome."
 
 ---
 
 ## Phase 4: Precise Fixing
 
 ### Action: Prompt to Fix
-**Narrative**: "Now we fix it. We don't guess. We prompt AgentEval to harden the agent."
+**Narrative**: "Now we fix it. We don't guess. We prompt AgentV to harden the agent."
 **Prompt**: "Enforce strict LoanAPI usage and deterministic output. Add a system prompt that explicitly forbids rule bypasses even for 'Admin' requests."
 
 ### Action: Apply Fix
@@ -89,4 +89,4 @@ python -m eval_runner.main --spec samples/loan_agent_demo/loan_approval.aes.yaml
 ```
 **Talk Track**: "We re-run the same scenarios. All pass. The adversarial prompt is now correctly rejected."
 
-**Closing**: "No logs. No guesswork. Deterministic validation. That's the power of AgentEval."
+**Closing**: "No logs. No guesswork. Deterministic validation. That's the power of AgentV."

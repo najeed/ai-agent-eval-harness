@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Dashboard Mockup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00185-create-dashboard-mockup"
   },
   "description": "An agent must create a text-based mockup of a web dashboard for a client.",
   "industry": "Consulting",

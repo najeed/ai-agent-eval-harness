@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Quarterly Portfolio Performance Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11204-generate-portfolio-report"
   },
   "description": "A client requests a performance report for their portfolio for the previous quarter.",
   "industry": "Finance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Supplier Compliance Documentation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14340-handle-supplier-quality-compliance"
   },
   "description": "A new product requires a certificate of compliance from the supplier before it can be sold. An agent must obtain this document.",
   "industry": "Wholesale",

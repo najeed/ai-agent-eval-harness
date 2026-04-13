@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Faculty Parking Permit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11087-request-parking-permit"
   },
   "description": "A new faculty member needs to get a parking permit for a campus garage.",
   "industry": "Education",

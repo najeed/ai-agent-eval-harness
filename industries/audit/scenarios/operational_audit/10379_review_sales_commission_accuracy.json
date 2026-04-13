@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Sales Commission Payment Accuracy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10379-review-sales-commission-accuracy"
   },
   "description": "An auditor reviews sales commission payments to ensure they were calculated correctly.",
   "industry": "Audit",

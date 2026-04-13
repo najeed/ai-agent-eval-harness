@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshoot a Disapproved Ad",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12457-troubleshoot-ad-disapproval"
   },
   "description": "An ad has been disapproved by the ad platform for violating a policy. A manager needs to diagnose and fix the issue.",
   "industry": "Marketing and Advertising",

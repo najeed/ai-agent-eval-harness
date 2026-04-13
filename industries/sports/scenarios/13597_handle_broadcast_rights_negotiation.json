@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Broadcast Rights Negotiation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13597-handle-broadcast-rights-negotiation"
   },
   "description": "A sports league is negotiating the sale of its broadcast rights for the next five years. An agent must analyze two competing offers.",
   "industry": "Sports",

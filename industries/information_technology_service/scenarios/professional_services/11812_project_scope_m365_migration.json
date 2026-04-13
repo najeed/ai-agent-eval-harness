@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Scoping - Microsoft 365 Migration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11812-project-scope-m365-migration"
   },
   "description": "A potential client with an on-premise Exchange server wants a quote to migrate their email to Microsoft 365.",
   "industry": "Information Technology Service",

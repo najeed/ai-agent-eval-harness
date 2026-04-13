@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Decommission an Old Asset",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12367-decommission-old-asset"
   },
   "description": "A piece of equipment is being replaced and needs to be formally decommissioned in the asset management system.",
   "industry": "Manufacturing",

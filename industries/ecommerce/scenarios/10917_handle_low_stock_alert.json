@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Low Stock Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10917-handle-low-stock-alert"
   },
   "description": "An automated alert indicates that a popular product is about to run out of stock. The agent needs to take action.",
   "industry": "Ecommerce",

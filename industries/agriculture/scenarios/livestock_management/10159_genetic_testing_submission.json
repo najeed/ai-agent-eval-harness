@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Submit Sample for Genetic Testing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10159-genetic-testing-submission"
   },
   "description": "A cattle breeder has taken a tissue sample from a prize bull and needs to submit it to a lab for genetic testing.",
   "industry": "Agriculture",

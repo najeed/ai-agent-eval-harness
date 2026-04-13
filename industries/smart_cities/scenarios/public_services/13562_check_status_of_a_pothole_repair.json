@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Status of a Pothole Repair",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13562-check-status-of-a-pothole-repair"
   },
   "description": "A citizen who previously reported a pothole calls to check on the status of the repair.",
   "industry": "Smart Cities",

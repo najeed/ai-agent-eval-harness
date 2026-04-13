@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Seasonal Promotion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11552-create-seasonal-promotion"
   },
   "description": "A marketing manager wants to create a 'Summer Getaway' package that includes a discounted room rate and a breakfast credit.",
   "industry": "Hospitality",

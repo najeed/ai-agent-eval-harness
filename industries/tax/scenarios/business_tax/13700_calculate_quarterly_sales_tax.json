@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate Quarterly Sales Tax",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13700-calculate-quarterly-sales-tax"
   },
   "description": "An online retail business needs to calculate and prepare its quarterly state sales tax return.",
   "industry": "Tax",

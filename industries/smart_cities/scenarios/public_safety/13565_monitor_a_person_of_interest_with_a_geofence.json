@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor a Person of Interest with a Geofence",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13565-monitor-a-person-of-interest-with-a-geofence"
   },
   "description": "Police have a person of interest under surveillance and want to be alerted if they enter a sensitive area.",
   "industry": "Smart Cities",

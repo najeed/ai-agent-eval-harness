@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Wind Farm Decommissioning Cost Estimate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11144-decommissioning-cost-estimate"
   },
   "description": "As part of the initial planning, a developer needs to estimate the cost to decommission a wind farm at the end of its 25-year life.",
   "industry": "Energy",

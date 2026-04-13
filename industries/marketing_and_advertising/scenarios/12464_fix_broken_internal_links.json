@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Fix Broken Internal Links",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12464-fix-broken-internal-links"
   },
   "description": "A technical SEO audit has found several broken internal links on the website that need to be fixed.",
   "industry": "Marketing and Advertising",

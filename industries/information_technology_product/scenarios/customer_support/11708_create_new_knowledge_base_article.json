@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create New Knowledge Base Article",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11708-create-new-knowledge-base-article"
   },
   "description": "After handling a recurring question multiple times, a support agent decides to create a knowledge base article to enable self-service.",
   "industry": "Information Technology Product",

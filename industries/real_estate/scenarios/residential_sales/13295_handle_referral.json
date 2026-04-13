@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Agent-to-Agent Referral",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13295-handle-referral"
   },
   "description": "An agent receives a referral for a buyer moving to their city from an out-of-state agent. They must manage the referral agreement and client handoff.",
   "industry": "Real Estate",

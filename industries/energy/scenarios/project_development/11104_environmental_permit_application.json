@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft Environmental Permit Application",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11104-environmental-permit-application"
   },
   "description": "An agent needs to compile and draft an environmental permit application for a new battery storage facility.",
   "industry": "Energy",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Return Without a Receipt",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13446-process-return-without-receipt"
   },
   "description": "A customer wants to return an item but does not have the receipt.",
   "industry": "Retail",

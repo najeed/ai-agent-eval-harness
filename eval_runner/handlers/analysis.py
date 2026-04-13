@@ -21,18 +21,40 @@ def handle_report(args):
         print("      [CRITICAL] FAILED: Run ID is mandatory for reporting.")
         return
 
-    # Resolve from authoritative vault
-    run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
-    path = run_log_dir / "run.jsonl"
+    # --- [TIERED RESOLUTION] ---
+    # 1. Primary: Industrial Vault (Mandatory for AES v1.5.0)
+    vault_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()
+    # 2. Fallback: Master Log (Industrial Consolidation)
+    master_path = (config.RUN_LOG_DIR / "run.jsonl").resolve()
 
-    if not path.exists():
-        # Fallback for flat traces
-        flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
-        if flat_trace.exists():
-            path = flat_trace
-        else:
-            print(f"      [CRITICAL] FAILED: Trace file for {run_id} not found.")
+    events = []
+    if vault_path.exists():
+        path = vault_path
+        events = trace_utils.load_events(path)
+    elif master_path.exists():
+        # [RECOVERABLE FALLBACK] Vault missing but master log available
+        try:
+            all_events = trace_utils.load_events(master_path)
+            events = [e for e in all_events if e.get("run_id") == run_id]
+
+            if events:
+                print(
+                    "❌ [ERROR] Vault directory not found for Run ID "
+                    f"'{run_id}'. Falling back to master log..."
+                )
+                path = master_path
+            else:
+                print(
+                    f"❌ [ERROR] Run ID '{run_id}' not found in vault or "
+                    "master log. Please verify the Run ID."
+                )
+                return
+        except Exception as e:
+            print(f"❌ [ERROR] Failed to load master log: {e}")
             return
+    else:
+        print(f"❌ [ERROR] Trace file for Run ID '{run_id}' not found in vault or master log.")
+        return
 
     print(f"\n[Report] Generating HTML report from Run ID: {run_id}")
 
@@ -67,19 +89,36 @@ def handle_explain(args):
 
     run_id = args.run_id
 
-    # Resolve from authoritative vault
-    run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
-    trace_path = run_log_dir / "run.jsonl"
+    # --- [TIERED RESOLUTION] ---
+    # 1. Primary: Industrial Vault
+    vault_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()
+    # 2. Fallback: Master Log
+    master_path = (config.RUN_LOG_DIR / "run.jsonl").resolve()
 
-    if not trace_path.exists():
-        flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
-        if flat_trace.exists():
-            trace_path = flat_trace
-        else:
-            print(f"      [CRITICAL] FAILED: Trace file for {run_id} not found.")
+    trace_path = None
+    if vault_path.exists():
+        trace_path = vault_path
+    elif master_path.exists():
+        # [RECOVERABLE FALLBACK] Passing master path to explain_trace
+        try:
+            all_events = trace_utils.load_events(master_path)
+            if any(e.get("run_id") == run_id for e in all_events):
+                print(
+                    "❌ [ERROR] Vault directory not found for Run ID "
+                    f"'{run_id}'. Using master log fallback."
+                )
+                trace_path = master_path
+            else:
+                print(f"❌ [ERROR] Run ID '{run_id}' not found in vault or master log.")
+                return
+        except Exception as e:
+            print(f"❌ [ERROR] Failed to load master log: {e}")
             return
+    else:
+        print(f"❌ [ERROR] Trace file for Run ID '{run_id}' not found.")
+        return
 
-    explainer.explain_trace(str(trace_path))
+    explainer.explain_trace(str(trace_path), run_id=run_id)
 
 
 def handle_calibrate(args):
@@ -88,20 +127,35 @@ def handle_calibrate(args):
 
     run_id = args.run_id
 
-    # Resolve from authoritative vault
-    run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
-    trace_path = run_log_dir / "run.jsonl"
+    # --- [TIERED RESOLUTION] ---
+    vault_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()
+    master_path = (config.RUN_LOG_DIR / "run.jsonl").resolve()
 
-    if not trace_path.exists():
-        flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
-        if flat_trace.exists():
-            trace_path = flat_trace
-        else:
-            print(f"      [CRITICAL] FAILED: Trace file for {run_id} not found.")
+    trace_path = None
+    if vault_path.exists():
+        trace_path = vault_path
+    elif master_path.exists():
+        try:
+            all_events = trace_utils.load_events(master_path)
+            if any(e.get("run_id") == run_id for e in all_events):
+                print(
+                    "❌ [ERROR] Vault directory not found for Run ID "
+                    f"'{run_id}'. Using master log fallback."
+                )
+                trace_path = master_path
+            else:
+                print(f"❌ [ERROR] Run ID '{run_id}' not found in vault or master log.")
+                return
+        except Exception as e:
+            print(f"❌ [ERROR] Failed to load master log: {e}")
             return
+    else:
+        print(f"❌ [ERROR] Trace file for Run ID '{run_id}' not found.")
+        return
 
     calibrator.run_calibration(
         str(trace_path),
+        run_id=run_id,
         golden_path=getattr(args, "golden", None),
         plot=getattr(args, "plot", False),
     )

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Customer Pickup Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14378-handle-customer-pickup-order"
   },
   "description": "A local customer chooses to pick up their order directly from the warehouse instead of having it shipped.",
   "industry": "Wholesale",

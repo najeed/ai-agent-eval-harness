@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advise on a 1031 Exchange",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13351-advise-on-1031-exchange"
   },
   "description": "An investor is selling a property and wants to perform a 1031 exchange to defer capital gains taxes. Their agent must guide them on the process.",
   "industry": "Real Estate",

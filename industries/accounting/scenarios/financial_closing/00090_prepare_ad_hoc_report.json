@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare an Ad-Hoc Financial Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00090-prepare-ad-hoc-report"
   },
   "description": "A department manager wants a report showing their department's expenses for the last quarter, broken down by GL account.",
   "industry": "Accounting",

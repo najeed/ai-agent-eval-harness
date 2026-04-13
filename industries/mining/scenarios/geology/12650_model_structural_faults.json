@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Model Major Structural Faults",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12650-model-structural-faults"
   },
   "description": "A mine geologist models the major faults in a deposit, as they can control mineralization and impact rock stability.",
   "industry": "Mining",

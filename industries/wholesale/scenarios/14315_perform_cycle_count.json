@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform an Inventory Cycle Count",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14315-perform-cycle-count"
   },
   "description": "To ensure inventory accuracy, a warehouse manager needs to perform a cycle count for a specific section of the warehouse.",
   "industry": "Wholesale",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Out-of-Specification (OOS) Lab Result",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10504-out-of-spec-lab-result"
   },
   "description": "A Quality Control lab analyst gets an OOS result for a key purity test on a finished product batch. An investigation must be initiated.",
   "industry": "Chemicals",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Design Open Pit Slope Angles",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12673-pit-slope-design"
   },
   "description": "A geotechnical engineer determines the steepest possible slope angles for an open pit mine that will still remain stable, to minimize the amount of waste rock that needs to be mined.",
   "industry": "Mining",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate a Closing Gift for a Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13157-send-closing-gift"
   },
   "description": "An agent wants to send a closing gift to a client who just bought a home. The agent's assistant needs to arrange it.",
   "industry": "Real Estate",

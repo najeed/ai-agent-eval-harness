@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Internal Check for Regulatory Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10520-conduct-regulatory-audit-check"
   },
   "description": "In preparation for an upcoming EPA audit, an EHS specialist needs to verify that all required emissions reports for the last year have been filed.",
   "industry": "Chemicals",

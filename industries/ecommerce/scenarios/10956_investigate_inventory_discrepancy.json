@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Inventory Discrepancy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10956-investigate-inventory-discrepancy"
   },
   "description": "A customer was able to order an item that, it turns out, was not actually in stock. An agent needs to fix the order and investigate the inventory error.",
   "industry": "Ecommerce",

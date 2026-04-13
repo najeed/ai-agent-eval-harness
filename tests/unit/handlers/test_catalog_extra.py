@@ -28,7 +28,7 @@ def test_build_index_cache_hit(tmp_path):
     scen_dir.mkdir(parents=True)
     scen_file = scen_dir / "s1.json"
     with open(scen_file, "w") as f:
-        json.dump({"scenario_id": "s1"}, f)
+        json.dump({"id": "s1"}, f)
 
     index_path = tmp_path / "index.json"
     cat = ScenarioCatalog(index_path=str(index_path))

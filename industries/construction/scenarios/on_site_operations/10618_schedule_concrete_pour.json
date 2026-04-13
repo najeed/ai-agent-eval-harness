@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Concrete Pour and Testing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10618-schedule-concrete-pour"
   },
   "description": "A site manager needs to schedule a concrete pour for the building's foundation and coordinate the required third-party slump test.",
   "industry": "Construction",

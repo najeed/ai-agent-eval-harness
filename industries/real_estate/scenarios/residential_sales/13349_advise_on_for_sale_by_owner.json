@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advise a Buyer Interested in a FSBO",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13349-advise-on-for-sale-by-owner"
   },
   "description": "A buyer represented by an agent wants to make an offer on a home being sold 'For Sale By Owner' (FSBO).",
   "industry": "Real Estate",

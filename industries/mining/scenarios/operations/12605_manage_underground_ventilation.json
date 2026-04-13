@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Underground Ventilation on Demand",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12605-manage-underground-ventilation"
   },
   "description": "An underground mine operator uses a Ventilation on Demand (VOD) system to adjust fan speeds based on where people and equipment are working.",
   "industry": "Mining",

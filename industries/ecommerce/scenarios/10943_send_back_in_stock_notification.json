@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Back-in-Stock Notification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10943-send-back-in-stock-notification"
   },
   "description": "A previously out-of-stock item is now back in stock. The system needs to notify all customers who signed up for an alert.",
   "industry": "Ecommerce",

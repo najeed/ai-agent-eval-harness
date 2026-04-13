@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct a Legal Review of an Investigative Piece",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12010-conduct-a-legal-review-of-an-investigative-piece"
   },
   "description": "Before publishing a sensitive investigative story that names individuals, an editor must have it reviewed by the legal department for libel risk.",
   "industry": "Journalism",

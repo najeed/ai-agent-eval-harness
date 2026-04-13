@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Piping Isometric Drawing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11479-create-isometic-drawing"
   },
   "description": "A piping designer needs to create an isometric drawing (iso) for a single pipeline, which will be used by the fabrication shop.",
   "industry": "Heavy Industries",

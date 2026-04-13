@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cross-Industry Negotiation: Public Sector & Healthcare Collaboration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "cross-industry-036-cross-industry-negotiation-public-sector-and-healthcare-collaboration"
   },
   "description": "An AI agent must bridge a complex data and policy gap between the Public Sector and Healthcare sectors.",
   "industry": "Meta-Industry",

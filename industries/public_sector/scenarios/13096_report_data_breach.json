@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Potential Data Breach",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13096-report-data-breach"
   },
   "description": "An agency employee reports that they may have accidentally exposed citizen data, triggering a data breach response.",
   "industry": "Public Sector",

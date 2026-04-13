@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Get Information on a Public Construction Project",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13024-get-info-on-construction-project"
   },
   "description": "A resident is asking for the timeline and scope of a road construction project happening on their street.",
   "industry": "Public Sector",

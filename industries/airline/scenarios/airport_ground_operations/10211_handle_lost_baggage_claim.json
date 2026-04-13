@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Lost Baggage Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10211-handle-lost-baggage-claim"
   },
   "description": "A passenger has arrived at their destination, but their checked bag did not. An agent at the baggage service office must create a claim.",
   "industry": "Airline",

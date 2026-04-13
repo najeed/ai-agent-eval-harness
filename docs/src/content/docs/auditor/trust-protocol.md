@@ -3,7 +3,7 @@ title: Trust Protocol Standard
 description: The industrial standard for non-repudiable evaluation traces and forensic integrity.
 ---
 
-The Trust Protocol (v1.4.1) provides **immutable proof of run integrity** for the AgentV Harness. It employs a "Detached Signature" architecture that separates bulky execution data from authoritative metadata certificates.
+The Trust Protocol (v1.4.1) provides **immutable proof of run integrity** for the AgentV Harness. It employs a "Detached Signature" architecture that separates bulky execution data from metadata certificates.
 
 ## 1. Forensic Architecture
 
@@ -29,7 +29,7 @@ graph TD
 ### The Multi-Layer Forensic Defense
 1.  **Trace Layer (Integrity)**: A SHA-256 hash of the `.jsonl` trace file ensures core execution has not been altered.
 2.  **Evidence Layer (Provenance)**: The **Forensic Evidence Ledger** contains SHA-256 hashes of all sidecar artifacts (reports, plots), preventing report manipulation.
-3.  **Manifest Layer (Authority)**: A signed JSON object (**Verification Certificate v3**) that binds these hashes to an authoritative identity via the **Identity Registry**.
+3.  **Manifest Layer (Authority)**: A signed JSON object (**Verification Certificate v3**) that binds these hashes to an identity via the **Identity Registry**.
 
 ---
 

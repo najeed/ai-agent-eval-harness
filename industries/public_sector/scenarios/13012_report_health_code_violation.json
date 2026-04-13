@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Health Code Violation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13012-report-health-code-violation"
   },
   "description": "A citizen wants to file a complaint about unsanitary conditions at a local restaurant.",
   "industry": "Public Sector",

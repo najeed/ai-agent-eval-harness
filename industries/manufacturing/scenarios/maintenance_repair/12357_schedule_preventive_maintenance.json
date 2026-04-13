@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Preventive Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12357-schedule-preventive-maintenance"
   },
   "description": "A maintenance planner needs to schedule the quarterly preventive maintenance (PM) for a critical CNC machine.",
   "industry": "Manufacturing",

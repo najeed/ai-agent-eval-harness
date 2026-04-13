@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Key Opinion Leader Engagement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12810-kol-engagement-planning"
   },
   "description": "A Medical Science Liaison (MSL) needs to identify and plan an engagement with a Key Opinion Leader (KOL) for a new drug launch.",
   "industry": "Pharmaceuticals and Life Sciences",

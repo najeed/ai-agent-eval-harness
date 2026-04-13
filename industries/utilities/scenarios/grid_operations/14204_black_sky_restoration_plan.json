@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop Black Sky Restoration Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14204-black-sky-restoration-plan"
   },
   "description": "A system planner is developing a restoration plan for a 'black sky' event (e.g., a major cyberattack or EMP) that causes a widespread, long-duration blackout.",
   "industry": "Utilities",

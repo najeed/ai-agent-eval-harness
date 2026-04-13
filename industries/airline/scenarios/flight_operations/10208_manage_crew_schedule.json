@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Crew Scheduling Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10208-manage-crew-schedule"
   },
   "description": "A pilot has called in sick for a flight departing in 3 hours. A crew scheduler must find a replacement.",
   "industry": "Airline",

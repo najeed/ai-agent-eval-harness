@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Supplier Non-Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14360-handle-supplier-non-compliance"
   },
   "description": "A supplier repeatedly fails to meet quality standards. A manager must address the issue.",
   "industry": "Wholesale",

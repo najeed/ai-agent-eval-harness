@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboard a New Retailer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14325-onboard-new-retailer"
   },
   "description": "A new retailer wants to start carrying a wholesaler's products. An agent must set them up as a new customer.",
   "industry": "Wholesale",

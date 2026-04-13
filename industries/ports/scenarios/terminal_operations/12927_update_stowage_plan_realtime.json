@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update a Stowage Plan in Real-Time",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12927-update-stowage-plan-realtime"
   },
   "description": "During vessel loading, a container that was planned to be loaded is found to be damaged. The planner must update the stowage plan.",
   "industry": "Ports",

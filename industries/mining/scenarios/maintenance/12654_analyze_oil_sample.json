@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Haul Truck Oil Sample",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12654-analyze-oil-sample"
   },
   "description": "A technician takes an oil sample from a haul truck's engine. The sample is sent to a lab to check for wear metals that could indicate an engine problem.",
   "industry": "Mining",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Simulate a Bird Strike on an Engine",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10022-simulate-bird-strike"
   },
   "description": "A safety engineer needs to run a computer simulation to model the structural impact of a bird strike on a new jet engine design.",
   "industry": "Aerospace",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate FERC Compliance Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11177-compliance-reporting"
   },
   "description": "A compliance officer needs to generate a quarterly report for the Federal Energy Regulatory Commission (FERC) detailing all physical and financial energy trades.",
   "industry": "Energy",

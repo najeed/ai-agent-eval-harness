@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Invoice for a Shipped Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14318-generate-invoice-for-shipped-order"
   },
   "description": "An order has been shipped to a customer. An agent in the finance department needs to generate and send the invoice.",
   "industry": "Wholesale",

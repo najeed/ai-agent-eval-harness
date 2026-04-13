@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Request for Information (ROI)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11306-process-request-for-information"
   },
   "description": "An HIM specialist needs to process a signed request from a patient for a copy of their medical records.",
   "industry": "Healthcare",

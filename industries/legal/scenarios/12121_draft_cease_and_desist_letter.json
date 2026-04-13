@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft a Cease and Desist Letter",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12121-draft-cease-and-desist-letter"
   },
   "description": "An attorney needs to draft a cease and desist letter to a third party who is infringing on a client's trademark.",
   "industry": "Legal",

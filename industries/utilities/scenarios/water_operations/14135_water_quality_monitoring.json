@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Water Quality Monitoring Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14135-water-quality-monitoring"
   },
   "description": "A sensor at the water treatment plant shows a sudden spike in turbidity levels in the raw water intake.",
   "industry": "Utilities",

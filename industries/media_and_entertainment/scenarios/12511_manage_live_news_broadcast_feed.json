@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Live News Broadcast Feed",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12511-manage-live-news-broadcast-feed"
   },
   "description": "During a live news broadcast, the primary video feed from a remote journalist fails. The agent must switch to a backup feed.",
   "industry": "Media and Entertainment",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Amend a Radiology Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11367-amend-a-radiology-report"
   },
   "description": "A radiologist needs to add an addendum to a report they signed earlier in the day to include an additional finding.",
   "industry": "Healthcare",

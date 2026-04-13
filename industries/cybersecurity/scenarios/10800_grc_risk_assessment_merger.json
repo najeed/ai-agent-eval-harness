@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Merger & Acquisition Risk Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10800-grc-risk-assessment-merger"
   },
   "description": "A GRC analyst must perform a high-level cybersecurity risk assessment of a company that is being acquired.",
   "industry": "Cybersecurity",

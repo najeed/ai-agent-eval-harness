@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Monthly Owner Distribution",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13127-process-owner-payment"
   },
   "description": "It's the end of the month, and the PM needs to calculate and process the net rental income payment to a property owner.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Staffing Conflict",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00131-staffing-conflict-resolution"
   },
   "description": "Two project proposals request the same lead data scientist. An agent must identify the conflict and propose a solution.",
   "industry": "Consulting",

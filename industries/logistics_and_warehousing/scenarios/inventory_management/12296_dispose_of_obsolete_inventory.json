@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispose of Obsolete Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12296-dispose-of-obsolete-inventory"
   },
   "description": "A product has been discontinued and the remaining stock is deemed obsolete. It needs to be disposed of.",
   "industry": "Logistics and Warehousing",

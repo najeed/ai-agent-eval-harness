@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Community Forum Spam Attack",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12554-investigate-community-forum-spam-attack"
   },
   "description": "A game's official community forum is hit by a large number of spam posts from newly created accounts.",
   "industry": "Media and Entertainment",

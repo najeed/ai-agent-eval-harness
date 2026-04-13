@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Root Cause Analysis (RCA) on Failure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11469-perform-root-cause-analysis"
   },
   "description": "Following a major equipment failure, a reliability engineer leads an RCA session to prevent recurrence.",
   "industry": "Heavy Industries",

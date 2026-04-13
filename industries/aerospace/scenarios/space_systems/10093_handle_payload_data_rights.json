@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Payload Data Rights",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10093-handle-payload-data-rights"
   },
   "description": "A university has an instrument on a NASA satellite. A mission manager must ensure the university gets their data while protecting the data rights of other instruments.",
   "industry": "Aerospace",

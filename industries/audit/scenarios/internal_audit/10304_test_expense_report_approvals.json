@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Test Expense Report Approvals",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10304-test-expense-report-approvals"
   },
   "description": "An auditor tests a sample of expense reports to ensure they were properly approved according to policy.",
   "industry": "Audit",

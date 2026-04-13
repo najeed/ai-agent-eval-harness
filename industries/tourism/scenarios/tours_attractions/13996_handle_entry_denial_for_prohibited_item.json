@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Entry Denial for Prohibited Item",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13996-handle-entry-denial-for-prohibited-item"
   },
   "description": "A visitor at a stadium entrance has a prohibited item (a large backpack) and is denied entry by security.",
   "industry": "Tourism",

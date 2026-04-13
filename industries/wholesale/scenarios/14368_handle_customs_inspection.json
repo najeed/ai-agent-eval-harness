@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Customs Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14368-handle-customs-inspection"
   },
   "description": "An inbound international shipment has been selected for a random physical inspection by customs.",
   "industry": "Wholesale",

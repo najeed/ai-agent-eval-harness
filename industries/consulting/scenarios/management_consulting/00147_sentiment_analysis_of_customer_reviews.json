@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sentiment Analysis of Customer Reviews",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00147-sentiment-analysis-of-customer-reviews"
   },
   "description": "An agent must analyze a CSV of customer reviews to gauge overall sentiment.",
   "industry": "Consulting",

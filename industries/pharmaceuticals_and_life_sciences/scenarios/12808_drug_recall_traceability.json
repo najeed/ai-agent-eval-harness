@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Execute a Product Recall",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12808-drug-recall-traceability"
   },
   "description": "A quality issue requires a Class II recall of a specific lot of a drug product. An agent must identify all distributors who received the lot.",
   "industry": "Pharmaceuticals and Life Sciences",

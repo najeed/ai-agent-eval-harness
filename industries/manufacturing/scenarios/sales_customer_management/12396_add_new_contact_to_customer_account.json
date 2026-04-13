@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add a New Contact to a Customer Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12396-add-new-contact-to-customer-account"
   },
   "description": "A new engineer at a customer company needs to be added as a technical contact on their account.",
   "industry": "Manufacturing",

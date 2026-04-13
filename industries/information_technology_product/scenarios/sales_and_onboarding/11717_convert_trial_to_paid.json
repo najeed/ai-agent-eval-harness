@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Convert Trial to Paid Subscription",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11717-convert-trial-to-paid"
   },
   "description": "A customer at the end of their trial period wants to convert to a paid subscription.",
   "industry": "Information Technology Product",

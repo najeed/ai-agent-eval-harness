@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Spear-Phishing Attack Response",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10825-cyber-threat-response-phishing"
   },
   "description": "An analyst detects a targeted spear-phishing campaign against high-ranking officials.",
   "industry": "Defense",

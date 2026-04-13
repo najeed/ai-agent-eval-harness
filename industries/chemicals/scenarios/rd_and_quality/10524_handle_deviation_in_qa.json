@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Manufacturing Deviation in QA",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10524-handle-deviation-in-qa"
   },
   "description": "A deviation was recorded during manufacturing (e.g., a mixing time was exceeded). QA must assess the impact on product quality.",
   "industry": "Chemicals",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Moderate Toxic Behavior in Voice Chat",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12540-moderate-toxic-player-in-voice-chat"
   },
   "description": "A player is reported for using abusive and toxic language in the in-game voice chat.",
   "industry": "Media and Entertainment",

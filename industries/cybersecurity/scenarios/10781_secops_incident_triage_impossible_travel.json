@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Impossible Travel Alert Triage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10781-secops-incident-triage-impossible-travel"
   },
   "description": "A SOC analyst receives an alert that a user has logged in from India and Brazil within 5 minutes. The analyst must triage this 'impossible travel' alert.",
   "industry": "Cybersecurity",

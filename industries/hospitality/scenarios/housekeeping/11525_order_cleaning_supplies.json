@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Order Cleaning Supplies",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11525-order-cleaning-supplies"
   },
   "description": "The housekeeping manager needs to order more cleaning chemicals as stock is running low.",
   "industry": "Hospitality",

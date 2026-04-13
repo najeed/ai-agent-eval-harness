@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update an Employee Record in HRIS",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11612-update-employee-record-in-hris"
   },
   "description": "An HR admin needs to update an employee's job title in the HRIS following a promotion.",
   "industry": "Human Resources",

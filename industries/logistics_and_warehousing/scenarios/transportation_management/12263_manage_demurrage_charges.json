@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Demurrage Charges",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12263-manage-demurrage-charges"
   },
   "description": "A container has been left at a port terminal beyond its allotted free time, incurring demurrage fees. An agent must resolve this.",
   "industry": "Logistics and Warehousing",

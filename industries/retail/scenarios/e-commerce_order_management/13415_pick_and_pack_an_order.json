@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pick and Pack an Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13415-pick-and-pack-an-order"
   },
   "description": "A warehouse associate needs to pick and pack a new online order.",
   "industry": "Retail",

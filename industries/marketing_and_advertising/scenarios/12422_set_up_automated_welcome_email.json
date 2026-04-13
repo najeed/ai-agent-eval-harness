@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up an Automated Welcome Email",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12422-set-up-automated-welcome-email"
   },
   "description": "An email marketer needs to create an automated workflow that sends a welcome email immediately after a new user signs up.",
   "industry": "Marketing and Advertising",

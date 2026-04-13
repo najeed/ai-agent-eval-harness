@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About a Contract Award",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13032-inquire-about-contract-award"
   },
   "description": "A vendor who bid on a contract wants to know if a decision has been made.",
   "industry": "Public Sector",

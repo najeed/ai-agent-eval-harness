@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Enroll Patient in Care Management",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11386-enroll-patient-in-care-management"
   },
   "description": "A patient identified as high-risk needs to be enrolled in a care management program.",
   "industry": "Healthcare",

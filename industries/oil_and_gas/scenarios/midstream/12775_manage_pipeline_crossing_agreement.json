@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Pipeline Crossing Agreement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12775-manage-pipeline-crossing-agreement"
   },
   "description": "A land manager handles a request from a utility company that wants to build a new water pipeline that will cross an existing oil pipeline.",
   "industry": "Oil and Gas",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Housing Damage Leads to Billing Charge",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11084-housing-damage-leads-to-billing-charge"
   },
   "description": "After a student moves out of a dorm, the housing staff finds damage to the room, which results in a charge being placed on the student's account.",
   "industry": "Education",

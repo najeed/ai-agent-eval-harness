@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Refinery Emission Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12714-analyze-refinery-emission-event"
   },
   "description": "An environmental engineer investigates an alert from a CEMS (Continuous Emissions Monitoring System) indicating an exceedance of SO2 limits from a flare stack.",
   "industry": "Oil and Gas",

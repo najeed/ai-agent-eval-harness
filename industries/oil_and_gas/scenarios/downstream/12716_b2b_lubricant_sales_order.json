@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create B2B Lubricant Sales Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12716-b2b-lubricant-sales-order"
   },
   "description": "A sales representative for a major oil company places a bulk order for industrial lubricants for a large manufacturing client.",
   "industry": "Oil and Gas",

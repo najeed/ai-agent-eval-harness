@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Yard Switching",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14021-manage-yard-switching"
   },
   "description": "A yardmaster needs to create a switch list to instruct a crew on how to move railcars around the yard to build an outbound train.",
   "industry": "Transportation",

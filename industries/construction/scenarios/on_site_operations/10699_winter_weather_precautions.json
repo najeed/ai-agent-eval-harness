@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Implement Winter Weather Precautions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10699-winter-weather-precautions"
   },
   "description": "With freezing temperatures forecast, a superintendent must implement winter weather precautions to protect the site and materials.",
   "industry": "Construction",

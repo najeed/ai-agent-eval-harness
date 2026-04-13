@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Zoning Regulations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13260-check-zoning-regulations"
   },
   "description": "A buyer wants to know if they can build an Accessory Dwelling Unit (ADU) on a property they are considering.",
   "industry": "Real Estate",

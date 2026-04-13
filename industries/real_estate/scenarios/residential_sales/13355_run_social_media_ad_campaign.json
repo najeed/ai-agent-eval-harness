@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Run a 'Just Listed' Social Media Ad Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13355-run-social-media-ad-campaign"
   },
   "description": "An agent wants to run a paid ad campaign on Facebook and Instagram for a new luxury listing.",
   "industry": "Real Estate",

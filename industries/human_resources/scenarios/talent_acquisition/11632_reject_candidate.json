@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reject a Candidate After Interview",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11632-reject-candidate"
   },
   "description": "A candidate who interviewed for a role was not selected to move forward. A recruiter needs to inform them.",
   "industry": "Human Resources",

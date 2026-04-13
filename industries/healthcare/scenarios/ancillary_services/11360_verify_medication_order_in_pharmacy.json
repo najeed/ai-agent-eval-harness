@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Medication Order in Pharmacy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11360-verify-medication-order-in-pharmacy"
   },
   "description": "A pharmacist needs to verify a new medication order for an inpatient before it can be dispensed.",
   "industry": "Healthcare",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Offshore Crane Lift",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12739-manage-offshore-crane-lift"
   },
   "description": "An offshore logistics coordinator plans a critical crane lift to move a large piece of equipment from a supply boat to the platform deck.",
   "industry": "Oil and Gas",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Gas Compressor Station",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12721-compressor-station-monitoring"
   },
   "description": "A control room operator monitors the health and performance of a natural gas compressor station to ensure it maintains pipeline pressure.",
   "industry": "Oil and Gas",

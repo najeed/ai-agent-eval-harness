@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pest Identification in Corn",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10102-pest-identification-corn"
   },
   "description": "A farmer submits a drone image of a cornfield showing signs of pest damage. The agent must identify the pest and recommend a treatment.",
   "industry": "Agriculture",

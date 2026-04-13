@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Market Transmission Congestion Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11121-market-congestion-alert"
   },
   "description": "A trader receives an alert about potential transmission congestion on a key path. They need to assess the impact on their wind farm's ability to export power.",
   "industry": "Energy",

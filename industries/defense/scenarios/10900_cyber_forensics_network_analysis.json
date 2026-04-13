@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Network Forensics for Lateral Movement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10900-cyber-forensics-network-analysis"
   },
   "description": "After a breach, a forensics analyst must analyze network logs to trace the attacker's lateral movement across the network from the initial point of compromise.",
   "industry": "Defense",

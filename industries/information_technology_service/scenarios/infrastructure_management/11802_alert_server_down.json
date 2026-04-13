@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitoring - Server Down Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11802-alert-server-down"
   },
   "description": "The RMM system generates a critical alert that a client's primary file server is offline.",
   "industry": "Information Technology Service",

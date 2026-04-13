@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Community Guideline Violation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14104-handle-community-guideline-violation"
   },
   "description": "A driver reports a rider for unprofessional behavior that violates the platform's community guidelines.",
   "industry": "Transportation",

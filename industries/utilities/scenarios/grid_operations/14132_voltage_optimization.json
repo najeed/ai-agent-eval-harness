@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conservation Voltage Reduction (CVR)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14132-voltage-optimization"
   },
   "description": "A distribution management system (DMS) needs to optimize feeder voltage levels to reduce energy consumption while keeping voltage within acceptable limits.",
   "industry": "Utilities",

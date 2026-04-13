@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Decline a Story Pitch",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12066-decline-a-story-pitch"
   },
   "description": "A reporter pitches a story, but the editor decides it is not a good fit for the publication and must decline it constructively.",
   "industry": "Journalism",

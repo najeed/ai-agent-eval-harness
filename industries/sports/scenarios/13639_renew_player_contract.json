@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Renew a Player's Contract",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13639-renew-player-contract"
   },
   "description": "A key player's contract is expiring at the end of the season. The GM needs to negotiate and process a contract extension.",
   "industry": "Sports",

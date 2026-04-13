@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Emergency Response Drill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12639-manage-emergency-response-drill"
   },
   "description": "An HSE superintendent runs a simulated emergency drill (e.g., a fire in the processing plant) to test the site's emergency response team.",
   "industry": "Mining",

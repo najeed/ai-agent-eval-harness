@@ -27,12 +27,12 @@ def parse_args(cmd_list):
 async def test_handle_aes_validate_dir(tmp_path, monkeypatch):
     """Test 'aes validate' command with real parser and isolated directory."""
     monkeypatch.chdir(tmp_path)
-    (tmp_path / "scenario.aes.yaml").write_text("scenario_id: test", encoding="utf-8")
+    (tmp_path / "scenario.aes.yaml").write_text("id: test", encoding="utf-8")
 
     args = parse_args(["aes", "validate", "--path", str(tmp_path)])
 
     with (
-        patch("yaml.safe_load", return_value={"scenario_id": "test"}),
+        patch("yaml.safe_load", return_value={"id": "test"}),
         patch("jsonschema.validate"),
     ):
         await eval_runner.handlers.scenarios.handle_aes_validate(args)
@@ -43,8 +43,10 @@ async def test_handle_aes_validate_dir(tmp_path, monkeypatch):
 async def test_handle_replay_success(tmp_path, monkeypatch):
     """Test 'replay' command logic with real parser."""
     monkeypatch.chdir(tmp_path)
-    # Create trace file matching the run_id
-    trace_file = tmp_path / "test-run.jsonl"
+    # Create vaulted trace file matching the run_id
+    run_dir = tmp_path / "test-run"
+    run_dir.mkdir()
+    trace_file = run_dir / "run.jsonl"
     trace_file.write_text("{}", encoding="utf-8")
 
     args = parse_args(["replay", "--run-id", "test-run"])
@@ -78,7 +80,7 @@ async def test_handle_run_success(tmp_path, monkeypatch):
     args = parse_args(["run", "--scenario", str(scen_file)])
 
     with (
-        patch("eval_runner.loader.load_scenario", return_value={"scenario_id": "test"}),
+        patch("eval_runner.loader.load_scenario", return_value={"id": "test"}),
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_engine,
     ):
         mock_engine.return_value = []
@@ -101,9 +103,7 @@ async def test_run_evaluate_success(tmp_path, monkeypatch):
     )
 
     with (
-        patch(
-            "eval_runner.loader.load_scenario", return_value={"scenario_id": "t1", "title": "T1"}
-        ),
+        patch("eval_runner.loader.load_scenario", return_value={"id": "t1", "title": "T1"}),
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_eval,
         patch("eval_runner.metrics.calculate_consensus_scoring", return_value=1.0),
         patch("builtins.open", MagicMock()),
@@ -137,7 +137,7 @@ async def test_handle_auto_translate_success(tmp_path, monkeypatch):
         ) as mock_trans,
         patch("eval_runner.auto_translate.save_scenario") as mock_save,
     ):
-        mock_trans.return_value = {"scenario_id": "auto"}
+        mock_trans.return_value = {"id": "auto"}
         await eval_runner.handlers.environment.handle_auto_translate(args)
         mock_save.assert_called_once()
 

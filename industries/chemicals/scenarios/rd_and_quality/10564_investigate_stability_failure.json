@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Stability Study Failure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10564-investigate-stability-failure"
   },
   "description": "A product fails its 6-month stability test point, with impurity levels exceeding the specification. QA must investigate.",
   "industry": "Chemicals",

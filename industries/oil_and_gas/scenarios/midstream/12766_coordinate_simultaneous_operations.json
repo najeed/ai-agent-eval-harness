@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate Simultaneous Operations (SIMOPS)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12766-coordinate-simultaneous-operations"
   },
   "description": "A terminal manager must coordinate two potentially conflicting activities: a tanker truck loading at one bay while a maintenance crew does hot work nearby.",
   "industry": "Oil and Gas",

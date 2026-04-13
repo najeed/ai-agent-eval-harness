@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send BOPIS Pickup Reminder",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13424-send-bopis-pickup-reminder"
   },
   "description": "A customer's 'Buy Online, Pick up In Store' order has been ready for pickup for three days but they have not collected it.",
   "industry": "Retail",

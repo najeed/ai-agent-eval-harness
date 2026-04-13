@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle the Return of a Gift",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10973-handle-return-of-gift"
   },
   "description": "A person received an item as a gift and wants to return it, but they are not the original purchaser.",
   "industry": "Ecommerce",

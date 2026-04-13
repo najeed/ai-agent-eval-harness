@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Third-Party Excavation Encroachment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12704-excavation-encroachment-alert"
   },
   "description": "A compliance manager receives an alert that unauthorized excavation is occurring near a high-pressure gas pipeline right-of-way.",
   "industry": "Oil and Gas",

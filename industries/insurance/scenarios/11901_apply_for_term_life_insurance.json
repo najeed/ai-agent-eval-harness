@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply for Term Life Insurance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11901-apply-for-term-life-insurance"
   },
   "description": "A 35-year-old non-smoker wants to apply for a 20-year, $500,000 term life insurance policy.",
   "industry": "Insurance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Patient List for Outreach",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11397-generate-patient-list-for-outreach"
   },
   "description": "A care manager needs a list of all high-risk asthma patients who have had an ED visit in the last 6 months.",
   "industry": "Healthcare",

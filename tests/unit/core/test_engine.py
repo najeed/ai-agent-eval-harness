@@ -29,7 +29,7 @@ async def test_pass_at_k_protocol():
     """Verify that engine runs k attempts and calculates pass@k. (Migrated from test_phase3.py)"""
     scenario = {
         "aes_version": 1.4,
-        "scenario_id": "test-k",
+        "id": "test-k",
         "metadata": {"name": "test-k", "compliance_level": "Standard"},
         "workflow": {
             "nodes": [
@@ -81,7 +81,7 @@ async def test_consistency_score_integration():
     """Verify that consistency score is calculated across attempts. (Migrated from test_phase3.py)"""  # noqa: E501
     scenario = {
         "aes_version": 1.4,
-        "scenario_id": "test-consistency",
+        "id": "test-consistency",
         "metadata": {"name": "test-consistency", "compliance_level": "Standard"},
         "workflow": {"nodes": [{"id": "task-1", "task_description": "Do something"}], "edges": []},
     }
@@ -113,7 +113,7 @@ def _make_scenario(required_tools=None):
     """Create a minimal scenario for testing."""
     return {
         "aes_version": 1.4,
-        "scenario_id": "test-scenario",
+        "id": "test-scenario",
         "metadata": {"name": "Test Scenario", "compliance_level": "Standard"},
         "industry": "test",
         "workflow": {
@@ -217,7 +217,7 @@ async def test_engine_final_answer_first_turn():
 @pytest.mark.asyncio
 async def test_engine_max_turns_reached(monkeypatch):
     """Agent keeps calling tools and never finishes — should stop at MAX_TURNS."""
-    monkeypatch.setattr("eval_runner.engine.MAX_TURNS", 2)
+    monkeypatch.setattr("eval_runner.config.EVAL_MAX_TURNS", 2)
 
     responses = [
         {
@@ -274,7 +274,7 @@ async def test_engine_generic_accuracy_metric():
     scenario = {
         "aes_version": 1.4,
         "metadata": {"name": "accuracy-test", "compliance_level": "Standard"},
-        "scenario_id": "accuracy-test",
+        "id": "accuracy-test",
         "industry": "test",
         "workflow": {
             "nodes": [
@@ -315,7 +315,7 @@ async def test_engine_communication_clarity_metric():
     scenario = {
         "aes_version": 1.4,
         "metadata": {"name": "clarity-test", "compliance_level": "Standard"},
-        "scenario_id": "clarity-test",
+        "id": "clarity-test",
         "industry": "test",
         "workflow": {
             "nodes": [
@@ -352,7 +352,7 @@ async def test_engine_policy_violation_feedback_loop():
     scenario = {
         "aes_version": 1.4,
         "metadata": {"name": "policy-test", "compliance_level": "Standard"},
-        "scenario_id": "policy-test",
+        "id": "policy-test",
         "industry": "test",
         "policies": {"apply_refund": {"max_limit": 50}},
         "workflow": {
@@ -395,7 +395,7 @@ async def test_engine_state_verification_metric():
     scenario = {
         "aes_version": 1.4,
         "metadata": {"name": "state-test", "compliance_level": "Standard"},
-        "scenario_id": "state-test",
+        "id": "state-test",
         "industry": "test",
         "initial_state": {"current_plan": "Basic"},
         "tools": {

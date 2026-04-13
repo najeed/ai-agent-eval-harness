@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Buyer Financial Qualification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13296-buyer-qualification"
   },
   "description": "An agent must assess a new home buyer's financial readiness and guide them to get pre-approved for a mortgage.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Code of Conduct Training",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10360-audit-code-of-conduct-training"
   },
   "description": "An auditor verifies that all new hires have completed the mandatory Code of Conduct training.",
   "industry": "Audit",

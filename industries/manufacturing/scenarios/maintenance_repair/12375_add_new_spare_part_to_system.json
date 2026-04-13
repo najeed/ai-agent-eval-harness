@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add a New Spare Part to the System",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12375-add-new-spare-part-to-system"
   },
   "description": "A new type of sensor will be used on several machines. It needs to be added to the spare parts inventory system.",
   "industry": "Manufacturing",

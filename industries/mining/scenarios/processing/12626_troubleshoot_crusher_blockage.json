@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshoot Crusher Blockage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12626-troubleshoot-crusher-blockage"
   },
   "description": "A primary gyratory crusher suddenly stops, and a control room operator must diagnose the problem.",
   "industry": "Mining",

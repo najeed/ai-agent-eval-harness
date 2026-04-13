@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Product Batch in Pipeline",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12740-manage-pipeline-batch-tracking"
   },
   "description": "A scheduler tracks a batch of premium gasoline as it moves through a multi-product pipeline to ensure it doesn't mix with other products.",
   "industry": "Oil and Gas",

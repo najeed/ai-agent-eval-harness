@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Lobbyist Activity Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13086-file-lobbyist-report"
   },
   "description": "A registered lobbyist is filing their required monthly report of their activities and expenditures.",
   "industry": "Public Sector",

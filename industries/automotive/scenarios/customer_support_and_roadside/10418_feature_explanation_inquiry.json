@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquiry on How to Use Adaptive Cruise Control",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10418-feature-explanation-inquiry"
   },
   "description": "A new owner calls asking for an explanation of how to use the Adaptive Cruise Control feature.",
   "industry": "Automotive",

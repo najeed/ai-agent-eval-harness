@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Corporate Carbon Accounting Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11179-carbon-accounting-report"
   },
   "description": "A sustainability consultant is preparing a carbon accounting report for a client, covering their Scope 2 emissions from purchased electricity.",
   "industry": "Energy",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Capacity for Marketing Launch",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11773-check-capacity-for-marketing-launch"
   },
   "description": "The marketing team is planning a major launch that will drive significant traffic. SRE needs to confirm the platform can handle the expected load.",
   "industry": "Information Technology Product",

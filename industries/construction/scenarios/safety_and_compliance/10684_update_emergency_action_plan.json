@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Emergency Action Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10684-update-emergency-action-plan"
   },
   "description": "Due to new construction nearby, the primary evacuation route has changed. The safety manager must update the project's Emergency Action Plan (EAP).",
   "industry": "Construction",

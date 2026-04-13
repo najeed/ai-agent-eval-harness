@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Ancillary Service Market Bidding",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11125-ancillary-service-market-bidding"
   },
   "description": "A battery storage asset operator needs to submit bids into the day-ahead market for ancillary services (frequency regulation).",
   "industry": "Energy",

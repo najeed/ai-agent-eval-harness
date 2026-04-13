@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Aircraft Weight and Balance after Modification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10091-update-aircraft-weight-balance"
   },
   "description": "After a major modification (like adding a new satellite antenna), an engineer must update the aircraft's official weight and balance records.",
   "industry": "Aerospace",

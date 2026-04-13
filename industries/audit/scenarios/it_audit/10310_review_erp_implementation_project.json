@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review a Major ERP Implementation Project",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10310-review-erp-implementation-project"
   },
   "description": "An auditor is reviewing a large, in-progress ERP implementation project to assess its risks.",
   "industry": "Audit",

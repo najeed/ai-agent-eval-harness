@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Student Locked Out of Dorm Room",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11061-locked-out-of-dorm-room"
   },
   "description": "A student has left their key inside their dorm room and is locked out.",
   "industry": "Education",

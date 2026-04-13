@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up Geotargeting for a Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12461-set-up-geotargeting"
   },
   "description": "A manager for a local business wants to run ads that only target users within a 10-mile radius of their store.",
   "industry": "Marketing and Advertising",

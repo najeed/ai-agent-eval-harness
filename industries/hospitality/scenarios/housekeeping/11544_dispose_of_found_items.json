@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispose of Unclaimed Found Items",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11544-dispose-of-found-items"
   },
   "description": "According to hotel policy, items left in the lost and found for over 90 days must be disposed of.",
   "industry": "Hospitality",

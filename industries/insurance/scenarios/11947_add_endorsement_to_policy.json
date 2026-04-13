@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add an Endorsement to a Home Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11947-add-endorsement-to-policy"
   },
   "description": "A customer bought an expensive piece of jewelry and wants to add a scheduled personal property endorsement to their home policy to cover it.",
   "industry": "Insurance",

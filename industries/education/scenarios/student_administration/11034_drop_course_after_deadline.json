@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Petition to Drop Course After Deadline",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11034-drop-course-after-deadline"
   },
   "description": "A student needs to drop a course after the official drop/add deadline due to a medical emergency.",
   "industry": "Education",

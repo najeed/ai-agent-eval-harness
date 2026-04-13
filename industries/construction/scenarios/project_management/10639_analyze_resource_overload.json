@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Resource Over-allocation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10639-analyze-resource-overload"
   },
   "description": "A project manager sees an alert that the lead electrician is allocated to work 16 hours in a single day. This over-allocation must be resolved.",
   "industry": "Construction",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Upcoming Lease Expirations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13279-track-lease-expirations"
   },
   "description": "A commercial property manager needs to identify all leases expiring in the next 12 months to begin renewal discussions.",
   "industry": "Real Estate",

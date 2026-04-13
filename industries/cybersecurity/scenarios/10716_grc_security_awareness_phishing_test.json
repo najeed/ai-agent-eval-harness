@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Phishing Simulation Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10716-grc-security-awareness-phishing-test"
   },
   "description": "A security awareness manager must conduct a simulated phishing campaign to test employee vigilance.",
   "industry": "Cybersecurity",

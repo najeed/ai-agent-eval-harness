@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update DNS Record for a Customer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13889-update-dns-record"
   },
   "description": "A business customer needs to update the A record for their domain, which is hosted on the telecom's DNS servers.",
   "industry": "Telecom",

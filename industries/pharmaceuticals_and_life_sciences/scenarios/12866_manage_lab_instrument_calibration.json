@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Lab Instrument Calibration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12866-manage-lab-instrument-calibration"
   },
   "description": "A lab technician must ensure a critical analytical balance is calibrated correctly before use.",
   "industry": "Pharmaceuticals and Life Sciences",

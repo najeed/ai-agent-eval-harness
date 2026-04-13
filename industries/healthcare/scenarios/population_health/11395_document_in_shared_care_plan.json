@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document in a Shared Care Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11395-document-in-shared-care-plan"
   },
   "description": "A home health nurse visits a patient and needs to add a note to the shared care plan that is visible to the patient's PCP and other specialists.",
   "industry": "Healthcare",

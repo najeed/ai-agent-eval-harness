@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Customer Complaint",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10232-handle-customer-complaint"
   },
   "description": "A customer is calling to complain about a rude gate agent during their last trip.",
   "industry": "Airline",

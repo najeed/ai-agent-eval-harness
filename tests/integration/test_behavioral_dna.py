@@ -19,7 +19,7 @@ async def test_behavioral_dna_nesting(monkeypatch):
 
     # We need a minimal scenario that won't actually call an agent (or mocks it)
     scenario = {
-        "scenario_id": "dna-test",
+        "id": "dna-test",
         "tasks": [{"node_id": "task-1", "task_description": "test task"}],
     }
 

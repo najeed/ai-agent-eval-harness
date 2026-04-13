@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Propose an A/B Test Hypothesis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12428-propose-a-b-test-hypothesis"
   },
   "description": "A CRO specialist wants to propose a new A/B test for the checkout page.",
   "industry": "Marketing and Advertising",

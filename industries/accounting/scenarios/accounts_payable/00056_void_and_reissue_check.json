@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Void and Reissue a Lost Vendor Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00056-void-and-reissue-check"
   },
   "description": "A vendor reports that they never received a check that was mailed to them. The accountant needs to void the original check and reissue a new one.",
   "industry": "Accounting",

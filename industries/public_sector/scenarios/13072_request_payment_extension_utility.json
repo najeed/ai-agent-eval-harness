@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Payment Extension for a Utility Bill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13072-request-payment-extension-utility"
   },
   "description": "A resident is having temporary financial difficulty and needs an extension on their water bill due date.",
   "industry": "Public Sector",

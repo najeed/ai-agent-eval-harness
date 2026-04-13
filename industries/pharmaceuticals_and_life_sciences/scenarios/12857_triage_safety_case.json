@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Triage an Incoming Safety Case",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12857-triage-safety-case"
   },
   "description": "A drug safety associate must perform the initial triage of a new adverse event case to determine its priority and processing requirements.",
   "industry": "Pharmaceuticals and Life Sciences",

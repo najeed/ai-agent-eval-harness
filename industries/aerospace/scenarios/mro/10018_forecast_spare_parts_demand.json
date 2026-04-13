@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Forecast Spare Parts Demand",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10018-forecast-spare-parts-demand"
   },
   "description": "A logistics planner needs to forecast the demand for a specific type of landing gear brake assembly for the next year.",
   "industry": "Aerospace",

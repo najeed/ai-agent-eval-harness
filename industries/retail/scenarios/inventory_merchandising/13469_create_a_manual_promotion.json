@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Manual Promotion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13469-create-a-manual-promotion"
   },
   "description": "A store manager decides to create a one-day 'manager's special' on a specific item to clear out slow-moving stock.",
   "industry": "Retail",

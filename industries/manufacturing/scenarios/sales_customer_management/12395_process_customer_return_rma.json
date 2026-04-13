@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Customer Return (RMA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12395-process-customer-return-rma"
   },
   "description": "A customer is returning a product they ordered by mistake. A customer service rep needs to process the return.",
   "industry": "Manufacturing",

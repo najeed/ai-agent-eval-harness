@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "LNG Regasification Planning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12758-lng-regasification-planning"
   },
   "description": "An operator at an LNG import terminal plans the regasification schedule to meet the daily demand from the downstream gas pipeline.",
   "industry": "Oil and Gas",

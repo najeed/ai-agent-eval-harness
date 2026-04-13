@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Project Wiki Page",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00175-create-project-wiki-page"
   },
   "description": "An agent must create a new page in a project wiki (e.g., Confluence) summarizing a key project deliverable.",
   "industry": "Consulting",

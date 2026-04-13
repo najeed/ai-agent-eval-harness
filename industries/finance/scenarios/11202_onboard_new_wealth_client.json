@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboard New Wealth Management Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11202-onboard-new-wealth-client"
   },
   "description": "A new high-net-worth client needs to be onboarded, including KYC checks and risk profiling.",
   "industry": "Finance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Disseminate Information about a Missing Child (Amber Alert)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13557-disseminate-information-about-a-missing-child-(amber-alert)"
   },
   "description": "Police issue an Amber Alert for a missing child. An operator must broadcast the alert across the city's communication channels.",
   "industry": "Smart Cities",

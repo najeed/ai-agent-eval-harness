@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Will Call Ticket Pickup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14223-handle-will-call-tickets"
   },
   "description": "A guest arrives at the box office to pick up tickets that were left for them at will call.",
   "industry": "Venues",

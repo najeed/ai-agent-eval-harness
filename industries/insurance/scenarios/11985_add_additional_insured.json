@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add an Additional Insured",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11985-add-additional-insured"
   },
   "description": "A small business needs to add a client as an additional insured on their general liability policy for a specific project.",
   "industry": "Insurance",

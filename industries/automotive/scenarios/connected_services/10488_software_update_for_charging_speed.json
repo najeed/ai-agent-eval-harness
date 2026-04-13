@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "OTA Update to Improve EV Charging Speed",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10488-software-update-for-charging-speed"
   },
   "description": "The manufacturer releases an OTA update for EVs to improve DC fast charging speeds.",
   "industry": "Automotive",

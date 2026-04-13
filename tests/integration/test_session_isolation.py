@@ -9,7 +9,7 @@ from eval_runner.session import SessionManager
 @pytest.fixture
 def minimal_scenario():
     return {
-        "scenario_id": "test_isolation",
+        "id": "test_isolation",
         "workflow": {"nodes": [{"id": "t1", "task_description": "test"}], "edges": []},
     }
 

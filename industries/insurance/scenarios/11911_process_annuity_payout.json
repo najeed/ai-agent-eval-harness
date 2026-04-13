@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Annuity Death Benefit Payout",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11911-process-annuity-payout"
   },
   "description": "The beneficiary of an annuity contract needs to start the process of receiving the death benefit.",
   "industry": "Insurance",

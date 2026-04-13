@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Predict Optimal Harvest Time for Wine Grapes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10115-harvest-timing-prediction-grapes"
   },
   "description": "A vineyard manager needs to decide the optimal day to harvest their Cabernet Sauvignon grapes based on sugar levels and weather.",
   "industry": "Agriculture",

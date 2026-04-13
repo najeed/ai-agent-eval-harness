@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Follow Up on an Online Lead",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13332-follow-up-on-zillow-lead"
   },
   "description": "An agent receives a new lead from Zillow who is interested in one of their listings.",
   "industry": "Real Estate",

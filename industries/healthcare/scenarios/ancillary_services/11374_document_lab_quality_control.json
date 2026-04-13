@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document Lab Quality Control",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11374-document-lab-quality-control"
   },
   "description": "At the beginning of a shift, a lab technician must run quality control (QC) samples on an analyzer and document the results.",
   "industry": "Healthcare",

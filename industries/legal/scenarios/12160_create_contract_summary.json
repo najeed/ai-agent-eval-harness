@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Contract Summary",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12160-create-contract-summary"
   },
   "description": "A business executive needs a one-page summary of a long, complex contract, highlighting the key business terms.",
   "industry": "Legal",

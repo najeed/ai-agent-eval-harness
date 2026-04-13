@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Record Animal Medication Treatment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10151-animal-medication-records"
   },
   "description": "A veterinarian has treated a sick animal and needs to record the medication administered to maintain compliance and track withdrawal times.",
   "industry": "Agriculture",

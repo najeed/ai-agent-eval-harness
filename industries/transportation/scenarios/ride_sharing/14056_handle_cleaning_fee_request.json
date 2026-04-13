@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Cleaning Fee Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14056-handle-cleaning-fee-request"
   },
   "description": "A driver reports that a rider left a mess in their car and requests a cleaning fee.",
   "industry": "Transportation",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Non-Renew a High-Risk Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11939-non-renew-policy"
   },
   "description": "An underwriter has decided not to renew a homeowner's policy due to an unacceptable number of claims.",
   "industry": "Insurance",

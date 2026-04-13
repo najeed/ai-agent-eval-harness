@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Roadside Inspection Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14034-handle-roadside-inspection"
   },
   "description": "A driver undergoes a DOT roadside inspection and receives a violation. The safety manager must log the report and schedule corrective action.",
   "industry": "Transportation",

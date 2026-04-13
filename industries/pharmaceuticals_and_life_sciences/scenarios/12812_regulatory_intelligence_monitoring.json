@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor for Regulatory Intelligence Updates",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12812-regulatory-intelligence-monitoring"
   },
   "description": "A regulatory intelligence specialist must monitor global health authority websites for new draft guidances that could impact the company's products.",
   "industry": "Pharmaceuticals and Life Sciences",

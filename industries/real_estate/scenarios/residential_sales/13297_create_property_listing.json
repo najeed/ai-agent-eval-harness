@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create New Property Listing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13297-create-property-listing"
   },
   "description": "An agent needs to create a compelling and accurate MLS listing for a new property.",
   "industry": "Real Estate",

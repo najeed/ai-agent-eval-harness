@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Look Up Loyalty Points Balance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13482-look-up-loyalty-points-balance"
   },
   "description": "A customer calls to ask how many loyalty points they have.",
   "industry": "Retail",

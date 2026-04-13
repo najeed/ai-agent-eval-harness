@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Ticket Scanning Failure at Gate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14217-handle-ticket-scanning-failure"
   },
   "description": "A guest's mobile ticket will not scan at the entry gate, showing an 'Invalid Code' error.",
   "industry": "Venues",

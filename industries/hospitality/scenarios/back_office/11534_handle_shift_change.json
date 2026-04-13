@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Staff Shift Change Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11534-handle-shift-change"
   },
   "description": "An employee needs to swap shifts with a coworker.",
   "industry": "Hospitality",

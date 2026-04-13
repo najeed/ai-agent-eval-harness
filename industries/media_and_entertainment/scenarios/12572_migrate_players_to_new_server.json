@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Migrate Players to a New Server",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12572-migrate-players-to-new-server"
   },
   "description": "A game is retiring an old server and needs to migrate all players and their data to a new, more powerful server.",
   "industry": "Media and Entertainment",

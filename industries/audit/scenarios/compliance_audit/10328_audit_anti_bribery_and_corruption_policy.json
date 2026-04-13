@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Anti-Bribery and Corruption (ABAC) Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10328-audit-anti-bribery-and-corruption-policy"
   },
   "description": "An auditor tests compliance with the company's ABAC policy, focusing on gifts and entertainment provided to foreign officials.",
   "industry": "Audit",

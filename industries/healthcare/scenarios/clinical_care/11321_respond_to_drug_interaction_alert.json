@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a Drug-Interaction Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11321-respond-to-drug-interaction-alert"
   },
   "description": "A physician is ordering a new medication, and the Clinical Decision Support system fires an alert for a potential major drug-drug interaction.",
   "industry": "Healthcare",

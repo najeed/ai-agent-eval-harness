@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Asset Health Index Calculation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11134-asset-health-index-calculation"
   },
   "description": "An asset manager wants to calculate a composite 'health index' for each wind turbine in a farm to prioritize maintenance.",
   "industry": "Energy",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Truck Arriving with No Appointment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12905-handle-truck-with-no-appointment"
   },
   "description": "A truck arrives at the gate but does not have a Vehicle Booking System (VBS) appointment. The clerk must handle the exception.",
   "industry": "Ports",

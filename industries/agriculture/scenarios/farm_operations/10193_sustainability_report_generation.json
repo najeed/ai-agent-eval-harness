@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate a Farm Sustainability Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10193-sustainability-report-generation"
   },
   "description": "A farm that supplies a major food brand needs to generate an annual sustainability report covering its water usage, carbon footprint, and biodiversity practices.",
   "industry": "Agriculture",

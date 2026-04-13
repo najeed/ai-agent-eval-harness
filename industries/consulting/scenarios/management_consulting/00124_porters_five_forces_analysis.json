@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Porter's Five Forces Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00124-porters-five-forces-analysis"
   },
   "description": "An agent must conduct a Porter's Five Forces analysis for a client in the airline industry based on provided research documents.",
   "industry": "Consulting",

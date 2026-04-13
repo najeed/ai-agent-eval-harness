@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Updated Weather Information",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10299-request-updated-weather"
   },
   "description": "En route, a pilot wants to get the latest weather report (METAR) for their destination airport to prepare for the approach and landing.",
   "industry": "Airline",

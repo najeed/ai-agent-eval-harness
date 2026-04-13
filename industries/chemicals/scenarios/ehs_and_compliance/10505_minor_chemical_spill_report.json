@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Minor Chemical Spill Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10505-minor-chemical-spill-report"
   },
   "description": "A plant operator reports a small chemical spill in a secondary containment area. The EHS department must document the incident and manage the cleanup.",
   "industry": "Chemicals",

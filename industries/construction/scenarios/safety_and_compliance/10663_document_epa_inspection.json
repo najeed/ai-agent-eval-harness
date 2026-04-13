@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document an EPA Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10663-document-epa-inspection"
   },
   "description": "An inspector from the Environmental Protection Agency (EPA) conducts a site visit. The safety manager must document the visit and any findings.",
   "industry": "Construction",

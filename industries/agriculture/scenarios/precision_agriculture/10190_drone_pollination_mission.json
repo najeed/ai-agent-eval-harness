@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan a Drone Pollination Mission",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10190-drone-pollination-mission"
   },
   "description": "A greenhouse operator wants to use a small drone to pollinate their tomato plants.",
   "industry": "Agriculture",

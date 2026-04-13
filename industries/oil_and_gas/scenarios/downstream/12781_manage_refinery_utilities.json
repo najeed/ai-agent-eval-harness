@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Refinery Steam System",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12781-manage-refinery-utilities"
   },
   "description": "A utilities operator manages the refinery's steam system, ensuring there is enough high-pressure steam for process units while optimizing fuel gas consumption in the boilers.",
   "industry": "Oil and Gas",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Lease Due Diligence",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13307-conduct-lease-due-diligence"
   },
   "description": "During a property acquisition, an agent must perform due diligence by abstracting all tenant leases.",
   "industry": "Real Estate",

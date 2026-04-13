@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Health Authority Commitments",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12892-health-authority-commitment-tracking"
   },
   "description": "As a condition of a drug approval, a company has made a post-marketing commitment to a health authority to conduct a new study. A regulatory manager must track this commitment.",
   "industry": "Pharmaceuticals and Life Sciences",

@@ -27,7 +27,7 @@ One of the suite's most powerful features is the **"Isolate Root Cause"** engine
 For rapid scenario design, the suite includes a drag-and-drop editor for the **Agent Evaluation Specification (AES)**.
 - **Node Library**: Add task nodes, tool constraints, and success criteria via a GUI.
 - **Instant Validation**: The editor lints the scenario against the latest industrial schema in real-time.
-- **Persistence**: Scenarios saved in the builder are persisted directly to the authoritative [`industries/`](/evaluator/industries/) directory.
+- **Persistence**: Scenarios saved in the builder are persisted directly to the [`industries/`](/evaluator/industries/) directory.
 
 ---
 

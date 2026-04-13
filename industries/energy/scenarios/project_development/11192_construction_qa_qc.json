@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Solar Farm Construction QA/QC",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11192-construction-qa-qc"
   },
   "description": "An on-site quality control inspector is verifying that solar panel installations meet technical specifications.",
   "industry": "Energy",

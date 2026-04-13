@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Common Operating Picture Management",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10816-c2-cop-management"
   },
   "description": "An operator must manage the Common Operating Picture (COP) during a multi-domain operation, ensuring all friendly and enemy tracks are accurately displayed.",
   "industry": "Defense",

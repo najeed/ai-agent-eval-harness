@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book Multi-City Flights",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13939-book-multi-city-flights"
   },
   "description": "A traveler needs to book a multi-city trip: from London to Paris, then Paris to Rome, and finally Rome back to London.",
   "industry": "Tourism",

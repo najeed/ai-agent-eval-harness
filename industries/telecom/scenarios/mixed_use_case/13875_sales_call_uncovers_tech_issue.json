@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sales Call Uncovers Technical Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13875-sales-call-uncovers-tech-issue"
   },
   "description": "During a sales call to upgrade a customer's phone, the customer mentions their current phone has poor battery life.",
   "industry": "Telecom",

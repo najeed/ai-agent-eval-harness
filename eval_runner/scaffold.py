@@ -46,10 +46,12 @@ def generate_interactive():
     generated_files = []
     for i in range(1, count + 1):
         tpl = templates[(i - 1) % len(templates)]
-        scenario_id = f"gen_{industry}_{capability.replace(' ', '_')}_{i}"
+        identifier = f"gen_{industry}_{capability.replace(' ', '_')}_{i}"
         scenario = {
             "aes_version": 1.4,
+            "id": identifier,
             "metadata": {
+                "id": identifier,
                 "name": f"Generated {capability.replace('_', ' ').title()} Scenario {i}",
                 "compliance_level": "Standard",
                 "standards_registry": [],
@@ -98,12 +100,12 @@ def generate_interactive():
                 resolver = RefResolver(f"file:///{schema_path.parent.as_posix()}/", schema)
                 validate(instance=scenario, schema=schema, resolver=resolver)
         except jsonschema.exceptions.ValidationError as ve:
-            print(f"❌ Internal Validation Error for {scenario_id}: {ve.message}")
+            print(f"❌ Internal Validation Error for {identifier}: {ve.message}")
             continue
         except Exception as e:
             print(f"⚠ Warning: Could not perform internal validation: {e}")
 
-        filename = f"{scenario_id}.json"
+        filename = f"{identifier}.json"
         filepath = output_dir / filename
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(scenario, f, indent=2)
@@ -167,11 +169,13 @@ def scaffold_benchmark(dir_path: str, industry: str, protocol: str):
     with open(base_dir / "eval_config.json", "w", encoding="utf-8") as f:
         json.dump(config_data, f, indent=4)
 
-    # Generate starter scenario using v1.4 schema
+    # Generate starter scenario using v1.4 schema (Industrial Identity v1.5.0)
+    starter_id = f"scenario-{uuid.uuid4().hex[:8]}"
     starter = {
         "aes_version": 1.4,
+        "id": starter_id,
         "metadata": {
-            "id": f"scenario-{uuid.uuid4().hex[:8]}",
+            "id": starter_id,
             "compliance_level": "Standard",
             "capabilities": [],
         },

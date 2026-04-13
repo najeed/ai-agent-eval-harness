@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Research a Specific Stock",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11239-research-specific-stock"
   },
   "description": "An advisor asks for a summary report on a specific company before recommending it to a client.",
   "industry": "Finance",

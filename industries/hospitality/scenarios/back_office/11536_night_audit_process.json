@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Run the Night Audit Process",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11536-night-audit-process"
   },
   "description": "The night auditor needs to run the end-of-day process to close the day's business and prepare for the next.",
   "industry": "Hospitality",

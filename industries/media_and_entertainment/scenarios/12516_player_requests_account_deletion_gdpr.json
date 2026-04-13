@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Player Requests Account Deletion (GDPR)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12516-player-requests-account-deletion-gdpr"
   },
   "description": "A player from the EU submits a formal request to have all their personal data and game account deleted under GDPR.",
   "industry": "Media and Entertainment",

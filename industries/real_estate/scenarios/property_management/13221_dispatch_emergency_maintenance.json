@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispatch Emergency Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13221-dispatch-emergency-maintenance"
   },
   "description": "A tenant calls at 10 PM reporting a burst pipe. The agent must dispatch an emergency plumber immediately.",
   "industry": "Real Estate",

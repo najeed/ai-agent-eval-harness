@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sewer Smoke Testing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14206-sewer-smoke-testing"
   },
   "description": "A wastewater crew is conducting smoke testing to find sources of rainwater inflow and infiltration into the sewer system.",
   "industry": "Utilities",

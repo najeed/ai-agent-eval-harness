@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Refinery Control Real-time Optimization Simulation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "simulations-016-refinery-control-real-time-optimization-simulation"
   },
   "description": "Agent must manage a high-fidelity Refinery Control simulation with streaming telemetry.",
   "industry": "Meta-Industry",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Gene Expression Data from Microarray",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12886-analyze-gene-expression-data"
   },
   "description": "A bioinformatician needs to analyze gene expression data from a microarray experiment to see how a drug affects a cancer cell line.",
   "industry": "Pharmaceuticals and Life Sciences",

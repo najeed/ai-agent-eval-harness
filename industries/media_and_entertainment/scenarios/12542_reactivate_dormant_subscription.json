@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Win-Back Campaign for Dormant Subscriber",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12542-reactivate-dormant-subscription"
   },
   "description": "A subscriber who cancelled their service six months ago is targeted with a special offer to rejoin.",
   "industry": "Media and Entertainment",

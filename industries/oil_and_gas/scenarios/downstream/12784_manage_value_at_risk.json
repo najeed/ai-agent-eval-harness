@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate Value at Risk (VaR)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12784-manage-value-at-risk"
   },
   "description": "A risk manager calculates the Value at Risk (VaR) for the company's trading portfolio to estimate the potential maximum loss over a single day.",
   "industry": "Oil and Gas",

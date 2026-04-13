@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Updated Supplier Catalog",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14356-request-updated-supplier-catalog"
   },
   "description": "A supplier has released their new catalog for the year. A procurement manager needs to get the new catalog and update the system.",
   "industry": "Wholesale",

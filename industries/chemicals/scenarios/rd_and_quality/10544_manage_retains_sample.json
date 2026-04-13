@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Retain Sample",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10544-manage-retains-sample"
   },
   "description": "A batch of finished product has been produced, and a retain sample must be logged and stored in the archive.",
   "industry": "Chemicals",

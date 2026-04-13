@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Validate Theme Park Entry Ticket",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13934-validate-theme-park-entry"
   },
   "description": "A family arrives at a theme park entrance and presents their pre-purchased e-tickets on a smartphone.",
   "industry": "Tourism",

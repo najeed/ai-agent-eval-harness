@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Negotiate Tenant Improvement Allowance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13320-negotiate-tenant-improvement-allowance"
   },
   "description": "A prospective office tenant requires a significant build-out. The tenant's agent must negotiate a Tenant Improvement (TI) allowance from the landlord.",
   "industry": "Real Estate",

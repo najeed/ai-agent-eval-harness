@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Retailer Places a Bulk Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14310-place-bulk-order"
   },
   "description": "A retail chain places a large purchase order for multiple products to stock its stores for the upcoming season.",
   "industry": "Wholesale",

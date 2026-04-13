@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Propose a New Course",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11011-propose-new-course"
   },
   "description": "A department head wants to submit a proposal for a new undergraduate course to be offered next year.",
   "industry": "Education",

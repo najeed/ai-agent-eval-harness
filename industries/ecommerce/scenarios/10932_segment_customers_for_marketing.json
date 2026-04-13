@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Segment Customers for a Marketing Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10932-segment-customers-for-marketing"
   },
   "description": "A marketer wants to create a customer segment of 'high-value' customers for an exclusive offer.",
   "industry": "Ecommerce",

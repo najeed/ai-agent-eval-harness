@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Management - Resource Scheduling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11882-project-resource-scheduling"
   },
   "description": "A project manager needs to schedule technicians for the various tasks in a newly approved project.",
   "industry": "Information Technology Service",

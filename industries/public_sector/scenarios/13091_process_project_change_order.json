@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Project Change Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13091-process-project-change-order"
   },
   "description": "During construction of a new building, an unexpected issue requires a change order to the original contract.",
   "industry": "Public Sector",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Concierge Request - Book Theater Tickets",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11540-theater-ticket-booking"
   },
   "description": "A guest wants the concierge to book two tickets for a popular musical.",
   "industry": "Hospitality",

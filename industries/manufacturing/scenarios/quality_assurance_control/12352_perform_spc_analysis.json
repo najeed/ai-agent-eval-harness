@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Statistical Process Control (SPC) Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12352-perform-spc-analysis"
   },
   "description": "A quality engineer is monitoring a critical process parameter and wants to analyze its SPC chart.",
   "industry": "Manufacturing",

@@ -1,34 +1,35 @@
 {
-    "aes_version": 1.4,
-    "metadata": {
-        "name": "Generated Derivatives Trading Scenario 1",
-        "compliance_level": "Standard",
-        "capabilities": [],
-        "standards_registry": []
-    },
-    "description": "Automatically generated test case for derivatives trading in finance industry.",
-    "industry": "finance",
-    "workflow": {
-        "nodes": [
-            {
-                "id": "task_1",
-                "task_description": "User wants to perform derivatives trading. Handle the request correctly.",
-                "expected_outcome": {
-                    "type": "typed_value",
-                    "data_type": "object",
-                    "value": "Successfully handled derivatives trading."
-                }
-            }
-        ],
-        "edges": []
-    },
-    "evaluation": {
-        "consensus": {
-            "strategy": "Majority_Vote",
-            "min_judges": 1,
-            "judge_panel": [
-                "Luna-1"
-            ]
+  "aes_version": 1.4,
+  "metadata": {
+    "name": "Generated Derivatives Trading Scenario 1",
+    "compliance_level": "Standard",
+    "capabilities": [],
+    "standards_registry": [],
+    "id": "gen-finance-derivatives-trading-1"
+  },
+  "description": "Automatically generated test case for derivatives trading in finance industry.",
+  "industry": "finance",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task_1",
+        "task_description": "User wants to perform derivatives trading. Handle the request correctly.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Successfully handled derivatives trading."
         }
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
     }
+  }
 }

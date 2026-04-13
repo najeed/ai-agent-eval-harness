@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Sales Tax Exemption Certificates",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13715-manage-sales-tax-exemption-certificates"
   },
   "description": "A wholesale business needs to validate and manage sales tax exemption certificates from its reseller customers.",
   "industry": "Tax",

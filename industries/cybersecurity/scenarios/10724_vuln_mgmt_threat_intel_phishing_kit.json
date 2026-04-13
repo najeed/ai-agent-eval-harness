@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyzing a New Phishing Kit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10724-vuln-mgmt-threat-intel-phishing-kit"
   },
   "description": "A threat intelligence analyst discovers a new phishing kit being sold on a dark web forum and must analyze it to develop countermeasures.",
   "industry": "Cybersecurity",

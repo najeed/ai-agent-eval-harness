@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Source Passive Candidates",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11617-source-passive-candidates"
   },
   "description": "A recruiter is sourcing passive candidates for a hard-to-fill 'Cybersecurity Architect' role using LinkedIn Recruiter.",
   "industry": "Human Resources",

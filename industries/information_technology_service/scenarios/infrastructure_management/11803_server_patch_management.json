@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Server & Network - Apply OS Patches",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11803-server-patch-management"
   },
   "description": "A technician needs to apply the latest critical security patches to a client's servers during the scheduled maintenance window.",
   "industry": "Information Technology Service",

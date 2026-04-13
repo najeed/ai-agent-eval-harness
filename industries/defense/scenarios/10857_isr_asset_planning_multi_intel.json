@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Multi-INT Asset Planning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10857-isr-asset-planning-multi-intel"
   },
   "description": "A planner must coordinate satellite imagery (IMINT), signals intelligence (SIGINT), and a human intelligence (HUMINT) source to find a hidden weapons cache.",
   "industry": "Defense",

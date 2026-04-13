@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Quantity on Sales Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10596-change-order-quantity"
   },
   "description": "A customer calls to increase the quantity on an order they just placed, before it ships.",
   "industry": "Chemicals",

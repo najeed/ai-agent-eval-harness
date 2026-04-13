@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Merge Duplicate Player Accounts",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12556-merge-duplicate-player-accounts"
   },
   "description": "A player realizes they have two separate accounts (one old, one new) and wants to merge them.",
   "industry": "Media and Entertainment",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reject Damaged Material Delivery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10633-reject-material-delivery"
   },
   "description": "A delivery of windows arrives on site, but the foreman notices several are cracked. The delivery must be rejected.",
   "industry": "Construction",

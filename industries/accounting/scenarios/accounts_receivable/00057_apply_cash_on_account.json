@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply Cash on Account to an Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00057-apply-cash-on-account"
   },
   "description": "A customer has a credit on their account from a previous overpayment. They have now requested that this credit be applied to a new open invoice.",
   "industry": "Accounting",

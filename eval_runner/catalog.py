@@ -40,7 +40,7 @@ class ScenarioCatalog:
 
     @classmethod
     def clear_instance(cls):
-        """authoritative reset of singleton state for test isolation."""
+        """reset of singleton state for test isolation."""
         with cls._lock:
             cls._instance = None
             cls._initialized = False
@@ -126,9 +126,7 @@ class ScenarioCatalog:
                         if not isinstance(meta, dict):
                             meta = {}
 
-                        scenario_id = str(
-                            meta.get("id") or data.get("scenario_id") or p.stem
-                        ).strip()
+                        identifier = str(meta.get("id") or data.get("id") or p.stem).strip()
 
                         industry = normalize_industry(
                             data.get(
@@ -143,8 +141,8 @@ class ScenarioCatalog:
 
                         new_scenarios.append(
                             {
-                                "id": scenario_id,
-                                "title": str(meta.get("name") or data.get("title") or scenario_id),
+                                "id": identifier,
+                                "title": str(meta.get("name") or data.get("title") or identifier),
                                 "industry": industry,
                                 "difficulty": int(meta.get("difficulty", 1)),
                                 "tags": list(meta.get("tags") or []),
@@ -306,11 +304,11 @@ class ScenarioCatalog:
                 self.load_index()
             return [str(s.get("id") or s.get("title")) for s in self.scenarios]
 
-    def get_absolute_path(self, scenario_id: str) -> Path | None:
+    def get_absolute_path(self, identifier: str) -> Path | None:
         """Resolves scenario ID to absolute path."""
         with self._lock:
             for s in self.scenarios:
-                if s.get("id") == scenario_id:
+                if s.get("id") == identifier:
                     base_join = self.root_dir / s["path"]
                     if not base_join.exists():
                         return None
@@ -390,13 +388,14 @@ def _archive_existing_pack(target_dir: Path):
 def _download_simulated(pack: str, flavor: str, version: str) -> bytes:
     """Generates a simulated scenario pack ZIP for industrial benchmarks (v1.2.3)."""
     buf = io.BytesIO()
-    scenario_id = f"{pack}-{flavor}".lower()
+    identifier = f"{pack}-{flavor}".lower()
     with zipfile.ZipFile(buf, "w") as z:
         # Create a sample scenario for the pack
         scenario_data = {
             "aes_version": 1.4,
+            "id": identifier,
             "metadata": {
-                "id": scenario_id,
+                "id": identifier,
                 "name": f"Curated {pack} {flavor} ({version})",
                 "compliance_level": "Standard",
                 "capabilities": [],
@@ -410,7 +409,7 @@ def _download_simulated(pack: str, flavor: str, version: str) -> bytes:
             },
             "evaluation": {"consensus": {"strategy": "Majority_Vote", "judge_panel": ["Luna-1"]}},
         }
-        z.writestr(f"{scenario_id}.json", json.dumps(scenario_data, indent=2))
+        z.writestr(f"{identifier}.json", json.dumps(scenario_data, indent=2))
 
         # Add a manifest for flavor/version parity
         manifest = {

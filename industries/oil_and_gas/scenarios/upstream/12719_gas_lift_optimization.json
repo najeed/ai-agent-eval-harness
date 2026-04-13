@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Gas Lift Injection Optimization",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12719-gas-lift-optimization"
   },
   "description": "A production engineer adjusts the gas injection rate for a gas-lifted well to maximize oil production while minimizing gas consumption.",
   "industry": "Oil and Gas",

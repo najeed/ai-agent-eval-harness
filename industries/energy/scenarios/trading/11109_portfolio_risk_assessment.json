@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Energy Portfolio Risk Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11109-portfolio-risk-assessment"
   },
   "description": "A risk manager needs to assess the market risk of a portfolio of solar, wind, and battery storage assets.",
   "industry": "Energy",

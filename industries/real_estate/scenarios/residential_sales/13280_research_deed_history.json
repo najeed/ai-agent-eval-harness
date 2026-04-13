@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Research Property Deed History",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13280-research-deed-history"
   },
   "description": "A client is interested in the ownership history of a historic home. The agent needs to research the property's deed history.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Contingency Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14187-contingency-analysis"
   },
   "description": "The EMS continuously simulates single-point-of-failure scenarios (contingencies) to ensure the grid would remain stable if a major piece of equipment failed.",
   "industry": "Utilities",

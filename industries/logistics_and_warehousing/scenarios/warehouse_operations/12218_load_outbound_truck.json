@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Load an Outbound Truck",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12218-load-outbound-truck"
   },
   "description": "A warehouse loader must load all staged pallets for a specific shipment onto the correct truck, in the correct order.",
   "industry": "Logistics and Warehousing",

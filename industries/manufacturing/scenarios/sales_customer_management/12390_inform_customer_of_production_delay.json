@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inform Customer of a Production Delay",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12390-inform-customer-of-production-delay"
   },
   "description": "A production delay means a customer's order will be late. A sales rep needs to proactively inform the customer.",
   "industry": "Manufacturing",

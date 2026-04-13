@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Return with Foreign Bank Account Reporting (FBAR)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13792-prepare-return-with-foreign-bank-account-reporting"
   },
   "description": "A U.S. resident has financial accounts in a foreign country and needs to file an FBAR (FinCEN Form 114).",
   "industry": "Tax",

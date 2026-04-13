@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Proposal for Plagiarism",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00161-check-proposal-for-plagiarism"
   },
   "description": "Before submission, an agent must check a draft proposal against previous company proposals and public sources to avoid self-plagiarism or plagiarism.",
   "industry": "Consulting",

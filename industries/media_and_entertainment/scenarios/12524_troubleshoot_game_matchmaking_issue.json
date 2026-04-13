@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshoot Long Matchmaking Times",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12524-troubleshoot-game-matchmaking-issue"
   },
   "description": "Players in a specific region (e.g., Australia) are reporting excessively long wait times to find a game match.",
   "industry": "Media and Entertainment",

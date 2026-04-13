@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Proctor an Accommodated Exam",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11056-proctor-exam-with-accommodations"
   },
   "description": "An agent at the disability services testing center must proctor an exam for a student who has an accommodation to use a text-to-speech reader.",
   "industry": "Education",

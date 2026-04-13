@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review a Phase I Environmental Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13284-review-environmental-report"
   },
   "description": "As part of due diligence for a land purchase, a client has received a Phase I Environmental Site Assessment. The agent needs to review it.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Build a Train Consist",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14013-build-train-consist"
   },
   "description": "A yard planner needs to create a consist (a list of locomotives and railcars) for a new outbound train.",
   "industry": "Transportation",

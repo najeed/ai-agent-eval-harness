@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dynamic Re-tasking due to System Failure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10899-mission-planning-dynamic-retasking-system-failure"
   },
   "description": "The primary aircraft for a time-sensitive strike mission has a critical system failure on takeoff. A backup aircraft must be immediately launched and re-tasked.",
   "industry": "Defense",

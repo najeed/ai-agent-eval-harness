@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Tenant Parking Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13288-handle-parking-dispute"
   },
   "description": "A tenant reports that an unauthorized vehicle is parked in their assigned parking spot.",
   "industry": "Real Estate",

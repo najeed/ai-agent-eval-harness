@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve a Supplier Invoice Discrepancy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10173-resolve-invoice-discrepancy"
   },
   "description": "A farmer has received an invoice from a chemical supplier that does not match their own records.",
   "industry": "Agriculture",

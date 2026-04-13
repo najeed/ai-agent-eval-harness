@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Employee Role Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10757-iam-user-provisioning-role-change"
   },
   "description": "An employee is moving from the Sales department to the Finance department. An IAM analyst must update their access accordingly.",
   "industry": "Cybersecurity",

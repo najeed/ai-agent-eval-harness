@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Buyer's Search Criteria",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13135-update-client-search-criteria"
   },
   "description": "A buyer client calls to inform their agent that they have increased their budget and now want a pool.",
   "industry": "Real Estate",

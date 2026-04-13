@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Maintenance Logbook Entry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10031-create-maintenance-logbook-entry"
   },
   "description": "After replacing a tire on an aircraft, a mechanic must create a formal entry in the aircraft's official logbook.",
   "industry": "Aerospace",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Freight Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14380-handle-freight-claim"
   },
   "description": "An inbound shipment from a supplier arrives with visible damage to the packaging. An agent must file a claim with the freight carrier.",
   "industry": "Wholesale",

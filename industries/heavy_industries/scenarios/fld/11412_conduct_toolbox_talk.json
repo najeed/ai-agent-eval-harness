@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Daily Toolbox Talk",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11412-conduct-toolbox-talk"
   },
   "description": "A construction supervisor needs to conduct a daily safety toolbox talk for their crew before work begins.",
   "industry": "Heavy Industries",

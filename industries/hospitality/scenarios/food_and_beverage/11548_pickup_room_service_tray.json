@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Guest Requests Room Service Tray Pickup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11548-pickup-room-service-tray"
   },
   "description": "A guest calls to have their used room service tray removed from their room.",
   "industry": "Hospitality",

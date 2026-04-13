@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Housing Code Violation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13026-report-housing-code-violation"
   },
   "description": "A tenant wants to report a potential housing code violation (e.g., no heating) against their landlord.",
   "industry": "Public Sector",

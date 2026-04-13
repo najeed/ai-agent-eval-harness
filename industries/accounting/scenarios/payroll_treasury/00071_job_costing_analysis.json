@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Job Costing Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00071-job-costing-analysis"
   },
   "description": "A construction company needs to analyze the costs for a completed project to determine its profitability.",
   "industry": "Accounting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pre-order Parts for Upcoming Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10436-parts-ordering-for-service"
   },
   "description": "A service advisor is preparing for a major service appointment and needs to pre-order parts that are not kept in stock.",
   "industry": "Automotive",

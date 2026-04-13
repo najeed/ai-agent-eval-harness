@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process New Customer Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10511-process-new-customer-order"
   },
   "description": "A sales representative needs to enter a new order for an existing customer for 10 drums of a standard product.",
   "industry": "Chemicals",

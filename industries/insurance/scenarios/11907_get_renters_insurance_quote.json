@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Get Renters Insurance Quote",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11907-get-renters-insurance-quote"
   },
   "description": "A person renting an apartment wants a quote for renters insurance.",
   "industry": "Insurance",

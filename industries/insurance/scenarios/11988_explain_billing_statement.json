@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Explain a Billing Statement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11988-explain-billing-statement"
   },
   "description": "A customer does not understand the charges on their most recent bill, which includes a policy change prorated amount.",
   "industry": "Insurance",

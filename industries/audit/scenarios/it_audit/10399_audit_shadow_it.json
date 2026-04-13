@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit for 'Shadow IT'",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10399-audit-shadow-it"
   },
   "description": "An IT auditor tries to identify instances of 'Shadow IT' - software or services used by departments without official IT approval.",
   "industry": "Audit",

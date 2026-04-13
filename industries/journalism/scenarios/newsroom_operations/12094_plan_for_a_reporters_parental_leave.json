@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan for a Reporter's Parental Leave",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12094-plan-for-a-reporters-parental-leave"
   },
   "description": "A reporter is going on parental leave for three months. Their editor must plan to reassign their beat and ongoing stories.",
   "industry": "Journalism",

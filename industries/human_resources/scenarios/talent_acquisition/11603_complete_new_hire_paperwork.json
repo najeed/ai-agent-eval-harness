@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Complete New Hire Paperwork",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11603-complete-new-hire-paperwork"
   },
   "description": "A new hire needs to complete their I-9 and W-4 forms before their first day.",
   "industry": "Human Resources",

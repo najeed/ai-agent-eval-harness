@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Capacity Market Auction Bidding",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11185-capacity-market-auction"
   },
   "description": "A power plant owner needs to develop a bid strategy to sell capacity from their generator in the ISO's forward capacity auction.",
   "industry": "Energy",

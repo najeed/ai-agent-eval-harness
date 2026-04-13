@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Hazardous Waste Disposal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10515-manage-hazardous-waste-disposal"
   },
   "description": "A drum of hazardous waste from a production clean-out needs to be prepared for shipment to a licensed disposal facility.",
   "industry": "Chemicals",

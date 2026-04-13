@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Utility Accounts for Vacant Unit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13276-set-utility-accounts"
   },
   "description": "A unit is vacant between tenants. The property manager needs to put the electric utility account in the owner's name.",
   "industry": "Real Estate",

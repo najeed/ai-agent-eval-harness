@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Asset Transfer Between Sites",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11493-manage-asset-transfer"
   },
   "description": "A piece of mobile equipment (e.g., a crane) is being permanently transferred from one project site to another.",
   "industry": "Heavy Industries",

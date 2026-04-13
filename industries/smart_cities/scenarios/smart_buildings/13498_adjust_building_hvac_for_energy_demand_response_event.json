@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Adjust Building HVAC for Energy Demand Response Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13498-adjust-building-hvac-for-energy-demand-response-event"
   },
   "description": "The utility has called a demand response event. An operator must reduce energy consumption in a city-owned building.",
   "industry": "Smart Cities",

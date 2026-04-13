@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Mobile Device Management (MDM) Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10358-review-mobile-device-management-policy"
   },
   "description": "An IT auditor reviews the controls over mobile devices that connect to the corporate network.",
   "industry": "Audit",

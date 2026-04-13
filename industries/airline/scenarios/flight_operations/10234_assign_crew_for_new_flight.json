@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assign Crew for a New Flight",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10234-assign-crew-for-new-flight"
   },
   "description": "A new flight has been added to the schedule. A crew scheduler must assign a full crew (pilots and cabin crew) to it.",
   "industry": "Airline",

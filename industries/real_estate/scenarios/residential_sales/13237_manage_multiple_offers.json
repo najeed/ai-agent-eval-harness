@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Multiple Offer Situation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13237-manage-multiple-offers"
   },
   "description": "A seller has received three offers on their property. The agent must organize the offers and present them to the seller.",
   "industry": "Real Estate",

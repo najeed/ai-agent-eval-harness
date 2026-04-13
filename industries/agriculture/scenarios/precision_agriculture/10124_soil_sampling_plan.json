@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Grid Soil Sampling Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10124-soil-sampling-plan"
   },
   "description": "A farmer wants to create a plan for soil sampling a field on a 2.5-acre grid pattern.",
   "industry": "Agriculture",

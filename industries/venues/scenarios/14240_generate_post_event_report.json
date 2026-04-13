@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Post-Event Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14240-generate-post-event-report"
   },
   "description": "Following a large concert, the venue's general manager needs a report summarizing key performance metrics.",
   "industry": "Venues",

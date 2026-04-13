@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Define Campaign KPIs",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12435-define-campaign-kpis"
   },
   "description": "During the planning phase, a strategist needs to define the Key Performance Indicators (KPIs) for a new brand awareness campaign.",
   "industry": "Marketing and Advertising",

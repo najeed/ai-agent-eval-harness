@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Launch Hold",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10036-handle-launch-hold"
   },
   "description": "During a countdown, a sensor on the rocket's second stage reports an anomalous reading, forcing a launch hold. The director must manage the situation.",
   "industry": "Aerospace",

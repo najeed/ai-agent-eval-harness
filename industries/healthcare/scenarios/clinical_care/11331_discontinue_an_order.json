@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Discontinue an Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11331-discontinue-an-order"
   },
   "description": "A patient has had an adverse reaction to a medication. The physician needs to discontinue the order immediately.",
   "industry": "Healthcare",

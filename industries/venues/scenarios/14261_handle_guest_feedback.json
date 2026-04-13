@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Post-Event Guest Feedback",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14261-handle-guest-feedback"
   },
   "description": "A guest sends an email after an event complaining about long lines for the restrooms.",
   "industry": "Venues",

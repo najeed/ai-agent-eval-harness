@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Brigade Deployment Planning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10818-logistics-deployment-planning"
   },
   "description": "A logistics planner must create a strategic deployment plan to move a brigade and its equipment from its home base to a theater of operations.",
   "industry": "Defense",

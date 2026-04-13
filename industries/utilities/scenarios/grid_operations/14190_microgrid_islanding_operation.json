@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Microgrid Islanding Operation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14190-microgrid-islanding-operation"
   },
   "description": "During a wider grid outage, a community microgrid must safely disconnect from the main grid and operate independently to keep power on for its local customers.",
   "industry": "Utilities",

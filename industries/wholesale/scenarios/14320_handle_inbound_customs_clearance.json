@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Inbound Customs Clearance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14320-handle-inbound-customs-clearance"
   },
   "description": "An international shipment from a supplier is being held by customs. An agent must provide the necessary documentation to clear it.",
   "industry": "Wholesale",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare a Closing Binder for an M&A Deal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12125-prepare-closing-binder-for-ma-deal"
   },
   "description": "After an M&A deal has closed, a corporate paralegal needs to assemble a 'closing binder' with all the final, executed deal documents.",
   "industry": "Legal",

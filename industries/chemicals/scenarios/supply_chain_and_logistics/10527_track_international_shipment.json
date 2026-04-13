@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track an International Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10527-track-international-shipment"
   },
   "description": "A customer is asking for the current status of their international sea freight shipment.",
   "industry": "Chemicals",

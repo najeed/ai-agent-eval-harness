@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Solar Panel Soiling Loss Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11150-soiling-loss-analysis"
   },
   "description": "An O&M manager wants to determine if the cost of cleaning the panels at a solar farm is justified by the expected gain in energy production.",
   "industry": "Energy",

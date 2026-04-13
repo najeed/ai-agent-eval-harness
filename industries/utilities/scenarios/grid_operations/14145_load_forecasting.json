@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Short-Term System Load Forecast",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14145-load-forecasting"
   },
   "description": "A system operator needs an accurate 24-hour load forecast for the entire grid to plan for generation dispatch.",
   "industry": "Utilities",

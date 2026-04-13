@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Loyalty Points Balance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10920-check-loyalty-points-balance"
   },
   "description": "A customer wants to know how many loyalty points they have and what they can be redeemed for.",
   "industry": "Ecommerce",

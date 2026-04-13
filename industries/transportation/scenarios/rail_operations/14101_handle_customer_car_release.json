@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Customer's Railcar Release",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14101-handle-customer-car-release"
   },
   "description": "A customer has finished unloading a railcar at their facility and is releasing it back to the railroad, making it empty and available for its next load.",
   "industry": "Transportation",

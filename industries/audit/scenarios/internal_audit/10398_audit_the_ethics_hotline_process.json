@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit the Ethics Hotline Process",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10398-audit-the-ethics-hotline-process"
   },
   "description": "An auditor reviews the process for handling reports made to the company's ethics hotline.",
   "industry": "Audit",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify 'Clear to Close'",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13235-verify-clear-to-close"
   },
   "description": "The closing date is approaching. The agent needs to confirm with the buyer's lender that the loan is fully approved and ready to fund.",
   "industry": "Real Estate",

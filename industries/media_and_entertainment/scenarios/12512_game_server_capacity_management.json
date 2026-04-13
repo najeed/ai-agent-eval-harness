@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Game Server Capacity Management",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12512-game-server-capacity-management"
   },
   "description": "Following the launch of a new game expansion, player concurrency is higher than expected, causing login queues.",
   "industry": "Media and Entertainment",

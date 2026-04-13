@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Subcontractor Bonding Capacity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10685-check-bonding-capacity"
   },
   "description": "Before awarding a large subcontract, a contract manager must verify that the subcontractor has sufficient bonding capacity.",
   "industry": "Construction",

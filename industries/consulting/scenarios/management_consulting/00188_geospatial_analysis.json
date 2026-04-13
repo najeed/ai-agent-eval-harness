@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Geospatial Analysis for Site Selection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00188-geospatial-analysis"
   },
   "description": "For a retail client, an agent must analyze demographic data to recommend the best city for a new store.",
   "industry": "Consulting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Substitute Item in a BOPIS Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13432-substitute-item-in-bopis-order"
   },
   "description": "While picking a 'Buy Online, Pick up In Store' grocery order, an associate finds an item is out of stock and needs to substitute it.",
   "industry": "Retail",

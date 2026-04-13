@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Acknowledge Safety Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12315-acknowledge-safety-alert"
   },
   "description": "A light curtain on a robotic arm has been tripped, pausing the machine. The area supervisor needs to acknowledge and resolve the alert.",
   "industry": "Manufacturing",

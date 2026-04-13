@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Vendor Design Document",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11411-review-vendor-design-document"
   },
   "description": "A vendor has submitted a design drawing for a custom-built piece of equipment. An engineer must review it to ensure it meets project specifications.",
   "industry": "Heavy Industries",

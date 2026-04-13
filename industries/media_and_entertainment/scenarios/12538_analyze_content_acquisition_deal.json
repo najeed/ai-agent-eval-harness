@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Content Acquisition Deal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12538-analyze-content-acquisition-deal"
   },
   "description": "A streaming service is considering acquiring the rights to an older, popular TV show. An agent must analyze if the deal is worthwhile.",
   "industry": "Media and Entertainment",

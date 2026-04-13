@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Link a Customer Complaint to an NCR",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12354-link-customer-complaint-to-ncr"
   },
   "description": "A customer complaint has been received that matches an existing internal Non-Conformance Report. The two records need to be linked.",
   "industry": "Manufacturing",

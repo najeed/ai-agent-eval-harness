@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track a Contract Renewal Date",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12143-track-contract-renewal-date"
   },
   "description": "An in-house legal department needs to track the renewal date of a key software license to decide whether to renew or terminate.",
   "industry": "Legal",

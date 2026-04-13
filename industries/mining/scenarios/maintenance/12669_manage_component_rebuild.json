@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Component Rebuild Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12669-manage-component-rebuild"
   },
   "description": "A maintenance planner manages the program for rebuilding major components (like haul truck engines) to be swapped into the fleet.",
   "industry": "Mining",

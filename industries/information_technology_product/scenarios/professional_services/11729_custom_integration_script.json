@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop Custom Integration Script",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11729-custom-integration-script"
   },
   "description": "A customer needs a custom script to sync data between the product and their homegrown CRM system.",
   "industry": "Information Technology Product",

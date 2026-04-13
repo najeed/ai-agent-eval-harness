@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Subpoena for a Reporter's Notes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12070-handle-a-subpoena-for-a-reporters-notes"
   },
   "description": "The news organization has received a subpoena from a court demanding a reporter's notes for a story. This must be handled by the legal department.",
   "industry": "Journalism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Fulfill Sponsorship Contract Obligations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13642-fulfill-sponsorship-contract-obligations"
   },
   "description": "A team needs to provide a sponsor with a report detailing all the times their logo was shown during last month's broadcasts, as required by their contract.",
   "industry": "Sports",

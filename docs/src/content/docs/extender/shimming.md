@@ -61,7 +61,7 @@ Add your shim to the [Cumulative Registry](/extender/api-reference/) (`shim_reso
 Enable specific shims by adding them to your scenario JSON:
 ```json
 {
-  "scenario_id": "iot_test",
+  "id": "iot_test",
   "enabled_shims": ["database", "industrial_iot"]
 }
 ```

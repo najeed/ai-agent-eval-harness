@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Consolidate a Subsidiary's Financials",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00042-consolidate-subsidiary"
   },
   "description": "A parent company needs to consolidate the financial results of a wholly-owned subsidiary into its own financial statements.",
   "industry": "Accounting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Project Budget",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00121-create-project-budget"
   },
   "description": "Based on a resource plan and standard consultant day rates, an agent must create a project budget.",
   "industry": "Consulting",

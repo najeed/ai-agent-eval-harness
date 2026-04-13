@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "DDoS Attack Mitigation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11745-ddos-attack-mitigation-product"
   },
   "description": "A security alert indicates the application is the target of a large-scale DDoS attack.",
   "industry": "Information Technology Product",

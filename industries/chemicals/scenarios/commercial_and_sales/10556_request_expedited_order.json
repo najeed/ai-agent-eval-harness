@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Requests Expedited Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10556-request-expedited-order"
   },
   "description": "A key customer needs an order delivered sooner than the standard lead time. Sales must check if this is possible and what the expedite fee would be.",
   "industry": "Chemicals",

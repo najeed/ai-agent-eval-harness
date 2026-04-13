@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Damaged Item Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10911-resolve-damaged-item-report"
   },
   "description": "A customer reports that an item in their order arrived broken. The agent must resolve the issue.",
   "industry": "Ecommerce",

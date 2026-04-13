@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Student Cannot Access Online Quiz",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11053-accessing-online-quiz-issue"
   },
   "description": "An online quiz is supposed to be available in the LMS, but a student reports they cannot see or access it.",
   "industry": "Education",

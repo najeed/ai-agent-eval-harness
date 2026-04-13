@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Farm Operating Loan Application Support",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10116-loan-application-support"
   },
   "description": "A farmer needs to compile financial documents to apply for an annual operating loan.",
   "industry": "Agriculture",

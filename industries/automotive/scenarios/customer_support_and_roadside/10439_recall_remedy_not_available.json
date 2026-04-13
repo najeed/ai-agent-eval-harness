@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Recall Announced but Remedy Not Yet Available",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10439-recall-remedy-not-available"
   },
   "description": "A customer calls about a new recall, but the parts required for the fix are not yet available.",
   "industry": "Automotive",

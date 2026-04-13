@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshoot an Avionics Fault",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10088-troubleshoot-avionics-fault"
   },
   "description": "A pilot has reported an intermittent fault with the autopilot system. An avionics technician must diagnose the cause.",
   "industry": "Aerospace",

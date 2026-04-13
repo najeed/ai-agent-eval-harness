@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pricing Strategy Recommendation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00189-pricing-strategy-recommendation"
   },
   "description": "An agent must recommend a pricing strategy for a new software product.",
   "industry": "Consulting",

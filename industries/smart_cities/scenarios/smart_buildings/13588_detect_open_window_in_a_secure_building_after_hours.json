@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Detect Open Window in a Secure Building After Hours",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13588-detect-open-window-in-a-secure-building-after-hours"
   },
   "description": "A sensor in a secure city office building detects that a window was left open after the building has closed.",
   "industry": "Smart Cities",

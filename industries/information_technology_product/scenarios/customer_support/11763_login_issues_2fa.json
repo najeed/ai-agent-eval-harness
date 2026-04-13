@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Login Issues with 2FA",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11763-login-issues-2fa"
   },
   "description": "A user who has lost their phone cannot log in because they cannot complete the two-factor authentication (2FA) step.",
   "industry": "Information Technology Product",

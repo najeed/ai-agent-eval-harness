@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "DDoS Attack Mitigation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13908-ddos-attack-mitigation"
   },
   "description": "A security alert indicates a potential DDoS attack against a specific IP range. The agent must mitigate it.",
   "industry": "Telecom",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Complete Power of Attorney (Form 2848)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13774-power-of-attorney-form-2848"
   },
   "description": "A tax professional needs to be formally authorized to represent a client before the IRS.",
   "industry": "Tax",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Patient Allergy List",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11326-update-patient-allergy-list"
   },
   "description": "During an intake, a patient reports a new allergy to penicillin. A nurse needs to update the patient's allergy list.",
   "industry": "Healthcare",

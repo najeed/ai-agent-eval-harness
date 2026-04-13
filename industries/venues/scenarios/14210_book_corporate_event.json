@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book a Corporate Conference",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14210-book-corporate-event"
   },
   "description": "A corporate event planner wants to book a two-day conference at the venue.",
   "industry": "Venues",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Product Location in System",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13471-update-product-location-in-system"
   },
   "description": "A product's primary location has been moved to a different aisle. The system needs to be updated.",
   "industry": "Retail",

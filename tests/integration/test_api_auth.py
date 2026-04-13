@@ -23,7 +23,7 @@ def client():
 def test_evaluate_endpoint_security_no_key(client):
     """Verify that /api/evaluate rejects requests without an API key."""
     # We use a POST request to a protected endpoint
-    response = client.post("/api/evaluate", json={"path": "scenarios/test.yaml"})
+    response = client.post("/api/v1/evaluate", json={"path": "scenarios/test.yaml"})
     # StaticKeyProvider returns 401 Unauthorized if key is missing or invalid
     assert response.status_code == 401
 
@@ -31,7 +31,9 @@ def test_evaluate_endpoint_security_no_key(client):
 def test_evaluate_endpoint_security_wrong_key(client):
     """Verify that /api/evaluate rejects requests with an invalid API key."""
     headers = {"X-Api-Key": "wrong_key"}
-    response = client.post("/api/evaluate", json={"path": "scenarios/test.yaml"}, headers=headers)
+    response = client.post(
+        "/api/v1/evaluate", json={"path": "scenarios/test.yaml"}, headers=headers
+    )
     assert response.status_code == 401
 
 
@@ -43,7 +45,11 @@ def test_evaluate_endpoint_security_service_key(client, tmp_path):
         json.dumps(
             {
                 "aes_version": 1.4,
-                "metadata": {"name": "Integration Auth Test", "compliance_level": "Standard"},
+                "metadata": {
+                    "id": "auth-test-v1",
+                    "name": "Integration Auth Test",
+                    "compliance_level": "Standard",
+                },
                 "workflow": {
                     "nodes": [{"id": "start", "task_description": "Verify programmatic auth"}],
                     "edges": [],
@@ -60,7 +66,7 @@ def test_evaluate_endpoint_security_service_key(client, tmp_path):
         # We still mock Thread to avoid side effects of actual execution
         with patch("threading.Thread") as mock_thread:
             response = client.post(
-                "/api/evaluate", json={"path": str(scenario_path.name)}, headers=headers
+                "/api/v1/evaluate", json={"path": str(scenario_path.name)}, headers=headers
             )
 
             # Successfully authorized and resolved
@@ -84,7 +90,11 @@ def test_evaluate_endpoint_security_dash_key_fallback(client, tmp_path):
         json.dumps(
             {
                 "aes_version": 1.4,
-                "metadata": {"name": "Fallback Auth Test", "compliance_level": "Standard"},
+                "metadata": {
+                    "id": "fallback-test-v1",
+                    "name": "Fallback Auth Test",
+                    "compliance_level": "Standard",
+                },
                 "workflow": {
                     "nodes": [{"id": "start", "task_description": "Verify fallback execution"}],
                     "edges": [],
@@ -105,6 +115,6 @@ def test_evaluate_endpoint_security_dash_key_fallback(client, tmp_path):
         with app.test_client() as c:
             headers = {"X-Api-Key": "fallback_dash_key"}
             response = c.post(
-                "/api/evaluate", json={"path": str(scenario_path.name)}, headers=headers
+                "/api/v1/evaluate", json={"path": str(scenario_path.name)}, headers=headers
             )
             assert response.status_code == 200

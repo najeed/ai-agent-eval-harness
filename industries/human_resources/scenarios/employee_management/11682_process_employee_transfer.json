@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an Employee Transfer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11682-process-employee-transfer"
   },
   "description": "An employee is transferring to a new role in a different department.",
   "industry": "Human Resources",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Viewership Data for a Pilot Episode",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12507-analyze-pilot-episode-viewership"
   },
   "description": "A TV network needs a report on the viewership performance of a new show's pilot episode to decide whether to order a full season.",
   "industry": "Media and Entertainment",

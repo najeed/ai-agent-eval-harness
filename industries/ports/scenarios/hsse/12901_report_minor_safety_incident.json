@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Minor Safety Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12901-report-minor-safety-incident"
   },
   "description": "A worker reports a near-miss incident where a container was nearly dropped. A safety officer must log the incident.",
   "industry": "Ports",

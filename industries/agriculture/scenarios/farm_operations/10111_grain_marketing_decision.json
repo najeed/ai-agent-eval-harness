@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Grain Marketing Decision Support",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10111-grain-marketing-decision"
   },
   "description": "A farmer has harvested their wheat and needs to decide whether to sell it now or store it based on market prices and storage costs.",
   "industry": "Agriculture",

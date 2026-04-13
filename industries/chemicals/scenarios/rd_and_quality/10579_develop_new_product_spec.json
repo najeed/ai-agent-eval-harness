@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop New Product Specification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10579-develop-new-product-spec"
   },
   "description": "An R&D chemist needs to create the official quality specification for a new product that is moving from development to commercialization.",
   "industry": "Chemicals",

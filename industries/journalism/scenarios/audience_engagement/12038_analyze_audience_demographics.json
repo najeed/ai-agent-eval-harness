@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Audience Demographics",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12038-analyze-audience-demographics"
   },
   "description": "An editor wants to understand the demographic makeup (age, gender, location) of their website's audience to better tailor content.",
   "industry": "Journalism",

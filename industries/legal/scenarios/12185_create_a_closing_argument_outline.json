@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Closing Argument Outline",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12185-create-a-closing-argument-outline"
   },
   "description": "An attorney is preparing for trial and needs to create an outline for their closing argument.",
   "industry": "Legal",

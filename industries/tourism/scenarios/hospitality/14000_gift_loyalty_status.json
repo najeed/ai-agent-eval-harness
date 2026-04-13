@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Gift Loyalty Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14000-gift-loyalty-status"
   },
   "description": "A top-tier loyalty member wants to use their annual benefit to gift Gold status to a family member.",
   "industry": "Tourism",

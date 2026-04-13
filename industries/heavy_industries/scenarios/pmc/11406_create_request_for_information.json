@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Request for Information (RFI)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11406-create-request-for-information"
   },
   "description": "A contractor on site has a question about a design drawing and needs clarification from the engineering team. A formal RFI must be logged.",
   "industry": "Heavy Industries",

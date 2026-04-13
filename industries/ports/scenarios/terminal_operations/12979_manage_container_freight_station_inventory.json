@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage CFS Warehouse Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12979-manage-container-freight-station-inventory"
   },
   "description": "A customer wants to pick up their LCL (Less than Container Load) cargo from the CFS warehouse. The clerk must locate it.",
   "industry": "Ports",

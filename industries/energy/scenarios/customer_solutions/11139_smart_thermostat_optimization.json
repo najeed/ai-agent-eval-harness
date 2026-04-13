@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Smart Thermostat Demand Response Optimization",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11139-smart-thermostat-optimization"
   },
   "description": "During a heatwave, a VPP operator needs to use a fleet of smart thermostats to pre-cool homes before a demand response event.",
   "industry": "Energy",

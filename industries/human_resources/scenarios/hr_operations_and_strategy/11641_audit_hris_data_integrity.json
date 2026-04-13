@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit HRIS Data Integrity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11641-audit-hris-data-integrity"
   },
   "description": "An HRIS analyst needs to run an audit to find employees with missing or incomplete data in their records.",
   "industry": "Human Resources",

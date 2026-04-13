@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Animal Care and Use Protocol",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12876-manage-animal-care-protocol"
   },
   "description": "A lab manager needs to submit an annual renewal for an active animal study protocol.",
   "industry": "Pharmaceuticals and Life Sciences",

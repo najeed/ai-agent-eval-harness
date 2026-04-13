@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Receive Supplier Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14311-receive-supplier-shipment"
   },
   "description": "A shipment of goods arrives from a supplier. A warehouse worker must receive the goods and update inventory.",
   "industry": "Wholesale",

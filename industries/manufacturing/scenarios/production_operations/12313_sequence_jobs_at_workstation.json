@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sequence Jobs at a Workstation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12313-sequence-jobs-at-workstation"
   },
   "description": "A supervisor needs to manually sequence the jobs queued at a specific workstation for the day to minimize setup time.",
   "industry": "Manufacturing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Cold Chain Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12803-cold-chain-shipment-monitoring"
   },
   "description": "A logistics coordinator must monitor a shipment of temperature-sensitive vaccines to ensure it remains within the required temperature range.",
   "industry": "Pharmaceuticals and Life Sciences",

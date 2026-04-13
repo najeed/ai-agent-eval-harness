@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Response to Payer Formulary Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12870-prepare-response-to-formulary-request"
   },
   "description": "A health economics and outcomes research (HEOR) specialist must prepare a dossier for a payer (insurance company) that is considering adding a new drug to its formulary.",
   "industry": "Pharmaceuticals and Life Sciences",

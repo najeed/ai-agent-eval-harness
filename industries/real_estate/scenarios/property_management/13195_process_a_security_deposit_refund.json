@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Security Deposit Refund",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13195-process-a-security-deposit-refund"
   },
   "description": "A former tenant moved out, an inspection was completed with no damages found, and their security deposit is due to be refunded.",
   "industry": "Real Estate",

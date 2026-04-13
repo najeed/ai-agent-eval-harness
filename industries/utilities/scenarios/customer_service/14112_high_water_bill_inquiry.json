@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "High Water Bill Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14112-high-water-bill-inquiry"
   },
   "description": "A customer is calling because their water bill is significantly higher than usual and they suspect a leak.",
   "industry": "Utilities",

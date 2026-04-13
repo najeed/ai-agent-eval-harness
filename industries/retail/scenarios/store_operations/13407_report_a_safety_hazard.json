@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Safety Hazard",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13407-report-a-safety-hazard"
   },
   "description": "An associate discovers a liquid spill on the floor and needs to report it so it can be cleaned up.",
   "industry": "Retail",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Equipment Selection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12683-analyze-equipment-selection"
   },
   "description": "A planning engineer evaluates whether to purchase larger haul trucks for a new pit phase, considering both productivity benefits and capital cost.",
   "industry": "Mining",

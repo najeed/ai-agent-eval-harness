@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add Patient to Disease Registry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11396-add-patient-to-disease-registry"
   },
   "description": "A patient is newly diagnosed with diabetes. The system needs to automatically add them to the diabetes disease registry.",
   "industry": "Healthcare",

@@ -4,7 +4,7 @@ This script demonstrates how an custom extensions CI/CD gate or auditor can veri
 integrity of an Open Core evaluation run using the public Certificates API.
 
 Workflow:
-1. Fetch the authoritative Verification Certificate (VC) from the public API.
+1. Fetch the Verification Certificate (VC) from the public API.
 2. Verify the VC's asymmetric signature (ED25519) using the harness Public Key.
 3. Verify the local Trace file's content integrity (SHA-256) against the VC.
 """

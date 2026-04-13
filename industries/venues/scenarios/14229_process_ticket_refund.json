@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Ticket Refund for a Canceled Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14229-process-ticket-refund"
   },
   "description": "An event has been canceled, and a ticket holder is requesting a full refund.",
   "industry": "Venues",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Query Warranty Coverage for a Repair",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10451-query-warranty-coverage"
   },
   "description": "A customer wants to know if a specific repair (a faulty water pump) will be covered by their warranty.",
   "industry": "Automotive",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Database Server Patching",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10755-vuln-mgmt-patching-database"
   },
   "description": "An analyst must apply a critical security patch to a production database server, which requires downtime.",
   "industry": "Cybersecurity",

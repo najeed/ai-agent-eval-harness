@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Family Restroom Access",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14304-manage-family-restroom-access"
   },
   "description": "A parent with a child of the opposite gender needs access to a family restroom.",
   "industry": "Venues",

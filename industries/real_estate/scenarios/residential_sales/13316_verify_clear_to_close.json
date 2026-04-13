@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify 'Clear to Close'",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13316-verify-clear-to-close"
   },
   "description": "An agent must coordinate with the lender and title company to confirm that all conditions are met for the transaction to close.",
   "industry": "Real Estate",

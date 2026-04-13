@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Estimate Offshore Platform Decommissioning Costs",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12782-decommissioning-cost-estimate"
   },
   "description": "An engineer creates a cost estimate for the future decommissioning of an offshore platform, as required for financial reporting.",
   "industry": "Oil and Gas",

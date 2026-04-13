@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dark Web Monitoring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10788-vuln-mgmt-threat-intel-dark-web"
   },
   "description": "A threat intelligence analyst is monitoring dark web markets for stolen company credentials.",
   "industry": "Cybersecurity",

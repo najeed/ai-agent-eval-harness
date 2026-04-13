@@ -48,7 +48,7 @@ def test_handle_report_missing_trace(capsys):
     args = MagicMock(run_id="missing-id", share=False)
     analysis.handle_report(args)
     captured = capsys.readouterr()
-    assert "[CRITICAL] FAILED: Trace file for missing-id not found." in captured.out
+    assert "not found in vault or master log" in captured.out
 
 
 @pytest.mark.asyncio

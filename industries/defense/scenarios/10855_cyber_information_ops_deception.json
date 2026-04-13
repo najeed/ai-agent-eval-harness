@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Military Deception Planning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10855-cyber-information-ops-deception"
   },
   "description": "An IO officer must plan a military deception (MILDEC) operation to make an adversary believe an attack is coming from one direction, while the real attack comes from another.",
   "industry": "Defense",

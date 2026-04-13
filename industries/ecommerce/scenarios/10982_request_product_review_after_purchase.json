@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Product Review After Purchase",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10982-request-product-review-after-purchase"
   },
   "description": "A week after a customer's order is delivered, the system should automatically send an email asking them to review the products they bought.",
   "industry": "Ecommerce",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Correct a Coding Error",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11350-correct-a-coding-error"
   },
   "description": "An audit has revealed that an incorrect diagnosis code was used on a claim that has already been submitted. A coder needs to correct it.",
   "industry": "Healthcare",

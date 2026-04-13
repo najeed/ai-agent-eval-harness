@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to HCP about Potential Drug Interaction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12820-respond-to-hcp-about-drug-interaction"
   },
   "description": "A medical information specialist receives a call from a pharmacist asking about a potential drug-drug interaction for a specific product.",
   "industry": "Pharmaceuticals and Life Sciences",

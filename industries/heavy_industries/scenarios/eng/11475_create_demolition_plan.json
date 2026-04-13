@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Demolition Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11475-create-demolition-plan"
   },
   "description": "An old structure needs to be demolished. An engineer must create a safe demolition plan.",
   "industry": "Heavy Industries",

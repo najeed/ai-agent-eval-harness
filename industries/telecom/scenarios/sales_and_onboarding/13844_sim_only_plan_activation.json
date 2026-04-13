@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboarding - SIM-Only Plan Activation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13844-sim-only-plan-activation"
   },
   "description": "A customer has received their new SIM card for a SIM-only plan and needs to activate it.",
   "industry": "Telecom",

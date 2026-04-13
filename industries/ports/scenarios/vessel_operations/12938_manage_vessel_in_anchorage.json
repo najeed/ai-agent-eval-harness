@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Vessel in Anchorage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12938-manage-vessel-in-anchorage"
   },
   "description": "A vessel has arrived early and there is no berth available. The VTS operator must direct it to an anchorage spot.",
   "industry": "Ports",

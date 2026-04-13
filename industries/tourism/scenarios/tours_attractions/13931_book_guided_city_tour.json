@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book a Guided City Tour",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13931-book-guided-city-tour"
   },
   "description": "A couple wants to book two spots on a guided walking tour of historical Rome.",
   "industry": "Tourism",

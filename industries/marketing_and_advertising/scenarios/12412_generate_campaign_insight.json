@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Campaign Insight from Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12412-generate-campaign-insight"
   },
   "description": "An analyst is reviewing a performance report and needs to provide an actionable insight beyond just stating the numbers.",
   "industry": "Marketing and Advertising",

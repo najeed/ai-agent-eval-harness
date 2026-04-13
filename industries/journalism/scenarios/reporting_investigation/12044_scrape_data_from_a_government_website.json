@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Scrape Data from a Government Website",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12044-scrape-data-from-a-government-website"
   },
   "description": "A data journalist needs to collect data from a government website that does not offer a downloadable file. They must write a script to scrape the data.",
   "industry": "Journalism",

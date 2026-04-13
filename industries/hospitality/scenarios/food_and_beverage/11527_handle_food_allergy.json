@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Food Allergy Notification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11527-handle-food-allergy"
   },
   "description": "While taking an order, a guest informs the server they have a severe nut allergy.",
   "industry": "Hospitality",

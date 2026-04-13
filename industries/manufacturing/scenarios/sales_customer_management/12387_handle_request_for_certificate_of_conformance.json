@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Request for a Certificate of Conformance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12387-handle-request-for-certificate-of-conformance"
   },
   "description": "A customer requires a Certificate of Conformance (CoC) for a product they have already received.",
   "industry": "Manufacturing",

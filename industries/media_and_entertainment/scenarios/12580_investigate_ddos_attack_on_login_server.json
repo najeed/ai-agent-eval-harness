@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate DDoS Attack on Game Login Server",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12580-investigate-ddos-attack-on-login-server"
   },
   "description": "The system alerts that a game's login server is under a DDoS attack, preventing players from logging in.",
   "industry": "Media and Entertainment",

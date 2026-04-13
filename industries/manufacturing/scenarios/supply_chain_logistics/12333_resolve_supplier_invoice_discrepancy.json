@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve a Supplier Invoice Discrepancy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12333-resolve-supplier-invoice-discrepancy"
   },
   "description": "The accounts payable team has flagged a supplier invoice where the price charged is higher than the price on the PO.",
   "industry": "Manufacturing",

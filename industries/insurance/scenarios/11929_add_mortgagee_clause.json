@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add a Mortgagee Clause to a Home Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11929-add-mortgagee-clause"
   },
   "description": "A customer has refinanced their home and needs to update the mortgagee (lender) listed on their homeowner's policy.",
   "industry": "Insurance",

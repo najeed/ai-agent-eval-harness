@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pay a Property-Related Bill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13228-pay-property-bill"
   },
   "description": "The monthly HOA bill for a managed property has arrived. The agent needs to process the payment from the property's funds.",
   "industry": "Real Estate",

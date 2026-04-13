@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel a Booking and Contract",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14287-cancel-booking-contract"
   },
   "description": "A client who booked a conference six months ago is now cancelling the event.",
   "industry": "Venues",

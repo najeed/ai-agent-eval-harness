@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Forecast Reservoir Production",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12755-model-reservoir-performance"
   },
   "description": "A reservoir engineer uses a simulation model to forecast the future oil production of a field under different development scenarios.",
   "industry": "Oil and Gas",

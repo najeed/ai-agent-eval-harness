@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan a Crop Dusting Mission for a Drone",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10174-drone-crop-dusting-plan"
   },
   "description": "A farmer needs to apply a fungicide to a specific, hard-to-reach part of a field using a large spraying drone.",
   "industry": "Agriculture",

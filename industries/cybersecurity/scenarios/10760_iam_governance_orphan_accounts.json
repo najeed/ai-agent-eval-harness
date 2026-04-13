@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Orphaned Account Cleanup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10760-iam-governance-orphan-accounts"
   },
   "description": "An analyst must run a report to find 'orphaned' accounts (accounts that are not associated with a current employee) and disable them.",
   "industry": "Cybersecurity",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Real-Time Arrival Information",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14011-update-real-time-arrivals"
   },
   "description": "A bus is delayed due to unexpected traffic. A control center agent must update the real-time passenger information systems.",
   "industry": "Transportation",

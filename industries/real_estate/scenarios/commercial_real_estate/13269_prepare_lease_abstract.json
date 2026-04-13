@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare a Lease Abstract",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13269-prepare-lease-abstract"
   },
   "description": "A new property manager is taking over a building and needs to create abstracts for all existing leases for quick reference.",
   "industry": "Real Estate",

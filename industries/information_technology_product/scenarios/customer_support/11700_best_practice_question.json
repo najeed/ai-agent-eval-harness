@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquiry on Best Practices for Team Collaboration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11700-best-practice-question"
   },
   "description": "A team manager asks for advice on the best way to configure the product for collaboration between their design and development teams.",
   "industry": "Information Technology Product",

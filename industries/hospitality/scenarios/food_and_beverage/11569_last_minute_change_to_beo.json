@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Last-Minute Change to Banquet Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11569-last-minute-change-to-beo"
   },
   "description": "On the morning of an event, the client calls to add 10 more guests to their banquet.",
   "industry": "Hospitality",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Grid Frequency Stability Monitoring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14142-grid-stability-monitoring"
   },
   "description": "A system operator is monitoring grid frequency in real-time to ensure the balance between generation and load.",
   "industry": "Utilities",

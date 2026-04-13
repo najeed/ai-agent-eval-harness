@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cluster Analysis of Clients",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00153-cluster-analysis-of-clients"
   },
   "description": "An agent must use k-means clustering to group clients based on their industry and revenue.",
   "industry": "Consulting",

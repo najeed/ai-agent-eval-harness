@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Qualify a New Supplier",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12321-qualify-new-supplier"
   },
   "description": "A procurement manager needs to add a new potential supplier to the system for a specific commodity.",
   "industry": "Manufacturing",

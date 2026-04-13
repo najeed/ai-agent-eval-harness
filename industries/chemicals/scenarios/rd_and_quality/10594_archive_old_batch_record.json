@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Archive Old Batch Record",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10594-archive-old-batch-record"
   },
   "description": "An electronic batch record from 10 years ago has passed its required retention period and can be moved from the live system to a long-term archive.",
   "industry": "Chemicals",

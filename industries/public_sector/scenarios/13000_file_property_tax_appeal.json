@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Property Tax Assessment Appeal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13000-file-property-tax-appeal"
   },
   "description": "A homeowner believes their property tax assessment is too high and wants to file an appeal.",
   "industry": "Public Sector",

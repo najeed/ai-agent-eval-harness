@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Safety Data Sheet (SDS) Binder",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10640-update-sds-binder"
   },
   "description": "A new type of sealant is being used on site. The safety manager must add its Safety Data Sheet (SDS) to the project's chemical safety binder.",
   "industry": "Construction",

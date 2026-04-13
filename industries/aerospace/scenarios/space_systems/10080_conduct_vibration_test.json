@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct a Satellite Vibration Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10080-conduct-vibration-test"
   },
   "description": "A satellite must be subjected to intense vibrations on a shaker table to ensure it can survive the violent forces of a rocket launch.",
   "industry": "Aerospace",

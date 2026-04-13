@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Scoping - Network Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11855-project-scope-network-audit"
   },
   "description": "A client requests a project to perform a comprehensive audit of their network infrastructure and provide recommendations.",
   "industry": "Information Technology Service",

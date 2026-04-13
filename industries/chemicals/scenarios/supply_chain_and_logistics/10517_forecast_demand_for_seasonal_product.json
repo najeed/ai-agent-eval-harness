@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Forecast Demand for Seasonal Product",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10517-forecast-demand-for-seasonal-product"
   },
   "description": "A supply planner needs to forecast demand for an agricultural chemical with highly seasonal sales to inform the production plan.",
   "industry": "Chemicals",

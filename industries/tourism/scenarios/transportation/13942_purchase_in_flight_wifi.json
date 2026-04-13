@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Purchase In-Flight Wi-Fi",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13942-purchase-in-flight-wifi"
   },
   "description": "A passenger on a flight wants to purchase a Wi-Fi pass for the duration of the flight.",
   "industry": "Tourism",

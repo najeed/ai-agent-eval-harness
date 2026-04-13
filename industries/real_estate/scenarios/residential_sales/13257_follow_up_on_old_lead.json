@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Follow Up on an Old Lead",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13257-follow-up-on-old-lead"
   },
   "description": "An agent needs to re-engage a buyer lead that went cold 6 months ago.",
   "industry": "Real Estate",

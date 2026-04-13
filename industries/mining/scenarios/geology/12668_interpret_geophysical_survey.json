@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Interpret Airborne Geophysical Survey",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12668-interpret-geophysical-survey"
   },
   "description": "A geophysicist interprets data from an airborne magnetic survey to identify geological structures that might host mineralization.",
   "industry": "Mining",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Stock Transfer Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12212-create-stock-transfer-order"
   },
   "description": "A distribution center (DC A) is low on stock for a popular item. An inventory planner needs to create a stock transfer order to move inventory from another DC (DC B).",
   "industry": "Logistics and Warehousing",

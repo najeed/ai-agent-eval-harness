@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write a Film Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12088-write-a-film-review"
   },
   "description": "A film critic needs to write a review of a new movie.",
   "industry": "Journalism",

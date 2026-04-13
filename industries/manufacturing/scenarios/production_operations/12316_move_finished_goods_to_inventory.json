@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Move Finished Goods to Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12316-move-finished-goods-to-inventory"
   },
   "description": "A pallet of finished goods has been produced and needs to be moved from the production line to the finished goods warehouse.",
   "industry": "Manufacturing",

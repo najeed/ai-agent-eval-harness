@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Beneficiary on Investment Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11227-update-beneficiary"
   },
   "description": "A client wants to add their newborn child as a beneficiary on their investment account.",
   "industry": "Finance",

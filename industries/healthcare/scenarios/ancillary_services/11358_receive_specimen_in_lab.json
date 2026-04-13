@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Receive Specimen in Lab",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11358-receive-specimen-in-lab"
   },
   "description": "A lab technician receives a blood sample from a patient and needs to log it into the Laboratory Information System (LIS).",
   "industry": "Healthcare",

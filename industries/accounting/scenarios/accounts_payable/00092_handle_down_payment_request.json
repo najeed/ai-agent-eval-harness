@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Vendor Down Payment Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00092-handle-down-payment-request"
   },
   "description": "A vendor requires a 20% down payment before they will begin work on a large custom order.",
   "industry": "Accounting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Removal of Contingencies",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13189-handle-removal-of-contingencies"
   },
   "description": "The buyer is satisfied with their investigations and is ready to remove their inspection and appraisal contingencies.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Adjust Inventory for Warehouse Damage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12252-adjust-inventory-for-damage"
   },
   "description": "A forklift operator accidentally damages a pallet of goods in the warehouse. The damaged items must be adjusted out of inventory.",
   "industry": "Logistics and Warehousing",

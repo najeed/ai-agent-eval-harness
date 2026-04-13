@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Preventive Maintenance for Wellhead",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12700-schedule-preventive-maintenance"
   },
   "description": "A maintenance planner schedules a preventive maintenance job for a critical wellhead based on runtime hours and manufacturer recommendations.",
   "industry": "Oil and Gas",

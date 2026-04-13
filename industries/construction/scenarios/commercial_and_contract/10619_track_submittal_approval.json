@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Overdue Submittal Approval",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10619-track-submittal-approval"
   },
   "description": "A submittal for the HVAC unit model has been with the engineer for review for 15 days, exceeding the 10-day review period. The project manager needs to follow up.",
   "industry": "Construction",

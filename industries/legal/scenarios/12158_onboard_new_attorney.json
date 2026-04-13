@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboard a New Attorney",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12158-onboard-new-attorney"
   },
   "description": "A new attorney is joining the firm. The practice manager needs to set them up in all firm systems.",
   "industry": "Legal",

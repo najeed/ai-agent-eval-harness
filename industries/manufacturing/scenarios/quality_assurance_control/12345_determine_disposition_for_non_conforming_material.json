@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Determine Disposition for Non-Conforming Material",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12345-determine-disposition-for-non-conforming-material"
   },
   "description": "The Material Review Board (MRB) is meeting to decide the disposition for a batch of non-conforming parts.",
   "industry": "Manufacturing",

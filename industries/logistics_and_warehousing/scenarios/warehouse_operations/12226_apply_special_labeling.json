@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply Special Labeling (VAS)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12226-apply-special-labeling"
   },
   "description": "A specific customer requires all their outbound cartons to have a special 'Fragile' label and a customer-specific barcode label applied before shipping.",
   "industry": "Logistics and Warehousing",

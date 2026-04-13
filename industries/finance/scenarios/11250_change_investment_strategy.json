@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Investment Strategy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11250-change-investment-strategy"
   },
   "description": "A client's risk tolerance has decreased, and they want to move from a 'Growth' to a 'Balanced' investment strategy.",
   "industry": "Finance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Return with Itemized Deductions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13711-prepare-return-with-itemized-deductions"
   },
   "description": "A homeowner needs to file their return and wants to itemize deductions, including mortgage interest, state taxes, and charitable contributions.",
   "industry": "Tax",

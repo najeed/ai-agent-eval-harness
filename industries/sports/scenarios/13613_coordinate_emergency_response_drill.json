@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate Emergency Response Drill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13613-coordinate-emergency-response-drill"
   },
   "description": "A venue manager needs to plan and execute a fire evacuation drill at the stadium during the off-season.",
   "industry": "Sports",

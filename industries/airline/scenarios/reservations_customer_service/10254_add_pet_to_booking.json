@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add a Pet in Cabin to a Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10254-add-pet-to-booking"
   },
   "description": "A customer wants to add their small dog, which will travel in a carrier under the seat, to their booking.",
   "industry": "Airline",

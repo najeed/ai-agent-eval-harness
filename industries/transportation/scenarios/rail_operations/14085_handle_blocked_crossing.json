@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Blocked Crossing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14085-handle-blocked-crossing"
   },
   "description": "A train has stopped and is blocking a public road crossing for an extended period. The dispatcher must resolve the situation.",
   "industry": "Transportation",

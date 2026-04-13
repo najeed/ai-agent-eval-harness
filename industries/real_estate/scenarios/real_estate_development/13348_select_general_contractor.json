@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Select a General Contractor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13348-select-general-contractor"
   },
   "description": "A developer needs to select a General Contractor (GC) for a new construction project.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Stock Transfer Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10597-create-stock-transfer-order"
   },
   "description": "A planner needs to move inventory of a product from a main manufacturing site to a regional distribution center to rebalance stock.",
   "industry": "Chemicals",

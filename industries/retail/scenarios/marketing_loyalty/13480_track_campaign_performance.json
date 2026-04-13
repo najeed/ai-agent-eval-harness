@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Campaign Performance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13480-track-campaign-performance"
   },
   "description": "A marketing analyst wants to check the performance of an email campaign that was sent yesterday.",
   "industry": "Retail",

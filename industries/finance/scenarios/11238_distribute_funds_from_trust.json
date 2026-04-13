@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Distribute Funds from a Trust",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11238-distribute-funds-from-trust"
   },
   "description": "A trustee requests a distribution from a trust account to one of its beneficiaries.",
   "industry": "Finance",

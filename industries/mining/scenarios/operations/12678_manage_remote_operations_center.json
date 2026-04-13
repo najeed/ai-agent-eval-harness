@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage from Remote Operations Center",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12678-manage-remote-operations-center"
   },
   "description": "An operator in a remote operations center (ROC) in a city is controlling equipment at a mine site thousands of kilometers away.",
   "industry": "Mining",

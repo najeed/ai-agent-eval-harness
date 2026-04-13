@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Select a Cover Crop Mix",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10137-cover-crop-selection"
   },
   "description": "A farmer wants to plant a cover crop after corn harvest to improve soil health and reduce erosion. They need a recommendation for a suitable mix.",
   "industry": "Agriculture",

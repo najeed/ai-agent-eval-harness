@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Airborne Threat Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10801-c2-threat-assessment-air"
   },
   "description": "An operator must assess multiple inbound, unidentified aircraft to determine their threat level and recommend an appropriate response.",
   "industry": "Defense",

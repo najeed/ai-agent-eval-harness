@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Expiring Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10512-manage-expiring-inventory"
   },
   "description": "The inventory system flags a pallet of raw material that is due to expire in 60 days. The planner must ensure it is used before it expires.",
   "industry": "Chemicals",

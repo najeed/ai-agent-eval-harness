@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Post-Project CSAT Survey",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11796-customer-satisfaction-survey"
   },
   "description": "After a project is closed, a project manager sends a Customer Satisfaction (CSAT) survey to the main project sponsor.",
   "industry": "Information Technology Product",

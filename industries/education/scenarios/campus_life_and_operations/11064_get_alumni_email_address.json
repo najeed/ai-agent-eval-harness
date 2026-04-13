@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Alumni Email Forwarding",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11064-get-alumni-email-address"
   },
   "description": "An alumnus has forgotten their password for their lifetime alumni email forwarding address and needs it reset.",
   "industry": "Education",

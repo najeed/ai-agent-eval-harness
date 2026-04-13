@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About Policy Riders",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11973-inquire-about-riders"
   },
   "description": "A policyholder wants to know what optional riders they have on their life insurance policy.",
   "industry": "Insurance",

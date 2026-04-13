@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Drop-Shipping Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14346-handle-drop-shipping-order"
   },
   "description": "A retailer places an order that needs to be shipped directly to their end customer (drop-shipping).",
   "industry": "Wholesale",

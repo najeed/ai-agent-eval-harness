@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Diagnose Intermittent Electrical Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10440-intermittent-electrical-issue"
   },
   "description": "A customer reports that their radio occasionally reboots for no reason. There are no active DTCs.",
   "industry": "Automotive",

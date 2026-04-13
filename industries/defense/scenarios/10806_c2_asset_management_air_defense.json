@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Air Defense Asset Management",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10806-c2-asset-management-air-defense"
   },
   "description": "An Air Defense Officer must allocate surface-to-air missile (SAM) systems to engage multiple incoming cruise missiles.",
   "industry": "Defense",

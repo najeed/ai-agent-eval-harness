@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up Brand Safety Filters",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12443-set-up-brand-safety-filters"
   },
   "description": "A brand manager wants to ensure their display ads do not appear on websites with sensitive or inappropriate content.",
   "industry": "Marketing and Advertising",

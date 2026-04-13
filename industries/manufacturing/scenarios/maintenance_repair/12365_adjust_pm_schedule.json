@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Adjust a PM Schedule",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12365-adjust-pm-schedule"
   },
   "description": "Based on usage data, a reliability engineer has determined that a PM task can be done less frequently. They need to adjust the schedule.",
   "industry": "Manufacturing",

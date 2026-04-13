@@ -20,7 +20,7 @@ This guide is for users who want to run and understand evaluations without divin
 ### 🗂️ Scenario
 A scenario is the unit of evaluation. It's a JSON file that defines:
 
-- `scenario_id` — unique identifier
+- `id` — unique identifier
 - `title` — human-friendly name
 - `industry` — category for grouping
 - `dataset` — (optional) path to a synthetic CSV/JSONL dataset to ground the scenario. **Path Decoupling (v1.1+)**: Relative paths (e.g., `./data.csv`) are resolved relative to the scenario file itself.
@@ -146,15 +146,15 @@ Use this for rapid iteration and debugging. It supports the same core execution 
 The harness records every event (agent messages, tool calls, metrics) into trace files for debugging and auditing.
 
 **Default Behavior:**
-- All runs are appended to `runs/run.jsonl`.
-- Each run is also saved to its own file: `runs/run-<run_id>.jsonl`.
+- All runs are appended to `runs/run.jsonl` (master log).
+- Each run is also physically isolated in its own **Industrial Vault**: `runs/<run_id>/run.jsonl`.
 
 **Configuration (Environment Variables):**
 | Variable | Default | Description |
 |---|---|---|
 | `RUN_LOG_DIR` | `runs` | Directory where trace files are stored. |
-| `RUN_LOG_PER_RUN` | `true` | Save each run to a separate file. |
-| `RUN_LOG_MASTER` | `true` | Append all runs to a master `run.jsonl`. |
+| `RUN_LOG_PER_RUN` | `true` | Creates a nested "Vault" directory for every execution (Required for Compliance). Set to `false` for quick debugging of traces - this will prevent the creation of new subdirectories in the `runs` folder and cannot be used for compliance purposes.  |
+| `RUN_LOG_MASTER` | `true` | Append all runs to a master `run.jsonl`. Setting it to `false` in high security environments where you do not want to store all runs in a single file will force RUN_LOG_PER_RUN to be true. |
 | `RUN_LOG_ROTATE_COUNT` | `0` | Number of per-run files to keep. `0` means keep all. |
 | `EVAL_TURN_THROTTLE` | `0` | Operational: Delay (seconds) between agent turns for rate-limiting. |
 
@@ -278,7 +278,7 @@ Built into the Visual Debugger (`agentv console`), this tool provides a visual i
 
 ```json
 {
-  "scenario_id": "example_01",
+  "id": "example_01",
   "title": "Basic instruction",
   "industry": "generic",
   "tasks": [
@@ -314,7 +314,7 @@ mkdir -p industries/<your_industry>/scenarios
 
 ```json
 {
-  "scenario_id": "my_scenario_01",
+  "id": "my_scenario_01",
   "title": "Example scenario",
   "industry": "<your_industry>",
   "tasks": [ ... ]
@@ -338,7 +338,7 @@ agentv evaluate --run-id <id><your_industry>
 For high-stakes evaluations, the harness separates core infrastructure definitions from environment-specific overrides using a **Cumulative Layered Model**.
 
 ### Precedence & Merging (v1.3.0)
-The harness simplifies configuration management by deep-merging two authoritative sources:
+The harness simplifies configuration management by deep-merging two sources:
 1.  **Immutable Core baseline** (Internal): Sanctioned defaults for API/Git. This ensured the harness works Out-of-the-Box.
 2.  **Distributed Cumulative Folder** (`shim_resources.d/`): The **single source of truth** for all team and project extensions.
 3.  **Environment Injection** (`AES_SHIM_RESOURCES_JSON`): Higher-precedence runtime overrides for CI/CD pipelines.
@@ -454,10 +454,10 @@ agentv import-drift --input production_trace.jsonl --industry telecom --output-d
 ```
 
 ### 🔬 5.2 State-Level Trajectory Triage (How Root Cause Isolation Works)
-AgentEval isolates the root cause of a failure by combining three layers of analysis — not just scanning logs.
+AgentV isolates the root cause of a failure by combining three layers of analysis — not just scanning logs.
 
 **Layer 1: State Parity Check (VFS Delta)**
-Every World Shim (Database, Jira, Git, API, etc.) is "VFS-aware". When an agent calls a tool, AgentEval compares the resulting system state against the "Ground Truth" defined in the scenario. If the agent queries the wrong table or fails to commit a file, the State Divergence is flagged immediately as the **"Patient Zero"** step. This catches "silent failures" where the agent *thinks* it succeeded but the environment changed incorrectly.
+Every World Shim (Database, Jira, Git, API, etc.) is "VFS-aware". When an agent calls a tool, AgentV compares the resulting system state against the "Ground Truth" defined in the scenario. If the agent queries the wrong table or fails to commit a file, the State Divergence is flagged immediately as the **"Patient Zero"** step. This catches "silent failures" where the agent *thinks* it succeeded but the environment changed incorrectly.
 
 **Layer 2: Heuristic Triage Engine (`triage.py`)**
 A specialized engine scans the entire trace for failure patterns:
@@ -474,7 +474,7 @@ The Visual Debugger's **"Isolate Root Cause"** automatically scrolls the timelin
 | **Logic** | Loops & Stalls | Identifies when an agent's reasoning has hit a dead-end. |
 | **Security** | Policy Violations | Pinpoints exactly which guardrail was triggered and why. |
 
-By combining these layers, AgentEval can distinguish between an agent that *hallucinated a tool's existence* vs. an agent that *used the right tool but with the wrong parameters*.
+By combining these layers, AgentV can distinguish between an agent that *hallucinated a tool's existence* vs. an agent that *used the right tool but with the wrong parameters*.
 
 > **Why use Shims instead of Real APIs?**
 > - **Safety**: No risk of accidentally deleting a production database or emailing a real customer.

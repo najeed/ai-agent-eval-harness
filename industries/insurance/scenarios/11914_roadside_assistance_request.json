@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Roadside Assistance Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11914-roadside-assistance-request"
   },
   "description": "A policyholder's car has a flat tire and they are calling to use their roadside assistance coverage.",
   "industry": "Insurance",

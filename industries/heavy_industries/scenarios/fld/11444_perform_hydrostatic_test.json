@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Hydrostatic Test on Pipeline",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11444-perform-hydrostatic-test"
   },
   "description": "A new pipeline has been built and must be hydrostatically tested to ensure it is leak-free before being put into service.",
   "industry": "Heavy Industries",

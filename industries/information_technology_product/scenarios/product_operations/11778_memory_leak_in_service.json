@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Memory Leak",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11778-memory-leak-in-service"
   },
   "description": "A microservice is showing a sawtooth pattern for memory usage, and is being restarted frequently by the orchestrator.",
   "industry": "Information Technology Product",

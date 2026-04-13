@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Smart Feeder Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10199-smart-feeder-analysis"
   },
   "description": "A hog farmer uses smart feeders that record how much each individual pig eats. They want to identify pigs that are not eating enough.",
   "industry": "Agriculture",

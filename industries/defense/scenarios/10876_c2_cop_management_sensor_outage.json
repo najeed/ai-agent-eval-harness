@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Managing COP with Sensor Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10876-c2-cop-management-sensor-outage"
   },
   "description": "A key long-range radar goes offline, creating a gap in the Common Operating Picture. An operator must mitigate the gap.",
   "industry": "Defense",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Activate Stadium Sponsorship Deal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13612-activate-stadium-sponsorship"
   },
   "description": "A new sponsor has signed a deal that includes digital signage inside the stadium. An agent must ensure their ads are displayed during games.",
   "industry": "Sports",

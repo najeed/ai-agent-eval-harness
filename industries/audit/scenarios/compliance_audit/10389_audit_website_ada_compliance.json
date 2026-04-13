@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Website ADA Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10389-audit-website-ada-compliance"
   },
   "description": "A compliance auditor tests the company's public website for compliance with the Americans with Disabilities Act (ADA) accessibility standards.",
   "industry": "Audit",

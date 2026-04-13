@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Extract Table Data from PDF Reports",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00127-extract-data-from-pdfs"
   },
   "description": "An agent must extract specific data tables from a collection of PDF market research reports.",
   "industry": "Consulting",

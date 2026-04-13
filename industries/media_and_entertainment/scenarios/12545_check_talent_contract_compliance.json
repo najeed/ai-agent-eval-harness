@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Talent Contract Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12545-check-talent-contract-compliance"
   },
   "description": "An agent needs to verify that a recently edited TV commercial complies with the lead actor's contract, which specifies their screen time and logo placement.",
   "industry": "Media and Entertainment",

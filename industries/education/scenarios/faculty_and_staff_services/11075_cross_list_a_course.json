@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cross-list a Course Between Departments",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11075-cross-list-a-course"
   },
   "description": "Two departments want to cross-list a course, making it available for credit to students in both majors.",
   "industry": "Education",

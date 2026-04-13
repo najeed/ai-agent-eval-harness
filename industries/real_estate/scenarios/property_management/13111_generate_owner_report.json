@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Monthly Owner Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13111-generate-owner-report"
   },
   "description": "A property owner requires their monthly financial statement. The PM needs to generate and send the report.",
   "industry": "Real Estate",

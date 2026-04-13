@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitoring - Printer Offline Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11870-alert-printer-offline"
   },
   "description": "An RMM alert indicates that a client's main office printer is offline.",
   "industry": "Information Technology Service",

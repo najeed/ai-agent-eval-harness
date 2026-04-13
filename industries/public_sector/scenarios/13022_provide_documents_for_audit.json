@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Documents for a Program Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13022-provide-documents-for-audit"
   },
   "description": "A state auditor is conducting an audit of a public housing program and has requested specific case files.",
   "industry": "Public Sector",

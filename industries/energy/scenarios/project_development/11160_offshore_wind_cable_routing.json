@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Offshore Wind Export Cable Routing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11160-offshore-wind-cable-routing"
   },
   "description": "An engineer needs to plan the optimal route for the subsea export cable from an offshore wind farm to the onshore grid connection point.",
   "industry": "Energy",

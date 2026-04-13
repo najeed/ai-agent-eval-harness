@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reconcile an Intercompany Loan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00098-reconcile-intercompany-loan"
   },
   "description": "Subsidiary A has an 'Intercompany Loan Receivable' from Subsidiary B. This must be reconciled with Subsidiary B's 'Intercompany Loan Payable' to A.",
   "industry": "Accounting",

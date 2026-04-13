@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve an IT Helpdesk Ticket",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12974-resolve-it-helpdesk-ticket"
   },
   "description": "A user reports they cannot log in to the TOS. A helpdesk agent must resolve the issue.",
   "industry": "Ports",

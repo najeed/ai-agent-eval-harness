@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book a Backstage Pass Add-on",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14007-book-backstage-pass-add-on"
   },
   "description": "A customer who bought concert tickets wants to add a backstage meet-and-greet pass.",
   "industry": "Tourism",

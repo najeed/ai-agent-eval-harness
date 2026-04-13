@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report on Grant Expenditures",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11076-report-on-grant-expenditures"
   },
   "description": "A PI needs an official report of all expenditures for a grant that is ending to submit to the funding agency.",
   "industry": "Education",

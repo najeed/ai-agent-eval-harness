@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate a Championship Parade",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13693-coordinate-championship-parade"
   },
   "description": "After winning a championship, a team needs to work with the city to plan a championship parade.",
   "industry": "Sports",

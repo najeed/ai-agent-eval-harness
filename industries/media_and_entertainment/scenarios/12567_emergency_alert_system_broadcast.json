@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue an Emergency Alert System (EAS) Broadcast",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12567-emergency-alert-system-broadcast"
   },
   "description": "A local authority has issued an AMBER Alert, which must be broadcast immediately across all TV channels in the affected region.",
   "industry": "Media and Entertainment",

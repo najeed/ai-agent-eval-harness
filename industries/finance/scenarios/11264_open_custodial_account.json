@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Open a Custodial Account (UTMA/UGMA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11264-open-custodial-account"
   },
   "description": "A client wants to open an investment account for their minor child.",
   "industry": "Finance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate Carbon Credits from No-Till Farming",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10127-carbon-credit-calculation"
   },
   "description": "A farmer who has switched to no-till farming wants to estimate the amount of carbon credits they may be eligible for.",
   "industry": "Agriculture",

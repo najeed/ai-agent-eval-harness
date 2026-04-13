@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reactivate Account Suspended for Non-Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11710-reactivate-suspended-account"
   },
   "description": "A customer whose account was suspended for non-payment has paid their overdue invoice and wants their service reactivated immediately.",
   "industry": "Information Technology Product",

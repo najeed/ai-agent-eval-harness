@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Order a Home Warranty",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13172-order-home-warranty"
   },
   "description": "The purchase contract specifies that the seller will provide a one-year home warranty for the buyer. The TC must order it.",
   "industry": "Real Estate",

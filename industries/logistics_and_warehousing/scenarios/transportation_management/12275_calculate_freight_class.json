@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate Freight Class",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12275-calculate-freight-class"
   },
   "description": "A shipper needs to determine the correct National Motor Freight Classification (NMFC) freight class for a new item to get accurate LTL shipping rates.",
   "industry": "Logistics and Warehousing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Emergency Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10538-request-emergency-maintenance"
   },
   "description": "A plant operator notices a severe leak from a valve and must create an emergency maintenance work order.",
   "industry": "Chemicals",

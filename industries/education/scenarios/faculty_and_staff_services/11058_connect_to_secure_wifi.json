@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Connect to Secure Wi-Fi Network",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11058-connect-to-secure-wifi"
   },
   "description": "A new staff member needs help connecting their laptop to the university's secure Wi-Fi network (e.g., Eduroam).",
   "industry": "Education",

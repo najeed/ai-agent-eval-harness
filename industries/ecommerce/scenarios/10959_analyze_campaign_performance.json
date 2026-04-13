@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Marketing Campaign Performance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10959-analyze-campaign-performance"
   },
   "description": "A week after a campaign launch, a marketer wants to analyze its performance.",
   "industry": "Ecommerce",

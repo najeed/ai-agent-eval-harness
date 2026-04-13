@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Claim Missing Miles from a Hotel Partner",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10257-claim-missing-hotel-partner-miles"
   },
   "description": "A frequent flyer member stayed at a partner hotel but did not receive miles for it. They are requesting a manual credit.",
   "industry": "Airline",

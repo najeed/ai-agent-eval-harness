@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Upsell - Device Insurance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13847-upsell-insurance-addon"
   },
   "description": "After selling a customer a new high-end smartphone, the agent should attempt to sell them device insurance.",
   "industry": "Telecom",

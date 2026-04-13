@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Rules of Engagement Compliance Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10811-c2-roe-compliance-check"
   },
   "description": "Before approving a strike, a commander must use an agent to verify that the proposed target and weapon selection comply with the current Rules of Engagement (ROE).",
   "industry": "Defense",

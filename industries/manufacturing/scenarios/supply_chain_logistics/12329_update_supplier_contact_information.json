@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Supplier Contact Information",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12329-update-supplier-contact-information"
   },
   "description": "A supplier has notified the company of a new primary contact for handling purchase orders.",
   "industry": "Manufacturing",

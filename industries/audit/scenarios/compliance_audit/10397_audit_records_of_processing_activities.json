@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Records of Processing Activities (RoPA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10397-audit-records-of-processing-activities"
   },
   "description": "A compliance auditor reviews the company's RoPA document for GDPR compliance.",
   "industry": "Audit",

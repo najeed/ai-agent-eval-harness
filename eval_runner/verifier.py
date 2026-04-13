@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
@@ -189,20 +188,42 @@ class TraceVerifier:
 
         sha256_hash = cls.compute_signature(p)
 
-        # Identity Normalization (Hardening against brittle ID fragmentation)
+        # --- [STRICT IDENTITY PROTOCOL] ---
+        # 1. Authoritative Identity Basis
         if not run_id:
-            run_id = p.parent.name if p.name == "run.jsonl" else p.stem
+            logger.error(
+                "   [Verifier] FAIL: Missing explicit Run ID. Inference "
+                "is prohibited for forensic stability."
+            )
+            raise ValueError(
+                "Identity Basis Failure: Explicit 'run_id' is required for certification."
+            )
 
-        # Ensure trace filename aligns with the vault standard if name is generic/temp
-        if p.name != "run.jsonl" and p.parent.name == run_id:
-            try:
-                # Rename the temp trace to the authoritative name
-                new_path = p.parent / "run.jsonl"
-                os.rename(p, new_path)
-                p = new_path
-                logger.info(f"      [Identity] Normalized trace identity: {p.name} -> run.jsonl")
-            except Exception as e:
-                logger.warning(f"      [Identity] Failed to normalize trace identity for {p}: {e}")
+        # 2. Authoritative Vault Affinity (AES v1.5.0 Strict)
+        # The trace MUST be in the vault folder or the master log.
+        # [REMEDIATION]: Use absolute resolution to handle mock/test environments
+        vault_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()
+        master_path = (config.RUN_LOG_DIR / "run.jsonl").resolve()
+        resolved_p = p.resolve()
+
+        is_vault = resolved_p == vault_path
+        is_master = resolved_p == master_path
+
+        if not (is_vault or is_master):
+            # Log the specific mismatch to aid in industrial debugging
+            logger.error("   [Verifier] FAIL: Forensic Pollution - Path mismatch.")
+            logger.error(f"      Provided: {resolved_p}")
+            logger.error(f"      Expected (Vault): {vault_path}")
+            logger.error(f"      Expected (Master): {master_path}")
+            raise ValueError(
+                f"Forensic Pollution: Trace at '{p}' resides in a non-compliant location. "
+                "Traces must be standard vaults (runs/<id>/run.jsonl) or the master log."
+            )
+
+        logger.info(
+            f"      [Identity] Identity Basis Confirmed: {run_id} "
+            f"(Type: {'Vault' if is_vault else 'Master'})"
+        )
 
         now = datetime.now().astimezone()
         ts_base = now.strftime("%Y-%m-%dT%H:%M:%S")
@@ -268,7 +289,7 @@ class TraceVerifier:
             with open(cert_path, "w", encoding="utf-8") as f:
                 json.dump(manifest, f, indent=4)
         except Exception as e:
-            logger.warning(f"      [Verifier] Failed to save authoritative certificate backup: {e}")
+            logger.warning(f"      [Verifier] Failed to save certificate backup: {e}")
 
         return manifest
 

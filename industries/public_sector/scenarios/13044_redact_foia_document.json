@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Redact a Document for FOIA Release",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13044-redact-foia-document"
   },
   "description": "A public records officer is preparing a document for release under FOIA and needs to redact exempt information.",
   "industry": "Public Sector",

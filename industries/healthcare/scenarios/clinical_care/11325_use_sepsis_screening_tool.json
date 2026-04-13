@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Use Sepsis Screening Tool",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11325-use-sepsis-screening-tool"
   },
   "description": "Based on a patient's vital signs and lab results, a CDS alert fires, recommending a sepsis screening. A nurse needs to complete the screening tool.",
   "industry": "Healthcare",

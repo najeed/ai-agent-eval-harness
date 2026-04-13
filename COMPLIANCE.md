@@ -59,7 +59,7 @@ To remain compliant with these licenses, the following steps are handled automat
 ### Environmental DNA & Evidence Snapshots
 - [x] **Registry Snapshots**: Every evaluation captures a point-in-time snapshot of the resolved environment registry.
 - [x] **Forensic Evidence Ledger**: SHA-256 hashes of all sidecar report artifacts are stored in the signed manifest.
-- [x] **Cryptographic Provenance**: Traces and manifests are signed by the authoritative **Identity Registry** (`system_id` or similar).
+- [x] **Cryptographic Provenance**: Traces and manifests are signed by the **Identity Registry** (`system_id` or similar).
 - [x] **Decoupled Architecture**: Separation of infrastructure config from scenario logic (AES v1.4) ensures immutable, portable benchmarks.
 
 ### Audit Readiness

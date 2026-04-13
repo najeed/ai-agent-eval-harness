@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Landfill Methane Gas Levels",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13561-manage-landfill-methane-gas-levels"
   },
   "description": "Sensors at the city landfill report rising methane gas levels, requiring an operator to activate the gas flare system.",
   "industry": "Smart Cities",

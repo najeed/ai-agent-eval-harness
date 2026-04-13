@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a CFD Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10062-perform-cfd-analysis"
   },
   "description": "An aerodynamicist needs to run a Computational Fluid Dynamics (CFD) simulation to analyze airflow over a new winglet design.",
   "industry": "Aerospace",

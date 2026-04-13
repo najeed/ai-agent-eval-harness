@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Device Trade-in",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13888-trade-in-device"
   },
   "description": "A customer upgrading their phone wants to trade in their old device for credit.",
   "industry": "Telecom",

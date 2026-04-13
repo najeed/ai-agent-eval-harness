@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Storm Preparedness Planning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14167-storm-preparedness-planning"
   },
   "description": "A major hurricane is forecast to make landfall in the service territory in 3 days. The utility needs to prepare its response.",
   "industry": "Utilities",

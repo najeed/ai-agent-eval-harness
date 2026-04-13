@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Booking Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14275-handle-booking-inquiry"
   },
   "description": "A potential client submits a web form asking for information on renting the ballroom for a gala.",
   "industry": "Venues",

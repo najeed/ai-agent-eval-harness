@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Application Support - Microsoft 365 License Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11801-app-support-m365-license"
   },
   "description": "A user reports that Microsoft Word is showing an 'unlicensed product' error.",
   "industry": "Information Technology Service",

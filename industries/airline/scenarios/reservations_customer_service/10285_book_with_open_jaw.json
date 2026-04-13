@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book an Open-Jaw Itinerary",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10285-book-with-open-jaw"
   },
   "description": "A customer wants to book a flight from New York to London, and then return from Paris back to New York.",
   "industry": "Airline",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Lien Search",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12176-check-for-liens"
   },
   "description": "As part of a real estate transaction, a paralegal needs to perform a search to see if there are any outstanding liens on the property.",
   "industry": "Legal",

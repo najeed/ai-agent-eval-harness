@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Network Traffic Anomaly Detection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10832-isr-anomaly-detection-cyber"
   },
   "description": "An analyst must monitor network traffic logs to detect anomalous behavior indicative of a stealthy cyberattack.",
   "industry": "Defense",

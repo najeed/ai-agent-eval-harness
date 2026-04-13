@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Billing Dispute - International Roaming",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13796-billing-dispute-roaming"
   },
   "description": "A customer is disputing high charges after traveling internationally, claiming they were unaware of roaming fees.",
   "industry": "Telecom",

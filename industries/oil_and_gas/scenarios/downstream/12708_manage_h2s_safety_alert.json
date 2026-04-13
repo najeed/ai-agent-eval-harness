@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage H2S Gas Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12708-manage-h2s-safety-alert"
   },
   "description": "A safety officer in a refinery receives an alert from a fixed H2S gas detector in a process unit.",
   "industry": "Oil and Gas",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Determine Sales Tax Nexus",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13745-determine-sales-tax-nexus"
   },
   "description": "An e-commerce company is growing and needs to determine if it has established sales tax nexus in a new state.",
   "industry": "Tax",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up a Search Remarketing List (RLSA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12481-set-up-remarketing-list"
   },
   "description": "An SEM manager wants to create a remarketing list to bid more aggressively for users who have previously visited the website when they search on Google.",
   "industry": "Marketing and Advertising",

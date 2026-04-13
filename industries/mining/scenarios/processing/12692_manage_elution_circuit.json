@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Gold Elution Circuit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12692-manage-elution-circuit"
   },
   "description": "An operator at a gold plant manages the elution circuit, which strips the gold from the loaded carbon into a solution.",
   "industry": "Mining",

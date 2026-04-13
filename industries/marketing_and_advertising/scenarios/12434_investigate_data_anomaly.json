@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate a Data Anomaly",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12434-investigate-data-anomaly"
   },
   "description": "An analyst notices a sudden, unexplained spike in website traffic in a report and needs to find the cause.",
   "industry": "Marketing and Advertising",

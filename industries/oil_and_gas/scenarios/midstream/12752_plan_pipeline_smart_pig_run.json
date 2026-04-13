@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Pipeline Smart Pig Run",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12752-plan-pipeline-smart-pig-run"
   },
   "description": "An integrity engineer plans an inline inspection (ILI) run using a 'smart pig' to assess the condition of a major natural gas pipeline.",
   "industry": "Oil and Gas",

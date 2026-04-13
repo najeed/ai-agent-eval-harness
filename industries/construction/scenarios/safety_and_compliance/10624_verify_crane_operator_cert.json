@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Crane Operator Certification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10624-verify-crane-operator-cert"
   },
   "description": "Before a critical lift, the safety officer must verify that the crane operator's certification is valid and on file.",
   "industry": "Construction",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Tax Liability Using Annualized Income Method",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13739-project-tax-liability-for-annualized-income"
   },
   "description": "A freelancer with fluctuating income wants to calculate their estimated tax payments using the more complex annualized income method.",
   "industry": "Tax",

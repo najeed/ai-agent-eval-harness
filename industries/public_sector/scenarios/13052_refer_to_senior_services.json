@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Refer a Client to Senior Services",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13052-refer-to-senior-services"
   },
   "description": "A social worker determines that an elderly client needs additional support, such as meal delivery and transportation.",
   "industry": "Public Sector",

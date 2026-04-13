@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Mobile Equipment Fluid Levels",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12674-manage-equipment-fluid-levels"
   },
   "description": "A technician at a fuel bay is responsible for checking and topping up the fluids (fuel, oil, coolant) of every haul truck at the end of its shift.",
   "industry": "Mining",

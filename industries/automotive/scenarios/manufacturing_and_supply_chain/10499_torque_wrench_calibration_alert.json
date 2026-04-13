@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Torque Wrench Calibration Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10499-torque-wrench-calibration-alert"
   },
   "description": "A smart torque wrench used for a critical safety component (installing lug nuts) is due for its mandatory recalibration.",
   "industry": "Automotive",

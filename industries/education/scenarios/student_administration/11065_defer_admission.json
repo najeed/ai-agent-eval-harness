@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Defer Admission",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11065-defer-admission"
   },
   "description": "An accepted student wishes to defer their enrollment for one year.",
   "industry": "Education",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Signature on Repair Addendum",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13163-request-addendum-signature"
   },
   "description": "After negotiations, both parties have agreed on repairs. The TC must get the final repair addendum signed.",
   "industry": "Real Estate",

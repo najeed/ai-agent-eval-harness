@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Special Service Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12977-process-a-special-service-request"
   },
   "description": "A customer requests a service not covered by the standard tariff, such as providing a floating crane for a heavy lift. A manager must price and approve the service.",
   "industry": "Ports",

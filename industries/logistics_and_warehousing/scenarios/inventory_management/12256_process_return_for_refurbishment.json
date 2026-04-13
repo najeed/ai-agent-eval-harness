@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Return for Refurbishment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12256-process-return-for-refurbishment"
   },
   "description": "A returned electronic item is not resalable as-is but can be refurbished. It needs to be routed to the refurbishment department.",
   "industry": "Logistics and Warehousing",

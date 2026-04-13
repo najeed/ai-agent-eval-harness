@@ -8,7 +8,7 @@ from eval_runner.tool_sandbox import ToolSandbox
 @pytest.mark.asyncio
 async def test_resource_registry_cleanup():
     # Setup
-    scenario = {"scenario_id": "test_cleanup", "initial_state": {}}
+    scenario = {"id": "test_cleanup", "initial_state": {}}
     sandbox = ToolSandbox(scenario)
 
     # Create transient artifacts
@@ -45,7 +45,7 @@ async def test_resource_registry_audit_proxy():
             self.registered.append((path, alias))
 
     mock_forensics = MockForensics()
-    scenario = {"scenario_id": "test_proxy", "initial_state": {}}
+    scenario = {"id": "test_proxy", "initial_state": {}}
     sandbox = ToolSandbox(scenario, forensics=mock_forensics)
 
     # Create and register

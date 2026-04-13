@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Bridge Over-Height Vehicle Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13573-investigate-bridge-over-height-vehicle-alert"
   },
   "description": "Sensors on a low-clearance bridge detect a vehicle that is too tall to pass safely. An operator must intervene.",
   "industry": "Smart Cities",

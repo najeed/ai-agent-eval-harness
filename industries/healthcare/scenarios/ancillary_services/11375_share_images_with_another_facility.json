@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Share Images with Another Facility",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11375-share-images-with-another-facility"
   },
   "description": "A patient is being transferred to another hospital, which needs access to the imaging studies performed at the current facility.",
   "industry": "Healthcare",

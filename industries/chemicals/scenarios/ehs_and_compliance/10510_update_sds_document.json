@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update SDS Due to New Hazard Info",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10510-update-sds-document"
   },
   "description": "New toxicology data has become available for a raw material, requiring an update to the Safety Data Sheet (SDS) for all products containing it.",
   "industry": "Chemicals",

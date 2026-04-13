@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "System Security Risk Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10730-grc-risk-assessment-system"
   },
   "description": "A GRC analyst must perform a security risk assessment on a legacy, business-critical application that cannot be easily patched.",
   "industry": "Cybersecurity",

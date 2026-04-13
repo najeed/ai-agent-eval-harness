@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Well Abandonment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12712-plan-well-abandonment"
   },
   "description": "An engineer prepares a plug and abandonment (P&A) plan for an old, non-producing well to ensure it is sealed safely and permanently.",
   "industry": "Oil and Gas",

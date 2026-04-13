@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Service Campaign Outreach",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10455-service-campaign-outreach"
   },
   "description": "The manufacturer has initiated a non-safety 'service campaign' (e.g., a software update to improve transmission smoothness). The dealership needs to contact affected customers.",
   "industry": "Automotive",

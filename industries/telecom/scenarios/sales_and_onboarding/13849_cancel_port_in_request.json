@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel a Pending Port-in Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13849-cancel-port-in-request"
   },
   "description": "A customer who requested a port-in has changed their mind and wants to cancel it before it completes.",
   "industry": "Telecom",

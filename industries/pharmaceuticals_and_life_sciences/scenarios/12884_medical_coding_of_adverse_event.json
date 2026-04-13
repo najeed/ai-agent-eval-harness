@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Medical Coding of an Adverse Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12884-medical-coding-of-adverse-event"
   },
   "description": "A drug safety physician must perform the medical assessment and coding for a complex adverse event case.",
   "industry": "Pharmaceuticals and Life Sciences",

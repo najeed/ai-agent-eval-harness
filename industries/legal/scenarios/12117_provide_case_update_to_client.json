@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Case Update to Inquiring Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12117-provide-case-update-to-client"
   },
   "description": "A client calls asking for a quick update on their case. The assigned paralegal needs to provide a concise and accurate status.",
   "industry": "Legal",

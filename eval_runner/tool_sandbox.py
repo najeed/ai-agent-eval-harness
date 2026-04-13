@@ -69,7 +69,7 @@ class SharedStateRegistry:
         ):
             self.registry[path] = value
 
-            # Granular Taint tracking: Emit write event (Enterprise Audit Requirement)
+            # Granular Taint tracking: Emit write event
             from . import events
 
             event_data = {"agent": agent_name, "path": path, "value": value}
@@ -96,7 +96,7 @@ class SharedStateRegistry:
             # This is a metric mentioned in the roadmap
             val = self.registry.get(path)
 
-            # Granular Taint tracking: Emit read event (Enterprise Audit Requirement)
+            # Granular Taint tracking: Emit read event
             from . import events
 
             event_data = {"agent": agent_name, "path": path, "value": val}
@@ -133,7 +133,8 @@ class AbstractSandbox(ABC):
         # Workspace management
         from pathlib import Path
 
-        self.workspace_dir = Path("workspace") / self.scenario.get("scenario_id", "default")
+        self.identifier = self.scenario.get("id", "default")
+        self.workspace_dir = Path("workspace") / self.identifier
 
         # Phase 2: Grounding Coverage Tracking
         # Stores hit counts for 'policies' and 'tools' (KB/Grounding)
@@ -148,11 +149,24 @@ class AbstractSandbox(ABC):
 
         import eval_runner.config as config
 
-        self.run_id = self.scenario.get("run_id", "unknown_run")
-        self.terminal_jail = (config.RUN_LOG_DIR / self.run_id / "terminal_jail").resolve()
+        # [INDUSTRIAL HARDENING] Absolute Session Identity (v1.5.0)
+        # Prevents 'unknown_run' directory pollution in the root runs/ directory.
+        self.run_id = self.scenario.get("run_id")
+        if not self.run_id:
+            # Fallback for unit tests only; production runs MUST have a run_id via SessionManager
+            import tempfile
+
+            from . import utils
+
+            self.run_id = utils.generate_id(prefix="transient")
+            self.terminal_jail = (
+                Path(tempfile.gettempdir()) / "agentv" / self.run_id / "terminal_jail"
+            )
+        else:
+            self.terminal_jail = (config.RUN_LOG_DIR / self.run_id / "terminal_jail").resolve()
 
         # [RFC-002 Hybrid Registry] Environmental DNA Snapshot
-        # Capture the authoritative resolved state of all shims for this run
+        # Capture the resolved state of all shims for this run
         full_registry = config.RegistryManager.get_resolved_registry()
         snapshot_json = json.dumps(full_registry, sort_keys=True)
         self.provisioning_hash = hashlib.sha256(snapshot_json.encode()).hexdigest()

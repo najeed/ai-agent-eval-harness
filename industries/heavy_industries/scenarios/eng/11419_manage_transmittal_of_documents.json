@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Transmittal of Documents",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11419-manage-transmittal-of-documents"
   },
   "description": "A set of new design drawings needs to be formally transmitted to the client for their review and approval.",
   "industry": "Heavy Industries",

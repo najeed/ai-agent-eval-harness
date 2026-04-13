@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dynamic Mission Re-tasking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10819-mission-planning-dynamic-retasking"
   },
   "description": "A fighter jet on a routine patrol is dynamically re-tasked to strike a newly discovered, time-sensitive target.",
   "industry": "Defense",

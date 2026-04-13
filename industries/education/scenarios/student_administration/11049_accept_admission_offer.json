@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Accept Admission Offer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11049-accept-admission-offer"
   },
   "description": "A recently accepted student wants to formally accept their offer of admission and pay the enrollment deposit.",
   "industry": "Education",

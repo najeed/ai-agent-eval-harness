@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Take Poolside Drink Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11507-take-poolside-drink-order"
   },
   "description": "A server is taking a drink order from a guest at the pool.",
   "industry": "Hospitality",

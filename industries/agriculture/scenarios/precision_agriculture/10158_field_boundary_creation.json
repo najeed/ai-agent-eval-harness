@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Field Boundary from Drone Imagery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10158-field-boundary-creation"
   },
   "description": "A farmer has a new field and has flown a drone over it. They need the agent to create an accurate field boundary from the image.",
   "industry": "Agriculture",

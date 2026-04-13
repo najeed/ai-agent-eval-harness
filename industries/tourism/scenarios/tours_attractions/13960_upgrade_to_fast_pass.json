@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Upgrade to a Fast Pass",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13960-upgrade-to-fast-pass"
   },
   "description": "A visitor already inside a theme park decides they want to upgrade their standard ticket to a Fast Pass to skip the lines.",
   "industry": "Tourism",

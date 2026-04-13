@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Power Outage at the Stadium",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13688-manage-power-outage-at-stadium"
   },
   "description": "A power outage occurs at the stadium during a game, affecting the lights and scoreboards.",
   "industry": "Sports",

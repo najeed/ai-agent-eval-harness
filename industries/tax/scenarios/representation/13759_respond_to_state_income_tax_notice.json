@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a State Income Tax Notice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13759-respond-to-state-income-tax-notice"
   },
   "description": "A taxpayer receives a notice from their state's Department of Revenue claiming they miscalculated a state-specific credit.",
   "industry": "Tax",

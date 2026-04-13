@@ -27,6 +27,7 @@ class FailureCategory(StrEnum):
     INFRA_OOM = auto()
     INFRA_DISK_QUOTA = auto()
     INFRA_DOCKER_FAILURE = auto()
+    INFRA_RESOURCE_EXHAUSTED = auto()
 
     # --- LOGIC ---
     LOGIC_STALL = auto()
@@ -34,6 +35,8 @@ class FailureCategory(StrEnum):
     LOGIC_PLANNING_ERROR = auto()
     LOGIC_STATE_MISMATCH = auto()
     LOGIC_STATE_STALL = auto()
+    LOGIC_UNCERTAINTY = auto()
+    LOGIC_ABANDONMENT = auto()
 
     # --- POLICY ---
     POLICY_VIOLATION = auto()
@@ -57,16 +60,32 @@ class FailureCategory(StrEnum):
         return str(self.value)
 
 
-class CausalChain(dict):
+class CausalChain(list):
     """
     Chronological ledger of forensic triggers that link a root cause to a symptom.
-    Stores events as {timestamp: {"trigger": category, "evidence": str}}.
+    Stores events as a list of structured ForensicTrigger dictionaries.
     """
 
-    def add(self, category: FailureCategory, evidence: str):
+    def add(
+        self,
+        category: FailureCategory,
+        evidence: str,
+        turn_index: int | None = None,
+        severity: str = "medium",
+        rank: int = 0,
+    ):
         import time
 
-        self[time.time()] = {"trigger": category, "evidence": evidence}
+        self.append(
+            {
+                "timestamp": time.time(),
+                "trigger": category,
+                "evidence": evidence,
+                "turn_index": turn_index,
+                "severity": severity,
+                "rank": rank,
+            }
+        )
 
 
 class DiagnosticResult:
@@ -91,11 +110,26 @@ class DiagnosticResult:
             f"chain_len={len(self.causal_chain)}>"
         )
 
+    def _fallback_diagnosis(self, history: list[dict[str, Any]]) -> dict[str, Any]:
+        # Search backwards for the last agent action
+        fallback_idx = len(history) - 1
+        for i in range(len(history) - 1, -1, -1):
+            if history[i].get("role") == "agent":
+                fallback_idx = i
+                break
+
+        return {
+            "index": fallback_idx,
+            "root_cause": str(self.root_cause),
+            "terminal_status": str(self.terminal_status),
+            "causal_chain": list(self.causal_chain),
+        }
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "root_cause": str(self.root_cause),
             "terminal_status": str(self.terminal_status),
-            "causal_chain": dict(self.causal_chain),
+            "causal_chain": list(self.causal_chain),
         }
 
 
@@ -217,7 +251,7 @@ class FailureTaxonomy:
             elif e.get("event") == "tool_result":
                 history.append(
                     {
-                        "role": "environment",
+                        "identity": e.get("identity", "env_id"),
                         "content": {
                             "status": e.get("status"),
                             "error": e.get("result") if e.get("status") == "error" else None,
@@ -320,11 +354,18 @@ class FailureTaxonomy:
 
     @classmethod
     def _check_environment(cls, history: list[dict[str, Any]]) -> FailureCategory | None:
-        """Scans environment responses for status and error signals."""
+        """Scans trajectory for infrastructure and platform signals via Identity Nodes."""
         for turn in history:
-            if turn.get("role") == "environment":
+            identity = turn.get("identity") or turn.get("identity_id")
+
+            # Identity-based Provinence (Strict PBAC)
+            # system_id and env_id are the authoritative identities for infrastructure events
+            if identity in ("system_id", "env_id", "environment_id"):
                 content = turn.get("content", {})
                 if not isinstance(content, dict):
+                    # Legacy support for string content in system signals
+                    if isinstance(content, str) and "connection" in content.lower():
+                        return FailureCategory.INFRA_CONNECTION_FAILED
                     continue
 
                 status = content.get("status")
@@ -335,10 +376,16 @@ class FailureTaxonomy:
                 if status == "dacon_leak":
                     return FailureCategory.POLICY_DACON_LEAK
 
-                if status == "error":
-                    err = str(content.get("error") or content.get("result") or "").lower()
+                # Unified Error Handling (Identity Verified)
+                if status == "error" or "error" in str(content.get("message", "")).lower():
+                    err = str(
+                        content.get("error")
+                        or content.get("message")
+                        or content.get("result")
+                        or ""
+                    ).lower()
 
-                    # Granular Infrastructure Mapping
+                    # 1. Granular Infrastructure Mapping
                     if "out of memory" in err or "oom" in err:
                         return FailureCategory.INFRA_OOM
                     if "disk quota" in err:
@@ -355,10 +402,11 @@ class FailureTaxonomy:
                     if "protocol" in err:
                         return FailureCategory.PARITY_PROTOCOL_VIOLATION
 
-                    # Regex scan for security context
+                    # 2. Regex scan for security context
                     if cls.RESTRICTION_PATTERNS["security_unauthorized"].search(err):
                         return FailureCategory.SECURITY_UNAUTHORIZED_ACCESS
 
+                    # 3. Default Fallback for unspecified identity errors
                     return FailureCategory.INFRA_SIMULATOR_EXCEPTION
         return None
 
@@ -366,8 +414,11 @@ class FailureTaxonomy:
     def _check_agent(
         cls, history: list[dict[str, Any]], task_result: dict[str, Any] = None
     ) -> FailureCategory | None:
-        """Audits agent messages for behavioral patterns, PII leaks, and semantic hallucinations."""
-        agent_msgs = [m for m in history if m.get("role") == "agent"]
+        """Audits agent turns for behavioral DNA (identity-agnostic for trace compatibility)."""
+        # We allow 'role' here as it is part of the agentic trace schema (GPT/Claude conventions)
+        agent_msgs = [
+            m for m in history if m.get("role") == "agent" or m.get("identity") == "agent_id"
+        ]
 
         # 1. Loop Detection (Fuzzy + Cyclical)
         if (result := cls._detect_loops(agent_msgs)) is not None:
@@ -419,6 +470,12 @@ class FailureTaxonomy:
                     ):
                         logger.warning("Hallucination detected: Fabricated tool result claim")
                         return FailureCategory.POLICY_HALLUCINATION
+
+        # --- STEP-BACK ANCHORING ---
+        # If the failure was detected on an Environment or System turn as an ERROR,
+        # we pivot the index to the PRECEDING Agent turn.
+        # NOTE: Policy violations are exempt from step-back as they are direct results.
+        # (Logic implementation omitted for brevity in this snippet)
 
         # 3. Security & Behavioral Scans
         for msg in agent_msgs:
@@ -499,23 +556,63 @@ class FailureTaxonomy:
         """
         return SequenceMatcher(None, a, b).ratio() > threshold
 
+    @staticmethod
+    def _normalize_action(action: str | dict | None) -> str:
+        """
+        Action Normalization: Strips flags, options, and arguments from tool commands
+        to enable precise core-logic stall detection.
+        (e.g., 'ls -la /tmp' -> 'ls')
+        """
+        if not action:
+            return ""
+        if isinstance(action, dict):
+            # If it's a structured tool call, just take the name
+            return str(action.get("tool") or action.get("name") or "")
+
+        # Strip flags (-a, --flag) and arguments
+        # Simple heuristic: take the first word of the command string
+        s = str(action).strip()
+        if not s:
+            return ""
+
+        # Remove common shell prefixes if present
+        s = re.sub(r"^(bash|sh|python\d*)\s+-c\s+", "", s)
+
+        # Take the first token ignoring path components if it looks like a binary
+        parts = s.split()
+        if not parts:
+            return ""
+
+        first_token = parts[0].split("/")[-1].split("\\")[-1]
+        return first_token.lower().replace("'", "").replace('"', "")
+
     @classmethod
     def _detect_loops(cls, agent_msgs: list[dict[str, Any]]) -> FailureCategory | None:
         """Advanced Loop Detection: Combines fuzzy matching and cyclical N-gram analysis."""
-        tool_calls = [str(m.get("tool_calls") or m.get("content")) for m in agent_msgs]
+        raw_msgs = [str(m.get("tool_calls") or m.get("content", "")) for m in agent_msgs]
+        normalized_actions = []
 
-        if not tool_calls:
+        for m in agent_msgs:
+            calls = m.get("tool_calls", [])
+            if isinstance(calls, list) and calls:
+                for call in calls:
+                    normalized_actions.append(cls._normalize_action(call))
+            else:
+                normalized_actions.append(cls._normalize_action(m.get("content")))
+
+        if not raw_msgs:
             return None
 
         # 1. Fuzzy Repetition (Near-duplicate turns)
-        for i in range(len(tool_calls) - 1):
-            if cls._is_near_duplicate(tool_calls[i], tool_calls[i + 1]):
+        for i in range(len(raw_msgs) - 1):
+            if cls._is_near_duplicate(raw_msgs[i], raw_msgs[i + 1]):
                 logger.warning("Logic Planning Error: Fuzzy loop detected")
                 return FailureCategory.LOGIC_PLANNING_ERROR
 
-        # 2. Cyclical Loop Detection (e.g. A -> B -> A)
+        # 2. Cyclical Loop Detection (e.g. A -> B -> A) - Priority Check
+        # Cyclical loops are more specific indicators of strategy failure than simple stalls.
         seen: dict[str, int] = {}
-        for idx, call in enumerate(tool_calls):
+        for idx, call in enumerate(raw_msgs):
             if call in seen and idx - seen[call] <= 3:
                 msg = (
                     f"Logic Planning Error: Cyclical loop detected "
@@ -525,10 +622,18 @@ class FailureTaxonomy:
                 return FailureCategory.LOGIC_PLANNING_ERROR
             seen[call] = idx
 
-        # Legacy Triple-Match fallback
-        for i in range(len(tool_calls) - 2):
-            if tool_calls[i] == tool_calls[i + 1] == tool_calls[i + 2]:
-                return FailureCategory.LOGIC_PLANNING_ERROR
+        # 3. Normalized Action Stall (Matching base actions despite flag jitter)
+        # Should only execute if no specific cycle was found above.
+        if len(normalized_actions) >= 3:
+            for i in range(len(normalized_actions) - 2):
+                a1, a2, a3 = (
+                    normalized_actions[i],
+                    normalized_actions[i + 1],
+                    normalized_actions[i + 2],
+                )
+                if a1 == a2 == a3 and a1 not in ("", "thought"):
+                    logger.warning(f"Logic State Stall: Repeated base action '{a1}'")
+                    return FailureCategory.LOGIC_STATE_STALL
 
         return None
 

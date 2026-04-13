@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate a Diversity Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11642-generate-diversity-report"
   },
   "description": "The Chief Diversity Officer needs a report on the company's workforce demographics (gender, ethnicity) by job level.",
   "industry": "Human Resources",

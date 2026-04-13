@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Start New Water Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13025-start-new-water-service"
   },
   "description": "A new resident who just moved into town needs to set up water and sewer service at their new address.",
   "industry": "Public Sector",

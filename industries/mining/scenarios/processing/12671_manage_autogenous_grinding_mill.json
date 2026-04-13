@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Autogenous (AG) Grinding Mill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12671-manage-autogenous-grinding-mill"
   },
   "description": "An operator manages an AG mill, which uses large rocks from the mine as the grinding media instead of steel balls.",
   "industry": "Mining",

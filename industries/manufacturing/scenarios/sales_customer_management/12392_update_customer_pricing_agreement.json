@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update a Customer's Pricing Agreement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12392-update-customer-pricing-agreement"
   },
   "description": "A customer has negotiated a new, lower price for a high-volume product. This needs to be updated in their contract.",
   "industry": "Manufacturing",

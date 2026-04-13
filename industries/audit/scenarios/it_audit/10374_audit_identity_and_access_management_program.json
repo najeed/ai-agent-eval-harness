@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Identity and Access Management (IAM) Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10374-audit-identity-and-access-management-program"
   },
   "description": "An IT auditor performs a high-level review of the entire IAM program.",
   "industry": "Audit",

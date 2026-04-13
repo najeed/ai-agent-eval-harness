@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set up A/V for a Meeting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14246-setup-av-for-meeting"
   },
   "description": "An event coordinator needs to ensure the audio/visual equipment is set up correctly for a small corporate meeting.",
   "industry": "Venues",

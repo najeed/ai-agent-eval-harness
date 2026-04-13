@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Work a Claim Denial",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11341-work-a-claim-denial"
   },
   "description": "A biller receives a denial for a claim due to 'missing prior authorization'. They need to investigate and appeal.",
   "industry": "Healthcare",

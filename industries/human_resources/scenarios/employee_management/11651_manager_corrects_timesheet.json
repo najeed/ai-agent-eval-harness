@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manager Corrects Employee Timesheet",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11651-manager-corrects-timesheet"
   },
   "description": "A manager needs to correct an employee's timesheet from last week before the payroll deadline.",
   "industry": "Human Resources",

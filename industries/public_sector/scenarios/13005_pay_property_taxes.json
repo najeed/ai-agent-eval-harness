@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pay Property Taxes Online",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13005-pay-property-taxes"
   },
   "description": "A homeowner wants to pay their semi-annual property tax bill online.",
   "industry": "Public Sector",

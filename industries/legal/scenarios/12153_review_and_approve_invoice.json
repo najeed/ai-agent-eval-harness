@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review and Approve a Vendor Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12153-review-and-approve-invoice"
   },
   "description": "A managing partner needs to review and approve an invoice from an expert witness before it can be paid.",
   "industry": "Legal",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update a Social Services Case File",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13030-update-case-file"
   },
   "description": "A social worker needs to add a note to a client's case file after a home visit.",
   "industry": "Public Sector",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Sponsorship Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14306-handle-sponsorship-inquiry"
   },
   "description": "A local company inquires about sponsorship opportunities at the venue, such as signage or naming rights.",
   "industry": "Venues",

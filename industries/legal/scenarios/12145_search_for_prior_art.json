@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Search for Patent Prior Art",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12145-search-for-prior-art"
   },
   "description": "Before filing a patent application, a patent agent needs to search for 'prior art' to assess the novelty of an invention.",
   "industry": "Legal",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Mobile Troubleshooting - No Data Connection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13896-mobile-no-data-connection"
   },
   "description": "A customer reports they can make calls but have no mobile data connection.",
   "industry": "Telecom",

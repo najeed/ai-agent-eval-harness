@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel a Job Requisition",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11681-cancel-job-requisition"
   },
   "description": "Due to a budget change, a hiring manager needs to cancel a job requisition that is currently open.",
   "industry": "Human Resources",

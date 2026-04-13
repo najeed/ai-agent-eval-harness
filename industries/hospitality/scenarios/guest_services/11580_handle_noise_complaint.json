@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Guest Noise Complaint",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11580-handle-noise-complaint"
   },
   "description": "A guest calls the front desk late at night to complain about a noisy party in the room next door.",
   "industry": "Hospitality",

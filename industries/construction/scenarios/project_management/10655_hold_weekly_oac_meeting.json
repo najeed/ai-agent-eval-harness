@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare for Weekly OAC Meeting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10655-hold-weekly-oac-meeting"
   },
   "description": "A PM needs to prepare the agenda and supporting documents for the weekly Owner-Architect-Contractor (OAC) meeting.",
   "industry": "Construction",

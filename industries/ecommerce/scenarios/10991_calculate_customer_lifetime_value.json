@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate Customer Lifetime Value (CLV)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10991-calculate-customer-lifetime-value"
   },
   "description": "A marketing analyst wants to calculate the lifetime value of a specific customer.",
   "industry": "Ecommerce",

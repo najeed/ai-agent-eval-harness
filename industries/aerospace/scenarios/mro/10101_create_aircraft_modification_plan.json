@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create an Aircraft Modification Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10101-create-aircraft-modification-plan"
   },
   "description": "An airline wants to add a new satellite internet system to its fleet. An MRO engineer must create the plan to perform this modification.",
   "industry": "Aerospace",

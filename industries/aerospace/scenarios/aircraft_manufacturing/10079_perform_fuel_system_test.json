@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Fuel System Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10079-perform-fuel-system-test"
   },
   "description": "On a newly built aircraft, engineers must test the entire fuel system, including pumps, valves, and gauges.",
   "industry": "Aerospace",

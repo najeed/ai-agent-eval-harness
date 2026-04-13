@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Petty Cash Fund",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00087-manage-petty-cash"
   },
   "description": "An office manager needs to be reimbursed for the petty cash they spent during the month.",
   "industry": "Accounting",

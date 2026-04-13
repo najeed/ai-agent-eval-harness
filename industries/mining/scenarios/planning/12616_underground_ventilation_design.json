@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Design Underground Ventilation Circuit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12616-underground-ventilation-design"
   },
   "description": "A ventilation engineer designs a ventilation system for a new section of an underground mine to ensure sufficient air is supplied.",
   "industry": "Mining",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Campaign Finance Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12031-analyze-campaign-finance-data"
   },
   "description": "A political reporter has a large dataset of campaign contributions and needs to find patterns, such as which industries are donating the most to a candidate.",
   "industry": "Journalism",

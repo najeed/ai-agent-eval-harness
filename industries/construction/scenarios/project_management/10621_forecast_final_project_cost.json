@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Forecast Final Project Cost",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10621-forecast-final-project-cost"
   },
   "description": "At the 50% completion mark, a project manager needs to forecast the final project cost based on performance to date.",
   "industry": "Construction",

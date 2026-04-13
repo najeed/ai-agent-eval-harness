@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About a Home Equity Line of Credit (HELOC)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11237-inquire-about-heloc"
   },
   "description": "A homeowner wants to learn about the bank's HELOC product and how to apply.",
   "industry": "Finance",

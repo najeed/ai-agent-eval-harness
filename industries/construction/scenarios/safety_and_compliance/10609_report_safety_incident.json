@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Minor Safety Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10609-report-safety-incident"
   },
   "description": "A safety officer needs to report a minor incident where a worker twisted their ankle.",
   "industry": "Construction",

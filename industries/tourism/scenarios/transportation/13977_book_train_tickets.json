@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book Train Tickets",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13977-book-train-tickets"
   },
   "description": "A traveler wants to book two first-class train tickets from Paris to Amsterdam.",
   "industry": "Tourism",

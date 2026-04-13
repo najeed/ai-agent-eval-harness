@@ -11,7 +11,8 @@ AES is the foundational standard for shareable, deterministic agent benchmarks.
 ## 2. Core Components (v1.4)
 
 ### Metadata (metadata)
-AES v1.4 introduces a stricter metadata schema to ensure cross-platform reproducibility:
+AES v1.4 introduces a stricter metadata schema to ensure cross-platform reproducibility and forensic traceability:
+- **`id`**: (Required) Global unique forensic identifier.
 - **`capabilities`**: (Required) A list of specific agentic skills required (e.g., `web_navigation`, `sql_generation`).
 - **`standards_registry`**: (Optional) Industry-standard identifiers (e.g., `ISO_20022`) for regulatory mapping.
 - **`aes_version`**: Must be set to `1.4`.
@@ -77,11 +78,11 @@ Below is a production-grade AES v1.3 scenario demonstrating a multi-stage loan a
 
 ```json
 {
-  "scenario_id": "loan_approval_01",
+  "aes_version": 1.4,
   "metadata": {
+    "id": "loan-approval-v1",
     "name": "High-Density Loan Credit Audit",
     "industry": "finance",
-    "aes_version": 1.4,
     "capabilities": ["credit_score_analysis", "policy_lookup"],
     "standards_registry": ["ISO_20022_LOAN_V1"],
     "compliance_level": "Standard",
@@ -181,7 +182,7 @@ To ensure that an evaluation trace genuinely reflects the intended scenario logi
  
 ## 11. Versioning & Provenance (v1.3.0)
 
-To support high-stakes industrial audits, AgentEval strictly decouples the **Standard Specification** from the **Execution Engine**:
+To support high-stakes industrial audits, AgentV strictly decouples the **Standard Specification** from the **Execution Engine**:
 
 ### `aes_version` (The Standard)
 Refers to the **Agent Eval Standard** itself (e.g., `1.3`). It defines the schema and vocabulary of the [scenario.json](/eval_runner/loader.py).
@@ -211,7 +212,7 @@ Refers to the **AgentV Engine** build (e.g., `1.3.0`). This is automatically inj
    "event": "run_start",
    "timestamp": "2026-04-06T20:00:00Z",
    "payload": {
-     "scenario_id": "fintech_11198",
+     "id": "fintech_11198",
      "aes_version": 1.3,
      "environmental_snapshot": {
        "shims": { "database": { "url": "..." }, "api": { ... } },

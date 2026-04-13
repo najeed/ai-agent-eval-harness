@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find a Backhaul Load",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14058-find-backhaul-load"
   },
   "description": "A driver is about to deliver a load, leaving them empty. A dispatcher needs to find a 'backhaul' load originating near the delivery location to avoid an empty return trip.",
   "industry": "Transportation",

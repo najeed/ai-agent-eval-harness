@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Investment Allocation in a Variable Annuity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11951-change-annuity-investments"
   },
   "description": "A contract holder wants to change their future contribution allocation to be more aggressive.",
   "industry": "Insurance",

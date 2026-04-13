@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Order with Special Instructions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12293-handle-order-with-special-instructions"
   },
   "description": "A customer adds a note to their order: 'Please gift wrap'. This instruction must be visible to the warehouse packer.",
   "industry": "Logistics and Warehousing",

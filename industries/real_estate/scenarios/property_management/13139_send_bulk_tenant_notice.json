@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Building-Wide Notice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13139-send-bulk-tenant-notice"
   },
   "description": "The water will be shut off for repairs in an apartment building. The PM must notify all residents.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Fleet Electrification Total Cost of Ownership (TCO) Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11167-fleet-electrification-analysis"
   },
   "description": "A corporate client wants to know the TCO of replacing their fleet of 100 diesel delivery vans with electric equivalents.",
   "industry": "Energy",

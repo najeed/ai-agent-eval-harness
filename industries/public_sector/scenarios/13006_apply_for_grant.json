@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply for a Community Arts Grant",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13006-apply-for-grant"
   },
   "description": "A non-profit organization is applying for a grant from the city's arts council.",
   "industry": "Public Sector",

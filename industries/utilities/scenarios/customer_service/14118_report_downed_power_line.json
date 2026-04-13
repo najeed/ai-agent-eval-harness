@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Downed Power Line",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14118-report-downed-power-line"
   },
   "description": "A member of the public calls to report a downed power line on a street. This is a critical safety scenario.",
   "industry": "Utilities",

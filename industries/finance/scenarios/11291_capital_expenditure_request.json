@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze a Capital Expenditure Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11291-capital-expenditure-request"
   },
   "description": "The FP&A team needs to analyze a request from the operations department to purchase a new piece of machinery for $500,000.",
   "industry": "Finance",

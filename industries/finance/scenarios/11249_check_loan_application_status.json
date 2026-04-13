@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Loan Application Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11249-check-loan-application-status"
   },
   "description": "A customer who recently applied for a mortgage wants to know the status of their application.",
   "industry": "Finance",

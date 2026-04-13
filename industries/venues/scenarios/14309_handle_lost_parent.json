@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Lost Parent",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14309-handle-lost-parent"
   },
   "description": "A staff member finds a young child who is crying and cannot find their parents.",
   "industry": "Venues",

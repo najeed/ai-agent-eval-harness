@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an ADA Accommodation Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11626-handle-ada-accommodation-request"
   },
   "description": "An employee requests an ergonomic chair as a reasonable accommodation under the Americans with Disabilities Act (ADA).",
   "industry": "Human Resources",

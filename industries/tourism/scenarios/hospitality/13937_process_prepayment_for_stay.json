@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Prepayment for Stay",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13937-process-prepayment-for-stay"
   },
   "description": "A customer wants to prepay for their entire hotel stay in advance to receive a discounted rate.",
   "industry": "Tourism",

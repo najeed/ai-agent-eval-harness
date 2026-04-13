@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Player Requests Username Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12536-change-player-username"
   },
   "description": "A player wants to change their in-game username.",
   "industry": "Media and Entertainment",

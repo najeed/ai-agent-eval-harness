@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Joint Check Agreement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10677-manage-joint-check-agreement"
   },
   "description": "A subcontractor is having financial trouble, so a joint check agreement is put in place with their material supplier. The accountant must process a payment accordingly.",
   "industry": "Construction",

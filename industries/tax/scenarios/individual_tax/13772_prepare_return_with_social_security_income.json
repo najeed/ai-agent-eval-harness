@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Return with Social Security Income",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13772-prepare-return-with-social-security-income"
   },
   "description": "A retiree receives Social Security benefits and needs to determine how much, if any, is taxable.",
   "industry": "Tax",

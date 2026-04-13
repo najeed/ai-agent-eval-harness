@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book a Flight for an Unaccompanied Minor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13953-book-flight-for-unaccompanied-minor"
   },
   "description": "A parent needs to book a flight for their 10-year-old child who will be traveling alone.",
   "industry": "Tourism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "AGV Fleet Real-time Optimization Simulation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "simulations-080-agv-fleet-real-time-optimization-simulation"
   },
   "description": "Agent must manage a high-fidelity AGV Fleet simulation with streaming telemetry.",
   "industry": "Meta-Industry",

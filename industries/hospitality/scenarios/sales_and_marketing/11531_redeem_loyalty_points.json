@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Redeem Loyalty Points for a Free Night",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11531-redeem-loyalty-points"
   },
   "description": "A loyalty member calls to book a room using their points.",
   "industry": "Hospitality",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate a Critical Crane Lift",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10642-coordinate-crane-lift"
   },
   "description": "A site manager must coordinate a critical lift of a large HVAC unit onto the roof, which requires temporarily closing a section of the site.",
   "industry": "Construction",

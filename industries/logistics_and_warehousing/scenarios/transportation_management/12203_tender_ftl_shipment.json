@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Tender a Full Truckload (FTL) Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12203-tender-ftl-shipment"
   },
   "description": "A logistics coordinator needs to find a carrier for a full truckload shipment and tender the load.",
   "industry": "Logistics and Warehousing",

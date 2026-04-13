@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Proof of Funds Letter",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11275-provide-proof-of-funds-letter"
   },
   "description": "A client is buying a house and needs an official letter from the firm confirming they have sufficient funds for the purchase.",
   "industry": "Finance",

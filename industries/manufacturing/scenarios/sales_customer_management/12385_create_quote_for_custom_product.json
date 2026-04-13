@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Quote for a Custom Product",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12385-create-quote-for-custom-product"
   },
   "description": "A sales rep is working with engineering to create a quote for a new, custom-configured product.",
   "industry": "Manufacturing",

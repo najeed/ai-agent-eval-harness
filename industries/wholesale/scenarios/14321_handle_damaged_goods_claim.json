@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Damaged Goods Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14321-handle-damaged-goods-claim"
   },
   "description": "A retailer reports that part of their recent shipment arrived damaged.",
   "industry": "Wholesale",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Comply with a New Airworthiness Directive (AD)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10041-comply-with-airworthiness-directive"
   },
   "description": "The FAA has issued a mandatory AD that requires an inspection of the horizontal stabilizer on a specific aircraft model. A maintenance planner must ensure compliance.",
   "industry": "Aerospace",

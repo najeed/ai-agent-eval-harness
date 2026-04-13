@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a Medical Emergency",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12995-respond-to-medical-emergency"
   },
   "description": "A worker has been injured on the quay. The port's emergency response system must be activated.",
   "industry": "Ports",

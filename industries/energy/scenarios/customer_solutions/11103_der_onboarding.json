@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboard Customer Rooftop Solar to VPP",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11103-der-onboarding"
   },
   "description": "A customer with an existing rooftop solar and battery system wants to enroll in the company's Virtual Power Plant (VPP) program.",
   "industry": "Energy",

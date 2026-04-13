@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Run a Conflicts Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12102-run-conflicts-check"
   },
   "description": "Before taking on a new client, a paralegal must run a conflicts check to ensure the firm can ethically represent them.",
   "industry": "Legal",

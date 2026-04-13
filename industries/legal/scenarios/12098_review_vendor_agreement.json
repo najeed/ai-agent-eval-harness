@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review a Standard Vendor Agreement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12098-review-vendor-agreement"
   },
   "description": "An in-house counsel needs to review a standard, third-party vendor agreement for potential risks.",
   "industry": "Legal",

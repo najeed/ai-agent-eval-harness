@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Tenant Utility Bill-Back",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13161-manage-utility-billing"
   },
   "description": "In a multi-unit property with a shared water meter, the PM must bill back each tenant for their share of the water bill.",
   "industry": "Real Estate",

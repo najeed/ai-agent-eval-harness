@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Attorney Bio on Firm Website",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12190-update-firm-website-bio"
   },
   "description": "An attorney has been promoted to partner. The marketing department needs to update their bio on the firm's website.",
   "industry": "Legal",

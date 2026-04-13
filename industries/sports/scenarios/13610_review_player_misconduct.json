@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Player Misconduct for Disciplinary Action",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13610-review-player-misconduct"
   },
   "description": "A player received a red card for a dangerous tackle. The league's disciplinary committee must review the incident to determine the length of the suspension.",
   "industry": "Sports",

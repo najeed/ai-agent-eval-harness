@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Pipeline Inspection Gauge (PIG) Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14144-pigging-run-analysis"
   },
   "description": "An integrity engineer analyzes data from a recent PIG run to check for corrosion or defects inside a natural gas pipeline.",
   "industry": "Utilities",

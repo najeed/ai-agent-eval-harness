@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Multi-Platform Track Fusion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10896-c2-cop-management-track-fusion"
   },
   "description": "A target is being tracked simultaneously by a ground radar, a naval ship, and an aircraft. An operator must fuse these three separate tracks into a single, high-confidence track on the COP.",
   "industry": "Defense",

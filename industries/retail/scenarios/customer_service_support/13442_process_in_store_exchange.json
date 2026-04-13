@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an In-Store Exchange",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13442-process-in-store-exchange"
   },
   "description": "A customer wants to exchange a shirt they bought for a different size.",
   "industry": "Retail",

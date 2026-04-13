@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Player Injury Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13619-manage-player-injury-status"
   },
   "description": "A player gets injured during a game. The medical staff needs to update their status and create a recovery plan.",
   "industry": "Sports",

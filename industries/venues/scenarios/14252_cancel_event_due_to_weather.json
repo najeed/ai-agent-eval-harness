@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel Event Due to Severe Weather",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14252-cancel-event-due-to-weather"
   },
   "description": "A severe blizzard forces the cancellation of an outdoor winter festival on the day of the event.",
   "industry": "Venues",

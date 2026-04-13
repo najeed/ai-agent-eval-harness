@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Personnel Behavior Anomaly Detection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10872-isr-anomaly-detection-personnel"
   },
   "description": "An analyst must review a service member's network activity for anomalies that could indicate an insider threat (e.g., espionage, radicalization).",
   "industry": "Defense",

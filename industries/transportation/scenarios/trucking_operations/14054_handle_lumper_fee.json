@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Lumper Fee",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14054-handle-lumper-fee"
   },
   "description": "A driver has to pay a 'lumper' (third-party service) to unload their trailer at a receiving facility. The driver needs to be reimbursed.",
   "industry": "Transportation",

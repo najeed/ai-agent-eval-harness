@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Virtual Patching with WAF",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10787-vuln-mgmt-patching-virtual"
   },
   "description": "A critical vulnerability is found in a legacy web application that cannot be immediately patched. An analyst must apply a 'virtual patch' using a Web Application Firewall (WAF).",
   "industry": "Cybersecurity",

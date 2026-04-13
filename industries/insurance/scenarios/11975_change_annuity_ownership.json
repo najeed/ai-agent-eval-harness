@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Ownership of an Annuity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11975-change-annuity-ownership"
   },
   "description": "An annuity owner wants to transfer ownership of their non-qualified annuity to their child.",
   "industry": "Insurance",

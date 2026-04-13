@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Claim Credit for Other Dependents",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13766-claim-credit-for-other-dependents"
   },
   "description": "A taxpayer is supporting their elderly parent who lives with them and wants to claim them as a dependent.",
   "industry": "Tax",

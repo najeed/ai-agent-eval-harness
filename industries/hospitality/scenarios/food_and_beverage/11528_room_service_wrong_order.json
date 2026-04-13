@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Room Service Delivers Wrong Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11528-room-service-wrong-order"
   },
   "description": "A guest calls to complain that they received the wrong room service order.",
   "industry": "Hospitality",

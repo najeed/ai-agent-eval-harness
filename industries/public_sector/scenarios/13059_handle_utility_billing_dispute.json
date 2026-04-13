@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Utility Billing Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13059-handle-utility-billing-dispute"
   },
   "description": "A customer disputes their water bill, claiming the meter reading must be wrong.",
   "industry": "Public Sector",

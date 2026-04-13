@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Power Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14111-report-power-outage"
   },
   "description": "A customer calls to report that their power is out.",
   "industry": "Utilities",

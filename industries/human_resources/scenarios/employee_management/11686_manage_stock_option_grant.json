@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a New Stock Option Grant",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11686-manage-stock-option-grant"
   },
   "description": "A newly promoted employee is receiving a stock option grant as part of their promotion.",
   "industry": "Human Resources",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft Weekly Client Update Email",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00115-draft-client-update-email"
   },
   "description": "An agent must draft a weekly status update email for a client based on a list of completed tasks and upcoming activities.",
   "industry": "Consulting",

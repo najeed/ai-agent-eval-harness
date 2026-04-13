@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cross-Industry Negotiation: Retail & Public Sector Collaboration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "cross-industry-080-cross-industry-negotiation-retail-and-public-sector-collaboration"
   },
   "description": "An AI agent must bridge a complex data and policy gap between the Retail and Public Sector sectors.",
   "industry": "Meta-Industry",

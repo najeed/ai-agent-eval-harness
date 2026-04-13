@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Customer Feedback",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13489-analyze-customer-feedback"
   },
   "description": "A manager wants to understand common themes from recent customer satisfaction surveys.",
   "industry": "Retail",

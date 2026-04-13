@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Parts Availability for a Recall",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10474-recall-parts-availability-check"
   },
   "description": "A customer who needs a recall service performed wants to ensure the dealership has the necessary parts before they bring their car in.",
   "industry": "Automotive",

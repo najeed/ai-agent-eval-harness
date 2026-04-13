@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Rejected E-file (SSN Mismatch)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13743-handle-rejected-e-file-due-to-ssn-mismatch"
   },
   "description": "A taxpayer's e-filed return was rejected because a dependent's Social Security Number and last name do not match IRS records.",
   "industry": "Tax",

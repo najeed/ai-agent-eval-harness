@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to Security Questionnaire",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11720-respond-to-security-questionnaire"
   },
   "description": "A large enterprise lead requires the company to complete a detailed security questionnaire as part of their procurement process.",
   "industry": "Information Technology Product",

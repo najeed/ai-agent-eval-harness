@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Explain New Feature from Release Notes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11793-explain-new-feature"
   },
   "description": "A customer calls asking for more details about a new feature they saw mentioned in the latest release notes.",
   "industry": "Information Technology Product",

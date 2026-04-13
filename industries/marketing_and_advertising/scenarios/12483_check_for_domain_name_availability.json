@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check for Domain Name Availability",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12483-check-for-domain-name-availability"
   },
   "description": "For a new product launch, a brand manager needs to see if a desired domain name is available.",
   "industry": "Marketing and Advertising",

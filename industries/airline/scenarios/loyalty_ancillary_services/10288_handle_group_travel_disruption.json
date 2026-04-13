@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Group Travel Disruption",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10288-handle-group-travel-disruption"
   },
   "description": "A flight carrying a school group has been cancelled. An agent must rebook the entire group together on a new flight.",
   "industry": "Airline",

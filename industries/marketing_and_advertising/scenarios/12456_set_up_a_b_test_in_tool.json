@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up an A/B Test in a Testing Tool",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12456-set-up-a-b-test-in-tool"
   },
   "description": "A CRO specialist needs to set up a new A/B test in a tool like Google Optimize or Optimizely.",
   "industry": "Marketing and Advertising",

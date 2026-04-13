@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check for Conflict of Interest",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12078-check-for-conflict-of-interest"
   },
   "description": "A reporter has been assigned a story about a company. The editor must check if the reporter has any financial or personal conflicts of interest.",
   "industry": "Journalism",

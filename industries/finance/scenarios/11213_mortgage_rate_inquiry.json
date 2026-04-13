@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Mortgage Rate Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11213-mortgage-rate-inquiry"
   },
   "description": "A potential customer is inquiring about current interest rates for a 30-year fixed-rate mortgage.",
   "industry": "Finance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Consolidate Product Facings",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13467-consolidate-product-facings"
   },
   "description": "As stock of an item sells down, an associate needs to consolidate the remaining units to make the shelf look full (a process called 'facing').",
   "industry": "Retail",

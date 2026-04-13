@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Business Model Canvas",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00159-business-model-canvas"
   },
   "description": "An agent must populate a Business Model Canvas based on a client's business plan document.",
   "industry": "Consulting",

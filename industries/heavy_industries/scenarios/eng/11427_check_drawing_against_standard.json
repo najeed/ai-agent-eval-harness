@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Drawing Against Company Standard",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11427-check-drawing-against-standard"
   },
   "description": "A junior designer has completed a new drawing. A senior designer must check it to ensure it complies with the company's drafting standards.",
   "industry": "Heavy Industries",

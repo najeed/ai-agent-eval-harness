@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Bird Strike on Takeoff",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10295-handle-bird-strike"
   },
   "description": "Shortly after takeoff, a flight experiences a bird strike on one of its engines. The crew must assess the situation and take appropriate action.",
   "industry": "Airline",

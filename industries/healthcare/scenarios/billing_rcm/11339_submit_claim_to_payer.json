@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Submit a Claim to a Payer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11339-submit-claim-to-payer"
   },
   "description": "A biller needs to submit a finalized claim to an insurance company for payment.",
   "industry": "Healthcare",

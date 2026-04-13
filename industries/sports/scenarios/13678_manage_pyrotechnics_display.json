@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Pre-Game Pyrotechnics Display",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13678-manage-pyrotechnics-display"
   },
   "description": "A team wants to have a pre-game pyrotechnics display. The event manager must ensure it is done safely.",
   "industry": "Sports",

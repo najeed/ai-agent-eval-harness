@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Task Dependency Conflict",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10626-resolve-task-dependency-conflict"
   },
   "description": "The project schedule shows that 'painting' is scheduled to start before 'drywall finishing' is complete. This logical conflict must be resolved.",
   "industry": "Construction",

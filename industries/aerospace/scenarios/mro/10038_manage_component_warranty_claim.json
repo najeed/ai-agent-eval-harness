@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Component Warranty Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10038-manage-component-warranty-claim"
   },
   "description": "A component has failed prematurely while still under the manufacturer's warranty. An MRO administrator must file a warranty claim.",
   "industry": "Aerospace",

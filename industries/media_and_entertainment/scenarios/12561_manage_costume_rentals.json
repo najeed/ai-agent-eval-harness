@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Costume Rentals for a Period Drama",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12561-manage-costume-rentals"
   },
   "description": "A TV production needs to rent several period-specific costumes from an external costume house.",
   "industry": "Media and Entertainment",

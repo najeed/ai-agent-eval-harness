@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Instant Replays During Broadcast",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13662-manage-instant-replays"
   },
   "description": "During a live broadcast, a producer wants to show an instant replay of a key play from multiple angles.",
   "industry": "Sports",

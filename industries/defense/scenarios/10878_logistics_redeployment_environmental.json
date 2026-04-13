@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Equipment Redeployment Environmental Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10878-logistics-redeployment-environmental"
   },
   "description": "A logistics officer must ensure all vehicles being redeployed are thoroughly cleaned to prevent the transport of foreign soil, seeds, or contaminants.",
   "industry": "Defense",

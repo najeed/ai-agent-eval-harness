@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Purchase a Carbon Offset",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10296-purchase-carbon-offset"
   },
   "description": "During the booking process, a customer wants to purchase a carbon offset to mitigate the environmental impact of their flight.",
   "industry": "Airline",

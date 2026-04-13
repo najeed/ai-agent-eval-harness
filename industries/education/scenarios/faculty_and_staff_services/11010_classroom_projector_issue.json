@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Classroom Projector Not Working",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11010-classroom-projector-issue"
   },
   "description": "A professor calls from a classroom 10 minutes before class starts because the projector is not turning on.",
   "industry": "Education",

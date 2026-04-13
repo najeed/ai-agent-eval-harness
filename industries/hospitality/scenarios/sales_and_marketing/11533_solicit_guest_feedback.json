@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Solicit Guest Feedback Post-Stay",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11533-solicit-guest-feedback"
   },
   "description": "The day after a guest checks out, the system automatically sends them an email survey asking for feedback on their stay.",
   "industry": "Hospitality",

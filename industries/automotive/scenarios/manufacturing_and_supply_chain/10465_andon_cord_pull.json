@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Andon Cord Pull by Assembly Worker",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10465-andon-cord-pull"
   },
   "description": "An assembly line worker pulls the Andon cord to stop the line because they've noticed a misaligned part on a vehicle.",
   "industry": "Automotive",

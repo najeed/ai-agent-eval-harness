@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Submit a Purchase Offer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13298-submit-purchase-offer"
   },
   "description": "A buyer wants to make an offer on a property. The agent must draft and submit the offer package.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Order a Replacement Spare Part",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12363-order-replacement-spare-part"
   },
   "description": "After using the last spare motor in stock, a technician needs to order a replacement to replenish the inventory.",
   "industry": "Manufacturing",

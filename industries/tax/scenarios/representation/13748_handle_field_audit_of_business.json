@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Field Audit of a Business",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13748-handle-field-audit-of-business"
   },
   "description": "An IRS agent is conducting a field audit at a client's place of business. The tax professional is representing the client.",
   "industry": "Tax",

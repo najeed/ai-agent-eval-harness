@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Locks for Unit Turnover",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13283-change-locks-for-turnover"
   },
   "description": "A tenant has moved out. For security, the agent must schedule a locksmith to rekey the unit before the next tenant moves in.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Broken Seat Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13668-handle-broken-seat"
   },
   "description": "A fan arrives at their seat to find that it is broken. An agent must relocate them.",
   "industry": "Sports",

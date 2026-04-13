@@ -8,7 +8,7 @@ Add an `enabled_shims` array to your scenario JSON. The evaluation engine will m
 
 ```json
 {
-  "scenario_id": "my_fintech_scenario",
+  "id": "my_fintech_scenario",
   "title": "Loan Approval Validation",
   "industry": "fintech",
   "enabled_shims": ["database", "stripe", "security", "slack"],

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Countering Social Media Disinformation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10835-cyber-information-ops-social-media"
   },
   "description": "An IO officer detects an adversary-controlled bot network spreading disinformation about troop movements on social media.",
   "industry": "Defense",

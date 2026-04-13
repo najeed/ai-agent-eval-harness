@@ -369,7 +369,7 @@ const LoanDemo = ({ apiFetch }) => {
                                     </div>
                                 </div>
 
-                                <button onClick={() => goToStep(2)} className="mt-4 px-12 py-5 bg-white text-black font-black rounded-full hover:scale-105 transition-all shadow-xl uppercase tracking-widest text-sm">Automate with AgentEval →</button>
+                                <button onClick={() => goToStep(2)} className="mt-4 px-12 py-5 bg-white text-black font-black rounded-full hover:scale-105 transition-all shadow-xl uppercase tracking-widest text-sm">Automate with AgentV →</button>
                             </div>
                         </div>
                     </div>
@@ -382,7 +382,7 @@ const LoanDemo = ({ apiFetch }) => {
                             <div className="space-y-6">
                                 <h2 className="text-5xl font-black text-white leading-tight">Goal-Driven Generation</h2>
                                 <p className="text-lg text-slate-400 leading-relaxed font-medium">
-                                    "We don't write complex test code. We define intent in a PRD, and AgentEval's <span className="text-blue-400 font-black">spec-to-eval</span> utility generates the infrastructure."
+                                    "We don't write complex test code. We define intent in a PRD, and AgentV's <span className="text-blue-400 font-black">spec-to-eval</span> utility generates the infrastructure."
                                 </p>
                                 <div
                                     onClick={() => setViewingFile('sample_agent/loan_agent_demo/loan_prd.md')}
@@ -478,7 +478,7 @@ const LoanDemo = ({ apiFetch }) => {
                                 </div>
                             </div>
                             <h2 className="text-4xl font-black text-white">Phase 3: Real Execution</h2>
-                            <p className="text-xl text-slate-400 italic">"We re-run our battery of tests. No more manual validation - AgentEval flags the security breach immediately."</p>
+                            <p className="text-xl text-slate-400 italic">"We re-run our battery of tests. No more manual validation - AgentV flags the security breach immediately."</p>
 
                             <div className="bg-black/40 border border-slate-800 rounded-3xl p-6 text-left shadow-2xl min-h-[160px]">
                                 <div className="font-mono space-y-1">
@@ -654,7 +654,7 @@ You MUST adhere to the following rules:
                             <div>
                                 <h2 className="text-6xl font-black text-white leading-tight mb-4">Trust, Scaled.</h2>
                                 <p className="text-2xl text-slate-400 leading-relaxed font-medium">
-                                    "No more guessing. No more manual log reviews. AgentEval lets you ship autonomous systems with absolute confidence."
+                                    "No more guessing. No more manual log reviews. AgentV lets you ship autonomous systems with absolute confidence."
                                 </p>
                             </div>
                             <div className="pt-12 flex gap-6 justify-center">

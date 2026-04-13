@@ -1,5 +1,5 @@
-# Authoritative Routing Manifest
-This directory contains the primary routing logic for the AgentEval harness.
+# Routing Manifest
+This directory contains the primary routing logic for the AgentV harness.
 
 ## Contents
 - `manifest.json`: The base routing manifest.

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Account Compromise Containment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10719-secops-containment-account-compromise"
   },
   "description": "An alert indicates a user account is logging in from two different countries simultaneously. An incident responder must contain the compromised account.",
   "industry": "Cybersecurity",

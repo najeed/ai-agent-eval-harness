@@ -29,7 +29,7 @@ async def test_dos_attempt_cap_clamp():
     from eval_runner import engine
 
     scenario = {
-        "scenario_id": "dos-test",
+        "id": "dos-test",
         "workflow": {"nodes": [{"id": "t1", "task_description": "test"}], "edges": []},
     }
 
@@ -53,7 +53,7 @@ def test_fork_bomb_depth():
 
     # Create a session already at max depth
     scenario = {
-        "scenario_id": "fork-depth",
+        "id": "fork-depth",
         "workflow": {"nodes": [], "edges": []},
         "_fork_depth": MAX_FORK_DEPTH,
     }
@@ -69,7 +69,7 @@ async def test_fork_bomb_breadth(monkeypatch):
     from eval_runner.session import MAX_FORK_BREADTH, SessionManager
 
     scenario = {
-        "scenario_id": "fork-breadth",
+        "id": "fork-breadth",
         "workflow": {"nodes": [{"id": "t1", "task_description": "test"}], "edges": []},
         "max_turns": 2,
     }
@@ -96,9 +96,9 @@ def test_context_immutability():
     """Frozen dataclass must reject attribute assignment."""
     from eval_runner.context import EvaluationContext, TurnContext
 
-    ctx = EvaluationContext(scenario_id="x", scenario_data={"a": 1})
+    ctx = EvaluationContext(identifier="x", scenario_data={"a": 1})
     with pytest.raises(AttributeError):
-        ctx.scenario_id = "hacked"
+        ctx.identifier = "hacked"
 
     turn = TurnContext(task_id="t", turn_number=1, current_message="hi", history=[])
     with pytest.raises(AttributeError):
@@ -125,7 +125,7 @@ def test_evaluation_context_frozen_dicts():
     """scenario_data and metadata should be read-only MappingProxyType."""
     from eval_runner.context import EvaluationContext
 
-    ctx = EvaluationContext(scenario_id="x", scenario_data={"key": "val"}, metadata={"m": 1})
+    ctx = EvaluationContext(identifier="x", scenario_data={"key": "val"}, metadata={"m": 1})
     assert isinstance(ctx.scenario_data, types.MappingProxyType)
     assert isinstance(ctx.metadata, types.MappingProxyType)
 
@@ -268,7 +268,7 @@ def test_repro_script_txt_extension(tmp_path, monkeypatch):
     from eval_runner.reporting_plugin import ReportingPlugin
 
     monkeypatch.chdir(tmp_path)
-    ctx = EvaluationContext(scenario_id="rce-test", scenario_data={})
+    ctx = EvaluationContext(identifier="rce-test", scenario_data={})
     plugin = ReportingPlugin()
     plugin.generate_repro_script(ctx)
 
@@ -284,7 +284,7 @@ def test_repro_script_rce_strip(tmp_path, monkeypatch):
     from eval_runner.reporting_plugin import ReportingPlugin
 
     monkeypatch.chdir(tmp_path)
-    ctx = EvaluationContext(scenario_id="rce-strip", scenario_data={})
+    ctx = EvaluationContext(identifier="rce-strip", scenario_data={})
     plugin = ReportingPlugin()
     plugin.generate_repro_script(ctx)
 

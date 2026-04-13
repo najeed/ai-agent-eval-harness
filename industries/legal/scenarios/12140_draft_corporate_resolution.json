@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft a Corporate Resolution",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12140-draft-corporate-resolution"
   },
   "description": "A company needs to open a new bank account, which requires a formal corporate resolution. A paralegal needs to draft it.",
   "industry": "Legal",

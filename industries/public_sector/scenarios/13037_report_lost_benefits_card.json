@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Lost or Stolen EBT Card",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13037-report-lost-benefits-card"
   },
   "description": "A SNAP recipient needs to report their Electronic Benefit Transfer (EBT) card as lost and request a replacement.",
   "industry": "Public Sector",

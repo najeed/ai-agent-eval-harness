@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reschedule a Booked Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14234-reschedule-booked-event"
   },
   "description": "A client needs to reschedule their booked wedding from a Saturday in June to a Saturday in September.",
   "industry": "Venues",

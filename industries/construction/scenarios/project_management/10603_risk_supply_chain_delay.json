@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assess Risk of Supply Chain Delay",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10603-risk-supply-chain-delay"
   },
   "description": "A project manager identifies a potential supply chain delay for custom windows and must assess the impact.",
   "industry": "Construction",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Operator Logbook Entries",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10588-review-operator-logbook"
   },
   "description": "A production supervisor is reviewing the electronic logbook entries made by operators during the previous shift to check for any issues.",
   "industry": "Chemicals",

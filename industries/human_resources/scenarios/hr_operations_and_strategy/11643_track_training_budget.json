@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track the Learning & Development Budget",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11643-track-training-budget"
   },
   "description": "The L&D manager needs to check the department's training spend against the budget for the quarter.",
   "industry": "Human Resources",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deactivate a Customer Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14370-deactivate-customer-account"
   },
   "description": "A retailer has stopped doing business with the wholesaler. An agent needs to deactivate their account.",
   "industry": "Wholesale",

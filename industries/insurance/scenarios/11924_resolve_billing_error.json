@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve a Billing Error",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11924-resolve-billing-error"
   },
   "description": "A customer was double-billed for their premium this month due to a system error.",
   "industry": "Insurance",

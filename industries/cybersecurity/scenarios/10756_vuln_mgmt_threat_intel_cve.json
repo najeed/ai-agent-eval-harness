@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prioritizing a new CVE",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10756-vuln-mgmt-threat-intel-cve"
   },
   "description": "A new critical CVE is announced. A threat intelligence analyst must determine its relevance and risk to the organization.",
   "industry": "Cybersecurity",

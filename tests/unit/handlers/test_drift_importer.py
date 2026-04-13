@@ -26,10 +26,10 @@ def test_import_trace_as_scenario(tmp_path):
     with open(scenario_path) as f:
         scenario = json.loads(f.read())
 
-    assert scenario["version"] == "2.0.0"
+    assert scenario["aes_version"] == 1.4
     assert scenario["industry"] == "telecom"
     assert scenario["use_case"] == "production_replay"
-    assert len(scenario["tasks"]) == 1
+    assert len(scenario["workflow"]["nodes"]) == 1
     assert scenario["ground_truth_history"] == [
         {"role": "user", "content": "Hello"},
         {"role": "assistant", "content": "How can I help?"},

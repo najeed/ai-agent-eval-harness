@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Earnest Money Release",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13245-release-earnest-money"
   },
   "description": "A transaction has been cancelled. The agent must facilitate the release of the earnest money deposit based on the cancellation agreement.",
   "industry": "Real Estate",

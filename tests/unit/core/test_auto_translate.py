@@ -46,7 +46,7 @@ async def ollama_stub(aiohttp_server):
         if "markdown_json" in prompt:
             return web.json_response(
                 {
-                    "response": 'Here is the JSON:\n```json\n{"scenario_id": "md-123", "title": "MD"}\n```'  # noqa: E501
+                    "response": 'Here is the JSON:\n```json\n{"id": "md-123", "title": "MD"}\n```'  # noqa: E501
                 }
             )
 
@@ -57,7 +57,7 @@ async def ollama_stub(aiohttp_server):
             {
                 "response": json.dumps(
                     {
-                        "scenario_id": "auto-123",
+                        "id": "auto-123",
                         "title": "Mock Title",
                         "workflow": {
                             "nodes": [{"id": "t1", "task_description": "do thing"}],
@@ -121,20 +121,20 @@ async def test_translate_to_scenario_success(ollama_stub):
     api_url = f"{base_url}/api/generate"
 
     result = await auto_translate.translate_to_scenario("some text", api_url=api_url)
-    assert result["scenario_id"] == "auto-123"
+    assert result["id"] == "auto-123"
     assert result["title"] == "Mock Title"
     assert len(result["workflow"]["nodes"]) == 1
 
 
 @pytest.mark.asyncio
 async def test_translate_to_scenario_repair_missing_id(ollama_stub):
-    """Verifies that the logic repairs a missing scenario_id using real server."""
+    """Verifies that the logic repairs a missing id using real server."""
     base_url = f"http://{ollama_stub.host}:{ollama_stub.port}"
     api_url = f"{base_url}/api/generate"
 
     result = await auto_translate.translate_to_scenario("missing_id", api_url=api_url)
-    assert result["scenario_id"].startswith("auto-")
-    assert result["version"] == "2.0.0"
+    assert result["id"].startswith("auto-")
+    assert result["aes_version"] == 1.4
 
 
 @pytest.mark.asyncio
@@ -144,7 +144,7 @@ async def test_translate_to_scenario_markdown_json(ollama_stub):
     api_url = f"{base_url}/api/generate"
 
     result = await auto_translate.translate_to_scenario("markdown_json", api_url=api_url)
-    assert result["scenario_id"] == "md-123"
+    assert result["id"] == "md-123"
 
 
 @pytest.mark.asyncio
@@ -191,7 +191,7 @@ def test_save_scenario(tmp_path):
 
 def test_save_scenario_error(tmp_path):
     """Verifies that save_scenario handles writing errors gracefully."""
-    scenario = {"scenario_id": "test"}
+    scenario = {"id": "test"}
     bad_path = tmp_path / "a_directory"
     bad_path.mkdir()
     auto_translate.save_scenario(scenario, bad_path)

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set up Landlord-Tenant Agreement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14176-landlord-tenant-agreement-setup"
   },
   "description": "A landlord wants to set up an agreement where the utility service for a rental property automatically reverts to their name when a tenant moves out.",
   "industry": "Utilities",

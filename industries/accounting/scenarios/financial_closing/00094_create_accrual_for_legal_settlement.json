@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create an Accrual for a Legal Settlement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00094-create-accrual-for-legal-settlement"
   },
   "description": "The legal department has informed accounting that a lawsuit is likely to be settled for an estimated amount. An accrual must be recorded.",
   "industry": "Accounting",

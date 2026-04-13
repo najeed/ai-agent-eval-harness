@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Credit Limit Increase",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11247-increase-credit-limit"
   },
   "description": "A customer with a good payment history requests an increase to their credit card limit.",
   "industry": "Finance",

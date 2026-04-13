@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft Website Terms of Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12195-draft-terms-of-service"
   },
   "description": "An in-house counsel needs to draft the Terms of Service (ToS) for a new software-as-a-service (SaaS) product.",
   "industry": "Legal",

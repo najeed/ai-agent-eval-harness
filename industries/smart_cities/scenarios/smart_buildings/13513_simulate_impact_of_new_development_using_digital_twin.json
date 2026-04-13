@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Simulate Impact of New Development Using Digital Twin",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13513-simulate-impact-of-new-development-using-digital-twin"
   },
   "description": "A developer has proposed a new high-rise building. A city planner uses the digital twin to assess its impact on traffic and solar access.",
   "industry": "Smart Cities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Suite Catering Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14292-manage-suite-catering-order"
   },
   "description": "A suite holder wants to place their food and beverage order for an upcoming event.",
   "industry": "Venues",

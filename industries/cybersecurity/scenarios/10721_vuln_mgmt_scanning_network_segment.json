@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Quarterly Network Vulnerability Scan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10721-vuln-mgmt-scanning-network-segment"
   },
   "description": "A vulnerability analyst must perform the quarterly authenticated vulnerability scan of the company's DMZ network segment.",
   "industry": "Cybersecurity",

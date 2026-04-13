@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an In-Flight Passenger Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10253-handle-in-flight-passenger-dispute"
   },
   "description": "Two passengers are arguing over a reclined seat. The cabin crew must intervene to de-escalate the situation.",
   "industry": "Airline",

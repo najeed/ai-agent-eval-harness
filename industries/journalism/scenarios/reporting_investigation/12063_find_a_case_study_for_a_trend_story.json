@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find a Case Study for a Trend Story",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12063-find-a-case-study-for-a-trend-story"
   },
   "description": "A reporter is writing about a national economic trend (e.g., inflation) and needs to find a local person or family to serve as a case study.",
   "industry": "Journalism",

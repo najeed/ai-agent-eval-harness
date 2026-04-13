@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Pre-Flight Walk-around Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10249-perform-pre-flight-walkaround"
   },
   "description": "Before every flight, a pilot must perform a walk-around inspection of the aircraft to check for any obvious issues.",
   "industry": "Airline",

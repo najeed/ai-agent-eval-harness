@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Network Intrusion Detection and Response",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10805-cyber-threat-detection-network"
   },
   "description": "A cybersecurity analyst must respond to an alert indicating a potential advanced persistent threat (APT) actor on a classified network.",
   "industry": "Defense",

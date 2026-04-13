@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Near-Miss Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10545-investigate-near-miss-incident"
   },
   "description": "A worker reports a near miss where a pallet almost fell from a high rack. An EHS specialist must investigate the root cause.",
   "industry": "Chemicals",

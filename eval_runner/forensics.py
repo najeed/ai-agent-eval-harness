@@ -67,6 +67,11 @@ class ForensicRelevanceEngine:
         if any(path.name.endswith(ext) for ext in config.SYSTEM_JUNK_EXTENSIONS):
             return False
 
+        # 2b. [INDUSTRIAL BLACKLIST]: Prevent environment leakage from shared temp folders
+        # Matches patterns found in common test runners and detention jails
+        if any(p in path.name for p in ["pytest-", "aes_test_jail-"]):
+            return False
+
         if any(re.match(p, path.name) for p in self.exclusion_patterns):
             return False
 
@@ -105,12 +110,24 @@ class ForensicRelevanceEngine:
     ) -> dict[str, str]:
         """
         Computes a filtered forensic ledger for a directory.
-        Implements Namespace Affinity Enforcement.
+        Implements Namespace Affinity Enforcement and Path Jailing.
         """
         ledger = {}
         is_dedicated_dir = run_id and directory.name == run_id
 
-        for root, _, files in os.walk(directory):
+        # [AES v1.5.0] Trace-Jailing enforcement: If not a dedicated dir,
+        # we refuse to walk subdirectories.
+        # This prevents accidental "inhaling" of neighbors in shared /tmp directories.
+        max_depth = 1 if not is_dedicated_dir else 5
+        base_depth = len(directory.parts)
+
+        for root, dirs, files in os.walk(directory):
+            curr_depth = len(Path(root).parts) - base_depth
+            if curr_depth > max_depth:
+                # Prune the walk to prevent crossing boundaries in non-vaulted environments
+                dirs[:] = []
+                continue
+
             for file in files:
                 file_path = Path(root) / file
                 if file in exclude_files:

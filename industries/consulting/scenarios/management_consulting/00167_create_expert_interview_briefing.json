@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Expert Interview Briefing Document",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00167-create-expert-interview-briefing"
   },
   "description": "Before an expert interview, an agent must create a briefing document for the consultant conducting the interview.",
   "industry": "Consulting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Solar Farm Preventive Maintenance Scheduling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11114-preventive-maintenance-scheduling"
   },
   "description": "An operations planner needs to schedule the annual preventive maintenance for a portfolio of solar farms, minimizing production loss.",
   "industry": "Energy",

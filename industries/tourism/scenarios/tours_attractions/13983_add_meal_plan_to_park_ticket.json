@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add a Meal Plan to Park Ticket",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13983-add-meal-plan-to-park-ticket"
   },
   "description": "A customer who has already purchased theme park tickets wants to add a one-day meal plan.",
   "industry": "Tourism",

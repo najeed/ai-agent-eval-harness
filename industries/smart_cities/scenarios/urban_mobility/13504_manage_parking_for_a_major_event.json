@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Parking for a Major Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13504-manage-parking-for-a-major-event"
   },
   "description": "A major concert is scheduled. An operator must update dynamic parking signs to guide attendees to available lots.",
   "industry": "Smart Cities",

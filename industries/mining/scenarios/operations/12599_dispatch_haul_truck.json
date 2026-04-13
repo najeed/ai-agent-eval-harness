@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispatch Haul Truck",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12599-dispatch-haul-truck"
   },
   "description": "A mine dispatcher in the control room receives a request from a shovel and dispatches the nearest available haul truck to be loaded.",
   "industry": "Mining",

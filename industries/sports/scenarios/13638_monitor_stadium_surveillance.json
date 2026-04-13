@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Stadium Surveillance for Overcrowding",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13638-monitor-stadium-surveillance"
   },
   "description": "The venue's security operator needs to monitor surveillance cameras to identify any potential overcrowding in the stadium's concourses.",
   "industry": "Sports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a SWOT Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00104-swot-analysis-creation"
   },
   "description": "Based on a set of internal documents and market research reports, an agent must create a SWOT (Strengths, Weaknesses, Opportunities, Threats) analysis for the client.",
   "industry": "Consulting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Driver App Technical Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14044-handle-driver-app-issue"
   },
   "description": "A driver calls support because their app is frozen and they cannot complete their current trip.",
   "industry": "Transportation",

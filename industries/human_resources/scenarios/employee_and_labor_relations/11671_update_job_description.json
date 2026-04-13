@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update a Job Description",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11671-update-job-description"
   },
   "description": "A manager needs to update the job description for a role on their team to reflect new responsibilities.",
   "industry": "Human Resources",

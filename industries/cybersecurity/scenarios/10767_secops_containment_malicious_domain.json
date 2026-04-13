@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Malicious Domain Containment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10767-secops-containment-malicious-domain"
   },
   "description": "Threat intelligence indicates a domain is being used to host malware. An incident responder must block access to it.",
   "industry": "Cybersecurity",

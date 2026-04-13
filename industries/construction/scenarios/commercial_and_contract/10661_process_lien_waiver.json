@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Subcontractor Lien Waiver",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10661-process-lien-waiver"
   },
   "description": "Along with their monthly invoice, a subcontractor has submitted a conditional lien waiver. The accountant must process it.",
   "industry": "Construction",

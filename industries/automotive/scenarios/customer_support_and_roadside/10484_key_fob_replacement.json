@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Key Fob Replacement and Programming",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10484-key-fob-replacement"
   },
   "description": "A customer has lost their key fob and needs to order and program a replacement.",
   "industry": "Automotive",

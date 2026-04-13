@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue Permit for Confined Space Entry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12614-manage-permit-to-work"
   },
   "description": "A supervisor needs to issue a permit for a maintenance crew to enter a large tank (a confined space) to perform repairs.",
   "industry": "Mining",

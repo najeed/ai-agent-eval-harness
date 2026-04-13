@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan a Bus Detour for a Parade",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14015-plan-bus-detour"
   },
   "description": "A city has announced a parade that will close several streets. A transit planner must create a detour for an affected bus route.",
   "industry": "Transportation",

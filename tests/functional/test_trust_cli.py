@@ -63,7 +63,13 @@ def test_cli_certify_success(cli_env, monkeypatch):
         "CI-P-01",
     ]
 
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    # Explicitly pass PROJECT_ROOT to the subprocess to prevent pollution
+    env = os.environ.copy()
+    env["PROJECT_ROOT"] = str(cli_env["tmp_path"])
+    env["RUN_LOG_DIR"] = str(cli_env["runs_dir"])
+    env["REPORTS_DIR"] = str(cli_env["tmp_path"] / "reports")
+
+    result = subprocess.run(cmd, capture_output=True, text=True, env=env)
     assert result.returncode == 0
     assert f"Certified: {run_id}" in result.stdout or "Success" in result.stdout
 
@@ -82,21 +88,24 @@ def test_cli_gate_success(cli_env, monkeypatch):
     """Verify gate command with Run ID centric discovery."""
     run_id = cli_env["run_id"]
 
-    monkeypatch.setenv("RUN_LOG_DIR", str(cli_env["runs_dir"]))
-    monkeypatch.setenv("TRUST_ROOT", str(config.TRUST_ROOT))
-    monkeypatch.setenv("REPORTS_DIR", str(cli_env["tmp_path"] / "reports"))
+    # Explicitly pass PROJECT_ROOT to the subprocess to prevent pollution
+    env = os.environ.copy()
+    env["PROJECT_ROOT"] = str(cli_env["tmp_path"])
+    env["RUN_LOG_DIR"] = str(cli_env["runs_dir"])
+    env["REPORTS_DIR"] = str(cli_env["tmp_path"] / "reports")
+    env["TRUST_ROOT"] = str(config.TRUST_ROOT)
 
     # 1. Certify first
     subprocess.run(
         ["python", "-m", "eval_runner.cli", "certify", "--run-id", run_id, "--identity", "ci_bot"],
-        env=dict(os.environ, **{"RUN_LOG_DIR": str(cli_env["runs_dir"])}),
+        env=env,
         check=True,
     )
 
     # 2. Gate using Run ID
     cmd = ["python", "-m", "eval_runner.cli", "gate", "--run-id", run_id, "--verify-ledger"]
 
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=True, text=True, env=env)
     assert result.returncode == 0
     assert "SUCCESS" in result.stdout
 
@@ -106,12 +115,16 @@ def test_cli_gate_failure_tampered(cli_env, monkeypatch):
     run_id = cli_env["run_id"]
     trace_path = cli_env["trace_path"]
 
-    monkeypatch.setenv("RUN_LOG_DIR", str(cli_env["runs_dir"]))
-    monkeypatch.setenv("REPORTS_DIR", str(cli_env["tmp_path"] / "reports"))
+    # Explicitly pass PROJECT_ROOT to the subprocess to prevent pollution
+    env = os.environ.copy()
+    env["PROJECT_ROOT"] = str(cli_env["tmp_path"])
+    env["RUN_LOG_DIR"] = str(cli_env["runs_dir"])
+    env["REPORTS_DIR"] = str(cli_env["tmp_path"] / "reports")
 
     # 1. Certify
     subprocess.run(
         ["python", "-m", "eval_runner.cli", "certify", "--run-id", run_id, "--identity", "ci_bot"],
+        env=env,
         check=True,
     )
 
@@ -121,6 +134,6 @@ def test_cli_gate_failure_tampered(cli_env, monkeypatch):
     # 3. Gate
     cmd = ["python", "-m", "eval_runner.cli", "gate", "--run-id", run_id]
 
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=True, text=True, env=env)
     assert result.returncode != 0
     assert "FAILURE" in result.stdout

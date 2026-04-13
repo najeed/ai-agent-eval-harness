@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pareto Analysis (80/20 Rule)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00183-pareto-analysis"
   },
   "description": "An agent must perform a Pareto analysis on sales data to identify the top 20% of products that generate 80% of revenue.",
   "industry": "Consulting",

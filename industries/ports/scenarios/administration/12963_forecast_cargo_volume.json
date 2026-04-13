@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Forecast Monthly Cargo Volume",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12963-forecast-cargo-volume"
   },
   "description": "A port director asks an analyst to forecast the container volume for the next month to plan for labor and equipment needs.",
   "industry": "Ports",

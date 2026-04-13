@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Submit a Grant Progress Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13066-submit-grant-progress-report"
   },
   "description": "A non-profit needs to submit its semi-annual progress report for a federal grant.",
   "industry": "Public Sector",

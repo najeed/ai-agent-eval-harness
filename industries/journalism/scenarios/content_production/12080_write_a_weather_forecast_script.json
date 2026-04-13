@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write a Weather Forecast Script",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12080-write-a-weather-forecast-script"
   },
   "description": "A TV meteorologist needs to write a script for their weather segment.",
   "industry": "Journalism",

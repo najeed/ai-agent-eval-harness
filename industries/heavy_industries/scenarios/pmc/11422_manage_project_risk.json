@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Project Risk",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11422-manage-project-risk"
   },
   "description": "A project manager identifies a new risk: a potential strike at the port could delay a critical equipment delivery. This risk must be logged and managed.",
   "industry": "Heavy Industries",

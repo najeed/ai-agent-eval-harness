@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Comply with Local Rental Regulations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13369-comply-with-local-rental-regulations"
   },
   "description": "A city passes a new ordinance requiring all rental properties to be registered. A property manager must comply for their entire portfolio.",
   "industry": "Real Estate",

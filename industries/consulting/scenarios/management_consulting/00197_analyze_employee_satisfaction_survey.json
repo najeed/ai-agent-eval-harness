@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Employee Satisfaction Survey",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00197-analyze-employee-satisfaction-survey"
   },
   "description": "An agent must analyze open-ended feedback from an employee satisfaction survey to identify key themes.",
   "industry": "Consulting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate a Comparative Market Analysis (CMA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13325-generate-cma-for-seller"
   },
   "description": "A prospective seller wants to know what their home is worth. The agent must prepare a CMA to propose a listing price.",
   "industry": "Real Estate",

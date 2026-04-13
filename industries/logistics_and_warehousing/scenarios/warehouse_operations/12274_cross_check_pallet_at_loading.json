@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cross-Check Pallet at Loading Dock",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12274-cross-check-pallet-at-loading"
   },
   "description": "To prevent loading errors, a final check is performed by scanning a pallet's license plate at the dock door to ensure it belongs on the truck being loaded.",
   "industry": "Logistics and Warehousing",

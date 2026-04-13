@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "API Performance Degradation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11742-performance-degradation-alert"
   },
   "description": "An alert indicates that the p95 latency for a key API endpoint has exceeded its SLO.",
   "industry": "Information Technology Product",

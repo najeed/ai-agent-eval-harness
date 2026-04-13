@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Detect Fault in Tunnel Ventilation System",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13548-detect-fault-in-tunnel-ventilation-system"
   },
   "description": "A sensor in a traffic tunnel's ventilation system reports a fan malfunction.",
   "industry": "Smart Cities",

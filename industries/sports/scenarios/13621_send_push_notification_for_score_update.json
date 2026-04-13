@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Push Notification for Score Update",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13621-send-push-notification-for-score-update"
   },
   "description": "A fan has subscribed to receive score alerts for their favorite team. An agent must send a push notification after the team scores.",
   "industry": "Sports",

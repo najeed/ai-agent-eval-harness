@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Register for an Employer Identification Number (EIN)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13767-register-for-employer-identification-number"
   },
   "description": "A new partnership is forming and needs to obtain an EIN from the IRS.",
   "industry": "Tax",

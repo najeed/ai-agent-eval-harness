@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Tool Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10058-manage-tool-inventory"
   },
   "description": "A tool crib attendant must manage the checkout and return of tools to maintenance technicians.",
   "industry": "Aerospace",

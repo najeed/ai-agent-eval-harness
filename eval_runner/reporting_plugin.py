@@ -97,7 +97,7 @@ class ReportingPlugin(BaseEvalPlugin):
 
     def generate_repro_script(self, context: EvaluationContext):
         """Creates a standalone script to reproduce the evaluation."""
-        scenario_id = context.scenario_id
+        identifier = context.identifier
         repro_dir = Path("reports") / "repro"
         repro_dir.mkdir(parents=True, exist_ok=True)
 
@@ -115,14 +115,15 @@ class ReportingPlugin(BaseEvalPlugin):
             scenario_path = context.scenario_data.get("path")
         # 4. Smart fallback: try to find the scenario in the default location
         else:
-            scenario_path = f"scenarios/{scenario_id}.json"
+            # Note: Extension fallback handled by Loader logic
+            scenario_path = f"scenarios/{identifier}.json"
 
         # Security Guardrails: RCE Prevention
         # Generate as inert .txt to prevent auto-execution
-        repro_path = repro_dir / f"repro_{scenario_id}.txt"
+        repro_path = repro_dir / f"repro_{identifier}.txt"
 
         # Strip potential arbitrary execution
-        content = f"""# Reproduction script for {scenario_id}
+        content = f"""# Reproduction script for {identifier}
 # Generated on {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 # 
 # Usage:
@@ -162,11 +163,11 @@ agentv run --scenario {scenario_path}
                 successes += 1
 
         payload = {
-            "text": f"🚀 *Evaluation Complete*\n*Scenario*: {context.scenario_id}\n*Success Rate*: {successes}/{total} tasks passed.",  # noqa: E501
+            "text": f"🚀 *Evaluation Complete*\n*Scenario*: {context.identifier}\n*Success Rate*: {successes}/{total} tasks passed.",  # noqa: E501
             "attachments": [
                 {
                     "title": "View Report",
-                    "text": f"Reproduction script generated: reports/repro/repro_{context.scenario_id}.txt",  # noqa: E501
+                    "text": f"Reproduction script generated: reports/repro/repro_{context.identifier}.txt",  # noqa: E501
                 }
             ],
         }

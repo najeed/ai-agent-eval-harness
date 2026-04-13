@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Close Out a Punch List Item",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11421-close-out-punch-list-item"
   },
   "description": "A contractor reports they have fixed a punch list item (e.g., a leaking valve). A commissioning engineer must verify the fix and close the item.",
   "industry": "Heavy Industries",

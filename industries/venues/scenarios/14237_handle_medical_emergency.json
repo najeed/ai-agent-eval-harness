@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Medical Emergency",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14237-handle-medical-emergency"
   },
   "description": "A staff member reports that a guest has collapsed and requires medical attention.",
   "industry": "Venues",

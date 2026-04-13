@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Return to Vendor (RTV)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14379-handle-return-to-vendor"
   },
   "description": "A product is found to be defective and needs to be returned to the original supplier for credit.",
   "industry": "Wholesale",

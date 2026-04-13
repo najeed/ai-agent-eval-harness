@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Piping and Instrumentation Diagram (P&ID)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11431-create-piping-and-instrumentation-diagram"
   },
   "description": "A process engineer needs to create a new P&ID for a simple chemical dosing system.",
   "industry": "Heavy Industries",

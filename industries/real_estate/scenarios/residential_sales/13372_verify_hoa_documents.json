@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify HOA Documents",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13372-verify-hoa-documents"
   },
   "description": "A buyer is purchasing a condo and their agent must review the Homeowners Association (HOA) documents.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Herbicide Carryover Risk",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10134-herbicide-carryover-risk"
   },
   "description": "A farmer wants to plant soybeans in a field where they applied a corn herbicide last year and needs to check for carryover risk.",
   "industry": "Agriculture",

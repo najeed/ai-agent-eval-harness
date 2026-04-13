@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Home Sale Contingent Offer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13354-handle-contingent-offer"
   },
   "description": "A buyer makes an offer that is contingent on them selling their current home. The listing agent must advise the seller.",
   "industry": "Real Estate",

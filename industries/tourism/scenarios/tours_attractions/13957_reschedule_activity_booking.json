@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reschedule an Activity Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13957-reschedule-activity-booking"
   },
   "description": "A customer needs to reschedule their ziplining tour from Saturday to Sunday.",
   "industry": "Tourism",

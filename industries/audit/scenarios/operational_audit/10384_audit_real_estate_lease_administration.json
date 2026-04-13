@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Real Estate Lease Administration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10384-audit-real-estate-lease-administration"
   },
   "description": "An auditor reviews the administration of the company's real estate leases.",
   "industry": "Audit",

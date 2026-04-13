@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Exercise Employee Stock Options",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11263-exercise-stock-options"
   },
   "description": "A client wants to exercise their vested employee stock options and sell the shares immediately (a 'cashless' exercise).",
   "industry": "Finance",

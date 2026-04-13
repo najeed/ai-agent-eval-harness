@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Gift Loyalty Points for Service Recovery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11589-gift-loyalty-points"
   },
   "description": "After resolving a guest's complaint, a manager decides to gift them some loyalty points as a gesture of goodwill.",
   "industry": "Hospitality",

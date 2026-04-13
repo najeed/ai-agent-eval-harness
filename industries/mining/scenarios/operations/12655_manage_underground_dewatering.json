@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Underground Dewatering",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12655-manage-underground-dewatering"
   },
   "description": "An underground operator inspects and manages the pumps and sumps that keep their work area dry.",
   "industry": "Mining",

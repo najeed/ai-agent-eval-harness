@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Project Marketing Website",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13361-create-a-project-marketing-website"
   },
   "description": "A developer needs a website for a new housing community to capture leads and provide information.",
   "industry": "Real Estate",

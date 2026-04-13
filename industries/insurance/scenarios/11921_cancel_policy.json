@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel an Auto Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11921-cancel-policy"
   },
   "description": "A customer sold their car and wants to cancel their auto insurance policy.",
   "industry": "Insurance",

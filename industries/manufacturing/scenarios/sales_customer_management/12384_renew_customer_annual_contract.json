@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Renew a Customer's Annual Contract",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12384-renew-customer-annual-contract"
   },
   "description": "A major customer's annual supply contract is due for renewal next month.",
   "industry": "Manufacturing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Guest Stuck in Elevator",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11557-guest-stuck-in-elevator"
   },
   "description": "A guest uses the emergency phone in an elevator to report they are stuck.",
   "industry": "Hospitality",

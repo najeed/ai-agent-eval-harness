@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule a Receiving Appointment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12327-schedule-receiving-appointment"
   },
   "description": "A supplier needs to schedule a delivery appointment for a large shipment arriving next week.",
   "industry": "Manufacturing",

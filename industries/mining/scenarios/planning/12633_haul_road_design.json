@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Design Mine Haul Road",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12633-haul-road-design"
   },
   "description": "A mine planning engineer designs a new haul road to access a lower phase of the open pit.",
   "industry": "Mining",

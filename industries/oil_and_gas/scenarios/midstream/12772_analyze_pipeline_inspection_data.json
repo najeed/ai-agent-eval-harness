@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Smart Pig Inspection Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12772-analyze-pipeline-inspection-data"
   },
   "description": "After a smart pig run, an integrity engineer analyzes the data to find and classify corrosion defects.",
   "industry": "Oil and Gas",

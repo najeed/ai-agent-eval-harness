@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Place Instrument Out of Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10574-place-instrument-out-of-service"
   },
   "description": "An analytical instrument is malfunctioning and giving erratic results. A lab analyst must take it out of service until it can be repaired.",
   "industry": "Chemicals",

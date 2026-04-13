@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Split an Order for Partial Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12245-split-order-for-shipment"
   },
   "description": "An order contains two items, but one is on backorder. The customer wants the in-stock item to ship now.",
   "industry": "Logistics and Warehousing",

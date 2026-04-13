@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Potential Customer Requests Product Sample",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10591-request-product-sample"
   },
   "description": "A potential new customer is requesting a small sample of a product to test in their lab.",
   "industry": "Chemicals",

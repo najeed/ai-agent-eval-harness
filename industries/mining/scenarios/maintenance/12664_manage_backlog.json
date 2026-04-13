@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Maintenance Backlog",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12664-manage-backlog"
   },
   "description": "A maintenance superintendent reviews the backlog of open work orders to prioritize them and ensure the most critical work is done first.",
   "industry": "Mining",

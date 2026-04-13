@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Environmental Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10355-audit-environmental-compliance"
   },
   "description": "For a manufacturing company, an auditor reviews compliance with environmental regulations.",
   "industry": "Audit",

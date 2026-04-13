@@ -89,9 +89,9 @@ def test_taxonomy_base_classify(name, signal, expected):
     history = []
 
     if isinstance(signal, dict):
-        history.append({"role": "environment", "content": signal})
+        history.append({"identity": "env_id", "content": signal})
     elif isinstance(signal, str):
-        history.append({"role": "agent", "content": signal})
+        history.append({"role": "agent", "identity": "agent_id", "content": signal})
 
     result = {"metrics": metrics, "conversation_history": history}
     assert FailureTaxonomy.classify(result) == expected

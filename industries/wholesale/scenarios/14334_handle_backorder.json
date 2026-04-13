@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Backordered Item on an Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14334-handle-backorder"
   },
   "description": "A customer places an order for an item that is currently out of stock. An agent must manage the backorder.",
   "industry": "Wholesale",

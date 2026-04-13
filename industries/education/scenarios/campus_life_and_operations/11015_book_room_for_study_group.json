@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book a Room for a Study Group",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11015-book-room-for-study-group"
   },
   "description": "A student group wants to book a classroom for a study session next week.",
   "industry": "Education",

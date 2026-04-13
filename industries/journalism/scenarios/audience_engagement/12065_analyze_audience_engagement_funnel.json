@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Audience Engagement Funnel",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12065-analyze-audience-engagement-funnel"
   },
   "description": "An analyst wants to see how many people who see a story on social media actually click the link, and then how long they stay on the page.",
   "industry": "Journalism",

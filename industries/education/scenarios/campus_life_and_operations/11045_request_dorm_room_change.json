@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Dorm Room Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11045-request-dorm-room-change"
   },
   "description": "A student wants to request a room change due to an issue with their roommate.",
   "industry": "Education",

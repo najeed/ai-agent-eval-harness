@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Group Hotel Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13949-process-group-booking"
   },
   "description": "A tour operator wants to book a block of 10 rooms for a group for a 3-night stay.",
   "industry": "Tourism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Gunshot Detection Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13500-investigate-gunshot-detection-alert"
   },
   "description": "Acoustic sensors detect a gunshot in a public park. An operator must verify the threat and dispatch police.",
   "industry": "Smart Cities",

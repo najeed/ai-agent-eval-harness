@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Defend Hobby Loss Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13734-defend-hobby-loss-audit"
   },
   "description": "The IRS is auditing a client's Schedule C, claiming their activity is a hobby, not a business, because it has shown losses for several years.",
   "industry": "Tax",

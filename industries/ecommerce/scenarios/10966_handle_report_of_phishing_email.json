@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Report of Phishing Email",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10966-handle-report-of-phishing-email"
   },
   "description": "A customer reports receiving a suspicious email that looks like it's from the company but asks for their password.",
   "industry": "Ecommerce",

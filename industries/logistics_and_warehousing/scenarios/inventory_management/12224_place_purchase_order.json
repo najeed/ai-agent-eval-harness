@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Place a Purchase Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12224-place-purchase-order"
   },
   "description": "An item's inventory has fallen below its reorder point. A buyer needs to place a purchase order with the supplier.",
   "industry": "Logistics and Warehousing",

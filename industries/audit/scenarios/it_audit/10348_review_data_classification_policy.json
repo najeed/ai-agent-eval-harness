@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Data Classification Policy Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10348-review-data-classification-policy"
   },
   "description": "An IT auditor checks if sensitive data is being handled according to the company's data classification policy.",
   "industry": "Audit",

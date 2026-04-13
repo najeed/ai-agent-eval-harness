@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Compare On-Farm Seed Variety Trial Performance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10149-compare-seed-variety-performance"
   },
   "description": "A farmer planted several different corn hybrids in trial strips across a field and wants to analyze the yield data to see which performed best.",
   "industry": "Agriculture",

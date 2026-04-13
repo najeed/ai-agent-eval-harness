@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop a Pasture Rotation Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10129-pasture-rotation-plan"
   },
   "description": "A sheep farmer wants to develop a rotational grazing plan to improve pasture health and animal nutrition.",
   "industry": "Agriculture",

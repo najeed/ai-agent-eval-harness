@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "API Error Troubleshooting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11697-api-error-troubleshooting"
   },
   "description": "A developer is receiving a '500 Internal Server Error' when calling a specific API endpoint and needs help diagnosing the cause.",
   "industry": "Information Technology Product",

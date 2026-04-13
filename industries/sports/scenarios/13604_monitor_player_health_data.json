@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Player Health Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13604-monitor-player-health-data"
   },
   "description": "A team's sports scientist needs to analyze GPS and heart rate data from a training session to identify players at risk of overexertion.",
   "industry": "Sports",

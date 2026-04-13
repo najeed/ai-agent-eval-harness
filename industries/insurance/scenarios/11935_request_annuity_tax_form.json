@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Annuity Tax Form (1099-R)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11935-request-annuity-tax-form"
   },
   "description": "An annuity holder needs a copy of their 1099-R tax form for a distribution they took last year.",
   "industry": "Insurance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Compensate Players for Server Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12576-compensate-player-for-server-outage"
   },
   "description": "After a prolonged server outage, the company decides to give all affected players a small gift of in-game currency as an apology.",
   "industry": "Media and Entertainment",

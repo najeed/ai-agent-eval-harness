@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assess Spray Drift Risk",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10184-spray-drift-risk-assessment"
   },
   "description": "A farmer is about to spray a field and needs to assess the risk of spray drift to a neighboring sensitive crop.",
   "industry": "Agriculture",

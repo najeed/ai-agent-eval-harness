@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Quay Crane Breakdown",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12936-handle-crane-breakdown"
   },
   "description": "During vessel operations, a quay crane suddenly stops working. The shift manager must manage the situation to minimize delays.",
   "industry": "Ports",

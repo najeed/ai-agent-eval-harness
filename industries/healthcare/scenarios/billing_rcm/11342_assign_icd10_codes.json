@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assign ICD-10 Codes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11342-assign-icd10-codes"
   },
   "description": "A professional coder is reviewing an inpatient record to assign ICD-10-CM (diagnosis) and ICD-10-PCS (procedure) codes.",
   "industry": "Healthcare",

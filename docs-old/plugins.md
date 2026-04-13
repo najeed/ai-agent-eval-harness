@@ -32,7 +32,7 @@ from abc import abstractmethod
 class MyCustomPlugin(BaseEvalPlugin):
     # Optional: override specific hooks as needed
     def before_evaluation(self, context):
-        print(f"Starting evaluation for {context.scenario_id}!")
+        print(f"Starting evaluation for {context.identifier}!")
 
     def on_tool_request(self, context, tool_name, args):
         if tool_name == "sensitive_tool":
@@ -64,7 +64,7 @@ Passed to `before_evaluation`, `after_evaluation`, and `on_metrics_calculated`. 
 
 | Field | Type | Description |
 | :--- | :--- | :--- |
-| `scenario_id` | `str` | Unique ID of the current scenario. |
+| `id` | `str` | Unique ID of the current scenario. |
 | `scenario_data`| `dict` | **Immutable**. The full AES JSON scenario definition. |
 | `metadata` | `dict` | **Immutable**. Global metadata (difficulty, industry, etc.). Contains `args` (a dictionary of CLI flags). |
 | `global_state` | `dict` | **Immutable**. Shared engine-level configuration. |
@@ -184,7 +184,7 @@ class RemoteBridgePlugin(BaseEvalPlugin):
             # Fast, non-blocking post to the debugger
             requests.post("http://localhost:5000/api/debugger/state", json={
                 "event": "turn_start",
-                "scenario": context.scenario_id,
+                "scenario": context.identifier,
                 "turn": context.turn_number
             }, timeout=0.1)
         except Exception:

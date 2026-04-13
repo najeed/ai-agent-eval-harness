@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track a Driver's Location",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14078-track-driver-location"
   },
   "description": "A customer is asking for a real-time update on the location of the truck carrying their shipment.",
   "industry": "Transportation",

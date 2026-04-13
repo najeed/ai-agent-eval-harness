@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Welding Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11420-perform-welding-inspection"
   },
   "description": "A quality inspector needs to perform a visual inspection of a completed weld on a structural beam.",
   "industry": "Heavy Industries",

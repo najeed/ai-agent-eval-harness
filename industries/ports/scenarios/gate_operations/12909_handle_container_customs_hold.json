@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Container with a Customs Hold",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12909-handle-container-customs-hold"
   },
   "description": "A truck arrives to pick up a container, but the system shows it has a hold placed on it by customs.",
   "industry": "Ports",

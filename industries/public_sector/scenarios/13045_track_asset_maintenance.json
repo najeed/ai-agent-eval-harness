@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Asset Maintenance History",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13045-track-asset-maintenance"
   },
   "description": "A public works manager wants to see the maintenance history for a specific city vehicle.",
   "industry": "Public Sector",

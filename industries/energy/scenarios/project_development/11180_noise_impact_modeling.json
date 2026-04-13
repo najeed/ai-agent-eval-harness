@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Wind Farm Noise Impact Modeling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11180-noise-impact-modeling"
   },
   "description": "A permitting manager needs to model the noise propagation from a proposed wind farm to ensure it complies with local ordinances.",
   "industry": "Energy",

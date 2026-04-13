@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Return with HSA Contributions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13784-prepare-return-with-hsa-contributions"
   },
   "description": "A taxpayer made contributions to a Health Savings Account (HSA) and wants to claim the deduction.",
   "industry": "Tax",

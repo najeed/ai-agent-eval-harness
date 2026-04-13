@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Video Ad Storyboard",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12425-create-video-ad-storyboard"
   },
   "description": "A creative director needs to create a storyboard for a 30-second video ad.",
   "industry": "Marketing and Advertising",

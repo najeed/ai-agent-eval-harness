@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update a Project Milestone",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13071-update-project-milestone"
   },
   "description": "A project manager for a new library construction needs to update the project plan to show that the foundation has been completed.",
   "industry": "Public Sector",

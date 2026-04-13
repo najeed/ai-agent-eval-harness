@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dynamic Re-tasking due to Weather",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10839-mission-planning-dynamic-retasking-weather"
   },
   "description": "A planned air strike is aborted due to bad weather over the primary target. The strike package must be re-tasked to a secondary target.",
   "industry": "Defense",

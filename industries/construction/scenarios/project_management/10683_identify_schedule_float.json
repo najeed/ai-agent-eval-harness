@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Schedule Float",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10683-identify-schedule-float"
   },
   "description": "A PM needs to identify which upcoming tasks have float (can be delayed without affecting the project completion date) to allow for resource reallocation.",
   "industry": "Construction",

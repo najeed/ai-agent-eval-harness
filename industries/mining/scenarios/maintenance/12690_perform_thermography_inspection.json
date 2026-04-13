@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Electrical Thermography Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12690-perform-thermography-inspection"
   },
   "description": "An electrician uses a thermal imaging camera to inspect electrical switchgear for hot spots, which can indicate a poor connection and a fire risk.",
   "industry": "Mining",

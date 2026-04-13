@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Compare Actual vs. Planned Schedule",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11494-compare-actual-vs-planned-schedule"
   },
   "description": "A project planner is analyzing schedule performance by comparing the actual progress against the original baseline.",
   "industry": "Heavy Industries",

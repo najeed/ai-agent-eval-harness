@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Account Takeover Support Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12570-handle-account-takeover-support-request"
   },
   "description": "A user reports they can no longer access their streaming account and suspect it has been taken over by someone else.",
   "industry": "Media and Entertainment",

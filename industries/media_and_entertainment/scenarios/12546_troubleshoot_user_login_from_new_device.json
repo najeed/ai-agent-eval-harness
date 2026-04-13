@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Login from New Device Flagged as Suspicious",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12546-troubleshoot-user-login-from-new-device"
   },
   "description": "A user's login attempt from a new device in a different country is automatically flagged as suspicious, and their account is temporarily locked.",
   "industry": "Media and Entertainment",

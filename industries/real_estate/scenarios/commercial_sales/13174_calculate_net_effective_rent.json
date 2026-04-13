@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate Net Effective Rent",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13174-calculate-net-effective-rent"
   },
   "description": "A landlord is offering a lease with free rent and a tenant improvement allowance. A potential tenant wants to know the 'net effective rent' to compare it to other leases.",
   "industry": "Real Estate",

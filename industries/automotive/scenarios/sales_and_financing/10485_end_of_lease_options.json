@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Explain End-of-Lease Options",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10485-end-of-lease-options"
   },
   "description": "A customer's lease is ending in 90 days. An agent calls to explain their options.",
   "industry": "Automotive",

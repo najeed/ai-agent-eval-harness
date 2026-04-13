@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Recovery Schedule",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10694-create-recovery-schedule"
   },
   "description": "After significant delays, a project is 30 days behind schedule. The PM must create a recovery schedule to make up the lost time.",
   "industry": "Construction",

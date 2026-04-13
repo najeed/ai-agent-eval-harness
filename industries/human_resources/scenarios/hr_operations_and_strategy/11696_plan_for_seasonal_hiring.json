@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan for Seasonal Hiring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11696-plan-for-seasonal-hiring"
   },
   "description": "A retail company needs to plan its seasonal hiring for the upcoming holiday season.",
   "industry": "Human Resources",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Record a Fixed Asset Acquisition",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00008-record-fixed-asset-acquisition"
   },
   "description": "The company has purchased a new piece of machinery and the accountant needs to add it to the fixed asset register.",
   "industry": "Accounting",

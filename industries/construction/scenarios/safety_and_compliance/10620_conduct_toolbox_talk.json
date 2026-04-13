@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document a Weekly Toolbox Talk",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10620-conduct-toolbox-talk"
   },
   "description": "A foreman conducts a weekly toolbox talk on ladder safety and needs to log it for compliance.",
   "industry": "Construction",

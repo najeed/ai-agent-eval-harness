@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Airplane Flight Manual (AFM) Revisions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10099-manage-flight-manual-revisions"
   },
   "description": "After a change in aircraft performance or limitations, a technical writer must revise the official AFM and submit it for regulatory approval.",
   "industry": "Aerospace",

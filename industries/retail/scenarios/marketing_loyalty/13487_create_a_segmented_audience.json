@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Segmented Audience",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13487-create-a-segmented-audience"
   },
   "description": "A marketer wants to create a special promotion for 'high-value' customers.",
   "industry": "Retail",

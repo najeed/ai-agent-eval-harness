@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document Patient Outreach Call",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11382-document-patient-outreach-call"
   },
   "description": "A care manager calls a high-risk patient to check on their status after a recent hospital discharge.",
   "industry": "Healthcare",

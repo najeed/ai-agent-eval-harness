@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Client Report with Written Insights",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12416-update-client-report-with-insights"
   },
   "description": "An account manager needs to add a written summary and key insights to an automated weekly performance report before sending it to the client.",
   "industry": "Marketing and Advertising",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Advance Ship Notice (ASN)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12257-send-advance-ship-notice"
   },
   "description": "After a shipment for a major retail partner has been dispatched, an EDI 856 (Advance Ship Notice) must be sent.",
   "industry": "Logistics and Warehousing",

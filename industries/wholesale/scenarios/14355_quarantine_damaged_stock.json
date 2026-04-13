@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Quarantine Damaged Stock",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14355-quarantine-damaged-stock"
   },
   "description": "A warehouse worker damages a pallet of goods with a forklift. The damaged items must be quarantined and removed from sellable inventory.",
   "industry": "Wholesale",

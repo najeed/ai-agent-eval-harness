@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up a Virtual Fence",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10171-virtual-fencing-setup"
   },
   "description": "A rancher wants to create a new virtual fence to confine cattle to a specific area of a large pasture without using physical fences.",
   "industry": "Agriculture",

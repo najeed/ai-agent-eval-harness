@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a New Vendor Setup Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00009-vendor-setup-request"
   },
   "description": "A department wants to purchase from a new vendor. AP needs to set up the vendor in the system before a PO can be issued.",
   "industry": "Accounting",

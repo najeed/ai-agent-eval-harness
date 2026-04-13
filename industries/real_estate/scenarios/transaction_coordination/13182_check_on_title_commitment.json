@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check on Title Commitment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13182-check-on-title-commitment"
   },
   "description": "The TC needs to ensure the title commitment has been issued and reviewed by the deadline.",
   "industry": "Real Estate",

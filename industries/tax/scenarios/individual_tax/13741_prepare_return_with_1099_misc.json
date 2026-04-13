@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Return with 1099-MISC Income",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13741-prepare-return-with-1099-misc"
   },
   "description": "An individual received a Form 1099-MISC for freelance work and needs to report it on their tax return.",
   "industry": "Tax",

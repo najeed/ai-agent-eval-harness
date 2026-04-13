@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Marketing Campaign ROI",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10338-audit-marketing-campaign-roi"
   },
   "description": "An operational auditor reviews a major marketing campaign to determine if it delivered a positive return on investment (ROI).",
   "industry": "Audit",

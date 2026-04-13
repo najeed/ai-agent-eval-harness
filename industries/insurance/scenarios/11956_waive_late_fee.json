@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Waive a Late Fee",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11956-waive-late-fee"
   },
   "description": "A long-time customer with a good payment history requests to have a late fee waived as a one-time courtesy.",
   "industry": "Insurance",

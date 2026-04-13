@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Clone Ad Set for A/B Testing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12433-clone-ad-set-for-testing"
   },
   "description": "A media buyer wants to test a new audience. They need to clone an existing ad set and change only the targeting.",
   "industry": "Marketing and Advertising",

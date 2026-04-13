@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Acoustic Leak Detection Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14136-leak-detection-in-dma"
   },
   "description": "The system analyzes data from acoustic sensors in a District Metered Area (DMA) to pinpoint a non-surfacing water leak.",
   "industry": "Utilities",

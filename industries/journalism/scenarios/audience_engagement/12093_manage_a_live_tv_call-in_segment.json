@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Live TV Call-In Segment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12093-manage-a-live-tv-call-in-segment"
   },
   "description": "A producer for a live TV news show must screen callers for a call-in segment with a political analyst.",
   "industry": "Journalism",

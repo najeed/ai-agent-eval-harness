@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Annual Fire Alarm System Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13156-schedule-fire-alarm-test"
   },
   "description": "The PM needs to schedule the legally required annual fire alarm system test for a commercial building.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request an Excavation Permit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11436-excavation-permit"
   },
   "description": "A crew needs to excavate a trench for a new pipeline. They must first get an excavation permit, which includes a check for underground utilities.",
   "industry": "Heavy Industries",

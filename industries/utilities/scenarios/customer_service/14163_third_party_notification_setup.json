@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set up Third-Party Notification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14163-third-party-notification-setup"
   },
   "description": "An elderly customer wants to designate their daughter to receive a copy of any disconnection notices.",
   "industry": "Utilities",

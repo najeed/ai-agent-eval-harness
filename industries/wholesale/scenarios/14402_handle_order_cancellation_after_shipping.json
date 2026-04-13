@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Order Cancellation After Shipping",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14402-handle-order-cancellation-after-shipping"
   },
   "description": "A customer calls to cancel an order, but it has already been shipped.",
   "industry": "Wholesale",

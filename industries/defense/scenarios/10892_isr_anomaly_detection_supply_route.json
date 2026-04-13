@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Supply Route Anomaly Detection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10892-isr-anomaly-detection-supply-route"
   },
   "description": "An analyst must monitor traffic patterns on a main supply route to detect behavior indicative of a planned ambush, like the absence of normal traffic.",
   "industry": "Defense",

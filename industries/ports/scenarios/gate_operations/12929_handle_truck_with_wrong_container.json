@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Truck Arriving for the Wrong Container",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12929-handle-truck-with-wrong-container"
   },
   "description": "A truck arrives with an appointment to pick up container A, but they have physically brought container B to drop off.",
   "industry": "Ports",

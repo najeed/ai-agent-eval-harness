@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dairy Cow Health Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10104-dairy-cow-health-alert"
   },
   "description": "A wearable sensor on a dairy cow triggers an alert for reduced rumination and activity, indicating a potential health issue.",
   "industry": "Agriculture",

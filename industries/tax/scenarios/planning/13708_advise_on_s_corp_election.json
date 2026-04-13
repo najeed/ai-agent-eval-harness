@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advise on S-Corp Election",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13708-advise-on-s-corp-election"
   },
   "description": "The owner of a profitable LLC wants to know if electing to be taxed as an S-Corporation would save them money on self-employment taxes.",
   "industry": "Tax",

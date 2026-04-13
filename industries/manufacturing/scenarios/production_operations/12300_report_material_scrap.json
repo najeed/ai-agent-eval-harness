@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Material Scrap",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12300-report-material-scrap"
   },
   "description": "A machine operator needs to report a quantity of raw material that was scrapped during a production run due to a defect.",
   "industry": "Manufacturing",

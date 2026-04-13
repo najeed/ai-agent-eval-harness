@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Stop Water Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13047-stop-water-service"
   },
   "description": "A resident is moving out of the city and needs to close their water utility account.",
   "industry": "Public Sector",

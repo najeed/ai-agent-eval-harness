@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Stormwater Pollution Prevention Plan (SWPPP) Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10630-manage-swppp-inspection"
   },
   "description": "A government inspector is on site to conduct a SWPPP inspection. The safety manager must provide the required documentation.",
   "industry": "Construction",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Inefficient Bins for Relocation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13536-identify-inefficient-bins-for-relocation"
   },
   "description": "An operator analyzes waste collection data to find smart bins that are consistently underutilized, suggesting they could be relocated.",
   "industry": "Smart Cities",

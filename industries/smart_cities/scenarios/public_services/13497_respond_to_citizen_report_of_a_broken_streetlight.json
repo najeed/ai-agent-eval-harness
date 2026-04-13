@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to Citizen Report of a Broken Streetlight",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13497-respond-to-citizen-report-of-a-broken-streetlight"
   },
   "description": "A citizen reports a broken streetlight via the city's mobile app. An operator must create a work order for the repair.",
   "industry": "Smart Cities",

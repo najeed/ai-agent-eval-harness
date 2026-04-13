@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Sign-off",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11776-project-sign-off"
   },
   "description": "An implementation project has been completed, and the consultant needs to get formal sign-off from the customer.",
   "industry": "Information Technology Product",

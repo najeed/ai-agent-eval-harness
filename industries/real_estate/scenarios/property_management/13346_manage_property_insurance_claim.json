@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Property Insurance Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13346-manage-property-insurance-claim"
   },
   "description": "A hail storm damages the roof of a rental property. The property manager must file an insurance claim.",
   "industry": "Real Estate",

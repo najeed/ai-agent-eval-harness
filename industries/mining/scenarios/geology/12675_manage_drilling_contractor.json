@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Drilling Contractor Performance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12675-manage-drilling-contractor"
   },
   "description": "An exploration manager reviews the performance of a drilling contractor to ensure they are meeting their contractual obligations.",
   "industry": "Mining",

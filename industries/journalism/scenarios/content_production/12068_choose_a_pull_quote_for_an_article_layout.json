@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Choose a 'Pull Quote' for an Article Layout",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12068-choose-a-pull-quote-for-an-article-layout"
   },
   "description": "A print designer needs a 'pull quote' (a short, compelling excerpt) from a feature story to use as a large, graphical element in the layout.",
   "industry": "Journalism",

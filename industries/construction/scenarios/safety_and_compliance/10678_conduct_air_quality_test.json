@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Post-Abatement Air Quality Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10678-conduct-air-quality-test"
   },
   "description": "After asbestos abatement work, a safety officer must ensure an independent air quality test is performed and passed before allowing other workers into the area.",
   "industry": "Construction",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Root Cause Analysis (RCA) for a Breakdown",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12366-perform-root-cause-analysis-for-breakdown"
   },
   "description": "Following a major equipment failure, a reliability engineer needs to lead a formal Root Cause Analysis (RCA).",
   "industry": "Manufacturing",

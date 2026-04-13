@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Return Off-Spec Raw Material to Vendor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10552-return-product-to-vendor"
   },
   "description": "An incoming raw material failed QC testing and needs to be returned to the supplier.",
   "industry": "Chemicals",

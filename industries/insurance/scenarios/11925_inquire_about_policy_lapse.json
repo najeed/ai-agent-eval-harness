@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About a Lapsed Life Insurance Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11925-inquire-about-policy-lapse"
   },
   "description": "A customer calls after receiving a notice that their life insurance policy has lapsed due to non-payment.",
   "industry": "Insurance",

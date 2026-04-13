@@ -8,7 +8,7 @@ This guide is for engineers building on or extending the AgentV harness.
 ## 📂 Repository Architecture
 
 - **`eval_runner/`**: The core Python package. Includes the engine, loaders, metrics, and simulators.
-- **`industries/`**: The authoritative industrial scenario library.
+- **`industries/`**: The industrial scenario library.
 - **`reports/`**: Destination for generated HTML and JSON results.
 - **`runs/`**: The "Flight Recorder" storage for `.jsonl` execution traces.
 - **`tests/`**: Unit and integration test suites.

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate Care with a Specialist",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11383-coordinate-with-specialist"
   },
   "description": "A primary care provider's care manager needs to send a referral and relevant patient information to a cardiologist's office.",
   "industry": "Healthcare",

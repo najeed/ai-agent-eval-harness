@@ -12,7 +12,7 @@ async def test_tool_sandbox_metadata_captures_snapshot():
     config.RegistryManager.reload()
 
     scenario = {
-        "scenario_id": "snapshot_test",
+        "id": "snapshot_test",
         "metadata": {"name": "Snapshot Test", "compliance_level": "Standard"},
         "workflow": {"nodes": [], "edges": []},
     }
@@ -41,7 +41,7 @@ async def test_api_simulator_uses_registry_defaults():
     config.RegistryManager.reload()
 
     scenario = {
-        "scenario_id": "api_test",
+        "id": "api_test",
         "metadata": {"name": "API Test", "compliance_level": "Standard"},
         "workflow": {"nodes": [], "edges": []},
     }

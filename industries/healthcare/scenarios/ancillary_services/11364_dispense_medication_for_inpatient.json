@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispense Medication for an Inpatient",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11364-dispense-medication-for-inpatient"
   },
   "description": "A pharmacy technician needs to fill a medication order for an inpatient.",
   "industry": "Healthcare",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Grant Reporting Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13019-check-grant-report-status"
   },
   "description": "A non-profit that received a government grant is checking to see if their quarterly report was received.",
   "industry": "Public Sector",

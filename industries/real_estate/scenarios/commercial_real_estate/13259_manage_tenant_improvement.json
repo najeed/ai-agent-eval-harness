@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Tenant Improvement (TI) Project",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13259-manage-tenant-improvement"
   },
   "description": "A new office tenant receives a TI allowance to build out their space. The property manager must oversee the project.",
   "industry": "Real Estate",

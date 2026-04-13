@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Virtual Screening of Compounds",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12881-perform-virtual-screening"
   },
   "description": "A computational chemist wants to perform a virtual screen of a large compound library against a protein target structure.",
   "industry": "Pharmaceuticals and Life Sciences",

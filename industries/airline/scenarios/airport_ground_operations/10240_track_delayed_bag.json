@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track a Delayed Bag",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10240-track-delayed-bag"
   },
   "description": "A passenger whose bag was delayed is calling for a status update. An agent must check the tracking system.",
   "industry": "Airline",

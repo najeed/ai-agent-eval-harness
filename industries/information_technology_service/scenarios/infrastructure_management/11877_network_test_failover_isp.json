@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Server & Network - Test ISP Failover",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11877-network-test-failover-isp"
   },
   "description": "A technician needs to test the automatic internet failover at a client site with two ISP connections.",
   "industry": "Information Technology Service",

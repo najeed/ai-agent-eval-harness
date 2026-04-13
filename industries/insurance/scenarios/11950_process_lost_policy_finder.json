@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Lost Policy Finder Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11950-process-lost-policy-finder"
   },
   "description": "A person believes their deceased relative had a life insurance policy with the company but cannot find it.",
   "industry": "Insurance",

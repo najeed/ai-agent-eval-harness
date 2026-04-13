@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Employee Calls in Sick",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11574-employee-calls-in-sick"
   },
   "description": "A front desk agent calls in sick for their shift, and the manager needs to find a replacement.",
   "industry": "Hospitality",

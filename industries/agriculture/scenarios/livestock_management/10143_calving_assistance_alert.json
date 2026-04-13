@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calving Assistance Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10143-calving-assistance-alert"
   },
   "description": "A sensor monitoring a pregnant cow's behavior indicates she has been in labor for an extended period, suggesting a difficult birth.",
   "industry": "Agriculture",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Application for Potential Fraud",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11976-review-application-for-fraud"
   },
   "description": "An underwriter's automated system flags a new life insurance application for potential fraud.",
   "industry": "Insurance",

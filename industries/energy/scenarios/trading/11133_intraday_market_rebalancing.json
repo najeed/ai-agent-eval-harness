@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Intraday Market Rebalancing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11133-intraday-market-rebalancing"
   },
   "description": "A wind farm's generation is coming in lower than the day-ahead forecast. The trader must rebalance the position in the intraday market to avoid penalties.",
   "industry": "Energy",

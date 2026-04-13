@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Data Source Connection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12486-verify-data-source-connection"
   },
   "description": "A dashboard is showing an error. An analyst needs to verify that the connection to the underlying data source is still active.",
   "industry": "Marketing and Advertising",

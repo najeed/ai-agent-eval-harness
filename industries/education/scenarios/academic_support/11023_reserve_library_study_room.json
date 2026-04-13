@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reserve Library Group Study Room",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11023-reserve-library-study-room"
   },
   "description": "A group of students needs to reserve a group study room in the main library for next Tuesday.",
   "industry": "Education",

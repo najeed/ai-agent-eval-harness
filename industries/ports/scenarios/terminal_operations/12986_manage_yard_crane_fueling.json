@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Yard Crane Fueling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12986-manage-yard-crane-fueling"
   },
   "description": "A rubber-tired gantry (RTG) crane in the yard is running low on fuel. The fleet manager must arrange for refueling.",
   "industry": "Ports",

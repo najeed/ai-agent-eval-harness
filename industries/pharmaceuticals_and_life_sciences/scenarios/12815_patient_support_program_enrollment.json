@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Enroll Patient in Support Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12815-patient-support-program-enrollment"
   },
   "description": "A case manager for a patient support program receives a request to enroll a new patient and verify their benefits for a specialty drug.",
   "industry": "Pharmaceuticals and Life Sciences",

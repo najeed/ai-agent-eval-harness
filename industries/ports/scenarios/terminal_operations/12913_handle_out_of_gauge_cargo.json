@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Out-of-Gauge (OOG) Cargo",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12913-handle-out-of-gauge-cargo"
   },
   "description": "A large piece of machinery that doesn't fit in a standard container (OOG) needs to be loaded onto a vessel.",
   "industry": "Ports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Crew Rest Periods",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14029-manage-crew-rest-periods"
   },
   "description": "A crew dispatcher must ensure that a train crew does not violate federally mandated rest period rules.",
   "industry": "Transportation",

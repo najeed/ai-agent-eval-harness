@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Lost Season Tickets",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14264-manage-lost-season-tickets"
   },
   "description": "A season ticket holder reports that they have lost their physical season ticket booklet.",
   "industry": "Venues",

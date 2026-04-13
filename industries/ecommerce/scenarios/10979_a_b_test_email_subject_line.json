@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "A/B Test an Email Subject Line",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10979-a-b-test-email-subject-line"
   },
   "description": "A marketer wants to test two different subject lines for a promotional email to see which one has a better open rate.",
   "industry": "Ecommerce",

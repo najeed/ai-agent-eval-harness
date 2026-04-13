@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit a Key Software Vendor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10312-audit-key-software-vendor"
   },
   "description": "An auditor assesses the risks associated with a critical third-party software-as-a-service (SaaS) vendor.",
   "industry": "Audit",

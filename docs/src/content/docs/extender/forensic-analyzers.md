@@ -18,8 +18,11 @@ class DatabaseIntegrityAnalyzer(BaseForensicAnalyzer):
         return FailureCategory.LOGIC_STATE_MISMATCH
 ```
 
+### Participation in the Weighted Model
+In AES v1.5, the triage engine uses a **Weighted Evidence Model**. When your analyzer returns a `FailureCategory`, it is automatically registered as a forensic trigger in the [Causal Chain](/spec/forensic-ledger-schema/). Enterprise-tier analyzers can return enriched metadata objects (containing confidence and severity) for superior ranking.
+
 ### `analyze(history, task_result=None)`
-- **history**: A list of turn dictionaries (role: 'agent' or 'environment').
+- **history**: A list of turn dictionaries. Each turn contains an `identity` (e.g., `agent_id`, `system_id`) and a `role` (`user`, `agent`).
 - **task_result**: A dictionary containing the [Forensic Ledger](/spec/forensic-ledger-schema/) (snapshots, telemetry, registries).
 - **Return**: A `FailureCategory` if a match is found, otherwise `None`.
 
@@ -59,10 +62,11 @@ class StateActionAnalyzer(BaseForensicAnalyzer):
         if not task_result: return None
         
         snapshots = task_result.get("state_snapshots", [])
-        agent_msgs = [m for m in history if m.get("role") == "agent"]
+        # Anchoring logic: Prioritize 'identity' over legacy 'role'
+        agent_msgs = [m for m in history if m.get("identity") == "agent_id"]
         
         for msg in agent_msgs:
-            if "deleted" in msg.get("content", "").lower():
+            if "deleted" in str(msg.get("content", "")).lower():
                 # If everything remained identical across all turns
                 if len(set(snapshots)) == 1:
                     return FailureCategory.LOGIC_STATE_MISMATCH

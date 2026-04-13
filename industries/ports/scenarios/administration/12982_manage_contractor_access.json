@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Contractor Access",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12982-manage-contractor-access"
   },
   "description": "A third-party contractor needs temporary access to the port to perform work. The admin must issue a temporary pass.",
   "industry": "Ports",

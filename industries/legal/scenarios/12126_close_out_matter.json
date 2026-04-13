@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Close Out a Matter",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12126-close-out-matter"
   },
   "description": "A case has concluded, and a paralegal needs to perform the administrative steps to close the matter.",
   "industry": "Legal",

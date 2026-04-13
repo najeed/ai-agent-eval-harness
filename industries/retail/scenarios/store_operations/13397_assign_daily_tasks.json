@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assign Daily Tasks",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13397-assign-daily-tasks"
   },
   "description": "A shift supervisor needs to assign restocking and cleaning tasks to associates for the current shift.",
   "industry": "Retail",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Non-Profit Discount Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11737-non-profit-discount-request"
   },
   "description": "A representative from a registered non-profit organization inquires about special pricing.",
   "industry": "Information Technology Product",

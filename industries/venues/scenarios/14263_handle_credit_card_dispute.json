@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Credit Card Chargeback",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14263-handle-credit-card-dispute"
   },
   "description": "The venue receives a credit card chargeback from a guest who claims they did not make a $50 purchase at a concession stand.",
   "industry": "Venues",

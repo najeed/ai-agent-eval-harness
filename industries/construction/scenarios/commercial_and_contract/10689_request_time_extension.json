@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Time Extension",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10689-request-time-extension"
   },
   "description": "Due to a client-caused delay, a PM needs to submit a formal request for a contract time extension.",
   "industry": "Construction",

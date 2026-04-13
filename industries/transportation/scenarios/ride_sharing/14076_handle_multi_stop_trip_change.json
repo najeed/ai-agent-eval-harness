@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Multi-Stop Trip Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14076-handle-multi-stop-trip-change"
   },
   "description": "During a trip with multiple stops, a rider wants to add another stop.",
   "industry": "Transportation",

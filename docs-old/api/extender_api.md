@@ -23,7 +23,7 @@ Generates a short-lived (60s) JWT handoff token for secure frontend-to-plugin co
 ### 📋 System & Metadata
 
 #### `GET /api/info`
-Returns the authoritative system status, including:
+Returns the system status, including:
 - Engine version.
 - Count of active plugins, adapters, and environment shims.
 - Configured agent endpoints (Gemini, Claude, Ollama).
@@ -41,23 +41,47 @@ Faceted search across the scenario catalog.
 - **Query Params**: `q` (search string), `industry`, `difficulty`, `limit`, `page`.
 
 #### `POST /api/scenarios`
-Saves or updates a scenario JSON file in the authoritative `industries/` directory.
+Saves or updates a scenario JSON file in the `industries/` directory.
 - **Body**: Complete AES V1.3 scenario JSON.
 - **Security**: Validates against the project jail and sanitizes industry paths.
 
 ---
 
-### ⚡ Execution & Monitoring
+#### `POST /api/v1/evaluate`
+Triggers an asynchronous evaluation run using the authoritative industrial namespace.
+- **Method**: `POST`
+- **Body**:
+    - `path` (string, **required**): Absolute or relative path to the scenario JSON.
+    - `max_turns` (int, optional): Maximum conversation depth (Default: 10).
+- **Response**:
+    ```json
+    {"status": "started", "run_id": "eval_20240412_..."}
+    ```
+- **Note**: This endpoint initiates a background thread. Results are streamed to `runs/<run_id>/run.jsonl`. This endpoint enforces strict vault affinity.
 
-#### `POST /api/evaluate`
-Triggers an asynchronous evaluation run.
-- **Body**: `{"path": "scenarios/my_test.json", "max_turns": 5}`
-- **Response**: `{"status": "started", "scenario_id": "..."}`
-- **Note**: Runs in a background thread to prevent blocking the Console API.
+#### `GET /api/v1/runs/<run_id>`
+Industrial Polling Primitive.
+- **Method**: `GET`
+- **Params**: None.
+- **Response**:
+    ```json
+    {
+      "run_id": "...",
+      "status": "COMPLETED",
+      "source": "vault",
+      "path": "runs/.../run.jsonl",
+      "size": 12450,
+      "mtime": 1712952000.0
+    }
+    ```
+- **Note**: Checks the authoritative vault first, falling back to a shallow scan of the master log if the vault directory is missing or unlinked.
 
 #### `GET /api/runs`
-Lists recent run traces, including both global logs and individual per-run artifacts.
-- **Filtering**: Supports `q` param for searching by Run ID or Scenario Name.
+Legacy faceted listing of all traces (supports master log and vault discovery).
+- **Method**: `GET`
+- **Params**:
+    - `q` (string, optional): Search filter for Run ID or Scenario Name.
+- **Filtering**: Supports shallow string matching across the forensic registry.
 
 ---
 
@@ -93,5 +117,27 @@ class MyCustomDashboardPlugin:
 
 These endpoints are unprotected to allow external deployment gates to verify results.
 
-- `GET /api/v1/certificates/<run_id>`: Industrial VC retrieval.
-- `GET /api/v1/verify/<run_id>`: SHA-256 integrity verification.
+- `POST /api/v1/certify`: Industrial Certification Service. Signs the trace zero-copy within the authoritative vault.
+    - **Body**:
+        - `run_id` (string, **required**): Unique identifier for the evaluation run.
+        - `identity` (string, optional): Signing Identity (Default: `system_id`).
+        - `status` (string, optional): Compliance outcome (e.g., `pass`, `fail`).
+        - `score` (float, optional): Normalized evaluation score (0.0 - 1.0).
+        - `policy_ref` (string, optional): Reference ID for the governing policy.
+        - `ttl` (int, optional): Certificate validity in days.
+    - **Response**: A complete VC v3 manifest containing the `sha256` hash and `provenance_chain`.
+    - **Note**: This requires write access to the vault. It generates `run_manifest.json` in the run directory.
+- `GET /v1/certificates/<run_id>`: Public Trust Protocol retrieval of the Verification Certificate (VC).
+    - **Response**: The raw VC v3 JSON manifest.
+    - **Note**: Unprotected endpoint for industrial deployment gates.
+- `GET /v1/verify/<run_id>`: Public Verification API for SHA-256 and cryptographic proof check.
+    - **Response**:
+        ```json
+        {
+          "run_id": "...",
+          "verified": true,
+          "timestamp": "2024-04-12T...",
+          "method": "ED25519 cryptographic signature proof"
+        }
+        ```
+    - **Note**: Performs a live integrity check comparing the `run.jsonl` trace against the issued manifest.

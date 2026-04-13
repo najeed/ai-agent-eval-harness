@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Prop Inventory for a TV Series",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12529-manage-prop-inventory"
   },
   "description": "A prop master needs to check the availability of a specific prop (a vintage telephone) for an upcoming shoot.",
   "industry": "Media and Entertainment",

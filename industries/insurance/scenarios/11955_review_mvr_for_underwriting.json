@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review MVR for Policy Renewal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11955-review-mvr-for-underwriting"
   },
   "description": "An underwriter is reviewing an auto policy for renewal and runs a new Motor Vehicle Report (MVR).",
   "industry": "Insurance",

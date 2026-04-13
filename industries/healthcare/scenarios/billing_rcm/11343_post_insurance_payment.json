@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Post an Insurance Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11343-post-insurance-payment"
   },
   "description": "A payment poster receives an Electronic Remittance Advice (ERA) from an insurance company and needs to post the payments and adjustments.",
   "industry": "Healthcare",

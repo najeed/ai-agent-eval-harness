@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find an Off-Market Deal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13390-find-off-market-deal"
   },
   "description": "A well-funded investor wants to buy a specific type of property (e.g., a grocery-anchored retail center) in a market with low inventory. The agent must find an off-market opportunity.",
   "industry": "Real Estate",

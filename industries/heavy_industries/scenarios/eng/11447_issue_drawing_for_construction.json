@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue Drawing for Construction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11447-issue-drawing-for-construction"
   },
   "description": "A design drawing has passed its final review and needs to be formally issued for construction.",
   "industry": "Heavy Industries",

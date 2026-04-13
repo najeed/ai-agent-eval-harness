@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Clinical Data Query",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12804-clinical-data-query-resolution"
   },
   "description": "A clinical data manager finds a discrepancy in the EDC system and must issue a query to the clinical site for clarification.",
   "industry": "Pharmaceuticals and Life Sciences",

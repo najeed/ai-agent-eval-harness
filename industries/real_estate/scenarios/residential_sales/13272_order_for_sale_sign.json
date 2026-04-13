@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Order a 'For Sale' Sign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13272-order-for-sale-sign"
   },
   "description": "For a new listing, the agent needs to order the installation of a 'For Sale' sign at the property.",
   "industry": "Real Estate",

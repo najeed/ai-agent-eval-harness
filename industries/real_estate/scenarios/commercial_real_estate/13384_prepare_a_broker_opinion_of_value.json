@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare a Broker Opinion of Value (BOV)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13384-prepare-a-broker-opinion-of-value"
   },
   "description": "A property owner wants to know the current market value of their small office building. They ask a commercial agent to prepare a BOV.",
   "industry": "Real Estate",

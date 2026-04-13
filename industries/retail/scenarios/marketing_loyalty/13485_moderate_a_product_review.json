@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Moderate a Product Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13485-moderate-a-product-review"
   },
   "description": "A new product review has been submitted and is waiting for moderation before it appears on the website.",
   "industry": "Retail",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct a Site Visit for an Event Planner",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11570-site-visit-for-event-planner"
   },
   "description": "A potential client for a large conference is visiting the hotel to see the facilities.",
   "industry": "Hospitality",

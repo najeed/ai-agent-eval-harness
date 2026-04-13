@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Submit an Expedited Safety Report (e.g., 15-day report)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12887-submit-expedited-safety-report"
   },
   "description": "A serious, unexpected adverse event has been processed and must be submitted to the FDA within 15 calendar days.",
   "industry": "Pharmaceuticals and Life Sciences",

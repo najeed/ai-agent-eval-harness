@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Employee Expense Report for Policy Violations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11256-review-employee-expense-report"
   },
   "description": "A compliance officer is reviewing an employee's expense report for any violations of company policy.",
   "industry": "Finance",

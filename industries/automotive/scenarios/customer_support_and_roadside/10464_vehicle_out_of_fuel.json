@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Roadside Assistance for Out of Fuel",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10464-vehicle-out-of-fuel"
   },
   "description": "A customer has run out of fuel and is stranded on the side of the road.",
   "industry": "Automotive",

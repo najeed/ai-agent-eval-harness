@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Product Demo Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11716-product-demo-request"
   },
   "description": "A qualified lead has requested a live product demonstration.",
   "industry": "Information Technology Product",

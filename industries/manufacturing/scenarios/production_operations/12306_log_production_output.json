@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Log Production Output",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12306-log-production-output"
   },
   "description": "An operator at the end of a shift needs to log the quantity of good parts produced for a specific work order.",
   "industry": "Manufacturing",

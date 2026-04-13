@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track CAPA Effectiveness",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12349-track-capa-effectiveness"
   },
   "description": "A CAPA was implemented 3 months ago. A quality manager needs to check its effectiveness by reviewing recent data.",
   "industry": "Manufacturing",

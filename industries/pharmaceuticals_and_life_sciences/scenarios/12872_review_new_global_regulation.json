@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assess Impact of New Global Regulation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12872-review-new-global-regulation"
   },
   "description": "A new regulation regarding medical device software has been published in the EU. A regulatory specialist must assess its impact.",
   "industry": "Pharmaceuticals and Life Sciences",

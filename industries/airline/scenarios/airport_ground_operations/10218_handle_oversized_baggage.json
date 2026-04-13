@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Oversized Baggage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10218-handle-oversized-baggage"
   },
   "description": "A passenger wants to check in a large item (e.g., a surfboard) that is considered oversized baggage.",
   "industry": "Airline",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Produce a Player Interview Segment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13632-produce-player-interview-segment"
   },
   "description": "A broadcast needs to produce a pre-recorded interview with a star player to air during a pre-game show.",
   "industry": "Sports",

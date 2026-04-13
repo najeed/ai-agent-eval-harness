@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Black Start Capability Test Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11154-black-start-capability-test"
   },
   "description": "A system operator needs to create a plan to test the black start capability of a power plant, which is its ability to start up without help from the grid.",
   "industry": "Energy",

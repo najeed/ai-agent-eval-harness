@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Search for Properties for a Buyer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13242-search-for-buyer-properties"
   },
   "description": "A buyer client has provided their search criteria. The agent needs to set up an automated MLS search for them.",
   "industry": "Real Estate",

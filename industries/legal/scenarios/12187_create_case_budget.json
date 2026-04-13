@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Case Budget",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12187-create-case-budget"
   },
   "description": "A client has requested a budget for a new litigation matter. A senior associate needs to create a phased budget.",
   "industry": "Legal",

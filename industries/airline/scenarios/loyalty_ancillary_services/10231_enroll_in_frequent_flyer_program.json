@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Enroll a New Member in the Frequent Flyer Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10231-enroll-in-frequent-flyer-program"
   },
   "description": "A customer wants to sign up for the airline's loyalty program.",
   "industry": "Airline",

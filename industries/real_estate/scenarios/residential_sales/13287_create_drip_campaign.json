@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Drip Campaign for New Leads",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13287-create-drip-campaign"
   },
   "description": "An agent wants to create an automated email drip campaign to nurture new buyer leads over several weeks.",
   "industry": "Real Estate",

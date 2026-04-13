@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write an Obituary",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12033-write-an-obituary"
   },
   "description": "A prominent community member has passed away. A reporter must write a respectful and comprehensive obituary.",
   "industry": "Journalism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft a Website Privacy Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12152-draft-privacy-policy"
   },
   "description": "An in-house counsel needs to draft a new privacy policy for the company's website to comply with regulations like GDPR and CCPA.",
   "industry": "Legal",

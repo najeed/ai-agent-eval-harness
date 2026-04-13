@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Project Schedule from Daily Log",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10651-update-schedule-from-daily-log"
   },
   "description": "A PM reviews the daily log and updates the main project schedule based on the reported progress.",
   "industry": "Construction",

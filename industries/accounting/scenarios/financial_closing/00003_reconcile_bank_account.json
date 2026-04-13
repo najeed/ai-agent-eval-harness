@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reconcile a Corporate Bank Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00003-reconcile-bank-account"
   },
   "description": "As part of the month-end close, an accountant needs to reconcile the main corporate bank account, matching transactions in the general ledger to the bank statement.",
   "industry": "Accounting",

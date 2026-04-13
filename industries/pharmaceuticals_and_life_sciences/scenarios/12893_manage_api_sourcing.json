@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Dual Sourcing for an API",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12893-manage-api-sourcing"
   },
   "description": "A supply chain manager needs to manage the supply of a critical API from two different qualified suppliers to mitigate risk.",
   "industry": "Pharmaceuticals and Life Sciences",

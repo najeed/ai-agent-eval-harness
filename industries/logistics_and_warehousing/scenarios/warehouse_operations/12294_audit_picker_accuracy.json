@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Picker Accuracy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12294-audit-picker-accuracy"
   },
   "description": "A manager wants to review the accuracy rates for individual pickers over the last week.",
   "industry": "Logistics and Warehousing",

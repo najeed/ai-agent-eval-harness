@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Maintenance Spare Parts Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10553-manage-maintenance-spare-parts"
   },
   "description": "A maintenance technician used the last spare gasket of a specific type. They need to record its use and trigger a reorder.",
   "industry": "Chemicals",

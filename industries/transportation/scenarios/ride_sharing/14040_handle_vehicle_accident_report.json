@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Vehicle Accident Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14040-handle-vehicle-accident-report"
   },
   "description": "A driver reports they have been in an accident during a trip. A safety agent must manage the initial response.",
   "industry": "Transportation",

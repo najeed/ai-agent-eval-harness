@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Log a Safety Observation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10525-log-safety-observation"
   },
   "description": "An employee observes a colleague wearing incorrect PPE and wants to log it in the safety observation system for trend analysis.",
   "industry": "Chemicals",

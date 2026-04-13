@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Train a Retailer on a New Product Line",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14341-train-retailer-on-new-product"
   },
   "description": "A wholesaler is launching a new, complex product line. An agent needs to schedule and conduct a training session for a key retailer's sales staff.",
   "industry": "Wholesale",

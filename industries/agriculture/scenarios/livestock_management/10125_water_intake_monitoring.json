@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cattle Water Intake Monitoring Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10125-water-intake-monitoring"
   },
   "description": "A smart water trough reports a significant drop in water consumption for a herd of cattle, suggesting a potential problem.",
   "industry": "Agriculture",

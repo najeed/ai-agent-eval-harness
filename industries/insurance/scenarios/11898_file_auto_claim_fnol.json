@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File an Auto Claim (FNOL)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11898-file-auto-claim-fnol"
   },
   "description": "A policyholder calls to report a minor car accident (fender bender). This is the First Notice of Loss (FNOL).",
   "industry": "Insurance",

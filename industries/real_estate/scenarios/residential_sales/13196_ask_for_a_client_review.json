@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Ask for a Client Review After Closing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13196-ask-for-a-client-review"
   },
   "description": "A transaction has successfully closed. The agent needs to ask the happy client for an online review.",
   "industry": "Real Estate",

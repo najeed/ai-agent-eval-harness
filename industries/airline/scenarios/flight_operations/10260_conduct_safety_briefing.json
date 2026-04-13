@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct a Pre-Flight Safety Briefing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10260-conduct-safety-briefing"
   },
   "description": "Before every flight, the cabin crew must conduct a safety briefing for passengers.",
   "industry": "Airline",

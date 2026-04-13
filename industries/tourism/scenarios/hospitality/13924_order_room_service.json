@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Order Room Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13924-order-room-service"
   },
   "description": "An in-house guest calls to order a club sandwich and a soda from the room service menu.",
   "industry": "Tourism",

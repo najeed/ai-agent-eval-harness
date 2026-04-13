@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Monthly Home Energy Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11131-home-energy-report-generation"
   },
   "description": "An agent needs to automatically generate a personalized monthly energy report for a residential customer with rooftop solar.",
   "industry": "Energy",

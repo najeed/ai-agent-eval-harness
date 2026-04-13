@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Aquaculture Water Quality",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10167-aquaculture-water-quality"
   },
   "description": "A fish farm manager gets an alert from a water quality sensor in a shrimp pond indicating low dissolved oxygen levels.",
   "industry": "Agriculture",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update the Official Port Tariff",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12969-manage-port-tariffs"
   },
   "description": "The port authority has approved a 3% annual increase in port charges. The finance department must update the official tariff document.",
   "industry": "Ports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft Community Engagement Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11128-community-engagement-plan"
   },
   "description": "A project developer needs to create a community engagement plan for a new wind farm project to address local concerns.",
   "industry": "Energy",

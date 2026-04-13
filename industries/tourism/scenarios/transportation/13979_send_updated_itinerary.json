@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Updated Itinerary After Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13979-send-updated-itinerary"
   },
   "description": "A flight time in a passenger's itinerary has been changed by the airline. The agent needs to send the updated itinerary.",
   "industry": "Tourism",

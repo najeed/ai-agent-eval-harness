@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Customer Address Verification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14381-handle-customer-address-verification"
   },
   "description": "A new order has a shipping address that cannot be verified by the shipping software. An agent must contact the customer to correct it.",
   "industry": "Wholesale",

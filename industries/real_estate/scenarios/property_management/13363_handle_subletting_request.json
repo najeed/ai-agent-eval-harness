@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Tenant's Subletting Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13363-handle-subletting-request"
   },
   "description": "A tenant requests permission to sublet their apartment for the summer.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assess Social Determinants of Health (SDoH)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11384-assess-social-determinants-of-health"
   },
   "description": "A social worker is screening a patient for social determinants of health, such as food insecurity and transportation issues.",
   "industry": "Healthcare",

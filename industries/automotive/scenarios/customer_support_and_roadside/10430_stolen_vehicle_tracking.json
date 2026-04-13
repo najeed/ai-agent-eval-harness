@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Stolen Vehicle Tracking Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10430-stolen-vehicle-tracking"
   },
   "description": "A customer reports their vehicle has been stolen and needs assistance locating it.",
   "industry": "Automotive",

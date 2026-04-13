@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Predictive Maintenance for a Bridge",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13512-schedule-predictive-maintenance-for-a-bridge"
   },
   "description": "The asset management system, based on sensor data and age, predicts that a bridge's expansion joints will need service soon.",
   "industry": "Smart Cities",

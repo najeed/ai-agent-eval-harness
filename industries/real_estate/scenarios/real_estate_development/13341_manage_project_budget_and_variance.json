@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Project Budget and Variance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13341-manage-project-budget-and-variance"
   },
   "description": "A development project manager must track construction costs against the budget and report on any variances.",
   "industry": "Real Estate",

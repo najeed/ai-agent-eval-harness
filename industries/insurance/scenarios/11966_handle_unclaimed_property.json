@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Unclaimed Property (Escheatment)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11966-handle-unclaimed-property"
   },
   "description": "A life insurance policy's death benefit was never claimed, and the funds must be turned over to the state as unclaimed property.",
   "industry": "Insurance",

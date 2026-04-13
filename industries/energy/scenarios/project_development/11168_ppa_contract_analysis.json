@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Draft PPA Contract for Risks",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11168-ppa-contract-analysis"
   },
   "description": "A legal analyst needs to review a draft Power Purchase Agreement (PPA) from a potential off-taker and identify any non-standard or high-risk clauses.",
   "industry": "Energy",

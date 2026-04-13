@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Contract Versions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12155-manage-contract-versions"
   },
   "description": "During a lengthy negotiation, multiple versions of a contract are being exchanged. A paralegal needs to manage version control.",
   "industry": "Legal",

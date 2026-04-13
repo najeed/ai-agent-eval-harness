@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Breeding Recommendation for Swine",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10117-breeding-recommendation-swine"
   },
   "description": "A swine farmer wants to select the best boar to breed with a specific sow to improve litter size.",
   "industry": "Agriculture",

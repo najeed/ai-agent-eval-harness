@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Segment Customer Data in a CDP",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12419-segment-customer-data"
   },
   "description": "An analyst needs to create a new audience segment in a Customer Data Platform (CDP) for customers who have viewed a specific product but not purchased.",
   "industry": "Marketing and Advertising",

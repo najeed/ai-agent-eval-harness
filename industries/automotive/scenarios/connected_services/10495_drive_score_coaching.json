@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Driving Score for Insurance Discount",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10495-drive-score-coaching"
   },
   "description": "A customer is enrolled in a usage-based insurance program and wants to review their driving score and get tips for improving it.",
   "industry": "Automotive",

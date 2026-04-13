@@ -31,7 +31,7 @@ def get_internal_spec_root() -> Path:
 
 
 def get_spec_root() -> Path:
-    """Dynamically resolves the specification root based on the authoritative PROJECT_ROOT."""
+    """Dynamically resolves the specification root based on the PROJECT_ROOT."""
     return config.PROJECT_ROOT / "spec"
 
 
@@ -115,7 +115,7 @@ def _get_schema() -> dict:
     """Lazy-loads and caches the scenario JSON schema. Forensic: Logical resolution."""
     global _SCENARIO_SCHEMA
     if _SCENARIO_SCHEMA is None:
-        # Prefer the internal baseline for authoritative platform logic
+        # Prefer the internal baseline for platform logic
         schema_path = get_internal_spec_root() / "aes" / "aes.schema.json"
         with open(schema_path, encoding="utf-8") as f:
             _SCENARIO_SCHEMA = json.load(f)
@@ -166,6 +166,33 @@ def load_jsonl(file_path: Path) -> list[dict]:
 def load_single_scenario(file_path: Path) -> list[dict]:
     """Loads a single scenario JSON file and returns it as a list."""
     return [load_scenario(str(file_path))]
+
+
+def _normalize_identity(scenario_data: dict, file_path: Path) -> dict:
+    """
+    Authoritative Identifier Resolution (AES v1.4.0 Compliance).
+    Unifies identity across metadata blocks, legacy keys, and physical storage.
+    """
+    metadata = scenario_data.get("metadata", {})
+
+    # 1. Authoritative Resolution Cascade (Guardrails v3.4 Section 1.6)
+    # Priority: metadata.id -> scenario_data.id -> legacy scenario_id -> filename stem
+    legacy_id = scenario_data.pop("scenario_id", None)
+    identifier = metadata.get("id") or scenario_data.get("id") or legacy_id or file_path.stem
+
+    # 2. Top-level Engine ID (Required for evaluation context and reporting)
+    scenario_data["id"] = identifier
+
+    # 3. Synchronize Metadata for downstream plugin compatibility
+    if "id" not in metadata:
+        metadata["id"] = identifier
+    scenario_data["metadata"] = metadata
+
+    # 4. Clean up legacy traces to prevent audit pollution
+    if "scenario_id" in scenario_data:
+        del scenario_data["scenario_id"]
+
+    return scenario_data
 
 
 def load_scenario(
@@ -251,6 +278,9 @@ def load_scenario(
 
     # Inject path for traceability in repro scripts/reports
     scenario_data["path"] = path_str
+
+    # --- FORENSIC IDENTITY HARDENING ---
+    scenario_data = _normalize_identity(scenario_data, file_path)
 
     return scenario_data
 

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update League Standings in Real Time",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13605-update-league-standings-in-real-time"
   },
   "description": "As a game ends, an agent must immediately update the official league standings.",
   "industry": "Sports",

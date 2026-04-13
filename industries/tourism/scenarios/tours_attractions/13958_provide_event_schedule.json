@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Event Schedule for a Festival",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13958-provide-event-schedule"
   },
   "description": "A visitor at a music festival wants to know the performance schedule for the main stage today.",
   "industry": "Tourism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send 'We Miss You' Email",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13491-send-we-miss-you-email"
   },
   "description": "The marketing system needs to send a re-engagement email to customers who have not made a purchase in the last six months.",
   "industry": "Retail",

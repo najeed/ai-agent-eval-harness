@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Data Retention Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11280-manage-data-retention-policy"
   },
   "description": "A compliance officer needs to ensure that financial records older than the 7-year retention policy are being properly archived or disposed of.",
   "industry": "Finance",

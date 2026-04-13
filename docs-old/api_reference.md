@@ -1,6 +1,6 @@
 # API Reference (Programmatic Authorization)
 
-This document provides a technical guide for interacting with the Advanced AgentEval Harness REST API using specialized service keys.
+This document provides a technical guide for interacting with the Advanced AgentV Harness REST API using specialized service keys.
 
 ## Authentication
 
@@ -43,19 +43,24 @@ Triggers an evaluation of a specific scenario in a background thread.
 {
   "status": "started",
   "message": "Evaluation started for loan_decision.yaml",
-  "scenario_id": "fin_loan_001"
+  "id": "fin_loan_001"
 }
 ```
 
 ### 2. Verify Run (Public Trust)
 `GET /v1/verify/<run_id>`
 
-Public endpoint that verifies a completed run against its industrial manifest using autonomous artifact resolution.
+Public endpoint that verifies a completed run against its industrial manifest using autonomous artifact resolution. (Unprotected for Public Trust compatibility).
 
 ### 3. Retrieve Certificate (Industrial VC)
 `GET /v1/certificates/<run_id>`
 
-Retrieves the authoritative Verification Certificate (VC) for a specific run, including SHA-256 hashes and identity signatures.
+Retrieves the Verification Certificate (VC) for a specific run, including SHA-256 hashes and identity signatures. (Unprotected for Public Trust compatibility).
+
+### 4. Identity Resolution (Public)
+`GET /v1/identity/<identity_id>/public_key`
+
+Resolves the public key for a forensic identity to support multi-party signature verification. (Unprotected for Public Trust compatibility).
 
 ---
 

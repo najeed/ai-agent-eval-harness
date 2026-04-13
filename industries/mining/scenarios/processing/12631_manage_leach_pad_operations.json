@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Heap Leach Pad Operations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12631-manage-leach-pad-operations"
   },
   "description": "An operator at a gold mine manages the application of cyanide solution to a heap leach pad to dissolve the gold.",
   "industry": "Mining",

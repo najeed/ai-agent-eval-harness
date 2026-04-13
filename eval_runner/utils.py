@@ -22,7 +22,7 @@ INDUSTRY_MAPPING = {
 
 
 def normalize_industry(industry: str) -> str:
-    """Normalizes industry identifier to the authoritative AES standard."""
+    """Normalizes industry identifier to the AES standard."""
     if not industry:
         return "generic"
 

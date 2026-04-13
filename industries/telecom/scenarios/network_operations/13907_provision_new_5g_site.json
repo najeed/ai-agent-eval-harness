@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provision New 5G Site",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13907-provision-new-5g-site"
   },
   "description": "A new 5G cell site has been physically installed. The agent must remotely configure and activate it.",
   "industry": "Telecom",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Procure a Piece of Heavy Equipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11486-procure-heavy-equipment"
   },
   "description": "A mining project needs to purchase a new haul truck. The procurement manager must manage the process.",
   "industry": "Heavy Industries",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create A/B Test for an Email Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13484-create-a-b-test-for-email-campaign"
   },
   "description": "A marketing manager wants to test two different subject lines for an upcoming promotional email to see which one gets a higher open rate.",
   "industry": "Retail",

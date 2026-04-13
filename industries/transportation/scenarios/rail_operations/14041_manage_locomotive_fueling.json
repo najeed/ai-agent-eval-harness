@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Locomotive Fueling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14041-manage-locomotive-fueling"
   },
   "description": "A locomotive is running low on fuel. A yard dispatcher must schedule it for fueling.",
   "industry": "Transportation",

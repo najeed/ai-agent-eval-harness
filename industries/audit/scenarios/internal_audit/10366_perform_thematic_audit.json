@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Thematic Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10366-perform-thematic-audit"
   },
   "description": "The Chief Audit Executive requests a thematic audit focusing on the use of consultants across the entire organization.",
   "industry": "Audit",

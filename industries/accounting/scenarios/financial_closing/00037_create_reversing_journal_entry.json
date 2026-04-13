@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Post a Reversing Journal Entry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00037-create-reversing-journal-entry"
   },
   "description": "An accountant needs to reverse the prior month's AP accrual at the beginning of the new month.",
   "industry": "Accounting",

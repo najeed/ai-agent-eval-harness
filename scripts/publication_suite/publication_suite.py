@@ -32,7 +32,7 @@ def main():
     args = parser.parse_args()
 
     print("=" * 60)
-    print(" AGENTEVAL ADVANCED PUBLICATION SUITE (v4)")
+    print(" AgentV ADVANCED PUBLICATION SUITE (v4)")
     print("=" * 60)
 
     suite_dir = Path(__file__).parent.absolute()

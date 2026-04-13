@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan for Required Minimum Distribution (RMD) Taxes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13737-plan-for-rmd-taxes"
   },
   "description": "A retiree needs to take their first RMD from their traditional IRA and wants to plan for the income tax.",
   "industry": "Tax",

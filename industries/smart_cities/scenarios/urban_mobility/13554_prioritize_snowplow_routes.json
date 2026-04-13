@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prioritize Snowplow Routes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13554-prioritize-snowplow-routes"
   },
   "description": "After a heavy snowfall, an operator must prioritize snowplow routes, starting with major roads and bus routes.",
   "industry": "Smart Cities",

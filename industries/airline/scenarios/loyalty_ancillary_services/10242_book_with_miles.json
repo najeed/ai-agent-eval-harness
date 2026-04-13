@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book an Award Flight with Miles",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10242-book-with-miles"
   },
   "description": "A frequent flyer member wants to book a round-trip flight using their miles.",
   "industry": "Airline",

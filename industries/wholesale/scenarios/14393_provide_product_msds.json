@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide a Material Safety Data Sheet (MSDS)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14393-provide-product-msds"
   },
   "description": "A retailer needs the MSDS for a chemical product they purchase.",
   "industry": "Wholesale",

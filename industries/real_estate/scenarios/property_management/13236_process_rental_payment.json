@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Rental Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13236-process-rental-payment"
   },
   "description": "A tenant has paid rent via an online portal. The agent must ensure the payment is correctly applied to their ledger.",
   "industry": "Real Estate",

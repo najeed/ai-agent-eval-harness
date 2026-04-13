@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Close Out a Punch List Item",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10638-close-out-punch-list-item"
   },
   "description": "A subcontractor has fixed a paint defect. The quality inspector must verify the fix and close the punch list item.",
   "industry": "Construction",

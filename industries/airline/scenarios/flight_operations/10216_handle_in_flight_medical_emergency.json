@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an In-Flight Medical Emergency",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10216-handle-in-flight-medical-emergency"
   },
   "description": "A passenger is experiencing a medical emergency in-flight. The cabin crew must respond and coordinate with the flight crew and ground support.",
   "industry": "Airline",

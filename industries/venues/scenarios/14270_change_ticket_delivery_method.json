@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Ticket Delivery Method",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14270-change-ticket-delivery-method"
   },
   "description": "A customer who chose to have their tickets mailed now wants to switch to digital mobile tickets.",
   "industry": "Venues",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Preventative Maintenance on a Pump",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10508-schedule-preventative-maintenance"
   },
   "description": "A maintenance planner needs to schedule a required 6-month preventative maintenance (PM) task on a critical process pump, minimizing production downtime.",
   "industry": "Chemicals",

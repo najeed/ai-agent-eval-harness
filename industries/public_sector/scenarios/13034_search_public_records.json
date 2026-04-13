@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Search Public Property Records",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13034-search-public-records"
   },
   "description": "A citizen wants to find the name of the owner of a specific property.",
   "industry": "Public Sector",

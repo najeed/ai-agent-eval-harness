@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Incorrect Room Rate Charge",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13975-handle-incorrect-room-charge"
   },
   "description": "A guest claims the rate charged on their folio is higher than the rate quoted in their confirmation email.",
   "industry": "Tourism",

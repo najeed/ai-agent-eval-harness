@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Post-Sale Accessory Add-On",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10432-accessory-add-on-sale"
   },
   "description": "A customer who recently bought a truck wants to purchase and have a bed liner installed.",
   "industry": "Automotive",

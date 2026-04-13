@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File Annual OSHA Injury Summary",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10692-file-annual-injury-summary"
   },
   "description": "It's the end of the calendar year. A safety director must compile and electronically file the OSHA Form 300A, the summary of work-related injuries and illnesses.",
   "industry": "Construction",

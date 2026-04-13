@@ -39,19 +39,30 @@ class SessionManager:
     """
 
     def __init__(self, run_id: str, scenario: dict, metadata: dict | None = None):
-        from .engine import MAX_TURNS
         from .plugins import PluginManager
 
         self.run_id = run_id
         self.scenario = scenario
+        # Authoritatively inject run_id for downstream forensic affinity (e.g., ToolSandbox)
+        self.scenario["run_id"] = run_id
+
+        # [AES v1.5.0] Authoritative Metadata Propagation
         self.metadata = metadata or {}
+        # Centralized identifier (resolved and normalized in Loader)
+        self.identifier = scenario["id"]
+
         self.session_metadata = dict(metadata) if metadata else {}
-        self.max_turns = int(scenario.get("max_turns", MAX_TURNS))
+        self.session_metadata.setdefault("identifier", self.identifier)
+        # Avoid literal "unknown" string; let events.py omit if None
+        self.session_metadata.setdefault("span_context", self.metadata.get("span_context"))
+
+        self.max_turns = int(scenario.get("max_turns", config.EVAL_MAX_TURNS)) or 10
         self.fork_depth = scenario.get("_fork_depth", 0)
 
         # Identity Propagation (v1.4.1 Hardening)
         # Allows external tools/plugins to align artifacts with the session identity.
         os.environ["AES_RUN_ID"] = run_id
+        os.environ["AES_IDENTIFIER"] = self.identifier
 
         # Session-Scoped Infrastructure
         self.event_bus = EventEmitter(run_id=run_id)

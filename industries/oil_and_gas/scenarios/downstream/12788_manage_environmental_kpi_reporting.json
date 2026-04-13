@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monthly Environmental KPI Reporting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12788-manage-environmental-kpi-reporting"
   },
   "description": "An HSE manager compiles the monthly environmental performance report for a refinery, including metrics on emissions, spills, and waste disposal.",
   "industry": "Oil and Gas",

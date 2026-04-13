@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Automated Irrigation System Fault Detection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10136-automated-irrigation-repair"
   },
   "description": "A center pivot irrigation system reports a pressure drop in one of its spans, indicating a leak or broken sprinkler.",
   "industry": "Agriculture",

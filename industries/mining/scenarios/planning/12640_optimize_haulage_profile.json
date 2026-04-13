@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Optimize Mine Haulage Profile",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12640-optimize-haulage-profile"
   },
   "description": "A planning engineer analyzes the mine's haulage routes and production schedule to optimize truck fleet requirements over the next year.",
   "industry": "Mining",

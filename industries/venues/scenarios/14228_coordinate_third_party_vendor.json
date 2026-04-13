@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate with a Third-Party Security Vendor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14228-coordinate-third-party-vendor"
   },
   "description": "A large music festival requires additional security beyond the in-house team, so a third-party security firm has been hired.",
   "industry": "Venues",

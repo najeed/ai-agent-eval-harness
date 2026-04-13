@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Facility Safety Hazard",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11088-report-facility-safety-hazard"
   },
   "description": "A staff member reports a large water spill on the floor of a main hallway, creating a slip hazard.",
   "industry": "Education",

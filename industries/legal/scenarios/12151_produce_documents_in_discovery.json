@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Produce Documents in Discovery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12151-produce-documents-in-discovery"
   },
   "description": "After completing a document review, a paralegal needs to produce the 'Responsive' and non-privileged documents to the opposing counsel.",
   "industry": "Legal",

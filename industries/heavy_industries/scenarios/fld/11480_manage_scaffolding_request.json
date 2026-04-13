@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Scaffolding Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11480-manage-scaffolding-request"
   },
   "description": "A crew needs scaffolding erected to access a work area at height.",
   "industry": "Heavy Industries",

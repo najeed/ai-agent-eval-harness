@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Clean a Customer Data List",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12427-clean-customer-data-list"
   },
   "description": "An analyst needs to clean a list of customer data before importing it into a new marketing automation platform, removing duplicates and correcting formatting.",
   "industry": "Marketing and Advertising",

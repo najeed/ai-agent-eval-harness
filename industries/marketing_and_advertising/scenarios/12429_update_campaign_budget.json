@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Campaign Budget",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12429-update-campaign-budget"
   },
   "description": "A campaign is performing better than expected, and the client has approved an additional budget. The manager needs to update the daily budget in the ad platform.",
   "industry": "Marketing and Advertising",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate a Rental Car for a Long Repair",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10470-rental-car-coordination"
   },
   "description": "A customer's vehicle requires a lengthy, multi-day repair that is covered by warranty. The service advisor needs to arrange a rental car for them.",
   "industry": "Automotive",

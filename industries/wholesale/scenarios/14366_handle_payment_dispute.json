@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Customer Payment Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14366-handle-payment-dispute"
   },
   "description": "A customer claims they already paid an invoice that is showing as overdue.",
   "industry": "Wholesale",

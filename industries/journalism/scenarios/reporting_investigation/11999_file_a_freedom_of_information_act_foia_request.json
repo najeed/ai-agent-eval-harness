@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Freedom of Information Act (FOIA) Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11999-file-a-freedom-of-information-act-foia-request"
   },
   "description": "A journalist needs to obtain government records about a public contract and must file a formal FOIA request.",
   "industry": "Journalism",

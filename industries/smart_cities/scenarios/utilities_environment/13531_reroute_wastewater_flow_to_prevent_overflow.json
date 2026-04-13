@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reroute Wastewater Flow to Prevent Overflow",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13531-reroute-wastewater-flow-to-prevent-overflow"
   },
   "description": "During a heavy storm, a wastewater interceptor is nearing capacity. An operator must reroute flow to a storage basin to prevent a sanitary sewer overflow.",
   "industry": "Smart Cities",

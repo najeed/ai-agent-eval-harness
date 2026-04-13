@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Critical Skill Specialist Readiness",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10853-logistics-personnel-readiness-specialist"
   },
   "description": "A joint task force commander needs to identify all available personnel with a critical skill (e.g., a specific foreign language) across all branches of service.",
   "industry": "Defense",

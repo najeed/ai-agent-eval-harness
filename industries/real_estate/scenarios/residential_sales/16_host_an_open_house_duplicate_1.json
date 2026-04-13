@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Host a Weekend Open House",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "16-host-an-open-house-duplicate-1"
   },
   "description": "An agent is hosting an open house and must manage marketing, setup, and visitor follow-up.",
   "industry": "Real Estate",

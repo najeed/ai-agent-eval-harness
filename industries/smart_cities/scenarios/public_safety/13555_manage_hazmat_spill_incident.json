@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Hazmat Spill Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13555-manage-hazmat-spill-incident"
   },
   "description": "A truck has overturned, spilling a hazardous chemical. An operator must coordinate a multi-agency response.",
   "industry": "Smart Cities",

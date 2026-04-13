@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare a Deposition Summary",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12115-prepare-deposition-summary"
   },
   "description": "A junior associate needs to read a 200-page deposition transcript and prepare a summary for the lead attorney.",
   "industry": "Legal",

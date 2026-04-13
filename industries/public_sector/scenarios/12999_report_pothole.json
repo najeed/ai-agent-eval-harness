@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Pothole",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12999-report-pothole"
   },
   "description": "A citizen wants to report a large pothole on a city street using the 311 service.",
   "industry": "Public Sector",

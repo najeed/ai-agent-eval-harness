@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Monthly Project Progress Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11410-generate-project-progress-report"
   },
   "description": "A project manager needs to generate the official monthly progress report for project stakeholders.",
   "industry": "Heavy Industries",

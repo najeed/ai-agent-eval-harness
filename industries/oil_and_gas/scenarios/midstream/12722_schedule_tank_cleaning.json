@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Storage Tank Cleaning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12722-schedule-tank-cleaning"
   },
   "description": "A terminal manager schedules a crude oil storage tank to be taken out of service for inspection and cleaning, as required by regulation.",
   "industry": "Oil and Gas",

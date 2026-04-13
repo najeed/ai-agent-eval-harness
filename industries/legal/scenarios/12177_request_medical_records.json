@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Medical Records",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12177-request-medical-records"
   },
   "description": "In a personal injury case, a paralegal needs to request the plaintiff's medical records from a hospital.",
   "industry": "Legal",

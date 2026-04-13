@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inter-Market Arbitrage Opportunity Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11153-arbitrage-opportunity-alert"
   },
   "description": "An agent continuously monitors prices between two adjacent electricity markets and identifies a significant price separation, creating an arbitrage opportunity.",
   "industry": "Energy",

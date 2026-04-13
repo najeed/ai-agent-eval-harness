@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update the Company Org Chart",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11684-update-org-chart"
   },
   "description": "Following a promotion, an HR admin needs to update the company's visual org chart.",
   "industry": "Human Resources",

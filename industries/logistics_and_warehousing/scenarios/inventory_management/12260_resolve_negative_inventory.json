@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Negative Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12260-resolve-negative-inventory"
   },
   "description": "A system report shows a negative on-hand quantity for an item, which is physically impossible. An inventory controller must investigate and correct it.",
   "industry": "Logistics and Warehousing",

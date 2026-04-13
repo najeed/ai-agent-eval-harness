@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write a Script for a Podcast",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12045-write-a-script-for-a-podcast"
   },
   "description": "A podcast host needs to write a script for an upcoming episode that includes an introduction, interview questions, and an outro.",
   "industry": "Journalism",

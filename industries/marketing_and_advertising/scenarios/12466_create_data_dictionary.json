@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Data Dictionary",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12466-create-data-dictionary"
   },
   "description": "To ensure consistent reporting, an analyst needs to create a data dictionary that defines each key metric the team uses.",
   "industry": "Marketing and Advertising",

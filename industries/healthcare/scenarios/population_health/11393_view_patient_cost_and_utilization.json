@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "View Patient Cost and Utilization",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11393-view-patient-cost-and-utilization"
   },
   "description": "A care manager is reviewing a high-risk patient and wants to see their healthcare cost and utilization over the past year.",
   "industry": "Healthcare",

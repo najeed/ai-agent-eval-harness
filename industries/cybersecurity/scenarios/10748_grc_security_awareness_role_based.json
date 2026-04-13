@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Role-Based Security Training",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10748-grc-security-awareness-role-based"
   },
   "description": "A security awareness manager needs to assign specialized, role-based training to different departments.",
   "industry": "Cybersecurity",

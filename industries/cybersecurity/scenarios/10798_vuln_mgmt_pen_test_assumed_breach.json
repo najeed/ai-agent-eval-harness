@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assumed Breach Penetration Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10798-vuln-mgmt-pen-test-assumed-breach"
   },
   "description": "A penetration tester is given a standard user account and tasked with seeing if they can achieve a specific objective, simulating an attacker who has already stolen credentials.",
   "industry": "Cybersecurity",

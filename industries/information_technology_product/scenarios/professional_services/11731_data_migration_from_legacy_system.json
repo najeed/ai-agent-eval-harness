@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Data Migration from Legacy System",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11731-data-migration-from-legacy-system"
   },
   "description": "A new customer needs help migrating their data from a competitor's product.",
   "industry": "Information Technology Product",

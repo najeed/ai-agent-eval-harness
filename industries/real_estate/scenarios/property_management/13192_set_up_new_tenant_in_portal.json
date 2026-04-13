@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up New Tenant in Online Portal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13192-set-up-new-tenant-in-portal"
   },
   "description": "A new tenant has signed a lease. The PM needs to set them up with an account for the online tenant portal to pay rent and submit maintenance requests.",
   "industry": "Real Estate",

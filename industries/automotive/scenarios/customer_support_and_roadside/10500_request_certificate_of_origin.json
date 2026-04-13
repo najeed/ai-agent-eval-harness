@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Certificate of Origin for Export",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10500-request-certificate-of-origin"
   },
   "description": "A customer is moving internationally and needs a Certificate of Origin for their vehicle to export it.",
   "industry": "Automotive",

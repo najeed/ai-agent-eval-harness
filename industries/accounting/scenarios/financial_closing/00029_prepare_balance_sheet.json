@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare a Monthly Balance Sheet",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00029-prepare-balance-sheet"
   },
   "description": "The controller needs a draft of the monthly balance sheet for the board package.",
   "industry": "Accounting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Replace a Vehicle on an Auto Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11913-replace-vehicle-on-policy"
   },
   "description": "A customer sold their old car and bought a new one, and needs to update their auto policy.",
   "industry": "Insurance",

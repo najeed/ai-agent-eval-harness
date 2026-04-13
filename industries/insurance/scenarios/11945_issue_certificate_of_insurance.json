@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue a Certificate of Insurance (COI)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11945-issue-certificate-of-insurance"
   },
   "description": "A small business owner needs a COI to provide to a client as proof of their general liability coverage.",
   "industry": "Insurance",

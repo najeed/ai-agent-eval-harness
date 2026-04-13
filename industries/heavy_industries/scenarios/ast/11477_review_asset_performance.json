@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Monthly Asset Performance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11477-review-asset-performance"
   },
   "description": "A plant manager is reviewing the monthly performance report for critical assets.",
   "industry": "Heavy Industries",

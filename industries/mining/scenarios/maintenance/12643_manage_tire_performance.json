@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Haul Truck Tire Performance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12643-manage-tire-performance"
   },
   "description": "A tire specialist monitors the condition of haul truck tires to maximize their lifespan and avoid premature failures.",
   "industry": "Mining",

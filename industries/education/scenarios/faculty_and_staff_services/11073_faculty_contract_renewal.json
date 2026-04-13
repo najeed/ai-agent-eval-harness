@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Faculty Contract Renewal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11073-faculty-contract-renewal"
   },
   "description": "A department chair needs to initiate the contract renewal process for a non-tenured faculty member.",
   "industry": "Education",

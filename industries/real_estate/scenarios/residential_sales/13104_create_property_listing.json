@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create New Property Listing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13104-create-property-listing"
   },
   "description": "An agent has signed a new listing agreement. They need to create the property listing in the MLS.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review a New Subcontract Agreement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10613-review-subcontract"
   },
   "description": "A contract manager needs to review a new subcontract for the HVAC installer to ensure it includes all required clauses.",
   "industry": "Construction",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Post-Stay Feedback",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13976-handle-post-stay-feedback"
   },
   "description": "A loyalty member sends an email complaining about slow service at the hotel restaurant during their recent stay.",
   "industry": "Tourism",

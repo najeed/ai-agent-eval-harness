@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an Invoice for a Capital Project",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00064-process-invoice-for-capital-project"
   },
   "description": "An invoice has been received from a contractor for work on a new building. The cost needs to be capitalized, not expensed.",
   "industry": "Accounting",

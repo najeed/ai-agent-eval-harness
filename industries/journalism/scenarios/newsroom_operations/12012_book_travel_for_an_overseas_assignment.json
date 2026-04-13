@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book Travel for an Overseas Assignment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12012-book-travel-for-an-overseas-assignment"
   },
   "description": "A reporter is being sent overseas to cover a conflict and needs flights, a hotel, and a local fixer booked.",
   "industry": "Journalism",

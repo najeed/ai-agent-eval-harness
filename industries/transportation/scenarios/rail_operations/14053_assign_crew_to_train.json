@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assign a Crew to a Train",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14053-assign-crew-to-train"
   },
   "description": "A train is scheduled to depart. A crew dispatcher needs to assign a qualified and rested crew to operate it.",
   "industry": "Transportation",

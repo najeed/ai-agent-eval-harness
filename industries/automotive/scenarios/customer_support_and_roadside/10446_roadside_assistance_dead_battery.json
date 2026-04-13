@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Roadside Assistance for Dead Battery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10446-roadside-assistance-dead-battery"
   },
   "description": "A customer's car won't start, and they suspect a dead battery.",
   "industry": "Automotive",

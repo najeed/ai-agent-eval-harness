@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Social Media Sentiment for a New Show",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12519-analyze-social-media-sentiment-for-new-show"
   },
   "description": "Following the premiere of a new series, an agent must analyze social media sentiment to gauge audience reaction.",
   "industry": "Media and Entertainment",

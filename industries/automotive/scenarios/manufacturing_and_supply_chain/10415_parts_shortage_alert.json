@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Critical Parts Shortage Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10415-parts-shortage-alert"
   },
   "description": "The inventory system alerts that the stock of a critical part (touchscreen displays) will be depleted in 4 hours, potentially halting production.",
   "industry": "Automotive",

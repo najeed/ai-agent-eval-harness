@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Hazardous Material Handling in Factory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10492-hazardous-material-handling"
   },
   "description": "A drum of solvent is found to be leaking in the factory's chemical storage area.",
   "industry": "Automotive",

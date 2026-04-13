@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About an Alumni Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11048-inquire-about-alumni-event"
   },
   "description": "An alumnus received an email about Homecoming weekend and has questions about registering for an event.",
   "industry": "Education",

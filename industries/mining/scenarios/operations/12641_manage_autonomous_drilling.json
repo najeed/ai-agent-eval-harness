@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Autonomous Drilling Fleet",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12641-manage-autonomous-drilling"
   },
   "description": "A control room operator oversees a fleet of autonomous drill rigs, assigning them tasks and monitoring their performance.",
   "industry": "Mining",

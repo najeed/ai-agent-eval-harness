@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Custody Transfer Measurement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12790-manage-custody-transfer"
   },
   "description": "An operator at a pipeline delivery point manages a custody transfer, where ownership of the oil passes from the pipeline to the refinery. Accurate measurement is critical.",
   "industry": "Oil and Gas",

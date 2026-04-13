@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Geosteer a Horizontal Well",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12767-geosteering-a-horizontal-well"
   },
   "description": "A geologist uses real-time LWD data to 'steer' a horizontal well, keeping it within a thin, high-quality reservoir layer.",
   "industry": "Oil and Gas",

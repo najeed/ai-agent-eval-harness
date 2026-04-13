@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze On-Farm Weather Station Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10166-weather-station-data-analysis"
   },
   "description": "A farmer wants to analyze data from their on-farm weather station to calculate growing degree days (GDD) for their corn crop.",
   "industry": "Agriculture",

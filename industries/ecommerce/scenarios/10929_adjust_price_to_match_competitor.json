@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Adjust Price to Match Competitor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10929-adjust-price-to-match-competitor"
   },
   "description": "A category manager decides to price-match a key competitor for a specific, popular product.",
   "industry": "Ecommerce",

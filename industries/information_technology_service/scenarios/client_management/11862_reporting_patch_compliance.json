@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "SLA Reporting - Patch Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11862-reporting-patch-compliance"
   },
   "description": "An account manager needs to generate a report for a client demonstrating patch compliance for all their managed servers.",
   "industry": "Information Technology Service",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Order Paid by Purchase Order/Check (B2B)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10989-process-order-paid-by-check"
   },
   "description": "A B2B customer places an order using a purchase order and will pay by check. The order should not be shipped until payment is received.",
   "industry": "Ecommerce",

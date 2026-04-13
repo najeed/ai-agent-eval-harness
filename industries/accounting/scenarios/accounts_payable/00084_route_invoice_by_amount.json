@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Route an Invoice for Approval Based on Amount",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00084-route-invoice-by-amount"
   },
   "description": "An invoice needs to be routed for approval, but the approver depends on the invoice amount according to the company's approval matrix.",
   "industry": "Accounting",

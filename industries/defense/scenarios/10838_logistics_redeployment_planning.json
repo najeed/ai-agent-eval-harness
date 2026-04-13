@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Equipment Redeployment and Reset",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10838-logistics-redeployment-planning"
   },
   "description": "A logistics planner must plan the redeployment of a unit's equipment from a theater of operations back to its home base for maintenance and reset.",
   "industry": "Defense",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Fan Club Newsletter",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13646-create-fan-club-newsletter"
   },
   "description": "A fan engagement coordinator needs to create and send the monthly fan club newsletter.",
   "industry": "Sports",

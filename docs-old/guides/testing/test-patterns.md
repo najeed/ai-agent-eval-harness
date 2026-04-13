@@ -178,7 +178,7 @@ class TestNetworkErrorHandling:
             mock_post.side_effect = requests.exceptions.Timeout("Request timed out")
             
             scenario = {
-                "scenario_id": "timeout_test",
+                "id": "timeout_test",
                 "tasks": [{"task_id": "task_1", "description": "Test task"}]
             }
             
@@ -201,9 +201,9 @@ class TestDataValidationErrors:
         # Arrange
         invalid_scenarios = [
             {},  # Empty scenario
-            {"scenario_id": "test"},  # Missing required fields
-            {"scenario_id": "test", "tasks": "not_a_list"},  # Wrong data type
-            {"scenario_id": "test", "tasks": [{"invalid": "task"}]}  # Invalid task
+            {"id": "test"},  # Missing required fields
+            {"id": "test", "tasks": "not_a_list"},  # Wrong data type
+            {"id": "test", "tasks": [{"invalid": "task"}]}  # Invalid task
         ]
         
         for scenario in invalid_scenarios:
@@ -265,7 +265,7 @@ class TestPerformancePatterns:
         """Test evaluation engine under load."""
         # Arrange
         large_scenario = {
-            "scenario_id": "load_test",
+            "id": "load_test",
             "tasks": [
                 {
                     "task_id": f"task_{i}",
@@ -297,7 +297,7 @@ class TestPerformancePatterns:
         # Arrange
         scenarios = [
             {
-                "scenario_id": f"concurrent_{i}",
+                "id": f"concurrent_{i}",
                 "tasks": [{"task_id": "task_1", "description": "Test"}]
             }
             for i in range(10)
@@ -334,7 +334,7 @@ class TestMemoryUsage:
         initial_memory = process.memory_info().rss
         
         large_scenario = {
-            "scenario_id": "memory_test",
+            "id": "memory_test",
             "tasks": [
                 {
                     "task_id": f"task_{i}",
@@ -383,7 +383,7 @@ class TestEndToEndIntegration:
         """Test complete evaluation workflow from file to report."""
         # Arrange
         scenario_data = {
-            "scenario_id": "e2e_test",
+            "id": "e2e_test",
             "title": "End-to-End Test",
             "tasks": [
                 {
@@ -414,7 +414,7 @@ class TestEndToEndIntegration:
         reporter.generate_report(scenario, results)
         
         # Assert
-        assert scenario["scenario_id"] == "e2e_test"
+        assert scenario["id"] == "e2e_test"
         assert len(results) == 1
         assert results[0]["task_id"] == "task_1"
         mock_agent_service.assert_called_once()
@@ -430,7 +430,7 @@ class TestCrossModuleIntegration:
         """Test integration between metrics and engine modules."""
         # Arrange
         scenario = {
-            "scenario_id": "integration_test",
+            "id": "integration_test",
             "tasks": [
                 {
                     "task_id": "task_1",
@@ -460,7 +460,7 @@ class TestCrossModuleIntegration:
         """Test integration between loader, engine, and reporter."""
         # Arrange
         scenario_data = {
-            "scenario_id": "integration_test",
+            "id": "integration_test",
             "title": "Integration Test",
             "tasks": [{"task_id": "task_1", "description": "Test"}]
         }
@@ -483,16 +483,16 @@ class TestCrossModuleIntegration:
 class TestParameterizedPatterns:
     """Test patterns using parameterized testing."""
     
-    @pytest.mark.parametrize("scenario_id,expected_tasks", [
+    @pytest.mark.parametrize("id,expected_tasks", [
         ("test_1", 1),
         ("test_2", 2),
         ("test_3", 3),
     ])
-    def test_scenario_task_count(self, scenario_id, expected_tasks):
+    def test_scenario_task_count(self, id, expected_tasks):
         """Test scenarios with different task counts."""
         # Arrange
         scenario = {
-            "scenario_id": scenario_id,
+            "id": id,
             "tasks": [
                 {
                     "task_id": f"task_{i}",
@@ -524,7 +524,7 @@ class TestParameterizedPatterns:
         """Test different metric types."""
         # Arrange
         scenario = {
-            "scenario_id": "metric_test",
+            "id": "metric_test",
             "tasks": [
                 {
                     "task_id": "task_1",
@@ -573,7 +573,7 @@ class TestAdvancedMocking:
         
         with patch('eval_runner.cli.requests.post', side_effect=side_effect):
             scenario = {
-                "scenario_id": "mock_test",
+                "id": "mock_test",
                 "tasks": [{"task_id": "task_1", "description": "Test"}]
             }
             
@@ -588,7 +588,7 @@ class TestAdvancedMocking:
         """Test mocking using context managers."""
         # Arrange
         scenario = {
-            "scenario_id": "context_test",
+            "id": "context_test",
             "tasks": [{"task_id": "task_1", "description": "Test"}]
         }
         

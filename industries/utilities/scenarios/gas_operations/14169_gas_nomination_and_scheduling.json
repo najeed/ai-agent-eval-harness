@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Gas Nomination and Scheduling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14169-gas-nomination-and-scheduling"
   },
   "description": "A gas scheduler needs to nominate (request) the amount of natural gas needed from an interstate pipeline for the next day to serve its customers.",
   "industry": "Utilities",

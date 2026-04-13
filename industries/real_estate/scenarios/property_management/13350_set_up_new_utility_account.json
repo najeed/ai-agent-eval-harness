@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up Utility Account for Vacant Unit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13350-set-up-new-utility-account"
   },
   "description": "Between tenants, a property manager must transfer the electric utility account for a unit into the management company's name.",
   "industry": "Real Estate",

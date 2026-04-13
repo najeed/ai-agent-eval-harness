@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage an Employee Referral",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11661-manage-employee-referral"
   },
   "description": "An employee has referred a candidate for an open position through the referral portal.",
   "industry": "Human Resources",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Network Capacity Before Adding Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13871-check-capacity-before-adding-service"
   },
   "description": "Before sales can sell a large new service, the agent must verify there is enough network capacity to support it.",
   "industry": "Telecom",

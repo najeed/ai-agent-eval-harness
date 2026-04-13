@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set up a Dividend Reinvestment Plan (DRIP)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11240-set-up-drip"
   },
   "description": "A client wants to automatically reinvest dividends from a specific stock back into buying more shares of that stock.",
   "industry": "Finance",

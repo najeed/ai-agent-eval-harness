@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Customer Acquisition - Student Discount",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13884-student-discount-application"
   },
   "description": "A student wants to sign up for a new plan and apply a student discount.",
   "industry": "Telecom",

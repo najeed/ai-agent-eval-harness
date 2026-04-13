@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Daily Drilling Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12751-generate-daily-drilling-report"
   },
   "description": "A rig clerk compiles the daily drilling report for management, summarizing the last 24 hours of operations.",
   "industry": "Oil and Gas",

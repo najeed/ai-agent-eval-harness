@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Course of Action Analysis for Hostage Rescue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10844-mission-planning-coa-hostage-rescue"
   },
   "description": "A planner must compare two COAs for a hostage rescue: a stealthy nighttime insertion vs. a rapid daylight assault.",
   "industry": "Defense",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Patient Refund",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11356-process-patient-refund"
   },
   "description": "A patient has a credit balance on their account due to an overpayment. A refund check needs to be issued.",
   "industry": "Healthcare",

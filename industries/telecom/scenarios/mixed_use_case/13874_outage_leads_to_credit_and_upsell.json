@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Outage Leads to Credit and Upsell",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13874-outage-leads-to-credit-and-upsell"
   },
   "description": "A customer calls about a service outage. After resolving, the agent identifies they are a good candidate for a higher-tier plan with better reliability.",
   "industry": "Telecom",

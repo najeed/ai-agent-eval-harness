@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Site Dewatering Operations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10695-dewatering-operations"
   },
   "description": "After heavy rain, an excavation is filled with water. The superintendent must manage dewatering operations in compliance with environmental permits.",
   "industry": "Construction",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Tax-Exempt Sale",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13402-process-tax-exempt-sale"
   },
   "description": "A customer from a non-profit organization is making a purchase and has a tax-exempt certificate.",
   "industry": "Retail",

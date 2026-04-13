@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Quote a Personal Umbrella Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11971-quote-umbrella-policy"
   },
   "description": "A high-net-worth customer wants a quote for a personal umbrella policy for extra liability protection.",
   "industry": "Insurance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Proactive Feature Recommendation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11705-proactive-feature-recommendation"
   },
   "description": "A system alert shows a customer is manually performing a task that could be automated with an existing feature. A success agent reaches out.",
   "industry": "Information Technology Product",

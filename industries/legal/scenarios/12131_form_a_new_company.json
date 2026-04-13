@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Form a New LLC",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12131-form-a-new-company"
   },
   "description": "A corporate paralegal needs to form a new Limited Liability Company (LLC) for a client in the state of Delaware.",
   "industry": "Legal",

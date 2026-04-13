@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Corrective Maintenance Job",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12635-plan-maintenance-job"
   },
   "description": "A maintenance planner receives a work order to replace a leaking pump and must plan the job.",
   "industry": "Mining",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue a Disciplinary Warning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11625-issue-disciplinary-warning"
   },
   "description": "An employee has violated the company's attendance policy. Their manager, in consultation with HR, needs to issue a formal written warning.",
   "industry": "Human Resources",

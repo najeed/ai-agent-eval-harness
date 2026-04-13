@@ -13,7 +13,7 @@ def test_physical_registry_lookup():
     """
     BRIDGING THE MOCK-REALITY GAP:
     Ensures that the real UniversalRegistry can resolve a core schema
-    using both authoritative Logical URIs and Physical anchors.
+    using both Logical URIs and Physical anchors.
     """
     reset_universal_registry()
     registry = get_universal_registry()

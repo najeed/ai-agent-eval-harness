@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Refinance an Auto Loan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11273-refinance-auto-loan"
   },
   "description": "A customer wants to refinance their existing auto loan from another lender to get a lower interest rate.",
   "industry": "Finance",

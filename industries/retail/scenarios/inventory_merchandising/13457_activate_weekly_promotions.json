@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Activate Weekly Promotions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13457-activate-weekly-promotions"
   },
   "description": "A store manager needs to activate the new set of weekly promotions in the POS system.",
   "industry": "Retail",

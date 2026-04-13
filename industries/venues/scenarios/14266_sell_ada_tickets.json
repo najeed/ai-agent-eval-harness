@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sell ADA Tickets",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14266-sell-ada-tickets"
   },
   "description": "A guest calls the box office to purchase tickets in a wheelchair accessible section.",
   "industry": "Venues",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Modify Therapy Plan of Care",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11373-modify-therapy-plan"
   },
   "description": "A patient is progressing faster than expected in physical therapy. The therapist needs to update their goals in the plan of care.",
   "industry": "Healthcare",

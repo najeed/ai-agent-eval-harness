@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Vendor Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13043-process-vendor-invoice"
   },
   "description": "An accounts payable clerk needs to process an invoice submitted by a vendor for services rendered.",
   "industry": "Public Sector",

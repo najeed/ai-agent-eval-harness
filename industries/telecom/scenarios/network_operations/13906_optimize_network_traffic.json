@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Optimize Network Traffic - High Congestion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13906-optimize-network-traffic"
   },
   "description": "An alert indicates high congestion in a specific cell sector. The agent must offload traffic to a neighboring sector.",
   "industry": "Telecom",

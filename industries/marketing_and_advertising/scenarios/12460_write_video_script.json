@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write a Video Script",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12460-write-video-script"
   },
   "description": "A copywriter needs to write the script for a 2-minute explainer video.",
   "industry": "Marketing and Advertising",

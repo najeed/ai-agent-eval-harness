@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Account - Unlock Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11842-account-unlock-locked-account"
   },
   "description": "A user reports their Active Directory account is locked out after too many failed password attempts.",
   "industry": "Information Technology Service",

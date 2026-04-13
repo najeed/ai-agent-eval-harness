@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Real-Time Hydraulic Modeling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14191-real-time-hydraulic-modeling"
   },
   "description": "A water utility uses a real-time hydraulic model (a 'digital twin') to simulate the effect of operational changes before they are made.",
   "industry": "Utilities",

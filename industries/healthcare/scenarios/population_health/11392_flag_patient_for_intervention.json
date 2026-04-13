@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Flag Patient for Intervention",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11392-flag-patient-for-intervention"
   },
   "description": "A risk model identifies a patient whose risk score has significantly increased. The system needs to flag them for intervention.",
   "industry": "Healthcare",

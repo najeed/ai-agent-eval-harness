@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct a Wind Tunnel Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10027-conduct-wind-tunnel-test"
   },
   "description": "An aerodynamics engineer needs to test a scale model of a new aircraft design in a wind tunnel to measure lift and drag.",
   "industry": "Aerospace",

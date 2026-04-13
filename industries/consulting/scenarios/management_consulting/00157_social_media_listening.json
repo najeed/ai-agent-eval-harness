@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Social Media Listening",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00157-social-media-listening"
   },
   "description": "An agent must monitor social media for mentions of a client's brand and classify the sentiment of those mentions.",
   "industry": "Consulting",

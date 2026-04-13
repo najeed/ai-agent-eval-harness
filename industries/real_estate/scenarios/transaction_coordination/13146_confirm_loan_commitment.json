@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Confirm Lender's Loan Commitment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13146-confirm-loan-commitment"
   },
   "description": "The financing contingency deadline is approaching. The TC must confirm the buyer has secured their loan commitment from the lender.",
   "industry": "Real Estate",

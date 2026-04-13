@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Poultry House Environmental Control",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10133-poultry-environmental-control"
   },
   "description": "Sensors in a poultry house show that the temperature and ammonia levels are rising above the acceptable thresholds.",
   "industry": "Agriculture",

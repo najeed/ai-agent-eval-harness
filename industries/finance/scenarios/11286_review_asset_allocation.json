@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Portfolio Asset Allocation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11286-review-asset-allocation"
   },
   "description": "An advisor is conducting an annual review and needs to check if a client's portfolio allocation is aligned with their goals.",
   "industry": "Finance",

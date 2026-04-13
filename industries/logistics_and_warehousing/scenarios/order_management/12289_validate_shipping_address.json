@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Validate a Shipping Address",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12289-validate-shipping-address"
   },
   "description": "When a customer enters their address during online checkout, the system must validate it to ensure it's a deliverable address and to prevent shipping errors.",
   "industry": "Logistics and Warehousing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cyber Forensics and Attribution",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10820-cyber-forensics-analysis"
   },
   "description": "Following a network breach, a cyber forensics analyst must analyze the attacker's malware to determine its capabilities and origin.",
   "industry": "Defense",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to IRS CP2000 Notice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13703-respond-to-irs-cp2000-notice"
   },
   "description": "A taxpayer received a CP2000 notice from the IRS proposing changes to their return due to underreported income.",
   "industry": "Tax",

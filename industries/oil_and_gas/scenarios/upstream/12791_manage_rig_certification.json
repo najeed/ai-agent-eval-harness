@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Rig Equipment Certification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12791-manage-rig-certification"
   },
   "description": "A rig manager must ensure that all critical lifting and pressure control equipment has valid, up-to-date third-party certifications.",
   "industry": "Oil and Gas",

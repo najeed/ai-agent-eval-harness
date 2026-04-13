@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check on Case Appeal Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12150-check-on-case-appeal-status"
   },
   "description": "A client wants to know the status of their appeal. A paralegal needs to check the appellate court's docket.",
   "industry": "Legal",

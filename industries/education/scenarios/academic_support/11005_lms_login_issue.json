@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Student Cannot Log In to LMS",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11005-lms-login-issue"
   },
   "description": "A student is unable to log in to the Learning Management System (LMS) to access their online course.",
   "industry": "Education",

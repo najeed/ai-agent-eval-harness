@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prioritize Recommendations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00129-prioritize-recommendations"
   },
   "description": "Given a list of strategic recommendations, an agent must prioritize them using an Impact/Effort matrix.",
   "industry": "Consulting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Break Down Shipping Cartons",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13468-break-down-shipping-cartons"
   },
   "description": "After restocking shelves, an associate needs to break down the empty cardboard cartons for recycling.",
   "industry": "Retail",

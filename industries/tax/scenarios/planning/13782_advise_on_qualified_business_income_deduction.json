@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advise on Qualified Business Income (QBI) Deduction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13782-advise-on-qualified-business-income-deduction"
   },
   "description": "The owner of a profitable pass-through business wants to understand if they qualify for the QBI deduction and how to maximize it.",
   "industry": "Tax",

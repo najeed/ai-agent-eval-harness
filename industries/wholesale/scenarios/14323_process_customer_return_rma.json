@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Customer Return (RMA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14323-process-customer-return-rma"
   },
   "description": "A retailer is returning unsold merchandise at the end of a season, as allowed by their contract.",
   "industry": "Wholesale",

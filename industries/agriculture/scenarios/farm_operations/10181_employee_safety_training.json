@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Employee Safety Training",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10181-employee-safety-training"
   },
   "description": "A farm manager needs to ensure all employees have completed their annual safety training.",
   "industry": "Agriculture",

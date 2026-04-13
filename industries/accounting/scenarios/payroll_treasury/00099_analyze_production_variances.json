@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Production Cost Variances",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00099-analyze-production-variances"
   },
   "description": "A manufacturing company's results show a significant unfavorable material variance. A cost accountant needs to investigate.",
   "industry": "Accounting",

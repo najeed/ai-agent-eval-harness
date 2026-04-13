@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Launch an Email Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13476-launch-email-campaign"
   },
   "description": "A marketing manager needs to launch a weekly email campaign announcing new arrivals to all subscribed customers.",
   "industry": "Retail",

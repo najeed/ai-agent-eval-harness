@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File for Guaranteed Service Refund",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12295-file-for-guaranteed-service-refund"
   },
   "description": "A shipment booked with a 'Guaranteed by 10 AM' service was delivered late. The company is entitled to a full refund.",
   "industry": "Logistics and Warehousing",

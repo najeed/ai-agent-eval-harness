@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Grid Curtailment Event Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11118-grid-curtailment-analysis"
   },
   "description": "A solar farm was curtailed by the grid operator. An analyst needs to verify the reason and calculate the financial impact.",
   "industry": "Energy",

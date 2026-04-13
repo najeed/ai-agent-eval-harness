@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a 30-60-90 Day Onboarding Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11677-create-onboarding-plan"
   },
   "description": "A hiring manager wants HR's help to create a structured 30-60-90 day plan for their new hire.",
   "industry": "Human Resources",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "De-ice an Aircraft",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10252-de-ice-aircraft"
   },
   "description": "During winter operations, an aircraft has accumulated snow and ice on its wings and must be de-iced before departure.",
   "industry": "Airline",

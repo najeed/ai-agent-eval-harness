@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshoot User's Streaming Playback Issues",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12518-troubleshoot-streaming-playback-buffering"
   },
   "description": "A user complains of constant buffering when trying to watch 4K content on their smart TV.",
   "industry": "Media and Entertainment",

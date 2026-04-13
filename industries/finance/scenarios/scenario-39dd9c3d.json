@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Financial Audit Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "scenario-39dd9c3d"
   },
   "description": "Evaluation of AI agent's ability to handle complex financial audit inquiries and data retrieval.",
   "industry": "finance",

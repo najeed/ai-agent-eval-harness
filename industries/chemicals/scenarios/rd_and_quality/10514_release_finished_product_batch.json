@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Release Finished Product Batch",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10514-release-finished-product-batch"
   },
   "description": "A Quality Assurance specialist needs to review a completed batch record and its associated lab results to approve the batch for release to customers.",
   "industry": "Chemicals",

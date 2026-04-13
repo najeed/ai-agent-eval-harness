@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Close Permit After Final Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13572-close-permit-after-final-inspection"
   },
   "description": "A building inspector has completed the final inspection for a new home and marked it as 'Passed'. An operator must close out the permit.",
   "industry": "Smart Cities",

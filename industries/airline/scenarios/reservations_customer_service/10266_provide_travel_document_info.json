@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Travel Document Information",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10266-provide-travel-document-info"
   },
   "description": "A customer is unsure what travel documents they need for an international trip. An agent must provide the correct information.",
   "industry": "Airline",

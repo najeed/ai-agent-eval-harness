@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Locate a Missing Person with a Smart Watch",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13525-locate-a-missing-person-with-a-smart-watch"
   },
   "description": "A family reports an elderly person with dementia as missing. The person is wearing a city-registered GPS smart watch.",
   "industry": "Smart Cities",

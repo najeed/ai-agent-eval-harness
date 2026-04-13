@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reorder Product Filters on Category Page",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10964-reorder-product-filters"
   },
   "description": "A merchandiser wants to change the order of filters on a category page, moving 'Brand' to be the top filter instead of 'Size'.",
   "industry": "Ecommerce",

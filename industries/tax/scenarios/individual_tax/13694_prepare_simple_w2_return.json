@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Simple W-2 Return",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13694-prepare-simple-w2-return"
   },
   "description": "A single individual with one W-2 and no dependents needs their federal tax return prepared.",
   "industry": "Tax",

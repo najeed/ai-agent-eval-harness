@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Purchase a Seat Upgrade",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13930-purchase-seat-upgrade"
   },
   "description": "A passenger with an existing economy ticket wants to upgrade to an extra legroom seat.",
   "industry": "Tourism",

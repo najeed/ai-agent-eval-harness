@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Unapplied Cash",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00026-process-unapplied-cash"
   },
   "description": "A customer made a payment without any remittance advice, and it's sitting in the system as unapplied cash. An AR specialist needs to identify which invoice(s) it should be applied to.",
   "industry": "Accounting",

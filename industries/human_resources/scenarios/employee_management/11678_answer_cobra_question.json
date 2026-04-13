@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Answer a COBRA Question",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11678-answer-cobra-question"
   },
   "description": "A recently terminated employee calls to ask how they can continue their health insurance coverage under COBRA.",
   "industry": "Human Resources",

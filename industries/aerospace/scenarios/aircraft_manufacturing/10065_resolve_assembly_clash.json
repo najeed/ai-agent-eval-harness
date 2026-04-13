@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve an Assembly Clash",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10065-resolve-assembly-clash"
   },
   "description": "During digital mock-up, a clash is detected between a hydraulic line and an electrical wire bundle. An engineer must resolve it.",
   "industry": "Aerospace",

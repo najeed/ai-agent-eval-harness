@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Maintenance Work Order Prioritization",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11162-work-order-prioritization"
   },
   "description": "An O&M supervisor has a backlog of 50 open work orders across a wind portfolio and needs the agent to prioritize them based on urgency and economic impact.",
   "industry": "Energy",

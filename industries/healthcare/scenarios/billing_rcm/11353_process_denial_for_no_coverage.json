@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Denial for No Coverage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11353-process-denial-for-no-coverage"
   },
   "description": "A claim is denied because the payer reports the patient did not have coverage on the date of service. The balance needs to be transferred to the patient.",
   "industry": "Healthcare",

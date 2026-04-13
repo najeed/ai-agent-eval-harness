@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Release Finished Product Batch",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12828-release-finished-product-batch"
   },
   "description": "A QA specialist must perform the final review of all production and quality data before releasing a batch of finished product for distribution.",
   "industry": "Pharmaceuticals and Life Sciences",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Invoice Shipping Line for Services",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12900-invoice-shipping-line-for-services"
   },
   "description": "A vessel has departed. The finance department must generate an invoice for all services rendered.",
   "industry": "Ports",

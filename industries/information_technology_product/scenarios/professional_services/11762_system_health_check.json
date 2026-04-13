@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Post-Implementation Health Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11762-system-health-check"
   },
   "description": "One month after a project go-live, a consultant performs a health check to ensure the system is being used effectively.",
   "industry": "Information Technology Product",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Security Footage to Police",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11592-pull-camera-footage-for-police"
   },
   "description": "The police have arrived with a warrant to obtain security camera footage related to an investigation.",
   "industry": "Hospitality",

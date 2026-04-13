@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reconcile Property Trust Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13263-reconcile-bank-account"
   },
   "description": "At month-end, the property manager must reconcile the property's bank trust account with the records in the software.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Fleet Vehicle Usage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10320-audit-fleet-vehicle-usage"
   },
   "description": "An operational auditor reviews the usage of the company's fleet of service vehicles to identify potential misuse or inefficiency.",
   "industry": "Audit",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sell Excess Baggage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10209-sell-excess-baggage"
   },
   "description": "A passenger at the check-in counter has a second bag to check, which is not included in their fare. The agent must sell them an excess baggage allowance.",
   "industry": "Airline",

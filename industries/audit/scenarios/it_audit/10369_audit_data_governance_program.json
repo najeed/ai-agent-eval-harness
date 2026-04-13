@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit the Data Governance Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10369-audit-data-governance-program"
   },
   "description": "An auditor reviews the company's newly established data governance program.",
   "industry": "Audit",

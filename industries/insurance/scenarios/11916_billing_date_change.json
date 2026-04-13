@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Monthly Billing Date",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11916-billing-date-change"
   },
   "description": "A customer wants to change their monthly payment due date from the 1st to the 15th of the month.",
   "industry": "Insurance",

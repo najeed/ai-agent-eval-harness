@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Casting Call Submissions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12513-casting-call-management"
   },
   "description": "A casting director needs to review thousands of actor submissions for a new role and narrow them down to a shortlist.",
   "industry": "Media and Entertainment",

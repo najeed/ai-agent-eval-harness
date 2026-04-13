@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Economic Dispatch of Generators",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14175-economic-dispatch-of-generators"
   },
   "description": "The energy management system (EMS) needs to create a dispatch schedule for the utility's power plants for the next hour that meets the load at the lowest possible cost.",
   "industry": "Utilities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Re-issue an Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10953-reissue-an-invoice"
   },
   "description": "A business customer has lost their invoice for a past order and needs a copy for their records.",
   "industry": "Ecommerce",

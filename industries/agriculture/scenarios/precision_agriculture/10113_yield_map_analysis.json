@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Post-Harvest Yield Map",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10113-yield-map-analysis"
   },
   "description": "After harvest, a farmer uploads a yield map from their combine. The agent needs to identify and explain areas of low yield.",
   "industry": "Agriculture",

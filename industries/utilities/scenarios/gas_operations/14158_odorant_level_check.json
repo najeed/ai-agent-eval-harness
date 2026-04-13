@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Odorant Level Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14158-odorant-level-check"
   },
   "description": "A technician is dispatched to check that the correct amount of odorant (mercaptan) is being injected into the natural gas stream at a gate station.",
   "industry": "Utilities",

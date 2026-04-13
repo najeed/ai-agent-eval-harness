@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule a Story for Later Publication",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12054-schedule-a-story-for-later-publication"
   },
   "description": "A story is finished and edited, but the editor wants to publish it next morning during peak traffic hours.",
   "industry": "Journalism",

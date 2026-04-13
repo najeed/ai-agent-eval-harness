@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare for an ISO 9001 Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12339-prepare-for-iso-9001-audit"
   },
   "description": "A quality manager needs to pull training records for all operators on a specific production line to prepare for an external audit.",
   "industry": "Manufacturing",

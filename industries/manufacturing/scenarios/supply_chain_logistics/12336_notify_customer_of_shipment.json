@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Notify Customer of Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12336-notify-customer-of-shipment"
   },
   "description": "A customer's order has just shipped, and the logistics coordinator needs to send them an Advanced Shipping Notice (ASN).",
   "industry": "Manufacturing",

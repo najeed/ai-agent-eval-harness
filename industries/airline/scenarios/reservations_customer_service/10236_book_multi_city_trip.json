@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book a Multi-City Trip",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10236-book-multi-city-trip"
   },
   "description": "A customer wants to book a trip with three legs: Dallas to Denver, then Denver to Seattle, then Seattle back to Dallas.",
   "industry": "Airline",

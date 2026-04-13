@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Hide Prices for Logged-Out Users (B2B)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10980-hide-product-prices-for-logged-out-users"
   },
   "description": "A B2B e-commerce site wants to hide product pricing for all users who are not logged in to a verified business account.",
   "industry": "Ecommerce",

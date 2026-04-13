@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Multi-Agent Billing & Network Repair",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "99999-multi-agent-billing-repair"
   },
   "description": "A complex multi-agent scenario where a billing agent must coordinate with a network specialist to resolve a high-bill complaint caused by technical faults.",
   "industry": "Telecom",

@@ -25,7 +25,7 @@ def _freeze_dict(d: dict) -> types.MappingProxyType:
 class EvaluationContext:
     """Context for an entire evaluation scenario."""
 
-    scenario_id: str
+    identifier: str
     scenario_data: dict[str, Any]
     metadata: dict[str, Any] = field(default_factory=dict)
     global_state: dict[str, Any] = field(default_factory=dict)

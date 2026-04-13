@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Cause of Widespread Air Quality Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13586-investigate-cause-of-widespread-air-quality-alert"
   },
   "description": "A sudden, city-wide drop in air quality is detected. An operator must investigate the cause, suspecting a regional event like a wildfire.",
   "industry": "Smart Cities",

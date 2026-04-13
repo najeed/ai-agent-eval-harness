@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Explain Agency Relationships to a New Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13191-explain-agency-relationships"
   },
   "description": "An agent is meeting a new buyer for the first time and must explain agency law and provide the required disclosure form.",
   "industry": "Real Estate",

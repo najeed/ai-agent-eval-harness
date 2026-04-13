@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Client Financial Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00103-financial-data-analysis"
   },
   "description": "An agent must analyze a client's financial statements (CSV) to identify trends in profitability and liquidity.",
   "industry": "Consulting",

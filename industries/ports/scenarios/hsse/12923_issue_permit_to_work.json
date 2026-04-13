@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue a Permit to Work for Hot Work",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12923-issue-permit-to-work"
   },
   "description": "A maintenance team needs to perform welding (hot work) on a crane. A safety officer must issue a permit to work.",
   "industry": "Ports",

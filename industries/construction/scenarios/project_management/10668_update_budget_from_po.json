@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Budget with Committed Costs",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10668-update-budget-from-po"
   },
   "description": "A purchase order for steel has been issued. The PM must update the budget to reflect this 'committed cost'.",
   "industry": "Construction",

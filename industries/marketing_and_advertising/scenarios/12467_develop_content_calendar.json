@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop a Monthly Content Calendar",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12467-develop-content-calendar"
   },
   "description": "A content strategist needs to plan the content (blog posts, social media themes) for the upcoming month.",
   "industry": "Marketing and Advertising",

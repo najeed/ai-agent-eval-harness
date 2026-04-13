@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Customer Age for Restricted Product",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10978-verify-customer-age-for-restricted-product"
   },
   "description": "A customer is trying to purchase an age-restricted item (e.g., wine, a rated video game) and must have their age verified.",
   "industry": "Ecommerce",

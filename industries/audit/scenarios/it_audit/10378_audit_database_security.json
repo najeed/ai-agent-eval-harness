@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Database Security",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10378-audit-database-security"
   },
   "description": "An IT auditor reviews the security configuration of a critical financial database.",
   "industry": "Audit",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deployment - Physical-to-Virtual Migration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11840-deployment-p2v-migration"
   },
   "description": "A project requires migrating an aging physical server to a virtual machine (P2V) on a new hypervisor.",
   "industry": "Information Technology Service",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check a Story for Plagiarism",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12018-check-a-story-for-plagiarism"
   },
   "description": "Before publication, an editor must check a freelance submission to ensure it is original work and does not contain plagiarism.",
   "industry": "Journalism",

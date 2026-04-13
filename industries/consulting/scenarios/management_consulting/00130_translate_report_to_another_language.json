@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Translate Report for International Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00130-translate-report-to-another-language"
   },
   "description": "An agent must translate a final report from English to Spanish for a client's international office.",
   "industry": "Consulting",

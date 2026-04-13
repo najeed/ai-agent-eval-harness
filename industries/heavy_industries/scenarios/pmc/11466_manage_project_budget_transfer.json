@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Project Budget Transfer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11466-manage-project-budget-transfer"
   },
   "description": "The civil engineering work package is trending under budget, and the project manager wants to transfer some of its budget to the mechanical work package, which is over budget.",
   "industry": "Heavy Industries",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Investment Sale Marketing Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13321-manage-investment-sale-marketing"
   },
   "description": "An agent is hired to sell a $10 million shopping center and must create a marketing campaign to attract qualified buyers.",
   "industry": "Real Estate",

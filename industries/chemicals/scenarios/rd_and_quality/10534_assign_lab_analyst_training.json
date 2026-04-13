@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assign Training for Lab Analyst",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10534-assign-lab-analyst-training"
   },
   "description": "A new lab analyst needs to be trained on a specific analytical instrument (e.g., GC-MS) before they can test samples on it.",
   "industry": "Chemicals",

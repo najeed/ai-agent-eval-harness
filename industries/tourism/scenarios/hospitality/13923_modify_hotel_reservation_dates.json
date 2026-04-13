@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Modify Hotel Reservation Dates",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13923-modify-hotel-reservation-dates"
   },
   "description": "A customer needs to change the dates of their existing hotel reservation, moving it one week later.",
   "industry": "Tourism",

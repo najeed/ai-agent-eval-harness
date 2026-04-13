@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Rebalance a Portfolio to Target Allocation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11214-rebalance-portfolio"
   },
   "description": "A client's portfolio has drifted from its target asset allocation (60% stocks, 40% bonds) and needs to be rebalanced.",
   "industry": "Finance",

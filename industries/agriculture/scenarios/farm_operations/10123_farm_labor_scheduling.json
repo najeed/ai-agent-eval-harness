@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Farm Labor Scheduling for Harvest",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10123-farm-labor-scheduling"
   },
   "description": "A vegetable farm manager needs to create a weekly schedule for their harvest crew, ensuring all tasks are covered.",
   "industry": "Agriculture",

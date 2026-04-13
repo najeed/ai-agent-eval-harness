@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Emergency Unmooring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12991-handle-emergency-unmooring"
   },
   "description": "A fire breaks out on a vessel at berth. The harbormaster orders an emergency unmooring to move the vessel away from the quay.",
   "industry": "Ports",

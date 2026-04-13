@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Appeal a Claim Denial",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11345-appeal-a-denial"
   },
   "description": "A claim was denied for 'not medically necessary'. A denial specialist needs to write and submit an appeal.",
   "industry": "Healthcare",

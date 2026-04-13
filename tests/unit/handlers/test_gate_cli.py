@@ -39,7 +39,7 @@ def gate_env(tmp_path, monkeypatch):
     trace_path.write_text('{"event": "run_start"}\n')
 
     # Generate Physical Manifest using real logic
-    TraceVerifier.sign_trace(str(trace_path), metadata={"git_hash": "abc"})
+    TraceVerifier.sign_trace(str(trace_path), metadata={"git_hash": "abc"}, run_id=run_id)
 
     return {
         "root": root,
@@ -102,7 +102,9 @@ async def test_handle_gate_asymmetric_success(gate_env, capsys, monkeypatch):
     # 2. Provision identity and resign trace
     # IdentityService auto-provisions if private_key.pem is missing
     IdentityService.get_private_key(identity_id)
-    TraceVerifier.sign_trace(gate_env["trace_path"], identity_id=identity_id)
+    TraceVerifier.sign_trace(
+        gate_env["trace_path"], identity_id=identity_id, run_id=gate_env["run_id"]
+    )
 
     # 3. Handle gate with public key from IdentityService
     pub_key_path = trust_root / identity_id / "public_key.pem"

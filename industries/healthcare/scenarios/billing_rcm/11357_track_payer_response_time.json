@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Payer Response Time",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11357-track-payer-response-time"
   },
   "description": "A manager wants to analyze which insurance companies are the slowest to pay their claims.",
   "industry": "Healthcare",

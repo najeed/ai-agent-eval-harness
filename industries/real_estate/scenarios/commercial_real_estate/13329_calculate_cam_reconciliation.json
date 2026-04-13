@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate Annual CAM Reconciliation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13329-calculate-cam-reconciliation"
   },
   "description": "A property manager for a retail center must reconcile the annual Common Area Maintenance (CAM) expenses and bill or credit tenants.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit API Security",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10363-audit-api-security"
   },
   "description": "An IT auditor reviews the security controls for the company's public-facing APIs.",
   "industry": "Audit",

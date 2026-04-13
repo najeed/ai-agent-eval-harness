@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Dumpster Swap-Out",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10652-request-dumpster-swap"
   },
   "description": "The construction debris dumpster on site is full. The site superintendent needs to request a swap-out from the waste management company.",
   "industry": "Construction",

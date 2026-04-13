@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Stratify Patient Risk by Condition",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11388-stratify-patient-risk"
   },
   "description": "An analyst wants to view the risk scores for all patients with asthma, broken down by risk level (low, medium, high).",
   "industry": "Healthcare",

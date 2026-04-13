@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Payment Method on File",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13997-change-payment-method-on-file"
   },
   "description": "A guest with an upcoming reservation wants to change the credit card used to guarantee the booking.",
   "industry": "Tourism",

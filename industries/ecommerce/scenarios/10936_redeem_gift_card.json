@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Redeem a Gift Card",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10936-redeem-gift-card"
   },
   "description": "A customer wants to apply a gift card to their purchase during checkout.",
   "industry": "Ecommerce",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Subcontractor Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10615-process-subcontractor-invoice"
   },
   "description": "An accounts payable clerk needs to process an invoice from the electrical subcontractor.",
   "industry": "Construction",

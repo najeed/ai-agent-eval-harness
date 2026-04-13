@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Response Time for Emergency Services",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13580-analyze-response-time-for-emergency-services"
   },
   "description": "A fire chief wants a report on the department's average response time over the last year to see if they are meeting their goals.",
   "industry": "Smart Cities",

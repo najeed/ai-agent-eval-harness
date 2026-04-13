@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Equipment Defect Elimination",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12685-manage-defects"
   },
   "description": "A supervisor finds a defect on a piece of equipment (e.g., a cracked weld) during an inspection and reports it for repair.",
   "industry": "Mining",

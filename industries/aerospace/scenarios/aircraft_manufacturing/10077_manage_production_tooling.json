@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Production Tooling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10077-manage-production-tooling"
   },
   "description": "A large jig used to assemble wings needs to be taken out of service for its scheduled maintenance.",
   "industry": "Aerospace",

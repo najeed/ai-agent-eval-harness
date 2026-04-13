@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Accessible Textbook Format",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11040-request-accessible-textbook"
   },
   "description": "A student with a visual impairment needs an accessible electronic version (e.g., PDF, EPUB) of a required textbook.",
   "industry": "Education",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Design Mine Dewatering System",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12627-design-mine-dewatering-system"
   },
   "description": "A planning engineer designs a dewatering system for a new open pit mine, including sump locations, pumps, and pipelines.",
   "industry": "Mining",

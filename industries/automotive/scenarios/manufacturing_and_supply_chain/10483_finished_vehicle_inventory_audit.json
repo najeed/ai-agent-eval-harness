@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Finished Vehicle Inventory Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10483-finished-vehicle-inventory-audit"
   },
   "description": "A manager needs to perform an audit to reconcile the list of finished vehicles in the system with the physical vehicles in the storage lot.",
   "industry": "Automotive",

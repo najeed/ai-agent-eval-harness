@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Vendor Insurance Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13248-manage-vendor-insurance"
   },
   "description": "A property management company must ensure all approved vendors have current liability insurance on file.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Quarterly Access Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10712-iam-governance-attestation"
   },
   "description": "A security analyst initiates the quarterly access review process, requiring managers to certify their direct reports' access rights.",
   "industry": "Cybersecurity",

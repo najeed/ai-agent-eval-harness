@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Signature Packets for a Closing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12189-create-signature-packets"
   },
   "description": "For a large real estate closing, a paralegal needs to prepare signature packets for each signatory with all the documents they need to sign.",
   "industry": "Legal",

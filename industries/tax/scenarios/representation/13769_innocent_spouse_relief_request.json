@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Innocent Spouse Relief Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13769-innocent-spouse-relief-request"
   },
   "description": "A recently divorced individual has discovered their ex-spouse understated income on a previously filed joint return, and the IRS is now seeking payment from them.",
   "industry": "Tax",

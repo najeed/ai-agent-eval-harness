@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add Patient to Appointment Waitlist",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11311-create-appointment-waitlist-entry"
   },
   "description": "A provider's schedule is full, but a patient wants to be notified if an earlier appointment becomes available.",
   "industry": "Healthcare",

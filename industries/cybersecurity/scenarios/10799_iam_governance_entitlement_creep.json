@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Remediating Entitlement Creep",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10799-iam-governance-entitlement-creep"
   },
   "description": "An access review reveals a long-term employee has accumulated access from multiple previous roles that they no longer need ('entitlement creep'). An analyst must remediate this.",
   "industry": "Cybersecurity",

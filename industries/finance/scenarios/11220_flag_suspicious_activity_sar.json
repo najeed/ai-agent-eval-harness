@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Flag Suspicious Activity for SAR Filing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11220-flag-suspicious-activity-sar"
   },
   "description": "A compliance analyst identifies a series of unusual transactions that may require filing a Suspicious Activity Report (SAR).",
   "industry": "Finance",

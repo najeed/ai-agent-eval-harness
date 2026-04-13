@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Location Scouting and Permitting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12521-location-scouting-and-permitting"
   },
   "description": "A production needs to find and secure permits for a public location (e.g., a city park) for a film shoot.",
   "industry": "Media and Entertainment",

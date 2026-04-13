@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Annual Hazardous Waste Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10535-generate-annual-waste-report"
   },
   "description": "An EHS manager needs to generate the EPA's biennial hazardous waste report, summarizing all hazardous waste shipped from the site.",
   "industry": "Chemicals",

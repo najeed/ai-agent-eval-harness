@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Parking on Game Day",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13663-manage-parking-on-game-day"
   },
   "description": "A venue operator needs to monitor parking lot capacity in real time and direct fans to available lots.",
   "industry": "Sports",

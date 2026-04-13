@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Complete Daily Construction Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11468-complete-daily-construction-report"
   },
   "description": "At the end of the day, a field engineer needs to complete the daily report, summarizing work completed, resources used, and any issues.",
   "industry": "Heavy Industries",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Quarantine a Recalled Product",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12232-quarantine-recalled-product"
   },
   "description": "A supplier has issued a recall for a specific batch of a product. An inventory manager must find all units from that batch and place them on hold.",
   "industry": "Logistics and Warehousing",

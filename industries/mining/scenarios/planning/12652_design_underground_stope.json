@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Design Underground Stope Shape",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12652-design-underground-stope"
   },
   "description": "An underground planning engineer designs the optimal shape for a stope (the underground excavation for ore removal) to maximize ore recovery while remaining stable.",
   "industry": "Mining",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Publish an Article to the CMS",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12004-publish-an-article-to-the-cms"
   },
   "description": "An online editor needs to take a finalized article and publish it to the website using the content management system (CMS).",
   "industry": "Journalism",

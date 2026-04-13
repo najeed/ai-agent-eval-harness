@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve a 3-Way Match Quantity Discrepancy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00096-resolve-3-way-match-quantity-discrepancy"
   },
   "description": "An invoice fails the 3-way match because the quantity invoiced is greater than the quantity received on the goods receipt note.",
   "industry": "Accounting",

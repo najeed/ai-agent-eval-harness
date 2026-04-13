@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Battery Storage Augmentation Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11196-battery-storage-augmentation"
   },
   "description": "The owner of a 5-year-old solar farm is considering adding a battery storage system to the site.",
   "industry": "Energy",

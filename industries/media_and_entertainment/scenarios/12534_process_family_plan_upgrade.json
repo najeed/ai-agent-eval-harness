@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Subscriber Family Plan Upgrade",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12534-process-family-plan-upgrade"
   },
   "description": "A subscriber on a standard plan wants to upgrade to a family plan to add their partner to the account.",
   "industry": "Media and Entertainment",

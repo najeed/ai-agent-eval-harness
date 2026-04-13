@@ -1,6 +1,6 @@
 # Developer API & CLI Reference
 
-This document is the authoritative reference for AI engineers using the AgentV harness. It covers the CLI interface, environment configuration, and public Trust Protocol endpoints.
+This document is the reference for AI engineers using the AgentV harness. It covers the CLI interface, environment configuration, and public Trust Protocol endpoints.
 
 ## CLI Core Interface
 
@@ -140,7 +140,7 @@ agentv gate --run-id <id> [--hash <commit_hash>] [--verify-ledger]
 For external systems (Deployment Gates, Audit Dashboards) that need programmatic verification.
 
 ### `GET /v1/certificates/<run_id>`
-Retrieves the authoritative Verification Certificate (VC) for a specific run from the archive.
+Retrieves the Verification Certificate (VC) for a specific run from the archive.
 
 ### `GET /v1/verify/<run_id>`
 Stateless verification bridge returning the boolean verification status via autonomous artifact resolution.

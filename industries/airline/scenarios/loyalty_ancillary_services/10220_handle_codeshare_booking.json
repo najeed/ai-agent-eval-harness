@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Codeshare Booking Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10220-handle-codeshare-booking"
   },
   "description": "A customer booked a flight on Airline A's website, but one leg is operated by a partner, Airline B. The customer cannot select a seat for the partner flight.",
   "industry": "Airline",

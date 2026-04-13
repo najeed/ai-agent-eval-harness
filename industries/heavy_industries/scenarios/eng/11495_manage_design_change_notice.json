@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Design Change Notice (DCN)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11495-manage-design-change-notice"
   },
   "description": "A design change is required after a drawing has already been issued. A formal DCN must be created to track the change.",
   "industry": "Heavy Industries",

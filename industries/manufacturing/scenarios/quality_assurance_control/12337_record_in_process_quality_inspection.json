@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Record In-Process Quality Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12337-record-in-process-quality-inspection"
   },
   "description": "A quality inspector needs to record the results of an in-process inspection for a work order.",
   "industry": "Manufacturing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Season Ticket Renewal Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14300-process-season-ticket-renewal"
   },
   "description": "A season ticket holder calls to make a payment for their renewal invoice.",
   "industry": "Venues",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Override Medication from Automated Dispensing Cabinet",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11328-override-medication-from-adc"
   },
   "description": "A nurse needs to pull a medication from an Automated Dispensing Cabinet (ADC) for an emergency, overriding the standard verification process.",
   "industry": "Healthcare",

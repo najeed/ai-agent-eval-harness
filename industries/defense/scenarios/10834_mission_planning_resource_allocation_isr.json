@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "ISR Asset Resource Planning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10834-mission-planning-resource-allocation-isr"
   },
   "description": "A planner must select the best ISR asset to find a mobile surface-to-air missile (SAM) launcher hidden in a forested area.",
   "industry": "Defense",

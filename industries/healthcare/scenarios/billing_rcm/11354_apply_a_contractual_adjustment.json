@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply a Contractual Adjustment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11354-apply-a-contractual-adjustment"
   },
   "description": "A biller is manually posting a payment and needs to apply the correct contractual adjustment based on the payer's allowed amount.",
   "industry": "Healthcare",

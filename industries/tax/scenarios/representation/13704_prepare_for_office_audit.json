@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare for an IRS Office Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13704-prepare-for-office-audit"
   },
   "description": "A taxpayer has been selected for an office audit regarding their Schedule C business expenses.",
   "industry": "Tax",

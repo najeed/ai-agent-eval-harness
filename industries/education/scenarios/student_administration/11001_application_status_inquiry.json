@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prospective Student Application Status Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11001-application-status-inquiry"
   },
   "description": "A prospective student calls to check the status of their undergraduate application.",
   "industry": "Education",

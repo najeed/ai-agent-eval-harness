@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document a Walkthrough Narrative",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10329-document-walkthrough-narrative"
   },
   "description": "An auditor must formally document their understanding of the payroll process in a workpaper narrative.",
   "industry": "Audit",

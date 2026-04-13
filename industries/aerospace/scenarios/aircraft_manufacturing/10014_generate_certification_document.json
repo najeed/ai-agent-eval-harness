@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate a Certification Document",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10014-generate-certification-document"
   },
   "description": "An engineer needs to prepare a document for the FAA demonstrating that a new avionics system complies with DO-178C standards.",
   "industry": "Aerospace",

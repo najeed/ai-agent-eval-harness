@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reconcile a Vendor Statement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00052-reconcile-vendor-statement"
   },
   "description": "A key supplier has sent their monthly statement of account. An AP clerk needs to reconcile it with the company's own records to ensure everything is aligned.",
   "industry": "Accounting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform an Advisory Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10381-perform-advisory-review"
   },
   "description": "A business unit is planning a major new process and asks internal audit to perform an advisory review to identify potential risks upfront.",
   "industry": "Audit",

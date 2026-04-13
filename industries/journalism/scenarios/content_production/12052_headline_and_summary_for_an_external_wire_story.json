@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Headline and Summary for an External Wire Story",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12052-headline-and-summary-for-an-external-wire-story"
   },
   "description": "An editor needs to take a story from a wire service (like AP or Reuters), write a new headline and summary for it, and publish it on their own site.",
   "industry": "Journalism",

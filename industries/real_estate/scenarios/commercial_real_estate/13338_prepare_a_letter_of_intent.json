@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare a Letter of Intent (LOI)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13338-prepare-a-letter-of-intent"
   },
   "description": "A tenant's agent needs to draft a Letter of Intent to lease a commercial space on behalf of their client.",
   "industry": "Real Estate",

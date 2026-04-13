@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Product Training Materials to a Retailer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14349-provide-product-training-materials"
   },
   "description": "A retailer's staff needs access to training materials for a wholesaler's products.",
   "industry": "Wholesale",

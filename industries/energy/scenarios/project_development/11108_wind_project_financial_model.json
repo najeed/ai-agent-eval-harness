@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Wind Project Financial Model",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11108-wind-project-financial-model"
   },
   "description": "A financial analyst needs to create a detailed financial model to assess the profitability of a proposed onshore wind farm.",
   "industry": "Energy",

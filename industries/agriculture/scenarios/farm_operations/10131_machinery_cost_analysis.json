@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Machinery Ownership vs. Custom Hire",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10131-machinery-cost-analysis"
   },
   "description": "A farmer is considering buying a new sprayer and wants to know if it's more cost-effective than continuing to use a custom application service.",
   "industry": "Agriculture",

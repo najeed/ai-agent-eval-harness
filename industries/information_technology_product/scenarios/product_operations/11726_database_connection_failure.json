@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Database Connection Pool Exhaustion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11726-database-connection-failure"
   },
   "description": "The application is throwing errors indicating it cannot get a connection to the database.",
   "industry": "Information Technology Product",

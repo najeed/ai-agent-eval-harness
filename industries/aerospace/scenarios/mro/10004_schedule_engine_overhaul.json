@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule an Engine Overhaul",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10004-schedule-engine-overhaul"
   },
   "description": "An MRO planner needs to schedule an engine for a complete overhaul based on its accumulated flight hours.",
   "industry": "Aerospace",

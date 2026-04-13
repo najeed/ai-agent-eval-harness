@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Pre-Task Safety Briefing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10667-pre-task-safety-briefing"
   },
   "description": "Before starting a concrete demolition task, a foreman must conduct and document a pre-task safety briefing with the crew.",
   "industry": "Construction",

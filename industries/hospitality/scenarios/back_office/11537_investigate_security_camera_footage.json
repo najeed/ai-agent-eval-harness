@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Security Camera Footage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11537-investigate-security-camera-footage"
   },
   "description": "A guest reports that their car was scratched in the hotel parking lot. Security needs to review camera footage.",
   "industry": "Hospitality",

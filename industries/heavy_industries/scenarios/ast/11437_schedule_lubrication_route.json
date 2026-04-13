@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule a Lubrication Route",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11437-schedule-lubrication-route"
   },
   "description": "A maintenance planner needs to schedule a weekly lubrication route for a maintenance technician.",
   "industry": "Heavy Industries",

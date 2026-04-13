@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Test Financial System Disaster Recovery Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11244-test-disaster-recovery-plan"
   },
   "description": "A risk officer is conducting a test of the disaster recovery (DR) plan for the primary accounting system.",
   "industry": "Finance",

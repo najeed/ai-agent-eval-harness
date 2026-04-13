@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule a Move-Out Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13208-schedule-move-out-inspection"
   },
   "description": "A tenant has given their notice to vacate. The agent needs to schedule the final move-out inspection.",
   "industry": "Real Estate",

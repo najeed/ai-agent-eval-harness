@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Return Unused Material to Warehouse",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12312-return-unused-material-to-warehouse"
   },
   "description": "A production run is complete, and there is unused raw material at the workstation that needs to be returned to inventory.",
   "industry": "Manufacturing",

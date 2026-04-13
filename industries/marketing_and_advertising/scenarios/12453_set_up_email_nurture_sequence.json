@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up an Email Nurture Sequence",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12453-set-up-email-nurture-sequence"
   },
   "description": "A marketer needs to create a 3-part email nurture sequence for new leads who download an ebook.",
   "industry": "Marketing and Advertising",

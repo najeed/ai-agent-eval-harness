@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Unaccompanied Minor (UM)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10233-handle-unaccompanied-minor"
   },
   "description": "A parent is checking in their child to fly as an unaccompanied minor. A ground agent must handle the process.",
   "industry": "Airline",

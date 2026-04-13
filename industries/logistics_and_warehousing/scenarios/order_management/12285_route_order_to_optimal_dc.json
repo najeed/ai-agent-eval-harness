@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Route Order to Optimal DC",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12285-route-order-to-optimal-dc"
   },
   "description": "An e-commerce order is placed. The system must decide which distribution center (DC) to fulfill it from to minimize shipping cost and time.",
   "industry": "Logistics and Warehousing",

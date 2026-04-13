@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Client KYC Information",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11216-update-kyc-information"
   },
   "description": "A periodic review requires a client to update their KYC information, such as employment and source of funds.",
   "industry": "Finance",

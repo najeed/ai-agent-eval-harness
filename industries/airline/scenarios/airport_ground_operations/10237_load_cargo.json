@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Load Cargo onto a Passenger Flight",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10237-load-cargo"
   },
   "description": "A ramp agent is responsible for loading cargo into the belly hold of a passenger aircraft.",
   "industry": "Airline",

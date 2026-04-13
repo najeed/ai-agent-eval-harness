@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Customer Account Reactivation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14406-handle-customer-account-reactivation"
   },
   "description": "A former customer wants to start ordering again. An agent must reactivate their old account.",
   "industry": "Wholesale",

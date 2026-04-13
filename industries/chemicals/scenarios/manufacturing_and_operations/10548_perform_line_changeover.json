@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Production Line Changeover",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10548-perform-line-changeover"
   },
   "description": "A production line that was making one product now needs to be cleaned and set up to make a different product.",
   "industry": "Chemicals",

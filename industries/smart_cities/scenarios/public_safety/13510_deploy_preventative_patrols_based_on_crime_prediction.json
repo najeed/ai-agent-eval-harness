@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deploy Preventative Patrols Based on Crime Prediction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13510-deploy-preventative-patrols-based-on-crime-prediction"
   },
   "description": "The system predicts a high likelihood of vehicle break-ins in a specific area. An operator must deploy police patrols as a deterrent.",
   "industry": "Smart Cities",

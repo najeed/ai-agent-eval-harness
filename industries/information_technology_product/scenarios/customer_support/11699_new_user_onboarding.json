@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New User Onboarding Assistance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11699-new-user-onboarding"
   },
   "description": "A new user is having trouble with the initial setup of their account and data import.",
   "industry": "Information Technology Product",

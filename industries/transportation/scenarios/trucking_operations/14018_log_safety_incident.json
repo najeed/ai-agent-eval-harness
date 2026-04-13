@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Log a Safety Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14018-log-safety-incident"
   },
   "description": "A driver reports a minor, non-injury accident. A safety manager must log the incident and begin the investigation process.",
   "industry": "Transportation",

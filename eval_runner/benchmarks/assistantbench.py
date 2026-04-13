@@ -7,10 +7,10 @@ class AssistantBenchmark:
 
     @staticmethod
     def load(uri: str) -> list[dict[str, Any]]:
-        print(f"      [Benchmark] Loading AssistantBench dataset from {uri}...")
+        print(f"      [Benchmark] Loading mock AssistantBench dataset from {uri}...")
         return [
             {
-                "scenario_id": f"ab_{i}",
+                "id": f"ab_{i}",
                 "title": f"AssistantBench Task {i}",
                 "description": "AssistantBench web-search/tool task.",
                 "use_case": "Web Assistant",

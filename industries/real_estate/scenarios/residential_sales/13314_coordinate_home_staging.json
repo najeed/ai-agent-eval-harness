@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate Professional Home Staging",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13314-coordinate-home-staging"
   },
   "description": "A listing agent advises a seller to use a professional stager to improve the home's appeal and coordinates the process.",
   "industry": "Real Estate",

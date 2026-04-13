@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Receive a Return Without an RMA",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12272-receive-return-without-rma"
   },
   "description": "A customer sends back a return without first getting a Return Merchandise Authorization (RMA). The returns department must handle this exception.",
   "industry": "Logistics and Warehousing",

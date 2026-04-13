@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "SLA Reporting - Prepare QBR Deck",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11894-reporting-qbr-deck"
   },
   "description": "An account manager prepares the slide deck for an upcoming Quarterly Business Review (QBR).",
   "industry": "Information Technology Service",

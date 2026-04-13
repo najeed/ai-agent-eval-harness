@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Claim the Adoption Credit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13777-claim-adoption-credit"
   },
   "description": "A couple adopted a child during the year and wants to claim the adoption tax credit for their expenses.",
   "industry": "Tax",

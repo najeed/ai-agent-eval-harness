@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Brainstorm Cost-Saving Initiatives",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00109-brainstorm-cost-saving-initiatives"
   },
   "description": "Given a client's main expense categories, an agent must brainstorm a list of potential cost-saving initiatives.",
   "industry": "Consulting",

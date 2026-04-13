@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Evaluate Lease vs. Buy Decision",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13264-evaluate-lease-vs-buy"
   },
   "description": "A business client needs help deciding whether to lease a new warehouse or buy one. The agent must prepare a comparative analysis.",
   "industry": "Real Estate",

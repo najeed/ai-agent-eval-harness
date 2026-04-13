@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Close Wealth Management Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11253-close-wealth-account"
   },
   "description": "A client is transferring their assets to another institution and wants to close their account.",
   "industry": "Finance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Employee Chemical Exposure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10555-track-employee-exposure"
   },
   "description": "An industrial hygienist needs to review the exposure monitoring data for an employee who works with a hazardous chemical.",
   "industry": "Chemicals",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Variable Rate Nitrogen Prescription for Corn",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10122-variable-rate-fertilizer-corn"
   },
   "description": "Based on satellite imagery showing crop health, a farmer wants to create a variable rate prescription for a top-dress nitrogen application.",
   "industry": "Agriculture",

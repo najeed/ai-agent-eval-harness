@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assemble Multi-Layer Insulation (MLI)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10060-assemble-multi-layer-insulation"
   },
   "description": "A technician is assembling MLI blankets to provide thermal protection for a satellite.",
   "industry": "Aerospace",

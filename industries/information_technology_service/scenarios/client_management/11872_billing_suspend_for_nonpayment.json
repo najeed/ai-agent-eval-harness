@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Billing - Suspend Account for Non-Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11872-billing-suspend-for-nonpayment"
   },
   "description": "A client is 90 days overdue on their invoices. The account manager needs to suspend their services.",
   "industry": "Information Technology Service",

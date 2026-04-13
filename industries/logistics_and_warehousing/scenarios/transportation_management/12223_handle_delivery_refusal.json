@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Delivery Refusal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12223-handle-delivery-refusal"
   },
   "description": "A carrier reports that a customer has refused a delivery. The agent must determine the next steps.",
   "industry": "Logistics and Warehousing",

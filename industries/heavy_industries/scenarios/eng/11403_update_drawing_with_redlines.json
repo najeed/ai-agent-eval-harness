@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Drawing with As-Built Redlines",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11403-update-drawing-with-redlines"
   },
   "description": "The field team has returned a 'red-line' drawing showing a minor change made during construction. A designer must update the official CAD drawing.",
   "industry": "Heavy Industries",

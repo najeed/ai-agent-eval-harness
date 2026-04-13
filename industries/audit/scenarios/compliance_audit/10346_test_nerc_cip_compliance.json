@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Test NERC CIP Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10346-test-nerc-cip-compliance"
   },
   "description": "For an electric utility, a compliance auditor tests adherence to NERC CIP (Critical Infrastructure Protection) standards.",
   "industry": "Audit",

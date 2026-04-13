@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find a New Supplier for a Product",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14364-find-new-supplier"
   },
   "description": "A current supplier is being discontinued. A procurement manager needs to find a new, alternative supplier for a key product.",
   "industry": "Wholesale",

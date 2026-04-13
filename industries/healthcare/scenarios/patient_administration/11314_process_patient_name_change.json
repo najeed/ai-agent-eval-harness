@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Patient Name Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11314-process-patient-name-change"
   },
   "description": "A patient has legally changed their name and provides documentation. An HIM specialist needs to update their medical record.",
   "industry": "Healthcare",

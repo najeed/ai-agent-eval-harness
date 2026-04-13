@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Server & Network - Change Device VLAN",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11893-network-client-vlan-change"
   },
   "description": "A client has moved a printer to a new location in the office and it can no longer be reached, likely because it needs to be on a different VLAN.",
   "industry": "Information Technology Service",

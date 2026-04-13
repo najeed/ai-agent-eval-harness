@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Author a New SDS",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10540-author-new-sds"
   },
   "description": "A new product has been developed, and an EHS specialist needs to author a new Safety Data Sheet (SDS) from scratch.",
   "industry": "Chemicals",

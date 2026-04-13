@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check if a Photo is Cleared for Use",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12026-check-if-a-photo-is-cleared-for-use"
   },
   "description": "An editor wants to use a photo found online, but must first verify that the publication has the legal right to use it.",
   "industry": "Journalism",

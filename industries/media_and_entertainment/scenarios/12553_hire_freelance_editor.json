@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Hire a Freelance Video Editor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12553-hire-freelance-editor"
   },
   "description": "A production needs to hire a freelance video editor for a short-term project.",
   "industry": "Media and Entertainment",

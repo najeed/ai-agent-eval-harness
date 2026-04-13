@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Patient-Facing Educational Material",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12850-create-patient-facing-material"
   },
   "description": "A medical communications specialist needs to create a patient-friendly brochure explaining a specific disease state.",
   "industry": "Pharmaceuticals and Life Sciences",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Dock Appointment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12234-manage-dock-appointment"
   },
   "description": "A carrier calls to reschedule their delivery appointment for a later time.",
   "industry": "Logistics and Warehousing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply for a New Business License",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13003-apply-for-business-license"
   },
   "description": "An entrepreneur is starting a new cafe and needs to apply for a city business license.",
   "industry": "Public Sector",

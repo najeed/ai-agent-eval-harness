@@ -15,7 +15,7 @@ def physical_jail(tmp_path):
     root = tmp_path / "root"
     root.mkdir()
 
-    # Create the authoritative vault structure
+    # Create the vault structure
     runs_dir = root / "runs"
     runs_dir.mkdir()
 

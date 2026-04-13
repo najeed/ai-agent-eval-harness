@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up an Email Suppression List",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12485-set-up-a-suppression-list"
   },
   "description": "A company needs to ensure they do not email a list of competitors who have signed up for their newsletter. A marketer needs to create a suppression list.",
   "industry": "Marketing and Advertising",

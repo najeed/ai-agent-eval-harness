@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Red Team Operation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10786-vuln-mgmt-pen-test-red-team"
   },
   "description": "A red team is tasked with simulating a real-world adversary by attempting to breach the company and achieve a specific objective (e.g., access the CEO's email) without being detected.",
   "industry": "Cybersecurity",

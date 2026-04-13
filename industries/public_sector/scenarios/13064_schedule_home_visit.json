@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule a Home Visit for a Case",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13064-schedule-home-visit"
   },
   "description": "A social worker needs to schedule a required monthly home visit with a client.",
   "industry": "Public Sector",

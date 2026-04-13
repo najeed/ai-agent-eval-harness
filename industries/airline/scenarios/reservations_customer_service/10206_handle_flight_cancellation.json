@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Flight Cancellation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10206-handle-flight-cancellation"
   },
   "description": "Due to a maintenance issue, a flight has been cancelled. An agent must contact affected passengers and rebook them.",
   "industry": "Airline",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About Material Composition",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13447-inquire-about-material-composition"
   },
   "description": "A customer with a wool allergy calls to ask if a specific sweater contains any wool.",
   "industry": "Retail",

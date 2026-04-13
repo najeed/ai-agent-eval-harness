@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book a One-Way Flight",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13915-book-one-way-flight"
   },
   "description": "A traveler needs to book a one-way flight from New York (JFK) to Los Angeles (LAX).",
   "industry": "Tourism",

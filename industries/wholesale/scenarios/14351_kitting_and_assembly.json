@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Kitting and Assembly",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14351-kitting-and-assembly"
   },
   "description": "A customer orders a 'gift basket' product which is a kit made up of several individual items. A warehouse worker must assemble the kit.",
   "industry": "Wholesale",

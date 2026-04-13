@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sewer Overflow Prevention",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14160-sewer-overflow-prevention"
   },
   "description": "During a heavy rainstorm, the system monitors sewer levels to proactively prevent a sanitary sewer overflow (SSO).",
   "industry": "Utilities",

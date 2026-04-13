@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit a Freight Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12211-audit-freight-invoice"
   },
   "description": "An accounts payable clerk needs to audit a carrier's freight invoice against the agreed-upon rate before approving it for payment.",
   "industry": "Logistics and Warehousing",

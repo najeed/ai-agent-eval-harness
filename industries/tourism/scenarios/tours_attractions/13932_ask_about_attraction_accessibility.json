@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Ask About Attraction Accessibility",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13932-ask-about-attraction-accessibility"
   },
   "description": "A visitor with mobility issues wants to know if the Eiffel Tower is wheelchair accessible.",
   "industry": "Tourism",

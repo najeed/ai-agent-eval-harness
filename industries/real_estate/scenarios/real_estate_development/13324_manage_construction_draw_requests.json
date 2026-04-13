@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Construction Draw Requests",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13324-manage-construction-draw-requests"
   },
   "description": "During construction, the developer must submit draw requests to the lender to get funds to pay contractors.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Adverse Event from Social Media",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12830-manage-adverse-event-from-social-media"
   },
   "description": "An agent monitoring social media finds a public post describing a potential adverse event for a company product.",
   "industry": "Pharmaceuticals and Life Sciences",

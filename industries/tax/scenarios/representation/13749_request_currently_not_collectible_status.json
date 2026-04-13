@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Currently Not Collectible Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13749-request-currently-not-collectible-status"
   },
   "description": "A taxpayer with a tax debt is experiencing extreme financial hardship and cannot afford any payments.",
   "industry": "Tax",

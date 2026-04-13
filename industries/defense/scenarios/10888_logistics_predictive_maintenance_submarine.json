@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Submarine Atmosphere Control Predictive Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10888-logistics-predictive-maintenance-submarine"
   },
   "description": "A submarine's atmosphere control system reports slightly elevated CO2 levels, predicting a potential failure in the CO2 scrubbers.",
   "industry": "Defense",

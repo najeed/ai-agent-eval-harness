@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deployment - New Wi-Fi Installation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11832-deployment-new-wifi"
   },
   "description": "A project requires the installation of a new Wi-Fi system across a client's office.",
   "industry": "Information Technology Service",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Market a New Condominium Development",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13331-market-new-condo-development"
   },
   "description": "A developer is launching a new condo project and needs a marketing campaign to drive pre-sales.",
   "industry": "Real Estate",

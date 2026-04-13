@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Request to Speak to a Supervisor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10974-handle-request-to-speak-to-supervisor"
   },
   "description": "A customer is unhappy with a policy and demands to be escalated to a supervisor.",
   "industry": "Ecommerce",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Client Onboarding - Initial Discovery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11807-client-onboarding-discovery"
   },
   "description": "An account manager and technical lead conduct the initial discovery and kickoff meeting with a new managed services client.",
   "industry": "Information Technology Service",

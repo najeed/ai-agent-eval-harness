@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Compare LCOE for Solar vs. Wind",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11124-lcoe-calculation"
   },
   "description": "An analyst needs to compare the Levelized Cost of Energy (LCOE) for a new solar project versus a new wind project at the same location.",
   "industry": "Energy",

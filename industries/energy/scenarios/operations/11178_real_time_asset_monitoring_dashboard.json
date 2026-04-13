@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Real-Time Asset Monitoring Dashboard",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11178-real-time-asset-monitoring-dashboard"
   },
   "description": "A control room operator uses a dashboard to monitor the real-time status and performance of a diverse portfolio of renewable assets.",
   "industry": "Energy",

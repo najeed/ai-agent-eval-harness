@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Free Trial to Paid Subscription Conversion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12582-handle-free-trial-conversion"
   },
   "description": "A user's free trial is about to end, and the system needs to automatically convert them to a paid subscription.",
   "industry": "Media and Entertainment",

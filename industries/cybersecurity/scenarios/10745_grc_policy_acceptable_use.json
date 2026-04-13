@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Annual Acceptable Use Policy Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10745-grc-policy-acceptable-use"
   },
   "description": "A GRC analyst must conduct the annual review of the Acceptable Use Policy (AUP) and require all employees to re-acknowledge it.",
   "industry": "Cybersecurity",

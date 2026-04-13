@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Home Internet - Setup Port Forwarding",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13831-setup-port-forwarding"
   },
   "description": "A customer needs to set up port forwarding on their router for a home gaming server.",
   "industry": "Telecom",

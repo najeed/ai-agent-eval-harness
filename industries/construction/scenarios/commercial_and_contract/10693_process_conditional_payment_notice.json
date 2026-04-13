@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Conditional Payment Notice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10693-process-conditional-payment-notice"
   },
   "description": "A general contractor receives a notice from a sub-subcontractor that they have not been paid by the subcontractor. The GC must now take action to ensure payment.",
   "industry": "Construction",

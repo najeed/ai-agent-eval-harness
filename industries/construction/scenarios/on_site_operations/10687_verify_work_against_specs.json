@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Installation Against Specifications",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10687-verify-work-against-specs"
   },
   "description": "A quality inspector must verify that the newly installed windows match the model number specified in the project's technical specifications.",
   "industry": "Construction",

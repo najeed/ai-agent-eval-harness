@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update a Corporate Minute Book",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12116-update-corporate-minute-book"
   },
   "description": "Following an annual shareholder meeting, a corporate paralegal needs to update the official corporate minute book.",
   "industry": "Legal",

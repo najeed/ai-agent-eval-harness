@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Potential Drug Target from Genomic Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12811-drug-discovery-target-identification"
   },
   "description": "A computational biologist needs to analyze genomic data from cancer patients to identify a potential new target for drug development.",
   "industry": "Pharmaceuticals and Life Sciences",

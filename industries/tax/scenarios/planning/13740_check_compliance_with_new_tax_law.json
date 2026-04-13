@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Compliance with New Tax Law",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13740-check-compliance-with-new-tax-law"
   },
   "description": "A business owner wants to know how a newly enacted tax law will affect their business and what changes they need to make.",
   "industry": "Tax",

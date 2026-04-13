@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Large Concrete Pour",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11460-manage-concrete-pour"
   },
   "description": "A supervisor is managing a large, continuous concrete pour for a building foundation and must track the trucks and volumes.",
   "industry": "Heavy Industries",

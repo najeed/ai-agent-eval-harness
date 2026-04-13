@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Research Regulatory Filings",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00162-regulatory-filing-research"
   },
   "description": "An agent must search SEC filings (e.g., 10-K, 8-K) for a specific company to find information about disclosed risks.",
   "industry": "Consulting",

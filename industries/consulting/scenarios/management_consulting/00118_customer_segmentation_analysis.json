@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Customer Segmentation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00118-customer-segmentation-analysis"
   },
   "description": "Using customer purchase data, an agent must perform a simple RFM (Recency, Frequency, Monetary) segmentation.",
   "industry": "Consulting",

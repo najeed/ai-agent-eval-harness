@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Station Elevator Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14083-handle-elevator-outage"
   },
   "description": "An elevator at a subway station is out of service, impacting accessibility. The control center must manage the response.",
   "industry": "Transportation",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Project Timeline from Email",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00190-create-project-timeline-from-email"
   },
   "description": "An agent must parse an unstructured email from a client and turn it into a structured project timeline.",
   "industry": "Consulting",

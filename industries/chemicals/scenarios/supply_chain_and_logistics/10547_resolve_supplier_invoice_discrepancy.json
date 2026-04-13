@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Supplier Invoice Discrepancy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10547-resolve-supplier-invoice-discrepancy"
   },
   "description": "Accounts payable has flagged a supplier invoice where the quantity billed does not match the quantity received.",
   "industry": "Chemicals",

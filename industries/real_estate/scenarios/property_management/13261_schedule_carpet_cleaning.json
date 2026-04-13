@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Carpet Cleaning for Unit Turnover",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13261-schedule-carpet-cleaning"
   },
   "description": "A unit is now vacant and needs carpet cleaning before the new tenant moves in. The manager must schedule a vendor.",
   "industry": "Real Estate",

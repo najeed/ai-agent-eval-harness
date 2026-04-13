@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Social Engineering Penetration Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10738-vuln-mgmt-pen-test-social-engineering"
   },
   "description": "A penetration tester is tasked with gaining a user's password through a vishing (voice phishing) phone call.",
   "industry": "Cybersecurity",

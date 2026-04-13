@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cloud - Provision New Azure VM",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11804-cloud-provision-vm"
   },
   "description": "A client has requested a new virtual machine in their Microsoft Azure environment to host a new application.",
   "industry": "Information Technology Service",

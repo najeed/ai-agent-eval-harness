@@ -1,7 +1,7 @@
 # PRD: Billing Dispute Resolution Agent
 
 ## Metadata
-- **scenario_id**: billing_dispute_01
+- **id**: billing_dispute_01
 - **version**: 1.2
 - **industry**: telecom
 - **compliance_level**: Standard

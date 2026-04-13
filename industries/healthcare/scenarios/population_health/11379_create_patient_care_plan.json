@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Patient Care Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11379-create-patient-care-plan"
   },
   "description": "A care manager is creating a comprehensive care plan for a patient with congestive heart failure (CHF).",
   "industry": "Healthcare",

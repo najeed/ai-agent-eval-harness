@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Bill of Materials for an Asset",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11481-create-bill-of-materials-for-asset"
   },
   "description": "A new asset has been created, and a planner needs to build its Bill of Materials (BOM) of spare parts in the maintenance system.",
   "industry": "Heavy Industries",

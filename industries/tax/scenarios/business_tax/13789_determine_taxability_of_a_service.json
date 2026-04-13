@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Determine Sales Taxability of a Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13789-determine-taxability-of-a-service"
   },
   "description": "A consulting firm is expanding to a new state and needs to know if its services are subject to sales tax there.",
   "industry": "Tax",

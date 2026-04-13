@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Warranty Claim for Faulty Sensor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10409-warranty-claim-submission"
   },
   "description": "A vehicle's transmission sensor failed and was replaced. The vehicle is still under the powertrain warranty, so a claim must be submitted.",
   "industry": "Automotive",

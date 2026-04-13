@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report on Order Fill Rate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12277-report-on-order-fill-rate"
   },
   "description": "A manager wants to analyze the order fill rate (the percentage of orders shipped complete without backorders) for the previous month.",
   "industry": "Logistics and Warehousing",

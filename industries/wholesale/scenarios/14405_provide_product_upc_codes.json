@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Product UPC Codes to a Retailer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14405-provide-product-upc-codes"
   },
   "description": "A retailer needs a list of all Universal Product Codes (UPCs) for the products they carry to set them up in their point-of-sale system.",
   "industry": "Wholesale",

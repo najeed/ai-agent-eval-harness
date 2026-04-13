@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispatch Crew for Outage Repair",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14134-crew-dispatch-for-repair"
   },
   "description": "Following an outage, the system needs to dispatch the nearest available crew to the fault location.",
   "industry": "Utilities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Hot Box Detector Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14057-handle-hot-box-detector-alert"
   },
   "description": "A wayside hot box detector sends an alert for an overheated wheel bearing on a specific railcar in a passing train.",
   "industry": "Transportation",

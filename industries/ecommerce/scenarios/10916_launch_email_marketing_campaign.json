@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Launch Email Marketing Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10916-launch-email-marketing-campaign"
   },
   "description": "A marketing manager wants to send a promotional email for a new product line to all customers who have previously purchased from a related category.",
   "industry": "Ecommerce",

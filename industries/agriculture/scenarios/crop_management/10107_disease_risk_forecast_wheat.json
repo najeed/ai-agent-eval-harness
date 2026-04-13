@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Disease Risk Forecast for Wheat",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10107-disease-risk-forecast-wheat"
   },
   "description": "A farmer wants to know the risk of fusarium head blight developing in their wheat field based on weather conditions.",
   "industry": "Agriculture",

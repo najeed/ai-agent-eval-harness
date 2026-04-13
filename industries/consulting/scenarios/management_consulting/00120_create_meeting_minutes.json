@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Meeting Minutes from Transcript",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00120-create-meeting-minutes"
   },
   "description": "An agent must generate structured meeting minutes from a raw audio transcript of a client meeting.",
   "industry": "Consulting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Collateral Damage Estimate ROE Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10891-c2-roe-compliance-collateral-damage"
   },
   "description": "A proposed air strike's collateral damage estimate (CDE) indicates a risk of civilian casualties. A legal officer must check if this risk is acceptable under the ROE.",
   "industry": "Defense",

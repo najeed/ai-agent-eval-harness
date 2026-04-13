@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Passenger Re-route at the Airport",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10248-handle-passenger-re-route"
   },
   "description": "A passenger has missed their connecting flight due to a delay on their first flight. A gate agent must rebook them.",
   "industry": "Airline",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Shift Handover",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12694-manage-shift-handover"
   },
   "description": "A control room dispatcher finishing their shift must provide a complete and accurate handover to the incoming dispatcher.",
   "industry": "Mining",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Close Out a Project",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11462-close-out-project"
   },
   "description": "A project is complete. The project manager must perform the final administrative steps to formally close it.",
   "industry": "Heavy Industries",

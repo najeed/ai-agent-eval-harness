@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Claim Liability Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11970-handle-liability-dispute"
   },
   "description": "Both drivers in an accident are claiming the other was at fault. The adjuster must determine liability.",
   "industry": "Insurance",

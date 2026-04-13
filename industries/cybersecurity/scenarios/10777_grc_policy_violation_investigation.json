@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Policy Violation Investigation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10777-grc-policy-violation-investigation"
   },
   "description": "A DLP tool flags an employee for attempting to email a sensitive document to their personal email address, violating policy. A GRC analyst must investigate.",
   "industry": "Cybersecurity",

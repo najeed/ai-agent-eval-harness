@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Price Accuracy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13473-verify-price-accuracy"
   },
   "description": "As part of a regular audit, an associate needs to scan a sample of items in an aisle to ensure the shelf price matches the price in the POS system.",
   "industry": "Retail",

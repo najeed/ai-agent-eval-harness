@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitoring - Server Room Temperature Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11879-alert-temperature-server-room"
   },
   "description": "An RMM alert indicates the temperature in a client's server room has exceeded the safe threshold.",
   "industry": "Information Technology Service",

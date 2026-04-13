@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue Form W-2 to an Employee",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13732-issue-form-w2-to-employee"
   },
   "description": "At year-end, a business needs to prepare and issue a Form W-2 to one of its employees.",
   "industry": "Tax",

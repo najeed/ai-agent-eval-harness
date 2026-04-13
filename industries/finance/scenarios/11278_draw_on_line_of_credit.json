@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draw Funds from a Line of Credit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11278-draw-on-line-of-credit"
   },
   "description": "A corporate client needs to draw $100,000 from their commercial line of credit to cover a temporary cash shortfall.",
   "industry": "Finance",

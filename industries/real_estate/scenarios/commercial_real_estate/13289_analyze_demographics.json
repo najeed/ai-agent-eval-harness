@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Demographics for a Retail Tenant",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13289-analyze-demographics"
   },
   "description": "A national coffee chain is considering leasing a retail space and has asked for a demographic analysis of the surrounding area.",
   "industry": "Real Estate",

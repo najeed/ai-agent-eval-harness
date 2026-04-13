@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Equipment Calibration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11473-manage-equipment-calibration"
   },
   "description": "A critical torque wrench used for bolt tensioning is due for its annual calibration.",
   "industry": "Heavy Industries",

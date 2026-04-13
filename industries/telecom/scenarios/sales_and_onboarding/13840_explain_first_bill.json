@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboarding - Explain First Bill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13840-explain-first-bill"
   },
   "description": "A new customer calls, confused about their first bill which includes prorated charges.",
   "industry": "Telecom",

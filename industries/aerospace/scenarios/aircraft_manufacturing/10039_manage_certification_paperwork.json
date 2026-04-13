@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Certification Paperwork",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10039-manage-certification-paperwork"
   },
   "description": "A certification manager must compile and submit the final package of documents to a regulatory agency to receive a Type Certificate for a new aircraft.",
   "industry": "Aerospace",

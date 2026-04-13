@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Vendor Risk Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10714-grc-risk-assessment-new-vendor"
   },
   "description": "A GRC analyst must conduct a security risk assessment of a new SaaS vendor that will handle sensitive customer data.",
   "industry": "Cybersecurity",

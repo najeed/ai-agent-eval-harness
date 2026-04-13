@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Threatens Lemon Law Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10496-lemon-law-complaint"
   },
   "description": "A customer's new vehicle has been in for the same repair three times, and they are threatening to file a Lemon Law claim.",
   "industry": "Automotive",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Construction Service Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14124-new-construction-service-request"
   },
   "description": "A building contractor needs to arrange for new electric and water service connections for a home under construction.",
   "industry": "Utilities",

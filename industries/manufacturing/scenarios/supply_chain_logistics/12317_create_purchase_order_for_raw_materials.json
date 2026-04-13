@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Purchase Order for Raw Materials",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12317-create-purchase-order-for-raw-materials"
   },
   "description": "A buyer needs to create a purchase order (PO) for a critical raw material that is below its reorder point.",
   "industry": "Manufacturing",

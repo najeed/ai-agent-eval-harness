@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Purchase Order Acknowledgement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14376-handle-po-acknowledgement"
   },
   "description": "A supplier sends back an acknowledgement for a purchase order, but with a different delivery date than requested.",
   "industry": "Wholesale",

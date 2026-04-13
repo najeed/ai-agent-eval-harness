@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Tour Bus Parking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14298-manage-tour-bus-parking"
   },
   "description": "The production manager for a touring show needs to arrange parking for three tour buses and two equipment trucks.",
   "industry": "Venues",

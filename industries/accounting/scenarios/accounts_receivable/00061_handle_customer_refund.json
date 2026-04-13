@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Customer Refund",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00061-handle-customer-refund"
   },
   "description": "A customer who paid in advance has canceled their order and is due a refund.",
   "industry": "Accounting",

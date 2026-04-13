@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Ground Station Pass",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10026-perform-ground-station-pass"
   },
   "description": "A satellite operator needs to upload a new command file and download scientific data during a scheduled pass over a ground station.",
   "industry": "Aerospace",

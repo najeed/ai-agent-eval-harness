@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Log a Near-Miss Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10648-log-near-miss-incident"
   },
   "description": "A worker dropped a tool from scaffolding, but no one was injured. A safety officer needs to log this as a 'near-miss' to prevent future occurrences.",
   "industry": "Construction",

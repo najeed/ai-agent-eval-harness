@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Billing Cycle Date",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13894-change-billing-cycle-date"
   },
   "description": "A customer requests to change their monthly billing date to align with their payday.",
   "industry": "Telecom",

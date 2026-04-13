@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Source of Illegal Dumping in Waterway",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13526-identify-source-of-illegal-dumping-in-waterway"
   },
   "description": "A water quality sensor detects an illegal chemical discharge into a river. An operator must trace the source.",
   "industry": "Smart Cities",

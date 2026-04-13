@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dynamic Ad Insertion for VOD",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12515-dynamic-ad-insertion-for-vod"
   },
   "description": "An agent needs to configure an advertising campaign for a new movie being added to a VOD catalog, targeting specific viewer demographics.",
   "industry": "Media and Entertainment",

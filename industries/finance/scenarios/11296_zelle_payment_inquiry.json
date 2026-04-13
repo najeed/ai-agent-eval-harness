@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Zelle / P2P Payment Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11296-zelle-payment-inquiry"
   },
   "description": "A customer sent a Zelle payment to a friend, but the friend claims they never received it.",
   "industry": "Finance",

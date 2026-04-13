@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Conveyor Transfer Chute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12689-manage-conveyor-transfer-chute"
   },
   "description": "An operator notices that a transfer chute between two conveyor belts is blocked, causing ore to spill.",
   "industry": "Mining",

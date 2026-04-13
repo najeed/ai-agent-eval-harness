@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Minimum Equipment List (MEL) Item",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10268-manage-minimum-equipment-list"
   },
   "description": "A pilot discovers a non-critical system is inoperative before a flight (e.g., a coffee maker). They must consult the MEL to see if the flight can legally depart.",
   "industry": "Airline",

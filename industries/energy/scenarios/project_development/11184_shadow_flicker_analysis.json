@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Wind Turbine Shadow Flicker Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11184-shadow-flicker-analysis"
   },
   "description": "A developer needs to model the potential shadow flicker impact of a new wind farm on nearby homes.",
   "industry": "Energy",

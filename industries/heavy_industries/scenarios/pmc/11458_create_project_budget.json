@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Initial Project Budget",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11458-create-project-budget"
   },
   "description": "A project is being initiated, and a cost engineer needs to create the initial budget based on the conceptual estimate.",
   "industry": "Heavy Industries",

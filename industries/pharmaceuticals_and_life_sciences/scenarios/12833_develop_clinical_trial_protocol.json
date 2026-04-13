@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop a Clinical Trial Protocol",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12833-develop-clinical-trial-protocol"
   },
   "description": "A clinical scientist is leading the development of a new protocol for a Phase 1 study.",
   "industry": "Pharmaceuticals and Life Sciences",

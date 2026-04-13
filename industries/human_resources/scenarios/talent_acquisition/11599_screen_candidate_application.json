@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Screen Candidate Application",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11599-screen-candidate-application"
   },
   "description": "A recruiter needs to screen a new application for an open 'Marketing Manager' role.",
   "industry": "Human Resources",

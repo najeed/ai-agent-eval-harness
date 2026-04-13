@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Windshield Repair Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11922-windshield-repair-claim"
   },
   "description": "A customer has a small chip in their windshield and wants to file a claim under their comprehensive coverage.",
   "industry": "Insurance",

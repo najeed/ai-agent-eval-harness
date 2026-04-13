@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Asset Vibration Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11425-analyze-asset-vibration-data"
   },
   "description": "A predictive maintenance system has flagged high vibration levels on a large industrial fan. A reliability engineer must analyze the data.",
   "industry": "Heavy Industries",

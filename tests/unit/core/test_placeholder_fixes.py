@@ -14,7 +14,7 @@ async def test_hitl_interactive_input():
     """Verifies that SessionManager correctly handles HITL interactive input."""
     scenario = {
         "aes_version": 1.4,
-        "scenario_id": "test_hitl",
+        "id": "test_hitl",
         "workflow": {"nodes": [{"id": "task1", "task_description": "Do something"}], "edges": []},
     }
 
@@ -52,7 +52,7 @@ async def test_hitl_ci_auto_resume():
     """Verifies that SessionManager auto-resumes in CI mode."""
     scenario = {
         "aes_version": 1.4,
-        "scenario_id": "test_hitl_ci",
+        "id": "test_hitl_ci",
         "workflow": {"nodes": [{"id": "task1", "task_description": "test"}], "edges": []},
     }
 
@@ -106,7 +106,7 @@ async def test_reporting_plugin_notifications():
     """Verifies ReportingPlugin dispatches notifications via aiohttp."""
     plugin = ReportingPlugin()
     context = EvaluationContext(
-        scenario_id="test_notif",
+        identifier="test_notif",
         scenario_data={},
         metadata={"webhook_url": "http://fake-webhook"},
     )

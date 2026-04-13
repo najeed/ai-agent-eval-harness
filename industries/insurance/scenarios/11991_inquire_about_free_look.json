@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About the Free Look Period",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11991-inquire-about-free-look"
   },
   "description": "A customer who just purchased an annuity wants to know if they can still cancel it without penalty.",
   "industry": "Insurance",

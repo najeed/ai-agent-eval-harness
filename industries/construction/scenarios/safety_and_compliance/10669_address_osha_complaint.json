@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Address an OSHA Complaint",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10669-address-osha-complaint"
   },
   "description": "The company receives a formal complaint from OSHA regarding inadequate fall protection on a specific site. The safety director must respond.",
   "industry": "Construction",

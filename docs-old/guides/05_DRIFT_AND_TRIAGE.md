@@ -18,15 +18,15 @@ A new scenario file is created in `industries/[industry]/scenarios/drift-[hash].
 
 ## 2. Pluggable Triage Engine
 
-AgentV 1.5.0 introduces the **Forensic Analyzer Registry**. Failure diagnostics are no longer a black-box heuristic; they are a series of pluggable analyzers that inspect the [Forensic Ledger](../spec/forensic_ledger_schema.md).
+AgentV 1.5.0 introduces the **Identity-Signed Forensic Analyzer Registry**. Failure diagnostics are no longer a black-box heuristic; they are a series of pluggable analyzers that inspect the [Forensic Ledger](../../docs/src/content/docs/spec/forensic-ledger-schema.md).
 
 ### Diagnostic Triage Tags
-| Tag | Description |
-| :--- | :--- |
-| `INFRA_TIMEOUT` | Exceeded wall-clock limits (Hardware telemetry gradient used). |
-| `POLICY_HALLUCINATION` | Tool use claims that lack environment evidence (State snapshots). |
-| `LOGIC_STATE_STALL` | No measurable state progress detected across 3+ turns (Fingerprint delta). |
-| `STRATEGIC_LOOP` | **Enterprise**: Semantic similarity detected across different tool attempts. |
+| Tag | Description | Identity Anchoring |
+| :--- | :--- | :--- |
+| `INFRA_TIMEOUT` | Exceeded wall-clock limits (Hardware telemetry gradient). | Step-Back to Agent Stimulus |
+| `POLICY_VIOLATION` | Explicit deviation from safety/identity boundaries. | Detection Point |
+| `LOGIC_STATE_STALL` | No measurable state progress detected across 3+ turns. | Trigger Point |
+| `INFRA_CONNECTION_FAILED` | Network or platform unavailability. | Step-Back to Agent Turn |
 
 ---
 
@@ -37,8 +37,10 @@ While triage applies categorical tags, the `explain` command now performs a **Ca
 ### Causal Attribution
 The engine distinguishes between the **Root Cause (Trigger)** and the **Terminal Status (Symptom)**.
 
+**Robust Step-Back Scan**: In v1.5.2, the triage engine performs a backward identity search to anchor infrastructure or metric faults to the preceding agent turn.
+
 **Example**:
-- **Root Cause**: `LOGIC_PLANNING_ERROR` (Semantic Loop detected)
+- **Root Cause**: `LOGIC_PLANNING_ERROR` (Circular Loop found via Step-Back)
 - **Manifestation**: `INFRA_TIMEOUT`
 
 ### Forensic Features

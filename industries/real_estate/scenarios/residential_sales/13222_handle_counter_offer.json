@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Seller's Counter Offer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13222-handle-counter-offer"
   },
   "description": "A seller has responded to a buyer's offer with a counter offer. The agent must present it to the buyer.",
   "industry": "Real Estate",

@@ -1,7 +1,7 @@
 const { useState, useEffect, useRef } = React;
 
 /**
- * Shared components for AgentEval Demos
+ * Shared components for AgentV Demos
  */
 
 const DraggableCard = ({ children, initialPos = null, className = "", style = {} }) => {
@@ -14,7 +14,7 @@ const DraggableCard = ({ children, initialPos = null, className = "", style = {}
         if (e.button !== 0) return;
         const element = ref.current;
         if (!element) return;
-        
+
         const rect = element.getBoundingClientRect();
         const currentX = pos ? pos.x : rect.left;
         const currentY = pos ? pos.y : rect.top;

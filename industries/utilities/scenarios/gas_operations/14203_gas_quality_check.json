@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Gas Quality Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14203-gas-quality-check"
   },
   "description": "A technician checks the quality of natural gas being received from a supplier to ensure it meets the utility's tariff specifications.",
   "industry": "Utilities",

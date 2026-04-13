@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Borescope Inspection of an Engine",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10048-perform--borescope-inspection"
   },
   "description": "A technician must use a borescope to inspect the internal components of a jet engine for damage without disassembling it.",
   "industry": "Aerospace",

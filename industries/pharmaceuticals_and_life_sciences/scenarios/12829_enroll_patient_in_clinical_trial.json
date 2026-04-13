@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Enroll Patient in a Clinical Trial",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12829-enroll-patient-in-clinical-trial"
   },
   "description": "A Clinical Research Coordinator (CRC) at a hospital site needs to enroll a patient who has consented to participate in a trial.",
   "industry": "Pharmaceuticals and Life Sciences",

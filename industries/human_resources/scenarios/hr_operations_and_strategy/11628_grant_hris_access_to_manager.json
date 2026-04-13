@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Grant HRIS Access to a New Manager",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11628-grant-hris-access-to-manager"
   },
   "description": "A newly promoted manager needs access to the manager self-service portal in the HRIS.",
   "industry": "Human Resources",

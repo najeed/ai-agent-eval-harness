@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cloud - Create New AWS IAM User",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11852-cloud-create-iam-user"
   },
   "description": "A client needs a new IAM user created in AWS for a developer, with access restricted to specific services.",
   "industry": "Information Technology Service",

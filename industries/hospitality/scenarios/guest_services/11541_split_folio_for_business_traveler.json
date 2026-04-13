@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Split Folio for Business Traveler",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11541-split-folio-for-business-traveler"
   },
   "description": "A business traveler needs to have their bill split, with the room and tax on one folio for their company and incidentals (e.g., room service) on another to be paid personally.",
   "industry": "Hospitality",

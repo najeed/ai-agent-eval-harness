@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Lost and Found Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13962-handle-lost-and-found-inquiry"
   },
   "description": "A guest who checked out yesterday calls to report they may have left their tablet in their room.",
   "industry": "Tourism",

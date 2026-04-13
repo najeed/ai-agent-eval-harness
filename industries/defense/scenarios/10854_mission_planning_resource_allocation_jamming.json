@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Electronic Warfare Resource Planning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10854-mission-planning-resource-allocation-jamming"
   },
   "description": "A planner must select the correct electronic warfare (EW) jamming asset to suppress an enemy's air defense radar during a strike.",
   "industry": "Defense",

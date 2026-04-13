@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve a Promo Code Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13448-resolve-promo-code-issue"
   },
   "description": "A customer is trying to use a promo code online, but the website says it's invalid. They contact customer support.",
   "industry": "Retail",

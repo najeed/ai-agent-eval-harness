@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Credit Missing Miles from a Partner Flight",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10213-credit-missing-miles"
   },
   "description": "A frequent flyer member took a flight on a partner airline, but the miles were not credited to their account. They are requesting a manual credit.",
   "industry": "Airline",

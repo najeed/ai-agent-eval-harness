@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply Coupon Code to Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10960-apply-coupon-code-to-order"
   },
   "description": "A customer is calling for help applying a 'WELCOME15' coupon code to their first order.",
   "industry": "Ecommerce",

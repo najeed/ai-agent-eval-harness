@@ -35,7 +35,7 @@ async def test_adapter_registry_call_agent():
 @pytest.mark.asyncio
 async def test_run_evaluation_caps_attempts():
     """Test that attempts are capped by MAX_ENGINE_ATTEMPTS."""
-    scenario = {"scenario_id": "s1"}
+    scenario = {"id": "s1"}
     with patch("eval_runner.runner.DefaultRunner.run", new_callable=AsyncMock) as mock_run:
         mock_run.return_value = [{"task_id": "t1", "metrics": []}]
         # Capping at 50 (per config)
@@ -51,7 +51,7 @@ async def test_run_evaluation_caps_attempts():
 async def test_default_runner_pass_at_k():
     """Test the pass@k calculation in DefaultRunner."""
     runner = DefaultRunner()
-    scenario = {"scenario_id": "pass-k-test"}
+    scenario = {"id": "pass-k-test"}
 
     # Mock SessionManager to return success for 1/2 attempts
     mock_results_pass = [{"task_id": "t1", "metrics": [{"success": True}]}]
@@ -74,7 +74,7 @@ async def test_default_runner_pass_at_k():
 async def test_default_runner_events():
     """Test that runner emits correct core events."""
     runner = DefaultRunner()
-    scenario = {"scenario_id": "event-test"}
+    scenario = {"id": "event-test"}
 
     with (
         patch("eval_runner.events.EventEmitter.emit") as mock_emit,
@@ -99,7 +99,7 @@ async def test_run_evaluation_plugin_init():
     from eval_runner import plugins
 
     # The reset_plugins autouse fixture in conftest.py already ensures manager.plugins = []
-    scenario = {"scenario_id": "plugin-init-test"}
+    scenario = {"id": "plugin-init-test"}
     with patch("eval_runner.runner.DefaultRunner.run", new_callable=AsyncMock) as mock_run:
         mock_run.return_value = []
         await run_evaluation(scenario)

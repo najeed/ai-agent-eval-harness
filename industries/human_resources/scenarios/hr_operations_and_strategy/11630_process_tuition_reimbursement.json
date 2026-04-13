@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Tuition Reimbursement Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11630-process-tuition-reimbursement"
   },
   "description": "An employee has completed a course and is submitting for tuition reimbursement under the company policy.",
   "industry": "Human Resources",

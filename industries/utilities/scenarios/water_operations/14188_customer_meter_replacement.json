@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Customer Water Meter Replacement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14188-customer-meter-replacement"
   },
   "description": "A water meter has reached the end of its service life and needs to be replaced.",
   "industry": "Utilities",

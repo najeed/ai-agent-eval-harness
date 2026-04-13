@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request for Proposal for a Corporate Banquet",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11529-request-for-proposal-banquet"
   },
   "description": "A company requests a proposal for their annual awards banquet, including a three-course meal and an open bar.",
   "industry": "Hospitality",

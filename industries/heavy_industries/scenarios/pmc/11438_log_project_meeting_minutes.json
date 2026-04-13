@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Log Project Meeting Minutes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11438-log-project-meeting-minutes"
   },
   "description": "Following the weekly project review meeting, the project administrator needs to log the meeting minutes and track the new action items.",
   "industry": "Heavy Industries",

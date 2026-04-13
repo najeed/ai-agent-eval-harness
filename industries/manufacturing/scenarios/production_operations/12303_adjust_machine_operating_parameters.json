@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Adjust Machine Operating Parameters",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12303-adjust-machine-operating-parameters"
   },
   "description": "A process engineer needs to adjust the operating speed of a packaging machine to improve efficiency.",
   "industry": "Manufacturing",

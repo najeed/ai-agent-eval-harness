@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Shipment by PRO Number",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12255-track-shipment-by-pro-number"
   },
   "description": "A clerk needs to find the status of an LTL shipment using the carrier's progressive (PRO) number.",
   "industry": "Logistics and Warehousing",

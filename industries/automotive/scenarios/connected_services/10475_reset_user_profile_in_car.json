@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reset In-Car User Profile",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10475-reset-user-profile-in-car"
   },
   "description": "A customer has bought a used car and wants to delete the previous owner's user profile and settings from the infotainment system.",
   "industry": "Automotive",

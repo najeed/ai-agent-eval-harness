@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Datasheet for an Instrument",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11451-create-datasheet-for-instrument"
   },
   "description": "An instrumentation engineer needs to create a technical datasheet for a new pressure transmitter that will be sent to vendors for quotes.",
   "industry": "Heavy Industries",

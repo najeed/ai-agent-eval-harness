@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Refund Policy Case",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "refund-policy-case"
   },
   "description": "Evaluation for Refund Policy Case in the retail industry.",
   "industry": "retail",

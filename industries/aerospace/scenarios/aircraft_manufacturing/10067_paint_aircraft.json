@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Paint an Aircraft",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10067-paint-aircraft"
   },
   "description": "A team in a paint hangar must paint a newly assembled aircraft according to the customer's livery specifications.",
   "industry": "Aerospace",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Select Photos for a Photo Essay",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12035-select-photos-for-a-photo-essay"
   },
   "description": "A photographer has submitted 200 photos from an event. A photo editor must select the 10-15 best images that tell a cohesive story.",
   "industry": "Journalism",

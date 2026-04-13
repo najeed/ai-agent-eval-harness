@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Late Rent Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13103-handle-late-rent-payment"
   },
   "description": "A tenant's rent has not been received by the due date. The system flags the account, and the PM must take action.",
   "industry": "Real Estate",

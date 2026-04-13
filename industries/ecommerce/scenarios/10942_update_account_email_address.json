@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Customer Account Email Address",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10942-update-account-email-address"
   },
   "description": "A customer needs to change the email address associated with their account.",
   "industry": "Ecommerce",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a Track Defect Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14033-respond-to-track-defect-report"
   },
   "description": "A track inspector reports a defect (e.g., a broken rail). The dispatcher must protect the area by stopping trains.",
   "industry": "Transportation",

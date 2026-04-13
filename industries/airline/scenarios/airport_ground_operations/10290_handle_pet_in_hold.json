@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check in a Pet Traveling in the Hold",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10290-handle-pet-in-hold"
   },
   "description": "A passenger is traveling with a large dog that must travel as checked baggage in the temperature-controlled cargo hold.",
   "industry": "Airline",

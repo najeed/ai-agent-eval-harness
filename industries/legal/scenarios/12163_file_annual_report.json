@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Corporate Annual Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12163-file-annual-report"
   },
   "description": "A corporate paralegal needs to file a company's annual report with the Secretary of State to keep it in good standing.",
   "industry": "Legal",

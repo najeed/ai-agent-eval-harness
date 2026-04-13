@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Search Literature for a Predictive Biomarker",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12896-search-for-biomarker"
   },
   "description": "A translational scientist is searching for a potential predictive biomarker that could identify patients most likely to respond to a new drug.",
   "industry": "Pharmaceuticals and Life Sciences",

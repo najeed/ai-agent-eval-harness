@@ -35,7 +35,7 @@ async def test_shim_hot_swapping():
         from eval_runner import config
 
         with patch.object(config, "GLOBAL_ENABLED_SHIMS", config.GLOBAL_ENABLED_SHIMS + ["custom"]):
-            scenario = {"scenario_id": "test"}
+            scenario = {"id": "test"}
             sandbox = ToolSandbox(scenario)
             result = await sandbox.execute("custom_action", {})
         assert result["status"] == "success"
@@ -47,7 +47,7 @@ async def test_shim_hot_swapping():
 
 def test_shim_filtering_enabled():
     """Verify that only explicitly enabled shims are active if provided."""
-    scenario = {"scenario_id": "filter-test", "enabled_shims": ["git"]}
+    scenario = {"id": "filter-test", "enabled_shims": ["git"]}
     sandbox = ToolSandbox(scenario)
     active = sandbox.get_active_simulators()
 
@@ -58,7 +58,7 @@ def test_shim_filtering_enabled():
 
 def test_shim_filtering_wildcard():
     """Verify that '*' (default) enables all shims."""
-    scenario = {"scenario_id": "wildcard-test", "enabled_shims": ["*"]}
+    scenario = {"id": "wildcard-test", "enabled_shims": ["*"]}
     sandbox = ToolSandbox(scenario)
     active = sandbox.get_active_simulators()
 
@@ -70,7 +70,7 @@ def test_shim_filtering_wildcard():
 @pytest.mark.asyncio
 async def test_shim_execution_not_enabled():
     """Verify that a shim call fails if it's not in the enabled list."""
-    scenario = {"scenario_id": "denial-test", "enabled_shims": ["git"]}
+    scenario = {"id": "denial-test", "enabled_shims": ["git"]}
     sandbox = ToolSandbox(scenario)
 
     # database_query is a shim tool, but 'database' is not enabled
@@ -90,7 +90,7 @@ def test_shim_global_filtering(monkeypatch):
     monkeypatch.setattr(config, "GLOBAL_ENABLED_SHIMS", ["git"])
 
     # 2. Scenario tries to enable 'api' (which is globally disabled)
-    scenario = {"scenario_id": "global-clash-test", "enabled_shims": ["git", "api"]}
+    scenario = {"id": "global-clash-test", "enabled_shims": ["git", "api"]}
     sandbox = ToolSandbox(scenario)
     active = sandbox.get_active_simulators()
 

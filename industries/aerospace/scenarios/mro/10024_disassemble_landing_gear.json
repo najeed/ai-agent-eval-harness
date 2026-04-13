@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Disassemble Landing Gear for Overhaul",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10024-disassemble-landing-gear"
   },
   "description": "A team of MRO technicians needs to disassemble a landing gear assembly for a major overhaul.",
   "industry": "Aerospace",

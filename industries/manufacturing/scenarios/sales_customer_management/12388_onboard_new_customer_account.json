@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboard a New Customer Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12388-onboard-new-customer-account"
   },
   "description": "A new customer has placed their first order. An account manager needs to set up their full account profile.",
   "industry": "Manufacturing",

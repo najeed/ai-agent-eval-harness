@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "End-of-Line (EOL) Testing Failure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10443-end-of-line-testing-failure"
   },
   "description": "A newly assembled vehicle has failed the EOL diagnostic test for an ABS fault.",
   "industry": "Automotive",

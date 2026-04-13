@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Player's Social Media Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13672-manage-player-social-media"
   },
   "description": "A player's agent needs to draft and post a message to the player's social media accounts.",
   "industry": "Sports",

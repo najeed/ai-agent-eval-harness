@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquiry About an Incoming Wire Transfer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11260-inquiry-about-incoming-wire"
   },
   "description": "A customer is expecting an incoming wire transfer and wants to know if it has arrived.",
   "industry": "Finance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Query a Provider for Documentation Clarification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11346-query-provider-for-clarification"
   },
   "description": "A coder finds the clinical documentation is ambiguous and needs to ask the provider for clarification to assign the correct code.",
   "industry": "Healthcare",

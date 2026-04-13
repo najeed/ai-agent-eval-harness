@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboard New Reseller Partner",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11715-onboard-new-reseller-partner"
   },
   "description": "A new reseller partner has signed a contract and needs to be set up in the system and trained.",
   "industry": "Information Technology Product",

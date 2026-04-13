@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Disaster Recovery Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11791-perform-disaster-recovery-test"
   },
   "description": "As part of a planned drill, the SRE team needs to test the disaster recovery plan by failing over to a secondary data center.",
   "industry": "Information Technology Product",

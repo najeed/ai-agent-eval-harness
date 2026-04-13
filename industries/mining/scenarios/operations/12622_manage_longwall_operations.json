@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Underground Longwall Operation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12622-manage-longwall-operations"
   },
   "description": "A control room operator for an underground coal mine monitors the progress of a longwall shearer.",
   "industry": "Mining",

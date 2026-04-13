@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cyber-Physical Threat Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10881-c2-threat-assessment-cyber-physical"
   },
   "description": "An operator sees a cyberattack on a power grid control system occur simultaneously with drone attacks on substations.",
   "industry": "Defense",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Platform-Wide Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14088-handle-platform-outage"
   },
   "description": "The ride-sharing app is experiencing a major outage, and neither riders nor drivers can use the service. The support team must manage communications.",
   "industry": "Transportation",

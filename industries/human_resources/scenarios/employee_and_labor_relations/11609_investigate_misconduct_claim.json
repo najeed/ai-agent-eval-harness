@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate an Employee Misconduct Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11609-investigate-misconduct-claim"
   },
   "description": "An employee files a formal complaint alleging harassment by a coworker. An HR business partner must investigate.",
   "industry": "Human Resources",

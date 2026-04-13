@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Detect and Locate Water Main Break",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13501-detect-and-locate-water-main-break"
   },
   "description": "Flow sensors in the water network indicate a significant pressure drop, suggesting a major leak or main break.",
   "industry": "Smart Cities",

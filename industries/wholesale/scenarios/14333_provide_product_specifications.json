@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Detailed Product Specifications",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14333-provide-product-specifications"
   },
   "description": "A retailer is considering a new product and requests a detailed specification sheet.",
   "industry": "Wholesale",

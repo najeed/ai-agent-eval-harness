@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Notice of Appearance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12182-file-notice-of-appearance"
   },
   "description": "An attorney is taking over a case from a prior counsel and needs to file a notice of appearance with the court.",
   "industry": "Legal",

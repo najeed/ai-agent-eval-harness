@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assess Unconventional Shale Play",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12777-assess-unconventional-play"
   },
   "description": "A geologist analyzes an unconventional shale play by creating maps of key properties like thickness and total organic carbon (TOC) to identify the most promising areas.",
   "industry": "Oil and Gas",

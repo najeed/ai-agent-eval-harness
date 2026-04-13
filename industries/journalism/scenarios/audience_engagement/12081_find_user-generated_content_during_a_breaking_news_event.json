@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find User-Generated Content During a Breaking News Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12081-find-user-generated-content-during-a-breaking-news-event"
   },
   "description": "During a breaking news event, a social media editor searches for photos and videos posted by eyewitnesses on social media.",
   "industry": "Journalism",

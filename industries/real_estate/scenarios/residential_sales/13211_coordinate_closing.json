@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate Closing with Escrow",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13211-coordinate-closing"
   },
   "description": "A transaction is clear to close. The agent needs to coordinate the final signing appointment with the escrow officer and the client.",
   "industry": "Real Estate",

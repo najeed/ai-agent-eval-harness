@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Subscription Frequency",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13429-update-subscription-frequency"
   },
   "description": "A customer wants to change their subscription from being delivered every month to every two months.",
   "industry": "Retail",

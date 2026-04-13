@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop Story Idea from Public Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12087-develop-story-idea-from-public-data"
   },
   "description": "A data journalist browses a city's open data portal looking for potential stories.",
   "industry": "Journalism",

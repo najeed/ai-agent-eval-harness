@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Receive an Inventory Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11545-receive-inventory-shipment"
   },
   "description": "A shipment of new towels has arrived from the supplier.",
   "industry": "Hospitality",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Vendor Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11515-process-vendor-invoice"
   },
   "description": "The accounting department receives an invoice from the hotel's linen supply vendor.",
   "industry": "Hospitality",

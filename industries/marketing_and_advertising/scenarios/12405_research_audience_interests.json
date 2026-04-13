@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Research Audience Interests",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12405-research-audience-interests"
   },
   "description": "A media planner needs to identify key interests for a target audience to use for ad targeting on social media.",
   "industry": "Marketing and Advertising",

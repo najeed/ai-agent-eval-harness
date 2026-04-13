@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Supplier Onboarding",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10471-new-supplier-onboarding"
   },
   "description": "A new supplier for seat foam has been selected and needs to be set up in the procurement and logistics systems.",
   "industry": "Automotive",

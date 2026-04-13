@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Production Chemical Injection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12733-manage-chemical-injection"
   },
   "description": "A production technician manages the injection of corrosion inhibitor into a subsea pipeline.",
   "industry": "Oil and Gas",

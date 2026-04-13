@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Intermodal Container Transfer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14025-manage-intermodal-container-transfer"
   },
   "description": "A container needs to be lifted from a train and mounted onto a truck chassis for final delivery.",
   "industry": "Transportation",

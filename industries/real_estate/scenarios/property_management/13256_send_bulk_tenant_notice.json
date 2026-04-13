@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Bulk Tenant Notice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13256-send-bulk-tenant-notice"
   },
   "description": "The water will be shut off for building-wide plumbing repairs. The manager must notify all tenants in the building.",
   "industry": "Real Estate",

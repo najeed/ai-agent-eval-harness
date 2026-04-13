@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage VIP Artist Hospitality Rider",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14227-manage-vip-artist-rider"
   },
   "description": "The manager for a performing artist sends their hospitality rider, which must be fulfilled by the venue.",
   "industry": "Venues",

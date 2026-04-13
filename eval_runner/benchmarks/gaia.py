@@ -10,13 +10,13 @@ class GAIABenchmark:
         # uri format: gaia://2023_all (or similar)
         # For now, we expect the user to have the gaia parquet/json locally or we'd fetch from HF
         # Mocking the fetch logic for v1.0 RC
-        print(f"      [Benchmark] Loading GAIA dataset from {uri}...")
+        print(f"      [Benchmark] Loading mock GAIA dataset from {uri}...")
 
         # In a real implementation, this would use `datasets` library to pull from HF
         # For the harness, we convert it to our Scenario format
         return [
             {
-                "scenario_id": "gaia_validation_001",
+                "id": "gaia_validation_001",
                 "title": "GAIA: Complex Information Extraction",
                 "description": "The agent must find the total population of a specific city in 2022 and compare it to its neighboring city.",  # noqa: E501
                 "use_case": "Research & Extraction",
@@ -32,7 +32,7 @@ class GAIABenchmark:
                 ],
             },
             {
-                "scenario_id": "gaia_validation_002",
+                "id": "gaia_validation_002",
                 "title": "GAIA: Tool-Enabled Cross-Referencing",
                 "description": "Given a list of scientific papers, find the most cited one and extract its main conclusion.",  # noqa: E501
                 "use_case": "Academic Research",

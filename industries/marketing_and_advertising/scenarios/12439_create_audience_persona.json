@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create an Audience Persona",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12439-create-audience-persona"
   },
   "description": "A strategist needs to create a detailed persona for the brand's primary target customer.",
   "industry": "Marketing and Advertising",

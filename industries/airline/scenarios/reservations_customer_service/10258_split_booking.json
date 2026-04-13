@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Split a Booking (PNR)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10258-split-booking"
   },
   "description": "Two passengers are on the same booking, but one needs to change their return date while the other does not. The agent must split the booking.",
   "industry": "Airline",

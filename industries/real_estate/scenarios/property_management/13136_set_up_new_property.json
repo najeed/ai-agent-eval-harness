@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboard a New Management Property",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13136-set-up-new-property"
   },
   "description": "A new landlord has signed a property management agreement. The PM must set up the property in the system.",
   "industry": "Real Estate",

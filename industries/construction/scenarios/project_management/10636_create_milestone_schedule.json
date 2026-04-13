@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a High-Level Milestone Schedule",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10636-create-milestone-schedule"
   },
   "description": "For a client presentation, a project manager needs to create a high-level schedule showing only major project milestones.",
   "industry": "Construction",

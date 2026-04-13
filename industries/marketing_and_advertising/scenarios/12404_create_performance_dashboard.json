@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Performance Dashboard",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12404-create-performance-dashboard"
   },
   "description": "An analyst needs to create a new live dashboard in a tool like Google Data Studio to track key campaign metrics.",
   "industry": "Marketing and Advertising",

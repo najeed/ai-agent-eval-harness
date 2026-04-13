@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Inventory After Receiving Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10909-update-inventory-from-shipment"
   },
   "description": "A warehouse manager needs to update inventory levels after receiving a new shipment of products from a supplier.",
   "industry": "Ecommerce",

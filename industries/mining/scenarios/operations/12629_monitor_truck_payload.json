@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Haul Truck Payload",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12629-monitor-truck-payload"
   },
   "description": "A dispatcher monitors haul truck payloads in real-time to ensure they are being loaded correctly, avoiding underloading (inefficient) and overloading (unsafe).",
   "industry": "Mining",

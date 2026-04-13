@@ -2,5 +2,9 @@
   "pack": "finance",
   "flavor": "FINRA",
   "version": "1.2.3",
-  "installed_at": "2026-04-03T08:13:00.862986"
+  "installed_at": "2026-04-03T08:13:00.862986",
+  "metadata": {
+    "id": "pack-manifest"
+  },
+  "aes_version": 1.4
 }

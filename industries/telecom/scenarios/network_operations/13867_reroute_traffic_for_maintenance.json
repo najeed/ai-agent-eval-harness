@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reroute Traffic for Scheduled Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13867-reroute-traffic-for-maintenance"
   },
   "description": "Before scheduled maintenance on a core router, an agent must proactively reroute traffic to a backup path.",
   "industry": "Telecom",

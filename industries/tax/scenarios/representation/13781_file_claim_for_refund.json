@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Claim for Refund",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13781-file-claim-for-refund"
   },
   "description": "A taxpayer discovers they were eligible for a large deduction on a return filed two years ago and wants to file a claim for a refund.",
   "industry": "Tax",

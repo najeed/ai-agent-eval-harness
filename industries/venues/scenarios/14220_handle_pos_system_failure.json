@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle POS System Failure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14220-handle-pos-system-failure"
   },
   "description": "The Point-of-Sale (POS) terminal at a busy concession stand has frozen during an event.",
   "industry": "Venues",

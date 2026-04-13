@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Competitor Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00102-competitor-analysis-research"
   },
   "description": "An agent must research and summarize the strengths and weaknesses of three key competitors identified by the client.",
   "industry": "Consulting",

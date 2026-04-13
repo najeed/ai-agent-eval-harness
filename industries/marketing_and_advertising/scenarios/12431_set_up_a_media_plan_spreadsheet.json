@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up a Media Plan Spreadsheet",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12431-set-up-a-media-plan-spreadsheet"
   },
   "description": "A media planner is starting a new media plan and needs to set up the initial spreadsheet.",
   "industry": "Marketing and Advertising",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Subscriber Churn Reasons",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12550-analyze-churn-reasons"
   },
   "description": "An agent needs to analyze the reasons given by subscribers who cancelled their service in the last month.",
   "industry": "Media and Entertainment",

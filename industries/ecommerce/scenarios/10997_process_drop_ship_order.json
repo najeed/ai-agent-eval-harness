@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Drop-Ship Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10997-process-drop-ship-order"
   },
   "description": "A customer orders an item that is not stocked in the warehouse but is instead shipped directly from a third-party supplier (drop-shipping).",
   "industry": "Ecommerce",

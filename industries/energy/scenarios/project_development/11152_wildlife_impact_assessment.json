@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Wildlife Impact Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11152-wildlife-impact-assessment"
   },
   "description": "An environmental consultant needs to assess the potential impact of a new solar project on local wildlife, particularly protected bird species.",
   "industry": "Energy",

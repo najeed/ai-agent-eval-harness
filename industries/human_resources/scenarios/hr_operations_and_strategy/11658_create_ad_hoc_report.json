@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create an Ad-Hoc Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11658-create-ad-hoc-report"
   },
   "description": "A business leader needs an ad-hoc report of all employees in their division who have a specific certification.",
   "industry": "Human Resources",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Appeal Financial Aid Decision",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11052-appeal-financial-aid-decision"
   },
   "description": "A student's family has had a recent change in financial circumstances (e.g., job loss) and they want to appeal for more financial aid.",
   "industry": "Education",

@@ -30,7 +30,7 @@ async def test_engine_captures_state_transitions():
     """Verifies that engine.py snapshots state in conversation_history."""
     # Mock scenario with a state-mutating tool
     scenario = {
-        "scenario_id": "test_scenario",
+        "id": "test_scenario",
         "workflow": {
             "nodes": [
                 {
@@ -120,7 +120,7 @@ def test_mermaid_generation():
 def test_trajectory_json_export(tmp_path):
     """Verifies JSON export structure."""
     scenario = {
-        "scenario_id": "test_hitl_ci",
+        "id": "test_hitl_ci",
         "workflow": {"nodes": [{"id": "task1", "task_description": "test"}], "edges": []},
     }
     results = [{"task_id": "t1", "metrics": []}]
@@ -138,7 +138,7 @@ def test_trajectory_json_export(tmp_path):
             content = f.read()
             print(f"\n[DEBUG] Read {len(content)} bytes from {export_files[0]}")
             data = json.loads(content)
-            assert data["metadata"]["scenario_id"] == "test_hitl_ci"
+            assert data["metadata"]["id"] == "test_hitl_ci"
             assert "results" in data
     except ValueError as e:
         print(f"\n[CRITICAL] ValueError at {export_files[0]}: {e}")

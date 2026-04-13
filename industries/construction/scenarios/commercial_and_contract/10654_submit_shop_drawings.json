@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Submit Steel Shop Drawings for Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10654-submit-shop-drawings"
   },
   "description": "The steel fabricator has completed their shop drawings. The project manager must submit them to the structural engineer for review and approval.",
   "industry": "Construction",

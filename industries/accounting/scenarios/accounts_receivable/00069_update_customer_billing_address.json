@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update a Customer's Billing Address",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00069-update-customer-billing-address"
   },
   "description": "A customer calls to inform the company that they have moved and need to update their billing address.",
   "industry": "Accounting",

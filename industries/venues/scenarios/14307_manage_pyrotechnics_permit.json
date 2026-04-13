@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Pyrotechnics Permit for an Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14307-manage-pyrotechnics-permit"
   },
   "description": "A touring show plans to use pyrotechnics, and the event manager must secure a permit from the local fire department.",
   "industry": "Venues",

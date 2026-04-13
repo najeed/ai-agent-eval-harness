@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Background a Political Candidate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12047-background-a-political-candidate"
   },
   "description": "A political reporter is assigned to cover a new candidate running for office and must research their entire public history.",
   "industry": "Journalism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Statement of Work (SOW)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00106-create-statement-of-work"
   },
   "description": "Using an approved proposal and a standard SOW template, an agent must create a formal Statement of Work.",
   "industry": "Consulting",

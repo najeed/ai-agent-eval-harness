@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Tenant's Sublet Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13273-handle-sublet-request"
   },
   "description": "A tenant wants to sublet their apartment for the summer. The agent must handle the request according to the lease and company policy.",
   "industry": "Real Estate",

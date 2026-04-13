@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Water Quality Monitoring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12608-manage-environmental-monitoring"
   },
   "description": "An environmental officer checks the latest water quality monitoring data to ensure the mine is compliant with its discharge permit.",
   "industry": "Mining",

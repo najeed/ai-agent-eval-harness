@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Post-Closing Client Follow-Up",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13225-post-closing-follow-up"
   },
   "description": "A transaction closed last week. The agent needs to follow up with the client and ask for a review.",
   "industry": "Real Estate",

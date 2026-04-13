@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Change of Address for DMV Records",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13028-request-change-of-address-dmv"
   },
   "description": "A citizen who has moved needs to update their address on their driver's license and vehicle registration.",
   "industry": "Public Sector",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Government Contract Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10393-audit-government-contract-compliance"
   },
   "description": "A compliance auditor reviews a large government contract to ensure the company is meeting all its terms.",
   "industry": "Audit",

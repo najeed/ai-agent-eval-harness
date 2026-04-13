@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Build a Family Attraction Pass",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13959-build-family-attraction-pass"
   },
   "description": "A family wants to buy a city pass that includes entry to the aquarium, the science museum, and a hop-on-hop-off bus tour.",
   "industry": "Tourism",

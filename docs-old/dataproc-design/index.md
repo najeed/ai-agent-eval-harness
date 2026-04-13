@@ -13,7 +13,7 @@ The **dataproc-engine** is an enterprise-grade framework designed to generate hi
 
 - [**User Manual**](user_manual.md): Installation, CLI reference, and BYOD configuration.
 - [**Implementation Strategy**](implementation_strategy.md): Technical framework and provider pattern.
-- [**Data Veracity Report**](data_veracity_report.md): Licensing compliance matrices and authoritative source manifests.
+- [**Data Veracity Report**](data_veracity_report.md): Licensing compliance matrices and source manifests.
 - [**Architecture Diagram**](architecture_diagram.md): Component-level technical breakdown.
 - [**Industry Guides**](cross_sector/industrial_sectors.md):
     - **Anchors**: [Finance](finance/finance_guide.md), [Healthcare](healthcare/healthcare_guide.md), [Energy](energy/energy_guide.md), [Telecom](telecom/telecom_guide.md).

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate Use Tax on Out-of-State Purchase",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13757-calculate-use-tax-on-out-of-state-purchase"
   },
   "description": "A business in California bought office furniture from an online retailer in Oregon (which has no sales tax) and needs to self-assess and pay California use tax.",
   "industry": "Tax",

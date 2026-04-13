@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Process Safety Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10565-report-process-safety-event"
   },
   "description": "A rupture disk on a reactor blew, resulting in a release of material through a safety vent. This Tier 1 Process Safety Event must be reported and investigated.",
   "industry": "Chemicals",

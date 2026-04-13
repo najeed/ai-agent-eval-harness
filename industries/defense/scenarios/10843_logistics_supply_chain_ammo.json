@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Artillery Ammunition Resupply",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10843-logistics-supply-chain-ammo"
   },
   "description": "A logistics officer must manage the emergency resupply of ammunition to an artillery unit in heavy combat.",
   "industry": "Defense",

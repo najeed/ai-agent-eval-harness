@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Offer Seat Upgrade to Loyalty Member",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13631-upgrade-season-ticket-holder-seats"
   },
   "description": "A long-time season ticket holder and high-ranking loyalty member is offered a complimentary seat upgrade for a game.",
   "industry": "Sports",

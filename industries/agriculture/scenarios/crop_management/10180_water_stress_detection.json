@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Detect Crop Water Stress from Thermal Imagery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10180-water-stress-detection"
   },
   "description": "A farmer uses a thermal camera on a drone to detect water stress in a potato field before it's visible to the naked eye.",
   "industry": "Agriculture",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Crowd at a Public Protest",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13515-manage-crowd-at-a-public-protest"
   },
   "description": "A large, unplanned protest is forming. An operator must monitor crowd size and density to ensure public safety.",
   "industry": "Smart Cities",

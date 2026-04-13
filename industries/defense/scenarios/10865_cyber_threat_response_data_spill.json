@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Classified Data Spill Response",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10865-cyber-threat-response-data-spill"
   },
   "description": "An analyst discovers that a classified document was accidentally sent over an unclassified email system.",
   "industry": "Defense",

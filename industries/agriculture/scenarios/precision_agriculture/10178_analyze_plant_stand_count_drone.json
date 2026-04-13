@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Plant Stand Count from Drone Imagery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10178-analyze-plant-stand-count-drone"
   },
   "description": "Shortly after emergence, a farmer flies a drone over a corn field and needs the agent to count the plants to assess germination success.",
   "industry": "Agriculture",

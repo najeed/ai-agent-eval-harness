@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Privileged Access Checkout",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10711-iam-pam-checkout"
   },
   "description": "A database administrator needs to check out the credentials for a privileged database account to perform maintenance.",
   "industry": "Cybersecurity",

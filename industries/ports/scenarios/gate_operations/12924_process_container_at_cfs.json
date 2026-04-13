@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Container for De-stuffing at CFS",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12924-process-container-at-cfs"
   },
   "description": "A container with goods for multiple owners (LCL) arrives at the Container Freight Station (CFS) to be unloaded.",
   "industry": "Ports",

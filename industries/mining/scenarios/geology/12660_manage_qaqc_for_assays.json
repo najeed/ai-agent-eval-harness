@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage QA/QC for Lab Assays",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12660-manage-qaqc-for-assays"
   },
   "description": "A geologist manages the Quality Assurance/Quality Control (QA/QC) program for drill samples by submitting standards, blanks, and duplicates to the lab.",
   "industry": "Mining",

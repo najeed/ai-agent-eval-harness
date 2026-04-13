@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Walk-in Guest with No Availability",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11559-walk-in-guest-no-availability"
   },
   "description": "A walk-in guest requests a room, but the hotel is sold out.",
   "industry": "Hospitality",

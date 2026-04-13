@@ -236,7 +236,7 @@ The following industry-standard rubrics are available out-of-the-box:
 ### Usage Example (Scenario JSON)
 ```json
 {
-  "scenario_id": "clinical_trial_summary",
+  "id": "clinical_trial_summary",
   "criteria": [
     {
       "metric": "luna_judge_score",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Model College Savings Plan (529)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11217-model-education-savings-plan"
   },
   "description": "Clients want to understand how much they need to save monthly for their child's future college education.",
   "industry": "Finance",

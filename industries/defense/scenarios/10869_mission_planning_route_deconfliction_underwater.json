@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Submarine Route Deconfliction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10869-mission-planning-route-deconfliction-underwater"
   },
   "description": "A submarine planner must plot a safe underwater transit route that avoids known undersea obstacles, neutral submarine operating areas, and surface shipping.",
   "industry": "Defense",

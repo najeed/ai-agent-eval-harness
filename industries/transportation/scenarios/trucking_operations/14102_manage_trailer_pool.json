@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Trailer Pool at a Customer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14102-manage-trailer-pool"
   },
   "description": "A high-volume customer has a 'trailer pool' where empty trailers are dropped for them to load at their convenience. A dispatcher must manage the pool's inventory.",
   "industry": "Transportation",

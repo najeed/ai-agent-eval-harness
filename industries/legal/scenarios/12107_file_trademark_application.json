@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Trademark Application",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12107-file-trademark-application"
   },
   "description": "An IP paralegal needs to file a new trademark application with the USPTO for a client's new product name.",
   "industry": "Legal",

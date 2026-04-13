@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Competitive Port-in Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13903-competitive-port-in-request"
   },
   "description": "A new customer wants to switch from another carrier and keep their existing phone number.",
   "industry": "Telecom",

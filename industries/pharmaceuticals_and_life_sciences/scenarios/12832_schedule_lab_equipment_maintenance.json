@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Lab Equipment Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12832-schedule-lab-equipment-maintenance"
   },
   "description": "A lab manager needs to schedule preventative maintenance for a high-performance liquid chromatography (HPLC) machine.",
   "industry": "Pharmaceuticals and Life Sciences",

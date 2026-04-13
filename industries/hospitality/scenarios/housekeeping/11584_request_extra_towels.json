@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Guest Requests Extra Towels",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11584-request-extra-towels"
   },
   "description": "A guest calls the front desk to request extra towels for their room.",
   "industry": "Hospitality",

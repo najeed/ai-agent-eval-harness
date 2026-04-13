@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Stop Utility Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14114-stop-service"
   },
   "description": "A customer is moving out and needs to stop all utility services (electric and water) at their address.",
   "industry": "Utilities",

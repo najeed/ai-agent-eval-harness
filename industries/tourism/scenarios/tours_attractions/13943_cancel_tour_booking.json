@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel a Tour Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13943-cancel-tour-booking"
   },
   "description": "A customer needs to cancel their booking for a wine tasting tour.",
   "industry": "Tourism",

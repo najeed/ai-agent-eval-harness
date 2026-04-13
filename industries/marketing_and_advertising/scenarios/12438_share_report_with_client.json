@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Share a Report with a Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12438-share-report-with-client"
   },
   "description": "An analyst has finalized a monthly report and needs to share it with the client.",
   "industry": "Marketing and Advertising",

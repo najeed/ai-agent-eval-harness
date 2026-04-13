@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Bereavement Leave Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11690-handle-bereavement-leave"
   },
   "description": "An employee needs to take time off following the death of a family member.",
   "industry": "Human Resources",

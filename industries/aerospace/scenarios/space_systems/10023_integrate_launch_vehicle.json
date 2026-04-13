@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Integrate a Satellite with a Launch Vehicle",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10023-integrate-launch-vehicle"
   },
   "description": "Engineers at a launch site must physically mount a satellite onto the launch vehicle's payload adapter.",
   "industry": "Aerospace",

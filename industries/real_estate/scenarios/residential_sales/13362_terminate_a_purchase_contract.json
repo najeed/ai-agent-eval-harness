@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Terminate a Purchase Contract",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13362-terminate-a-purchase-contract"
   },
   "description": "During the inspection period, a buyer decides to terminate the purchase contract due to major structural issues found.",
   "industry": "Real Estate",

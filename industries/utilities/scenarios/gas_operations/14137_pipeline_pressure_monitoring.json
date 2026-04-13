@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Gas Pipeline Pressure Monitoring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14137-pipeline-pressure-monitoring"
   },
   "description": "A gas control room operator needs to monitor pipeline pressure to ensure it stays within safe operating limits.",
   "industry": "Utilities",

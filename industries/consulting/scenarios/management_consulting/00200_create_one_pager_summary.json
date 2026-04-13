@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a One-Pager Project Summary",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00200-create-one-pager-summary"
   },
   "description": "An agent must create a visually appealing one-page summary of a complex project for an executive audience.",
   "industry": "Consulting",

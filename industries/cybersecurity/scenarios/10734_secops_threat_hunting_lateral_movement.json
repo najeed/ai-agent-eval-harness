@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Threat Hunting for Lateral Movement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10734-secops-threat-hunting-lateral-movement"
   },
   "description": "A threat hunter is looking for signs of lateral movement by searching for suspicious use of administrative tools like PsExec.",
   "industry": "Cybersecurity",

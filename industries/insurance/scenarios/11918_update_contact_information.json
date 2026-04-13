@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Policyholder Contact Information",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11918-update-contact-information"
   },
   "description": "A life insurance policyholder has moved and needs to update their address and phone number.",
   "industry": "Insurance",

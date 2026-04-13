@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Status of Port-in Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13845-port-in-status-check"
   },
   "description": "A customer who requested to port their number in yesterday is calling to check the status.",
   "industry": "Telecom",

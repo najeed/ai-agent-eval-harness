@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Project Schedule Baseline",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11470-manage-project-schedule-baseline"
   },
   "description": "A project has been approved and the project manager needs to set the initial schedule as the official baseline for performance measurement.",
   "industry": "Heavy Industries",

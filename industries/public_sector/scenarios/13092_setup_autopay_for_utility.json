@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up Autopay for a Utility Bill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13092-setup-autopay-for-utility"
   },
   "description": "A resident wants to set up automatic recurring payments for their water bill.",
   "industry": "Public Sector",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Referee Performance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13650-review-referee-performance"
   },
   "description": "After a controversial game, a team submits a formal complaint about the referee's performance. The league must review it.",
   "industry": "Sports",

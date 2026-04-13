@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create an Upsell Offer in the Cart",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10995-create-upsell-offer-in-cart"
   },
   "description": "When a customer adds a specific product to their cart, the system should offer them a related, more premium product as an upsell.",
   "industry": "Ecommerce",

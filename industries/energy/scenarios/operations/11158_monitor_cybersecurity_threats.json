@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor SCADA System for Cybersecurity Threats",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11158-monitor-cybersecurity-threats"
   },
   "description": "A cybersecurity analyst is monitoring the network traffic of a power plant's SCADA system for anomalies that could indicate a cyber attack.",
   "industry": "Energy",

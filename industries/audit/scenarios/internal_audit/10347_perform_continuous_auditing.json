@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Continuous Auditing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10347-perform-continuous-auditing"
   },
   "description": "An auditor sets up an automated script to continuously monitor transactions for potential exceptions.",
   "industry": "Audit",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule an MRI Exam",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11359-schedule-mri-exam"
   },
   "description": "A radiology scheduler receives an order for an MRI and needs to schedule the exam for the patient.",
   "industry": "Healthcare",

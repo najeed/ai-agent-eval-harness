@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Receive Purchase Order Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12197-receive-po-shipment"
   },
   "description": "A warehouse operator needs to receive an incoming shipment against a purchase order (PO), verifying item quantities and noting any discrepancies.",
   "industry": "Logistics and Warehousing",

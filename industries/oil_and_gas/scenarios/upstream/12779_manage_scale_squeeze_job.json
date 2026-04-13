@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Scale Squeeze Job",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12779-manage-scale-squeeze-job"
   },
   "description": "A production engineer plans and executes a 'scale squeeze' job, injecting scale inhibitor into a formation to prevent mineral scale from blocking a production well.",
   "industry": "Oil and Gas",

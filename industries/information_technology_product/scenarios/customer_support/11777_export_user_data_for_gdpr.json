@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Export User Data for GDPR Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11777-export-user-data-for-gdpr"
   },
   "description": "A user from the EU submits a GDPR data access request, asking for all of their personal data stored by the product.",
   "industry": "Information Technology Product",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Lost and Found Item",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11092-report-lost-and-found-item"
   },
   "description": "A student has found a wallet on campus and wants to turn it in.",
   "industry": "Education",

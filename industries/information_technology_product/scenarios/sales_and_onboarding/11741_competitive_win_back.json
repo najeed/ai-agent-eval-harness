@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Competitive Win-Back",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11741-competitive-win-back"
   },
   "description": "A lead reveals they are currently using a competitor's product but are unhappy with it.",
   "industry": "Information Technology Product",

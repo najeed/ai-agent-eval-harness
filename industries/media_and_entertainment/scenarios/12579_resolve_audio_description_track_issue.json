@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Audio Description Track Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12579-resolve-audio-description-track-issue"
   },
   "description": "A visually impaired user reports that the audio description track for a TV show is silent.",
   "industry": "Media and Entertainment",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Approve a PTO Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11606-approve-pto-request"
   },
   "description": "A manager needs to approve a vacation request submitted by one of their direct reports.",
   "industry": "Human Resources",

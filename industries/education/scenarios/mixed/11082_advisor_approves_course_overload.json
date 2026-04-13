@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advisor Approves Course Overload",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11082-advisor-approves-course-overload"
   },
   "description": "A high-achieving student wants to register for more than the maximum allowed credits for a semester and needs advisor approval.",
   "industry": "Education",

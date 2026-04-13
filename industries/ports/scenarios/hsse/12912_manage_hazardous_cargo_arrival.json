@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Hazardous Cargo Arrival",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12912-manage-hazardous-cargo-arrival"
   },
   "description": "A container with hazardous materials (HAZMAT) is scheduled to arrive. The HSSE officer must ensure it's handled correctly.",
   "industry": "Ports",

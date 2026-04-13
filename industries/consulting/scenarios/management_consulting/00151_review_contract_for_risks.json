@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Contract for Risks",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00151-review-contract-for-risks"
   },
   "description": "An agent must review a client contract to identify potential risks or unfavorable clauses.",
   "industry": "Consulting",

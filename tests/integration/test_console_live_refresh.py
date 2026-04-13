@@ -40,8 +40,10 @@ def test_live_run_refresh_and_timestamps(tmp_path):
             "timestamp": timestamp,
         }
 
-        # Individual run file
-        run_file = runs_dir / f"{run_id}.jsonl"
+        # Vault-style run file
+        run_vault = runs_dir / run_id
+        run_vault.mkdir()
+        run_file = run_vault / "run.jsonl"
         run_file.write_text(json.dumps(run_event) + "\n", encoding="utf-8")
 
         # 4. Check the /api/runs endpoint again

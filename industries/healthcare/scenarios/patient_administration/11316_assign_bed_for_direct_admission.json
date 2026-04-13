@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assign Bed for Direct Admission",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11316-assign-bed-for-direct-admission"
   },
   "description": "A physician's office is directly admitting a patient to the hospital and needs a bed assigned.",
   "industry": "Healthcare",

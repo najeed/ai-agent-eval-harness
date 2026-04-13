@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Post an Inventory Cycle Count Adjustment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00063-inventory-cycle-count-adjustment"
   },
   "description": "The warehouse performed a cycle count and found a discrepancy for a specific item. An accountant needs to post an adjustment.",
   "industry": "Accounting",

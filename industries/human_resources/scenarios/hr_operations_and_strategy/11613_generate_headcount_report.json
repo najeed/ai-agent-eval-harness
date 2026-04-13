@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate a Headcount Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11613-generate-headcount-report"
   },
   "description": "A department head needs a report of their current headcount, broken down by job title.",
   "industry": "Human Resources",

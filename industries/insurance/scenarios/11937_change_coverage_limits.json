@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Homeowners Insurance Coverage Limits",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11937-change-coverage-limits"
   },
   "description": "A customer finished their basement and wants to increase their personal property coverage limit.",
   "industry": "Insurance",

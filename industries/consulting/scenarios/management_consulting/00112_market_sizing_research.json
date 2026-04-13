@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Market Sizing Research",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00112-market-sizing-research"
   },
   "description": "An agent must research and estimate the Total Addressable Market (TAM) for a new product, citing its sources.",
   "industry": "Consulting",

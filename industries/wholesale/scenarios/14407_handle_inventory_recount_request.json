@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Inventory Recount Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14407-handle-inventory-recount-request"
   },
   "description": "After a cycle count reveals a discrepancy, a manager requests a blind recount of the specific item to verify.",
   "industry": "Wholesale",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Restore Power After Localized Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13516-restore-power-after-localized-outage"
   },
   "description": "A transformer fails, causing a power outage in a residential neighborhood. An operator must use FLISR to restore power.",
   "industry": "Smart Cities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reallocate Crew Due to Material Delay",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10617-reallocate-crew-due-to-delay"
   },
   "description": "The delivery of structural steel is delayed by a week. The project manager must reallocate the steel erection crew to another task.",
   "industry": "Construction",

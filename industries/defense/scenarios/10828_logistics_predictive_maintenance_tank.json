@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Tank Engine Predictive Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10828-logistics-predictive-maintenance-tank"
   },
   "description": "An onboard sensor in a main battle tank predicts imminent engine failure based on oil analysis and temperature data.",
   "industry": "Defense",

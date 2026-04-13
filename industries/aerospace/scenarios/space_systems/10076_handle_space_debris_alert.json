@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Space Debris Conjunction Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10076-handle-space-debris-alert"
   },
   "description": "A satellite operator receives an alert that their satellite has a high probability of colliding with a piece of space debris. They must decide whether to perform a collision avoidance maneuver.",
   "industry": "Aerospace",

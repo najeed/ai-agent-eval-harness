@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Incorrect Item Shipped",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10939-resolve-incorrect-item-shipped"
   },
   "description": "A customer ordered a red shirt but received a blue one. The agent needs to fix the mistake.",
   "industry": "Ecommerce",

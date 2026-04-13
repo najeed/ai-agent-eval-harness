@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Uncashed Vendor Checks (Escheatment)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00036-escheatment-process"
   },
   "description": "During a review, an accountant finds several vendor checks that were issued over a year ago but have never been cashed.",
   "industry": "Accounting",

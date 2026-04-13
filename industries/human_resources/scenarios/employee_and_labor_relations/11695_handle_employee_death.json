@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle the Death of an Employee",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11695-handle-employee-death"
   },
   "description": "HR has been notified that an active employee has passed away.",
   "industry": "Human Resources",

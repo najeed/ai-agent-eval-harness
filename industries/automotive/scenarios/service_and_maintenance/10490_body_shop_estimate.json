@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Body Shop Estimate for Collision Repair",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10490-body-shop-estimate"
   },
   "description": "A customer has been in a minor accident and needs an estimate for the body repair work.",
   "industry": "Automotive",

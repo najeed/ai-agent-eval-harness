@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Synchrophasor Data Analysis for Oscillation Detection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14207-synchrophasor-data-analysis"
   },
   "description": "An engineer analyzes high-speed synchrophasor (PMU) data to detect potentially harmful oscillations on the power grid.",
   "industry": "Utilities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Financial Plan for an Inheritance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11265-plan-for-inheritance"
   },
   "description": "A client is expecting to receive a large inheritance and wants advice on how to manage it.",
   "industry": "Finance",

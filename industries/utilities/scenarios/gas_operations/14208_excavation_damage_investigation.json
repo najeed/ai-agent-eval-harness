@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Excavation Damage Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14208-excavation-damage-investigation"
   },
   "description": "After a third-party digging crew damaged a gas line, a compliance officer investigates the incident.",
   "industry": "Utilities",

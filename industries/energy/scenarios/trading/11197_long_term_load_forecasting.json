@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Long-Term Load Forecasting for Resource Planning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11197-long-term-load-forecasting"
   },
   "description": "A resource planner needs a 20-year load forecast for the service territory to inform decisions about building new power plants.",
   "industry": "Energy",

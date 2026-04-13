@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate a Track Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14105-coordinate-track-inspection"
   },
   "description": "A section of track is due for its mandated quarterly inspection. A manager must schedule the inspection.",
   "industry": "Transportation",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate and Resolve a Customer Deduction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00049-manage-customer-deduction"
   },
   "description": "A collections specialist is investigating a large deduction taken by a major customer for a disputed marketing co-op fee.",
   "industry": "Accounting",

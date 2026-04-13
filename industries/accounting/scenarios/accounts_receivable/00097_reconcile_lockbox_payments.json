@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reconcile a Bank Lockbox File",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00097-reconcile-lockbox-payments"
   },
   "description": "The company uses a bank lockbox service where customer checks are sent. The bank provides a daily file of all payments received, which needs to be processed.",
   "industry": "Accounting",

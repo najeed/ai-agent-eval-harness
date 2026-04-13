@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Case Files to Co-Counsel",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12181-send-case-files-to-co-counsel"
   },
   "description": "A firm is bringing on co-counsel for a large case and needs to share the primary case files with them.",
   "industry": "Legal",

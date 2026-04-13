@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Proof of Delivery Discrepancy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12247-handle-pod-discrepancy"
   },
   "description": "A customer claims they only received 9 out of 10 pallets, but the carrier's POD is signed clean.",
   "industry": "Logistics and Warehousing",

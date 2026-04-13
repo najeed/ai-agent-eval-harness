@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Group Rooming List",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11550-create-group-rooming-list"
   },
   "description": "A corporate client has signed a contract for a block of rooms and has sent the list of guest names to be assigned to those rooms.",
   "industry": "Hospitality",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Exam Accommodation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11008-request-exam-accommodation"
   },
   "description": "A student registered with Disability Services needs to schedule an exam with their approved accommodation of 50% extra time.",
   "industry": "Education",

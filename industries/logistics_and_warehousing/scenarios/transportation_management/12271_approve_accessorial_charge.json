@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Approve an Accessorial Charge",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12271-approve-accessorial-charge"
   },
   "description": "A carrier adds an accessorial charge (e.g., 'Liftgate Service') to a freight bill. A specialist must review and approve it.",
   "industry": "Logistics and Warehousing",

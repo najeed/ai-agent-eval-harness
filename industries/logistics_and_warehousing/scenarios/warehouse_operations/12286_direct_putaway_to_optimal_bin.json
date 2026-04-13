@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Direct Put-Away to Optimal Bin",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12286-direct-putaway-to-optimal-bin"
   },
   "description": "After receiving an item, the WMS must direct the operator to the best possible storage bin, considering space, item type, and existing stock.",
   "industry": "Logistics and Warehousing",

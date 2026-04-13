@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Property Listing Description",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13204-create-listing-description"
   },
   "description": "An agent needs to write compelling marketing copy for a new property listing.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Return Damaged Goods to Supplier",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12331-return-damaged-goods-to-supplier"
   },
   "description": "A shipment of raw materials was received with visible damage and needs to be returned to the supplier.",
   "industry": "Manufacturing",

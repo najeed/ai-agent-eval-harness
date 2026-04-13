@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Environmental Monitoring Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12879-environmental-monitoring-in-cleanroom"
   },
   "description": "A microbiologist must review environmental monitoring data from a sterile manufacturing area to ensure it remains in a state of control.",
   "industry": "Pharmaceuticals and Life Sciences",

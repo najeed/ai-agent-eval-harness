@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Detect and Ban Bot Accounts",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12560-detect-and-ban-bot-accounts"
   },
   "description": "An agent needs to run a routine check to identify and ban bot accounts that are farming in-game resources.",
   "industry": "Media and Entertainment",

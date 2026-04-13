@@ -26,7 +26,7 @@ These events track the lifecycle of the evaluation run.
 
 ### `RUN_START` / `RUN_END`
 - **Trigger**: Called when a mission (multiple attempts) starts or finishes.
-- **Payload**: `run_id`, `scenario_id`, `k_attempts`.
+- **Payload**: `run_id`, `id`, `k_attempts`.
 
 ### `TASK_START` / `TASK_END`
 - **Trigger**: Called when a specific task node within a scenario starts.

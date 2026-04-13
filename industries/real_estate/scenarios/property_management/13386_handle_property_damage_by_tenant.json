@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Property Damage Caused by a Tenant",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13386-handle-property-damage-by-tenant"
   },
   "description": "A tenant causes significant damage to a property that exceeds their security deposit (e.g., breaks a window).",
   "industry": "Real Estate",

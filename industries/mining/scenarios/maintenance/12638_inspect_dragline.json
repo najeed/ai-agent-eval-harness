@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inspect Dragline Structural Integrity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12638-inspect-dragline"
   },
   "description": "A reliability engineer plans and reviews the results of a non-destructive testing (NDT) inspection on a dragline boom to check for cracks.",
   "industry": "Mining",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Collect and Analyze Control Environment Survey Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10356-collect-and-analyze-survey-data"
   },
   "description": "As part of an audit, the team sends a survey to employees to gauge their perception of the company's control environment.",
   "industry": "Audit",

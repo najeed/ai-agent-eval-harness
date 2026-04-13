@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Offer with an Escalation Clause",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13388-handle-offer-with-escalation-clause"
   },
   "description": "In a competitive market, a buyer submits an offer with an escalation clause that automatically increases their offer price above other offers.",
   "industry": "Real Estate",

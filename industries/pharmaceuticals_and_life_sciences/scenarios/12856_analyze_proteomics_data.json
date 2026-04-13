@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Proteomics Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12856-analyze-proteomics-data"
   },
   "description": "A scientist needs to analyze mass spectrometry data to identify proteins that are differentially expressed between healthy and diseased tissue samples.",
   "industry": "Pharmaceuticals and Life Sciences",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Inbound Freight Scheduling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14344-handle-inbound-freight-scheduling"
   },
   "description": "A large shipment is due to arrive from a supplier. A warehouse manager must schedule a delivery appointment.",
   "industry": "Wholesale",

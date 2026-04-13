@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Environmental Exceedance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11428-report-environmental-exceedance"
   },
   "description": "A water quality sensor at a site's discharge point shows a pH level outside the permitted range. The site environmental officer must report it.",
   "industry": "Heavy Industries",

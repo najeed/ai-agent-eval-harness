@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Congestion Revenue Rights (CRR) Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11173-congestion-revenue-rights-analysis"
   },
   "description": "A trader wants to analyze the value of Congestion Revenue Rights (CRRs), also known as FTRs, to see if they are a profitable investment.",
   "industry": "Energy",

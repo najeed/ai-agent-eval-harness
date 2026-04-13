@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare a 13-Week Cash Flow Forecast",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00035-cash-flow-forecasting"
   },
   "description": "The treasurer needs a 13-week direct cash flow forecast to manage liquidity and plan for potential borrowing needs.",
   "industry": "Accounting",

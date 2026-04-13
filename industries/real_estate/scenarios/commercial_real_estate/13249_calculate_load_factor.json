@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate Building Load Factor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13249-calculate-load-factor"
   },
   "description": "A landlord needs to calculate the building's load factor to accurately bill tenants for their share of common areas.",
   "industry": "Real Estate",

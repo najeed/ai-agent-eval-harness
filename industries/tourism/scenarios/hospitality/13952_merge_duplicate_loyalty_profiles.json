@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Merge Duplicate Loyalty Profiles",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13952-merge-duplicate-loyalty-profiles"
   },
   "description": "A guest has accidentally created two loyalty profiles and wants to merge them into one.",
   "industry": "Tourism",

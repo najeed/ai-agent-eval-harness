@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Source Titanium Forgings for Landing Gear",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10005-source-titanium-forgings"
   },
   "description": "A procurement manager needs to source certified titanium forgings for a new landing gear assembly from an approved supplier.",
   "industry": "Aerospace",

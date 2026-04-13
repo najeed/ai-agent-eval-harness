@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Compile Annual Product Quality Review (APQR)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12882-annual-product-quality-review"
   },
   "description": "A QA specialist must compile the APQR, a regulatory requirement that reviews all data for a product over the past year.",
   "industry": "Pharmaceuticals and Life Sciences",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Get Auto Insurance Quote",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11897-get-auto-insurance-quote"
   },
   "description": "A potential new customer wants a quote for auto insurance for their vehicle.",
   "industry": "Insurance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Routine Property Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13179-perform-routine-property-inspection"
   },
   "description": "A PM needs to perform a scheduled drive-by inspection of several single-family rentals to check for exterior maintenance issues.",
   "industry": "Real Estate",

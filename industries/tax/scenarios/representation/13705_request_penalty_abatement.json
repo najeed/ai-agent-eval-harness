@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Penalty Abatement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13705-request-penalty-abatement"
   },
   "description": "A taxpayer was assessed a failure-to-file penalty but had a reasonable cause (e.g., serious illness).",
   "industry": "Tax",

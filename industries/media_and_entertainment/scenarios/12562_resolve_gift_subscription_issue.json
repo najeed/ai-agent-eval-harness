@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Gift Subscription Activation Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12562-resolve-gift-subscription-issue"
   },
   "description": "A user received a gift subscription to a streaming service but is having trouble activating it.",
   "industry": "Media and Entertainment",

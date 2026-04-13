@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Financial Hold Prevents Registration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11081-financial-hold-prevents-registration"
   },
   "description": "A student is trying to register for classes but is blocked by a financial hold on their account from an unpaid library fine.",
   "industry": "Education",

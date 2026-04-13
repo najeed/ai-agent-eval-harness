@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reconcile Annual Physical Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12280-reconcile-physical-inventory"
   },
   "description": "After a full wall-to-wall physical inventory count, an accountant must reconcile the physical counts with the system records and post the financial adjustment.",
   "industry": "Logistics and Warehousing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply a Corporate Rate to a Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13963-apply-corporate-rate-to-booking"
   },
   "description": "An employee of a partner company is booking a room and wants to use their corporate discount.",
   "industry": "Tourism",

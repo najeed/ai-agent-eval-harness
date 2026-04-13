@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Championship Trophy Presentation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13685-handle-championship-trophy-presentation"
   },
   "description": "After the championship game, a league official must coordinate the on-field trophy presentation ceremony.",
   "industry": "Sports",

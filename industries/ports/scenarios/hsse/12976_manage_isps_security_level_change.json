@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage an ISPS Security Level Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12976-manage-isps-security-level-change"
   },
   "description": "The national authority raises the security level for all ports. The PFSO must implement heightened security measures.",
   "industry": "Ports",

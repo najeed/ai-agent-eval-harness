@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Impact of a New Bike Lane",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13549-analyze-impact-of-a-new-bike-lane"
   },
   "description": "A new protected bike lane was recently installed. A planner wants to see its impact on traffic speed and cyclist volume.",
   "industry": "Smart Cities",

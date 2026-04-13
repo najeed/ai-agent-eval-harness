@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Airline Schedule Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10251-handle-schedule-change"
   },
   "description": "An airline has changed its schedule, and a customer's flight now departs 3 hours earlier. An agent must notify the customer and handle their request.",
   "industry": "Airline",

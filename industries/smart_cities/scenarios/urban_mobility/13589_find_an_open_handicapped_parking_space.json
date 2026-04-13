@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find an Open Handicapped Parking Space",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13589-find-an-open-handicapped-parking-space"
   },
   "description": "A user with a disability uses the city app to find the nearest available handicapped parking space.",
   "industry": "Smart Cities",

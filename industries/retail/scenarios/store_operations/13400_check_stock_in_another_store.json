@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Stock in Another Store",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13400-check-stock-in-another-store"
   },
   "description": "A customer wants an item that is out of stock. An associate needs to check if it's available at a nearby store.",
   "industry": "Retail",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct a Supplier Performance Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12325-conduct-supplier-performance-review"
   },
   "description": "A category manager needs to pull performance data for a key supplier for a quarterly business review.",
   "industry": "Manufacturing",

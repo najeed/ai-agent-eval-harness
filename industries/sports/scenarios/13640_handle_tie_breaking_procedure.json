@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Season-End Tie-Breaking Procedure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13640-handle-tie-breaking-procedure"
   },
   "description": "Two teams finish the season with identical win-loss records. A league administrator must apply the official tie-breaking procedure to determine their final ranking.",
   "industry": "Sports",

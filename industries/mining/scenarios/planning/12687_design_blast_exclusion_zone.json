@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Design Blast Exclusion Zone",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12687-design-blast-exclusion-zone"
   },
   "description": "A drill and blast engineer determines the required exclusion zone for an upcoming blast to ensure the safety of all personnel and equipment.",
   "industry": "Mining",

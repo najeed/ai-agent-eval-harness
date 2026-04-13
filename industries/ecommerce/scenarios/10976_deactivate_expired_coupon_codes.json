@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deactivate Expired Coupon Codes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10976-deactivate-expired-coupon-codes"
   },
   "description": "An automated job runs daily to find and deactivate any coupon codes that have passed their expiration date.",
   "industry": "Ecommerce",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dynamic Re-tasking of CAS for Troops in Contact",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10879-mission-planning-dynamic-retasking-cas"
   },
   "description": "A ground unit makes an urgent call for Close Air Support after coming under heavy fire. A nearby CAS aircraft on a different mission must be re-tasked.",
   "industry": "Defense",

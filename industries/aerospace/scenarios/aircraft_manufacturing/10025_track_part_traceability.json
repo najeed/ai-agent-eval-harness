@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Part Traceability",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10025-track-part-traceability"
   },
   "description": "A quality inspector needs to verify the full traceability of a critical turbine blade, from raw material to final installation.",
   "industry": "Aerospace",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Management - Handle Scope Creep",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11839-project-handle-scope-creep"
   },
   "description": "During a project, a client asks a technician to perform a task that is outside the original scope of work.",
   "industry": "Information Technology Service",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue an Air Quality Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13502-issue-an-air-quality-alert"
   },
   "description": "Environmental sensors report a spike in airborne pollutants. An operator must issue a public health alert.",
   "industry": "Smart Cities",

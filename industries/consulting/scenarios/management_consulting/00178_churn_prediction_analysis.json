@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Churn Prediction Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00178-churn-prediction-analysis"
   },
   "description": "An agent must analyze customer data to identify the key factors that predict customer churn.",
   "industry": "Consulting",

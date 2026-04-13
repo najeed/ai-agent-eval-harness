@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Property Showings for Buyer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13102-schedule-property-showings"
   },
   "description": "A buyer client sends a list of 5 properties they want to see this Saturday. The agent needs to schedule the showings.",
   "industry": "Real Estate",

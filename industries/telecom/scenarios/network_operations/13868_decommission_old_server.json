@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Decommission Old Network Server",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13868-decommission-old-server"
   },
   "description": "An old server is being retired. An agent must ensure it is safely removed from the network.",
   "industry": "Telecom",

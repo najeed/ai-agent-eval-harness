@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deactivate Departing Employee's Access",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12942-deactivate-employee-access"
   },
   "description": "An employee has resigned. The security admin must deactivate all their access on their last day.",
   "industry": "Ports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Demonstrate Driver-Assist Features on Test Drive",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10480-demonstrate-driver-assist-features"
   },
   "description": "During a test drive, a salesperson needs to safely demonstrate advanced driver-assist features like Lane Keeping Assist and Pre-Collision Assist.",
   "industry": "Automotive",

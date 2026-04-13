@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Lookalike Audience",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12449-create-lookalike-audience"
   },
   "description": "A media buyer wants to find new customers by creating a lookalike audience based on their existing customer list.",
   "industry": "Marketing and Advertising",

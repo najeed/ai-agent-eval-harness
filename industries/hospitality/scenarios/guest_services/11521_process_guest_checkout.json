@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Guest Check-out and Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11521-process-guest-checkout"
   },
   "description": "A guest is at the front desk to check out and settle their bill.",
   "industry": "Hospitality",

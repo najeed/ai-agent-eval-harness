@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Broken Item in a Room",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11583-broken-item-in-room"
   },
   "description": "A housekeeper discovers a broken lamp while cleaning a room.",
   "industry": "Hospitality",

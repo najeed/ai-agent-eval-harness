@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare a Commission Agreement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13367-prepare-commission-agreement"
   },
   "description": "Two brokers, one representing the landlord and one the tenant, must execute a commission agreement before lease negotiations begin.",
   "industry": "Real Estate",

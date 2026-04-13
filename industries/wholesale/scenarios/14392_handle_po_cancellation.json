@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Purchase Order Cancellation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14392-handle-po-cancellation"
   },
   "description": "A procurement manager needs to cancel a purchase order that was placed with a supplier but is no longer needed.",
   "industry": "Wholesale",

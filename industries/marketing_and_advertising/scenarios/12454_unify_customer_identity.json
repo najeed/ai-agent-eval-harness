@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Unify Customer Identity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12454-unify-customer-identity"
   },
   "description": "A customer has interacted with the brand on multiple devices and channels. An analyst needs to unify these touchpoints into a single customer profile in the CDP.",
   "industry": "Marketing and Advertising",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assess Risk of a Labor Strike",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10665-assess-risk-of-labor-strike"
   },
   "description": "News reports indicate a potential labor strike by local union electricians. A PM must assess the risk to the project.",
   "industry": "Construction",

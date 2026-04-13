@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "The Disputed Claim (Healthcare & Insurance)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "narrative"
   },
   "description": "A high-stakes resolution between General Hospital and SecureHealth Insurance regarding patient John Smith. WARNING: The patient is extremely frustrated and has threatened legal action if this is not resolved immediately.",
   "industry": "Ecommerce",

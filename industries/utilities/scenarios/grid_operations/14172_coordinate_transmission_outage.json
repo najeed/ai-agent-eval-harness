@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate Planned Transmission Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14172-coordinate-transmission-outage"
   },
   "description": "A transmission planner needs to schedule a planned outage of a major transmission line for maintenance.",
   "industry": "Utilities",

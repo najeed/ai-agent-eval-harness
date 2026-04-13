@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "SLA Reporting - Analyze Ticket Trends",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11886-reporting-ticket-trends"
   },
   "description": "An account manager analyzes ticket trends for a client to identify recurring problems.",
   "industry": "Information Technology Service",

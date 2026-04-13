@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply a Travel Voucher to a New Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13991-apply-voucher-to-new-booking"
   },
   "description": "A customer is booking a new flight and wants to pay for it using a travel voucher from a previous cancellation.",
   "industry": "Tourism",

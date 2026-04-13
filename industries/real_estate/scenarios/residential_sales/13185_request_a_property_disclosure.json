@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Seller's Property Disclosure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13185-request-a-property-disclosure"
   },
   "description": "A buyer is interested in a property but the seller's disclosure statement is not attached to the MLS listing.",
   "industry": "Real Estate",

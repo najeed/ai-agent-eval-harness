@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write Social Media Posts for a Week",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12436-write-social-media-posts"
   },
   "description": "A social media manager needs to write and schedule a week's worth of posts for a client's Instagram account.",
   "industry": "Marketing and Advertising",

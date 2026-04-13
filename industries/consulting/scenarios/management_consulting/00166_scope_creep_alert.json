@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Alert on Potential Scope Creep",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00166-scope-creep-alert"
   },
   "description": "An agent must monitor client communications (emails) for phrases that might indicate a scope creep request.",
   "industry": "Consulting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Reagent Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12686-manage-reagent-inventory"
   },
   "description": "A plant operator manages the inventory of a key reagent like cyanide or flocculant.",
   "industry": "Mining",

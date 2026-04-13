@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Final Building Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10666-request-final-inspection"
   },
   "description": "The project is nearing completion. The PM must formally request the final inspection from the city's building department to obtain the Certificate of Occupancy.",
   "industry": "Construction",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Lost Boarding Pass",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10282-handle-lost-boarding-pass"
   },
   "description": "A passenger has lost their boarding pass after checking in. A gate agent needs to re-issue it.",
   "industry": "Airline",

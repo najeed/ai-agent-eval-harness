@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Physical Security Penetration Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10722-vuln-mgmt-pen-test-physical"
   },
   "description": "A penetration tester is tasked with gaining unauthorized physical access to a corporate office building to test security controls.",
   "industry": "Cybersecurity",

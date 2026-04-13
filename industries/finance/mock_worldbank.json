@@ -1,7 +1,67 @@
 [
-  {"country": {"value": "United States", "id": "USA"}, "indicator": {"value": "GDP", "id": "NY.GDP.MKTP.CD"}, "value": 23315081000000, "date": "2021"},
-  {"country": {"value": "China", "id": "CHN"}, "indicator": {"value": "GDP", "id": "NY.GDP.MKTP.CD"}, "value": 17734062000000, "date": "2021"},
-  {"country": {"value": "Japan", "id": "JPN"}, "indicator": {"value": "GDP", "id": "NY.GDP.MKTP.CD"}, "value": 4940877000000, "date": "2021"},
-  {"country": {"value": "Germany", "id": "DEU"}, "indicator": {"value": "GDP", "id": "NY.GDP.MKTP.CD"}, "value": 4223116000000, "date": "2021"},
-  {"country": {"value": "United Kingdom", "id": "GBR"}, "indicator": {"value": "GDP", "id": "NY.GDP.MKTP.CD"}, "value": 3186860000000, "date": "2021"}
+    {
+        "country": {
+            "value": "United States",
+            "id": "USA"
+        },
+        "indicator": {
+            "value": "GDP",
+            "id": "NY.GDP.MKTP.CD"
+        },
+        "value": 23315081000000,
+        "date": "2021",
+        "metadata": {}
+    },
+    {
+        "country": {
+            "value": "China",
+            "id": "CHN"
+        },
+        "indicator": {
+            "value": "GDP",
+            "id": "NY.GDP.MKTP.CD"
+        },
+        "value": 17734062000000,
+        "date": "2021",
+        "metadata": {}
+    },
+    {
+        "country": {
+            "value": "Japan",
+            "id": "JPN"
+        },
+        "indicator": {
+            "value": "GDP",
+            "id": "NY.GDP.MKTP.CD"
+        },
+        "value": 4940877000000,
+        "date": "2021",
+        "metadata": {}
+    },
+    {
+        "country": {
+            "value": "Germany",
+            "id": "DEU"
+        },
+        "indicator": {
+            "value": "GDP",
+            "id": "NY.GDP.MKTP.CD"
+        },
+        "value": 4223116000000,
+        "date": "2021",
+        "metadata": {}
+    },
+    {
+        "country": {
+            "value": "United Kingdom",
+            "id": "GBR"
+        },
+        "indicator": {
+            "value": "GDP",
+            "id": "NY.GDP.MKTP.CD"
+        },
+        "value": 3186860000000,
+        "date": "2021",
+        "metadata": {}
+    }
 ]

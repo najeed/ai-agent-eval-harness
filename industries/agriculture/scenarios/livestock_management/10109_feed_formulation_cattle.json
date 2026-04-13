@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Feed Formulation for Beef Cattle",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10109-feed-formulation-cattle"
   },
   "description": "A cattle rancher needs to formulate a cost-effective feed ration that meets the nutritional requirements for their finisher cattle.",
   "industry": "Agriculture",

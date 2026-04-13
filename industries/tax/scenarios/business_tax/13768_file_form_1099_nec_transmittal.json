@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File Form 1099-NEC Transmittal (Form 1096)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13768-file-form-1099-nec-transmittal"
   },
   "description": "A business has issued multiple paper Forms 1099-NEC and now must file them with the IRS using the summary Form 1096.",
   "industry": "Tax",

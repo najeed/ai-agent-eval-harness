@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Employment Verification Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11637-handle-employment-verification"
   },
   "description": "A mortgage lender calls HR to verify the employment and salary of a current employee.",
   "industry": "Human Resources",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Question About Prorated Charges",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11764-question-prorated-charges"
   },
   "description": "A customer who upgraded their plan mid-cycle is asking why their latest bill is higher than expected.",
   "industry": "Information Technology Product",

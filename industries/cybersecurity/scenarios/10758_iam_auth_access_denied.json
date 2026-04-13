@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshoot Access Denied Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10758-iam-auth-access-denied"
   },
   "description": "A user is reporting they are receiving an 'Access Denied' error when trying to access a folder they believe they should have access to.",
   "industry": "Cybersecurity",

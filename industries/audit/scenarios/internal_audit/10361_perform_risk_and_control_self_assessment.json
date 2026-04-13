@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Facilitate a Risk and Control Self-Assessment (RCSA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10361-perform-risk-and-control-self-assessment"
   },
   "description": "An auditor facilitates an RCSA workshop with a business unit to help them identify and assess their own risks and controls.",
   "industry": "Audit",

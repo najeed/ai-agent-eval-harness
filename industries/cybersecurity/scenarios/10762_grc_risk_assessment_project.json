@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Project Risk Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10762-grc-risk-assessment-project"
   },
   "description": "A GRC analyst must conduct a security risk assessment for a new internal project to develop a mobile application.",
   "industry": "Cybersecurity",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Key Opinion Leaders (KOLs)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00182-identify-key-opinion-leaders"
   },
   "description": "An agent must identify key opinion leaders in a specific medical field by analyzing publication databases.",
   "industry": "Consulting",

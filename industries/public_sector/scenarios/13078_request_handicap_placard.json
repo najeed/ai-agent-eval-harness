@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Handicap Parking Placard",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13078-request-handicap-placard"
   },
   "description": "A citizen with a disability needs to apply for a handicap parking placard.",
   "industry": "Public Sector",

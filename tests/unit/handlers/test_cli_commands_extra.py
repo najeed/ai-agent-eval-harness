@@ -61,7 +61,9 @@ async def test_handle_replay_exceptions(tmp_path, monkeypatch):
     assert e.value.code == 1
 
     # Read error
-    real_file = tmp_path / "read_err.jsonl"
+    run_dir = tmp_path / "read_err"
+    run_dir.mkdir()
+    real_file = run_dir / "run.jsonl"
     real_file.write_text("{}", encoding="utf-8")
 
     args = parse_args(["replay", "--run-id", "read_err"])
@@ -94,7 +96,7 @@ async def test_handle_run_extensions(tmp_path, monkeypatch):
     # URL Benchmark
     args = parse_args(["run", "--scenario", "hf://test"])
     with (
-        patch("eval_runner.loader.load_scenario", return_value=[{"scenario_id": "multi"}]),
+        patch("eval_runner.loader.load_scenario", return_value=[{"id": "multi"}]),
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_eval,
     ):
         mock_eval.return_value = []
@@ -136,7 +138,7 @@ async def test_run_evaluate_complex_branches(tmp_path, monkeypatch):
     )
 
     with (
-        patch("eval_runner.loader.load_dataset", return_value=[{"scenario_id": "s1"}]),
+        patch("eval_runner.loader.load_dataset", return_value=[{"id": "s1"}]),
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_eval,
         patch("eval_runner.metrics.calculate_consensus_scoring", return_value=1.0),
         patch("builtins.open", MagicMock()),

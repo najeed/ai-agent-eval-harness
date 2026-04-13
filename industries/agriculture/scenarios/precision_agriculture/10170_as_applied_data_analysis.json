@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze As-Applied Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10170-as-applied-data-analysis"
   },
   "description": "After planting, a farmer wants to verify that their planter correctly executed the variable rate seeding prescription.",
   "industry": "Agriculture",

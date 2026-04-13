@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send a Birthday Offer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13483-send-birthday-offer"
   },
   "description": "It's the first day of the month, and the marketing system needs to send a special birthday offer to all loyalty members whose birthday is this month.",
   "industry": "Retail",

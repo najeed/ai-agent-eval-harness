@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find an Order by Item Purchased",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10994-find-order-by-item"
   },
   "description": "A customer can't remember their order number but knows they bought a specific item last month. An agent needs to find their order.",
   "industry": "Ecommerce",

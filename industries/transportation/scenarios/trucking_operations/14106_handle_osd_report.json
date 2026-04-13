@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Overage, Shortage, and Damage (OS&D) Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14106-handle-osd-report"
   },
   "description": "A driver at a delivery location reports a discrepancy between the bill of lading and what is being unloaded (e.g., one pallet is over).",
   "industry": "Transportation",

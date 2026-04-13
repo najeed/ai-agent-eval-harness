@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Optimize Slow Database Query",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11766-optimize-slow-database-query"
   },
   "description": "A specific page in the application is consistently slow to load due to an inefficient database query.",
   "industry": "Information Technology Product",

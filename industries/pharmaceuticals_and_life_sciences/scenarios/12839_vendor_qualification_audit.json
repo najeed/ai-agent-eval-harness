@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct a Vendor Qualification Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12839-vendor-qualification-audit"
   },
   "description": "A QA auditor must conduct an audit of a new raw material supplier to ensure they meet quality standards.",
   "industry": "Pharmaceuticals and Life Sciences",

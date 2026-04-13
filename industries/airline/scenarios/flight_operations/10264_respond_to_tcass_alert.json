@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a TCAS Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10264-respond-to-tcass-alert"
   },
   "description": "While in-flight, the Traffic Collision Avoidance System (TCAS) issues a 'Climb, Climb' resolution advisory (RA) to the flight crew.",
   "industry": "Airline",

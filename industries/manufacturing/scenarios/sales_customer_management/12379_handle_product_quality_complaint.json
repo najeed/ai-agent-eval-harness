@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Product Quality Complaint",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12379-handle-product-quality-complaint"
   },
   "description": "A customer has received a product that is defective and wants a replacement.",
   "industry": "Manufacturing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Insider Trading List",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11268-update-insider-trading-list"
   },
   "description": "A compliance officer needs to add a new executive to the company's insider trading list, restricting when they can trade company stock.",
   "industry": "Finance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Fueling Discrepancy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10287-manage-fueling-discrepancy"
   },
   "description": "After fueling, the pilot notices the fuel quantity indicated in the cockpit does not match the amount on the fueler's receipt.",
   "industry": "Airline",

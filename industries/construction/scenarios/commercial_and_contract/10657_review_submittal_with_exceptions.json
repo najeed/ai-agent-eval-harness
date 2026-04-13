@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Submittal Returned 'As Noted'",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10657-review-submittal-with-exceptions"
   },
   "description": "An engineer reviews shop drawings and returns them with the status 'Approved as Noted'. The PM must review the notes and distribute them.",
   "industry": "Construction",

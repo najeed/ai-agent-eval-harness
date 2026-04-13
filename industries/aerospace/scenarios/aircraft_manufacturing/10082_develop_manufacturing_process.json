@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop a Manufacturing Process",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10082-develop-manufacturing-process"
   },
   "description": "A manufacturing engineer needs to develop the step-by-step process for assembling a new component.",
   "industry": "Aerospace",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Upsell - Personal to Business Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13851-upsell-to-business-plan"
   },
   "description": "A customer with a personal account calls to add a 4th line. The agent should identify this as an opportunity to upsell to a more suitable business plan.",
   "industry": "Telecom",

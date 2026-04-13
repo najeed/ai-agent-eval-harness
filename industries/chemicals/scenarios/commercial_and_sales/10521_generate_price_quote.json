@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Price Quote for Large Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10521-generate-price-quote"
   },
   "description": "A salesperson needs to generate a formal price quote for a customer requesting a large, non-standard order volume.",
   "industry": "Chemicals",

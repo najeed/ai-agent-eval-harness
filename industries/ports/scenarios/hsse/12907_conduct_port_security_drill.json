@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct a Port Security Drill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12907-conduct-port-security-drill"
   },
   "description": "The Port Facility Security Officer (PFSO) needs to conduct a scheduled drill simulating an unauthorized access attempt.",
   "industry": "Ports",

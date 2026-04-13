@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Strip and Repaint an Aircraft",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10074-strip-and-repaint-aircraft"
   },
   "description": "An aircraft is being rebranded with a new livery. An MRO facility must strip the old paint and apply the new one.",
   "industry": "Aerospace",

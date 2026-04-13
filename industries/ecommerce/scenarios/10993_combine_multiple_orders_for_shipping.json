@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Combine Multiple Orders for Shipping",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10993-combine-multiple-orders-for-shipping"
   },
   "description": "A customer placed two separate orders going to the same address within a few hours. A warehouse agent wants to combine them into one shipment to save costs.",
   "industry": "Ecommerce",

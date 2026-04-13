@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify a Story Idea from Online Forums",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12056-identify-a-story-idea-from-online-forums"
   },
   "description": "A community manager is monitoring a local online forum and notices many people are complaining about a specific local issue, suggesting a potential story.",
   "industry": "Journalism",

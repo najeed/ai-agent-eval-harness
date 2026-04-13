@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate a Utility Shutdown",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10679-coordinate-utility-shutdown"
   },
   "description": "To tie in the new water line, the water supply to the existing building must be shut down for four hours. The site manager must coordinate this.",
   "industry": "Construction",

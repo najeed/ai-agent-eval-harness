@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an ADA Compliance Complaint",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14103-handle-ada-compliance-complaint"
   },
   "description": "A passenger in a wheelchair reports that a bus driver refused to let them board because the driver claimed they were taking too long. A manager must investigate this serious complaint.",
   "industry": "Transportation",

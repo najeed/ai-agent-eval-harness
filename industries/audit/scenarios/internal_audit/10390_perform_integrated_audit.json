@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform an Integrated Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10390-perform-integrated-audit"
   },
   "description": "An audit team performs an integrated audit that covers both the financial and IT controls of the revenue cycle.",
   "industry": "Audit",

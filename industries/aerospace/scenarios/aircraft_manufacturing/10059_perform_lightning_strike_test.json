@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Lightning Strike Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10059-perform-lightning-strike-test"
   },
   "description": "Engineers must test a composite fuselage section to ensure it can safely dissipate the energy from a lightning strike without damaging critical systems.",
   "industry": "Aerospace",

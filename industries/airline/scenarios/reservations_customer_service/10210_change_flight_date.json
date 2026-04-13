@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change a Flight Date",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10210-change-flight-date"
   },
   "description": "A customer needs to change the date of their existing flight booking.",
   "industry": "Airline",

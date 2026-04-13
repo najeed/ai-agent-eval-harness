@@ -1,34 +1,35 @@
 {
-    "aes_version": 1.4,
-    "metadata": {
-        "name": "Generated Derivatives Trading Scenario 2",
-        "compliance_level": "Standard",
-        "capabilities": [],
-        "standards_registry": []
-    },
-    "description": "Edge-case validation for derivatives trading workflows within the finance sector.",
-    "industry": "finance",
-    "workflow": {
-        "nodes": [
-            {
-                "id": "task_2",
-                "task_description": "Simulate a complex derivatives trading interaction. Ensure the agent follows standard finance protocols.",
-                "expected_outcome": {
-                    "type": "typed_value",
-                    "data_type": "object",
-                    "value": "Derivatives Trading processed with full audit trails."
-                }
-            }
-        ],
-        "edges": []
-    },
-    "evaluation": {
-        "consensus": {
-            "strategy": "Majority_Vote",
-            "min_judges": 1,
-            "judge_panel": [
-                "Luna-1"
-            ]
+  "aes_version": 1.4,
+  "metadata": {
+    "name": "Generated Derivatives Trading Scenario 2",
+    "compliance_level": "Standard",
+    "capabilities": [],
+    "standards_registry": [],
+    "id": "gen-finance-derivatives-trading-2"
+  },
+  "description": "Edge-case validation for derivatives trading workflows within the finance sector.",
+  "industry": "finance",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task_2",
+        "task_description": "Simulate a complex derivatives trading interaction. Ensure the agent follows standard finance protocols.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": "Derivatives Trading processed with full audit trails."
         }
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
     }
+  }
 }

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle BOPIS Order Cancellation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13428-handle-bopis-order-cancellation"
   },
   "description": "A customer's 'Buy Online, Pick up In Store' order was not picked up within the 7-day window and needs to be cancelled.",
   "industry": "Retail",

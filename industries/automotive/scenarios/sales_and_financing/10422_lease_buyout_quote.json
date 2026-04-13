@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Lease Buyout Quote Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10422-lease-buyout-quote"
   },
   "description": "A customer nearing the end of their lease wants to know the cost to purchase their vehicle.",
   "industry": "Automotive",

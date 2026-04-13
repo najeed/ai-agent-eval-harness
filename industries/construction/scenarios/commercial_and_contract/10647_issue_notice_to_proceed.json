@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue Notice to Proceed",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10647-issue-notice-to-proceed"
   },
   "description": "After signing a contract with a new subcontractor, the contract manager must issue a formal Notice to Proceed (NTP).",
   "industry": "Construction",

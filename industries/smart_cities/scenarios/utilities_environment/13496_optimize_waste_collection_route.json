@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Optimize Waste Collection Route",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13496-optimize-waste-collection-route"
   },
   "description": "An operator needs to generate an optimized collection route for a waste management truck based on real-time smart bin fill levels.",
   "industry": "Smart Cities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Remove a Vehicle from an Auto Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11961-remove-vehicle-from-policy"
   },
   "description": "A policyholder sold a car and no longer needs it on their policy.",
   "industry": "Insurance",

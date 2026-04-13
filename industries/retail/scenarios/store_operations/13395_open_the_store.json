@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Open the Store for the Day",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13395-open-the-store"
   },
   "description": "A store manager needs to perform the morning opening procedures.",
   "industry": "Retail",

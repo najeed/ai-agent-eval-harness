@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set a Product to Pre-Order Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11000-set-preorder-status"
   },
   "description": "A highly anticipated new product is not yet released, but the company wants to allow customers to pre-order it.",
   "industry": "Ecommerce",

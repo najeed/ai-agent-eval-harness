@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a DOT Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14070-manage-dot-audit"
   },
   "description": "A safety manager receives a notification of an upcoming DOT compliance audit and must prepare the required documentation.",
   "industry": "Transportation",

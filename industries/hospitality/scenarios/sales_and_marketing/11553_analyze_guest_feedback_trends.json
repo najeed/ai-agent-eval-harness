@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Guest Feedback Trends",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11553-analyze-guest-feedback-trends"
   },
   "description": "A general manager wants to analyze guest feedback from the past quarter to identify common themes or recurring issues.",
   "industry": "Hospitality",

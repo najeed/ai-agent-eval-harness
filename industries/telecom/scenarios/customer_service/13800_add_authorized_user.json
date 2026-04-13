@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add an Authorized User to Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13800-add-authorized-user"
   },
   "description": "A customer wants to add their spouse as an authorized user who can make changes to the account.",
   "industry": "Telecom",

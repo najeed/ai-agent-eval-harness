@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Application Support - QuickBooks Network Error",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11867-app-support-quickbooks-networking"
   },
   "description": "A user reports they are unable to open their QuickBooks company file, which is hosted on a server.",
   "industry": "Information Technology Service",

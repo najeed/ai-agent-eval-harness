@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Customer Short Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00007-handle-customer-short-payment"
   },
   "description": "A customer has paid an invoice but has short-paid by $100, claiming the goods were damaged. Remittance advice is provided.",
   "industry": "Accounting",

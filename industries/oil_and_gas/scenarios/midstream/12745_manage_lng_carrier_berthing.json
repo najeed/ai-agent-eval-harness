@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage LNG Carrier Berthing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12745-manage-lng-carrier-berthing"
   },
   "description": "A port operator coordinates the safe berthing of a large LNG (Liquefied Natural Gas) carrier at the import terminal.",
   "industry": "Oil and Gas",

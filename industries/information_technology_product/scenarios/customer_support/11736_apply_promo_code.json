@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply Promotional Code",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11736-apply-promo-code"
   },
   "description": "A new customer forgot to enter their promotional code during signup and wants to have it applied retroactively.",
   "industry": "Information Technology Product",

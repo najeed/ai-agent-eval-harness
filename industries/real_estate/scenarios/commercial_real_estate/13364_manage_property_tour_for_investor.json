@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Property Tour for an Investor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13364-manage-property-tour-for-investor"
   },
   "description": "An out-of-state investor is flying in to tour a portfolio of three potential investment properties.",
   "industry": "Real Estate",

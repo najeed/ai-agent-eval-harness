@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to Drilling Kick",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12731-respond-to-drilling-kick"
   },
   "description": "A driller observes a sudden increase in flow from the well, indicating a 'kick' (an influx of formation fluid). They must initiate well control procedures immediately.",
   "industry": "Oil and Gas",

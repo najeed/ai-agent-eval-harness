@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Hazardous Materials",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10035-manage-hazardous-materials"
   },
   "description": "A supply chain manager needs to arrange the transportation of hazardous materials (e.g., primers, sealants) to the assembly line.",
   "industry": "Aerospace",

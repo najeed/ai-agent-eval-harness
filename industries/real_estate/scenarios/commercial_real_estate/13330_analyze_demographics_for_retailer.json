@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Demographics for a Retail Tenant",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13330-analyze-demographics-for-retailer"
   },
   "description": "A national coffee chain is considering a new location. Their agent must analyze the demographics of the surrounding area.",
   "industry": "Real Estate",

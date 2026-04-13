@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Collect Late Rent and Fees",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13203-collect-late-rent"
   },
   "description": "A tenant is 5 days late on rent. The agent must notify the tenant, apply the late fee, and record the communication.",
   "industry": "Real Estate",

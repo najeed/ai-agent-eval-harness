@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update a Public Project Website",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13046-update-public-project-website"
   },
   "description": "A project manager needs to post a weekly update on a major infrastructure project's public-facing website.",
   "industry": "Public Sector",

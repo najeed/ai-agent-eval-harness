@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Accrue for Employee Bonuses",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00078-accrue-for-employee-bonuses"
   },
   "description": "The company has a bonus plan tied to profitability. At year-end, the accountant must accrue for the estimated bonus payout.",
   "industry": "Accounting",

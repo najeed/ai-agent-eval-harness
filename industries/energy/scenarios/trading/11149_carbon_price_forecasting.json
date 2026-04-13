@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Carbon Price Forecasting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11149-carbon-price-forecasting"
   },
   "description": "An analyst needs to forecast the price of carbon allowances in a compliance market (e.g., EU ETS) to inform hedging decisions for fossil fuel assets.",
   "industry": "Energy",

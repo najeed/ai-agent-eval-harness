@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit GDPR Data Privacy Controls",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10332-audit-data-privacy-controls"
   },
   "description": "An auditor tests the company's compliance with GDPR requirements, specifically the 'right to be forgotten'.",
   "industry": "Audit",

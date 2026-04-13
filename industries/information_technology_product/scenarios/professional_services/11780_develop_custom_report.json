@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop Custom Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11780-develop-custom-report"
   },
   "description": "A customer requires a custom report that cannot be built using the standard reporting tools, requiring a direct database query.",
   "industry": "Information Technology Product",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add User Licenses to Subscription",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11707-add-user-licenses"
   },
   "description": "A customer needs to add 5 more user licenses to their annual subscription.",
   "industry": "Information Technology Product",

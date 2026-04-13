@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Closed Transaction File",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13116-audit-transaction-file"
   },
   "description": "A brokerage manager needs to audit a recently closed transaction file for compliance.",
   "industry": "Real Estate",

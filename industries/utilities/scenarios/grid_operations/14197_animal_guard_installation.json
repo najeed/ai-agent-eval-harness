@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Animal Guard Installation Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14197-animal-guard-installation"
   },
   "description": "After analyzing outage data, an asset manager decides to proactively install animal guards on transformers in areas with high rates of animal-caused outages.",
   "industry": "Utilities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Operate a Straddle Carrier",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12964-operate-a-straddle-carrier"
   },
   "description": "A straddle carrier operator receives a job to move a container from under a quay crane to a yard stack.",
   "industry": "Ports",

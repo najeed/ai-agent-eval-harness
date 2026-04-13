@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Treasury Operations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10377-audit-treasury-operations"
   },
   "description": "An auditor reviews the treasury department's controls over cash management and investments.",
   "industry": "Audit",

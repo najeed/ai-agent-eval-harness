@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Backup - Perform Test Restore",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11885-cloud-test-restore-from-backup"
   },
   "description": "As part of regular validation, a technician performs a test restore of a random server backup.",
   "industry": "Information Technology Service",

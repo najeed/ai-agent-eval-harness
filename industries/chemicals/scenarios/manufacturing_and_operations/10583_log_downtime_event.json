@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Log Equipment Downtime Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10583-log-downtime-event"
   },
   "description": "A production line was down for 2 hours due to a mechanical failure. A supervisor must log this event for OEE (Overall Equipment Effectiveness) tracking.",
   "industry": "Chemicals",

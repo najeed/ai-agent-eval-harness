@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Validate a Tour Voucher",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13922-validate-tour-voucher"
   },
   "description": "A tourist arrives for a city bus tour and presents a pre-paid voucher to the agent at the departure point.",
   "industry": "Tourism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct a Workplace Safety Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11687-conduct-workplace-safety-audit"
   },
   "description": "The EHS (Environment, Health, and Safety) manager is conducting a safety audit of a manufacturing plant.",
   "industry": "Human Resources",

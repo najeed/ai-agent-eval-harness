@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Combine Multiple Parcel Shipments",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12291-combine-parcel-shipments"
   },
   "description": "A customer has placed three small orders going to the same address on the same day. The system should combine them into a single, larger shipment to save on costs.",
   "industry": "Logistics and Warehousing",

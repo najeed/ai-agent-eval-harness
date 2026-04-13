@@ -5,7 +5,10 @@
         "max_ad_down": 1000,
         "max_ad_up": 1000,
         "provider_name": "Simulated Fiber Co",
-        "location": "Nationwide"
+        "location": "Nationwide",
+        "metadata": {
+            "id": "SIM_FCC_1"
+        }
     },
     {
         "id": "SIM_FCC_2",
@@ -13,6 +16,9 @@
         "max_ad_down": 300,
         "max_ad_up": 20,
         "provider_name": "Simulated Cable Corp",
-        "location": "Regional"
+        "location": "Regional",
+        "metadata": {
+            "id": "SIM_FCC_2"
+        }
     }
 ]

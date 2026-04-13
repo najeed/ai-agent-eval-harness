@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Damaged Container at the Gate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12920-handle-damaged-container-at-gate"
   },
   "description": "A truck arrives to drop off an export container, but the gate inspection camera identifies significant damage.",
   "industry": "Ports",

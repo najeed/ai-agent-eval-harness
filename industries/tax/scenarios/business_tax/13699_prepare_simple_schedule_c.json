@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Simple Schedule C",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13699-prepare-simple-schedule-c"
   },
   "description": "A freelance graphic designer needs to file a Schedule C for their sole proprietorship business.",
   "industry": "Tax",

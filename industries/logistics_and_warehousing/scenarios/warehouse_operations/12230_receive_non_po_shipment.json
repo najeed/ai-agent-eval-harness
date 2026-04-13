@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Receive a Shipment Without a PO",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12230-receive-non-po-shipment"
   },
   "description": "A truck arrives with a shipment that is not linked to a purchase order in the system. The operator must handle this exception.",
   "industry": "Logistics and Warehousing",

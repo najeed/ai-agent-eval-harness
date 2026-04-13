@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Tenant Maintenance Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13302-handle-maintenance-request"
   },
   "description": "A tenant submits a maintenance request for a leaking faucet.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Average Daily Gain in Feedlot Cattle",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10155-weight-gain-analysis"
   },
   "description": "A feedlot manager wants to analyze the performance of a pen of cattle by calculating their average daily gain (ADG).",
   "industry": "Agriculture",

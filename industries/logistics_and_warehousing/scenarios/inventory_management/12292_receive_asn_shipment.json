@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Receive a Shipment with an ASN",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12292-receive-asn-shipment"
   },
   "description": "A shipment arrives from a supplier who sent an Advance Ship Notice (ASN). The receiving process should be faster as the details are already in the system.",
   "industry": "Logistics and Warehousing",

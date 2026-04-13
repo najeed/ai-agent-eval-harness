@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write SEO-Friendly Article",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12092-write-seo-friendly-article"
   },
   "description": "A reporter is writing an article on a popular topic and needs to ensure it is optimized to rank well in search engine results.",
   "industry": "Journalism",

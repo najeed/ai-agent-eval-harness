@@ -67,7 +67,7 @@ def test_core_events_taxonomy_growth():
 def test_context_objects_telemetry_fields():
     """Verify EvaluationContext and TurnContext support span_context."""
     eval_ctx = EvaluationContext(
-        scenario_id="s1", scenario_data={}, span_context={"root_span": "abc"}
+        identifier="s1", scenario_data={}, span_context={"root_span": "abc"}
     )
     assert eval_ctx.span_context == {"root_span": "abc"}
 

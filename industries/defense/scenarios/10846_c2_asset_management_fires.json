@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinated Fires Asset Management",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10846-c2-asset-management-fires"
   },
   "description": "A fires officer must deconflict and synchronize artillery, naval gunfire, and close air support to suppress enemy defenses.",
   "industry": "Defense",

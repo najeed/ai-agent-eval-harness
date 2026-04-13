@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Lockout-Tagout (LOTO)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10590-lockout-tagout-procedure"
   },
   "description": "A maintenance technician needs to perform a lockout-tagout procedure to safely de-energize a piece of equipment before working on it.",
   "industry": "Chemicals",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Subscriber Updates Payment Method",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12522-update-subscriber-payment-method"
   },
   "description": "A subscriber's credit card has expired, and they need to update their payment information to keep their streaming service active.",
   "industry": "Media and Entertainment",

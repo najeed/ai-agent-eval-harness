@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Power Substation Real-time Optimization Simulation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "simulations-042-power-substation-real-time-optimization-simulation"
   },
   "description": "Agent must manage a high-fidelity Power Substation simulation with streaming telemetry.",
   "industry": "Meta-Industry",

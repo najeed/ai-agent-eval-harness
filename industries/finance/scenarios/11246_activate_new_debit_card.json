@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Activate New Debit Card",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11246-activate-new-debit-card"
   },
   "description": "A customer has received their new debit card in the mail and needs to activate it.",
   "industry": "Finance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Diagnose Nutrient Deficiency from Leaf Image",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10112-nutrient-deficiency-diagnosis"
   },
   "description": "A farmer uploads a picture of a soybean leaf that is yellowing. The agent must diagnose the nutrient deficiency.",
   "industry": "Agriculture",

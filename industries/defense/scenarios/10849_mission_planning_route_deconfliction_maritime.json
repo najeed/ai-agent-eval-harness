@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Maritime Route Deconfliction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10849-mission-planning-route-deconfliction-maritime"
   },
   "description": "A planner must deconflict the transit route of a carrier strike group with commercial shipping lanes and a known submarine threat area.",
   "industry": "Defense",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deliver On-site Workshop",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11788-on-site-workshop"
   },
   "description": "A consultant travels to a customer's office to deliver a two-day, on-site implementation workshop.",
   "industry": "Information Technology Product",

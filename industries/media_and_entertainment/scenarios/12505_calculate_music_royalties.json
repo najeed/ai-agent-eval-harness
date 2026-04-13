@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate Music Royalties for a Film",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12505-calculate-music-royalties"
   },
   "description": "An agent needs to calculate the quarterly royalties owed to a composer for their music used in a film, based on streaming and broadcast data.",
   "industry": "Media and Entertainment",

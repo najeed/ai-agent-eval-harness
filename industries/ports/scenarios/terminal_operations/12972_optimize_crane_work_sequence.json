@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Optimize Crane Work Sequence",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12972-optimize-crane-work-sequence"
   },
   "description": "A planner reviews the initial work sequence for a quay crane and sees it can be improved to reduce travel time for yard equipment.",
   "industry": "Ports",

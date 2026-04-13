@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Flight Delay Notification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10221-handle-delay-notification"
   },
   "description": "The operations team has announced a 2-hour delay for an upcoming flight. A customer service agent must inform the passengers.",
   "industry": "Airline",

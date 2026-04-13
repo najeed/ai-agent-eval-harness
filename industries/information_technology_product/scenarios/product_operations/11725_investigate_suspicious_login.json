@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Suspicious Login",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11725-investigate-suspicious-login"
   },
   "description": "A security alert is triggered for multiple failed login attempts on a high-profile customer account, followed by a successful login from an unusual IP address.",
   "industry": "Information Technology Product",

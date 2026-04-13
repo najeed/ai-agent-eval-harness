@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Market Lease Rates",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13229-analyze-market-lease-rates"
   },
   "description": "A landlord client wants to know if they should increase the asking rent for a vacant office suite. The agent must analyze current market rates.",
   "industry": "Real Estate",

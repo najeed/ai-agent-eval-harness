@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Drilling Operation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11424-manage-drilling-operation"
   },
   "description": "A mine supervisor is monitoring a drilling operation and needs to ensure the drill is following the planned pattern.",
   "industry": "Heavy Industries",

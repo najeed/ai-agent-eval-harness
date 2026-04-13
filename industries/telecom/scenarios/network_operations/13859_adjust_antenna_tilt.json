@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Optimize Coverage by Adjusting Antenna Tilt",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13859-adjust-antenna-tilt"
   },
   "description": "To reduce interference with a neighboring cell, an agent needs to remotely adjust the electrical tilt of a cell tower antenna.",
   "industry": "Telecom",

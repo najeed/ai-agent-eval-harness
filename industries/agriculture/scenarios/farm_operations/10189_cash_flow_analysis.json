@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monthly Cash Flow Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10189-cash-flow-analysis"
   },
   "description": "A farm's bookkeeper needs to generate a monthly cash flow statement to ensure the farm has enough liquidity to meet its obligations.",
   "industry": "Agriculture",

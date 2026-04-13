@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Tire Pressure Monitoring System (TPMS) Warning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10431-tire-pressure-warning"
   },
   "description": "A customer's TPMS warning light is on, and they want to know what to do.",
   "industry": "Automotive",

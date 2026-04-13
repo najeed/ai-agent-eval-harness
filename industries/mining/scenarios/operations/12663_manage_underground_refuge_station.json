@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inspect Underground Refuge Station",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12663-manage-underground-refuge-station"
   },
   "description": "An underground supervisor performs a weekly inspection of a refuge station to ensure it is ready for use in an emergency.",
   "industry": "Mining",

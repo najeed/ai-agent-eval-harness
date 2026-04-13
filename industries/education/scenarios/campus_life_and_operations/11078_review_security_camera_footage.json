@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Security Camera Footage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11078-review-security-camera-footage"
   },
   "description": "Campus safety needs to review security camera footage following a report of a bicycle theft.",
   "industry": "Education",

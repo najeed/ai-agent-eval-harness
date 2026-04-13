@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Receive a Cross-Dock Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12214-receive-cross-dock-shipment"
   },
   "description": "A shipment arrives that is designated for cross-docking. It must be received and immediately moved to an outbound staging lane without being put away.",
   "industry": "Logistics and Warehousing",

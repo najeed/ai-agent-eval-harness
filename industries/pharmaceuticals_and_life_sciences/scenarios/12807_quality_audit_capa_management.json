@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage CAPA from Quality Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12807-quality-audit-capa-management"
   },
   "description": "Following a regulatory inspection, a quality manager must create and track a Corrective and Preventive Action (CAPA) to address a finding.",
   "industry": "Pharmaceuticals and Life Sciences",

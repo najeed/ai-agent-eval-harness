@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispatch Demand Response Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11115-demand-response-event-dispatch"
   },
   "description": "A VPP operator receives a request from the grid operator to curtail 5 MW of load in a specific zone for 2 hours.",
   "industry": "Energy",

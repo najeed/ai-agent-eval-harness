@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Lease vs. Buy Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10452-lease-vs-buy-analysis"
   },
   "description": "A customer is undecided between leasing or financing a new car and wants to understand the financial differences.",
   "industry": "Automotive",

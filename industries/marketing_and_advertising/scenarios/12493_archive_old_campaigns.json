@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Archive Old Campaigns",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12493-archive-old-campaigns"
   },
   "description": "To clean up the ad account, a manager needs to archive all campaigns that ended more than a year ago.",
   "industry": "Marketing and Advertising",

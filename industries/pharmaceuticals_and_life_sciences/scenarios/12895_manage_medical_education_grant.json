@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Medical Education Grant",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12895-manage-medical-education-grant"
   },
   "description": "A medical affairs coordinator receives a request for a medical education grant from a professional society and must process it.",
   "industry": "Pharmaceuticals and Life Sciences",

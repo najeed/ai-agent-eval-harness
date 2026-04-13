@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Crew Rest Requirements",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10223-manage-crew-rest-requirements"
   },
   "description": "A flight has been delayed, and a crew scheduler must check if the delay will cause the flight crew to exceed their maximum duty day limits.",
   "industry": "Airline",

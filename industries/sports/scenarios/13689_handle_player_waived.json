@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Player Being Waived",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13689-handle-player-waived"
   },
   "description": "A team decides to release a player from their contract. The GM must place the player on waivers.",
   "industry": "Sports",

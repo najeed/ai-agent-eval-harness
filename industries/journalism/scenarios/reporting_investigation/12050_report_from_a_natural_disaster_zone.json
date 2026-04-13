@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report from a Natural Disaster Zone",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12050-report-from-a-natural-disaster-zone"
   },
   "description": "A reporter is sent to cover a hurricane's aftermath. They must report on the damage and the human impact while dealing with difficult conditions.",
   "industry": "Journalism",

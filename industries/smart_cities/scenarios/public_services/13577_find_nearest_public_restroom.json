@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find Nearest Public Restroom",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13577-find-nearest-public-restroom"
   },
   "description": "A tourist uses a city information kiosk to find the nearest available public restroom.",
   "industry": "Smart Cities",

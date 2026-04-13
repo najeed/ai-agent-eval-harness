@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Upgrade Customer to VIP Loyalty Tier",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13490-upgrade-customer-to-vip-loyalty-tier"
   },
   "description": "A customer's spending has reached the threshold to be upgraded to the VIP tier of the loyalty program.",
   "industry": "Retail",

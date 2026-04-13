@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advise on Hiring Employee vs. Contractor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13738-advise-on-hiring-employee-vs-contractor"
   },
   "description": "A small business needs to hire help and wants to understand the tax differences between hiring an employee (W-2) and an independent contractor (1099).",
   "industry": "Tax",

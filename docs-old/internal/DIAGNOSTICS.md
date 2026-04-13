@@ -1,6 +1,6 @@
 # AgentV Diagnostics & Log Locations (v1.2.3)
 
-This document provides an authoritative guide for locating system logs, execution traces, and evaluation reports.
+This document provides an guide for locating system logs, execution traces, and evaluation reports.
 
 ## Execution Trace Logs (.jsonl)
 Detailed step-by-step agent interactions are recorded as `.jsonl` files.
@@ -22,4 +22,4 @@ The system maintains a fast-lookup index of all discoverable scenarios.
 Configuration and environment status can be viewed via the Visual Suite Dashboard under the **Industrial System Paths** section.
 
 ---
-*For industrial support, contact the AgentEval Enterprise team.*
+*For industrial support, contact the AgentV Enterprise team.*

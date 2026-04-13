@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Lost and Found",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14035-manage-lost-and-found"
   },
   "description": "A bus driver turns in a wallet found on their bus. An agent must log the item and attempt to contact the owner.",
   "industry": "Transportation",

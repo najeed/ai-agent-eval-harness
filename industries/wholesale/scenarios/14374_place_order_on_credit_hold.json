@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Place a Customer's Order on Credit Hold",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14374-place-order-on-credit-hold"
   },
   "description": "A customer with overdue invoices places a new order. The system must automatically place the new order on credit hold.",
   "industry": "Wholesale",

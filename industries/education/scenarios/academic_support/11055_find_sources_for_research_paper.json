@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Help Finding Sources for Research Paper",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11055-find-sources-for-research-paper"
   },
   "description": "A student is struggling to find peer-reviewed articles for a research paper and asks a librarian for help.",
   "industry": "Education",

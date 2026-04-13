@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Scenario Specification: Healthcare Portal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "scenario-48fff5a6"
   },
   "description": "This scenario tests an agent's ability to handle a medical appointment rescheduling request.",
   "industry": "healthcare",

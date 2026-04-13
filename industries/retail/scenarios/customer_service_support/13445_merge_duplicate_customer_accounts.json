@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Merge Duplicate Customer Accounts",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13445-merge-duplicate-customer-accounts"
   },
   "description": "A customer service agent discovers a customer has two online accounts (e.g., one with a typo in the email). The accounts need to be merged.",
   "industry": "Retail",

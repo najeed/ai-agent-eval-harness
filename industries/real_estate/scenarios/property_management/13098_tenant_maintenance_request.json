@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Tenant Reports Leaky Faucet",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13098-tenant-maintenance-request"
   },
   "description": "A tenant reports a leaky faucet in their bathroom. The property manager must log the issue and dispatch a plumber.",
   "industry": "Real Estate",

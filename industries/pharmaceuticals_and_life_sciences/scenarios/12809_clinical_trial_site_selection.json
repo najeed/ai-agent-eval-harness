@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Select Clinical Trial Investigation Sites",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12809-clinical-trial-site-selection"
   },
   "description": "A clinical operations manager needs to identify and evaluate potential investigator sites for a new global oncology study.",
   "industry": "Pharmaceuticals and Life Sciences",

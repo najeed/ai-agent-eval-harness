@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Yield Loss in Manufacturing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12873-investigate-yield-loss-in-mfg"
   },
   "description": "A manufacturing engineer needs to investigate why the yield of a recent batch was significantly lower than average.",
   "industry": "Pharmaceuticals and Life Sciences",

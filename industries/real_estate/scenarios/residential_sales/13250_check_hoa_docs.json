@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check HOA Documents for Buyer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13250-check-hoa-docs"
   },
   "description": "A buyer is considering a condo and the agent needs to review the HOA documents for potential red flags.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Halftime Show Highlights",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13602-create-halftime-show-highlights"
   },
   "description": "During a live game, a broadcast producer needs to quickly create a highlight package of the first half to air during halftime.",
   "industry": "Sports",

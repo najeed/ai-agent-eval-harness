@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assign Training for a New SOP",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12863-assign-training-for-new-sop"
   },
   "description": "Following the approval of a new manufacturing SOP, a training coordinator must assign and track training for all affected personnel.",
   "industry": "Pharmaceuticals and Life Sciences",

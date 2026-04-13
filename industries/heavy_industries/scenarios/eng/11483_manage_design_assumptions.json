@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Design Assumptions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11483-manage-design-assumptions"
   },
   "description": "During early design, an engineer has to make an assumption (e.g., about soil conditions) that must be documented and tracked for later verification.",
   "industry": "Heavy Industries",

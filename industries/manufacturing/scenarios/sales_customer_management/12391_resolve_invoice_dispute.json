@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve an Invoice Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12391-resolve-invoice-dispute"
   },
   "description": "A customer is disputing an item on their invoice, claiming they were overcharged.",
   "industry": "Manufacturing",

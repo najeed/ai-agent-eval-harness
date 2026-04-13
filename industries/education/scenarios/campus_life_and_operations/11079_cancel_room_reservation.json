@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel a Room Reservation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11079-cancel-room-reservation"
   },
   "description": "A student club needs to cancel their reservation for a meeting room.",
   "industry": "Education",

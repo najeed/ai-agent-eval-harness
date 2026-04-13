@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Commercial Card Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11290-manage-commercial-card-program"
   },
   "description": "A corporate administrator needs to issue a new commercial credit card to an employee and set their spending limits.",
   "industry": "Finance",

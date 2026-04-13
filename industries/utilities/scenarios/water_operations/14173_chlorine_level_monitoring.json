@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Chlorine Residual Monitoring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14173-chlorine-level-monitoring"
   },
   "description": "An operator monitors the chlorine residual levels in the water distribution system to ensure disinfection is maintained.",
   "industry": "Utilities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Unit Personnel Readiness Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10813-logistics-personnel-readiness"
   },
   "description": "A commander needs to assess their unit's personnel readiness for an upcoming rapid deployment.",
   "industry": "Defense",

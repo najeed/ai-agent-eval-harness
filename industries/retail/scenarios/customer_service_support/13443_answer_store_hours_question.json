@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Answer Store Hours Question",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13443-answer-store-hours-question"
   },
   "description": "A customer uses the website's chatbot to ask for the store hours of a specific location.",
   "industry": "Retail",

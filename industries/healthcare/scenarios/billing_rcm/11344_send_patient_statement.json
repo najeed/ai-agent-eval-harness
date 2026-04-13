@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Patient Statement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11344-send-patient-statement"
   },
   "description": "A billing office runs a weekly process to generate and send statements to patients with outstanding balances.",
   "industry": "Healthcare",

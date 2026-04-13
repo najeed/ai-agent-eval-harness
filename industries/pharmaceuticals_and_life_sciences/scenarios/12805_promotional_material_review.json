@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Promotional Material for Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12805-promotional-material-review"
   },
   "description": "An agent must facilitate the review of a new sales aid for a drug product, ensuring it gets approval from the medical, legal, and regulatory departments.",
   "industry": "Pharmaceuticals and Life Sciences",

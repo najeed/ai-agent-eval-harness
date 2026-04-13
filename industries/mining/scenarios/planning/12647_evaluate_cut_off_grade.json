@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Evaluate Cut-off Grade Strategy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12647-evaluate-cut-off-grade"
   },
   "description": "A planning engineer evaluates the optimal cut-off grade (the grade that separates ore from waste) to maximize the project's economic value.",
   "industry": "Mining",

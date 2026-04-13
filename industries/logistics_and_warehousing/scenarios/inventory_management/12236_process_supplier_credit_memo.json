@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Supplier Credit Memo for Shortage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12236-process-supplier-credit-memo"
   },
   "description": "A shipment was received with a shortage. The supplier has sent a credit memo for the missing items, which needs to be applied.",
   "industry": "Logistics and Warehousing",

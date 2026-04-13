@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reactor High Temperature Deviation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10503-reactor-temperature-deviation"
   },
   "description": "An alarm indicates a high temperature deviation in a running batch reactor. An operator must diagnose the cause and take corrective action to save the batch.",
   "industry": "Chemicals",

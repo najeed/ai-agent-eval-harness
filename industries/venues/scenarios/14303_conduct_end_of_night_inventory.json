@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct End-of-Night Inventory Count",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14303-conduct-end-of-night-inventory"
   },
   "description": "After an event, a concession stand manager must count their remaining inventory and report it.",
   "industry": "Venues",

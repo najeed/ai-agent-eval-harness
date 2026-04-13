@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle IRS Levy on a Bank Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13786-handle-irs-levy-on-bank-account"
   },
   "description": "A taxpayer's bank account has been levied by the IRS for an outstanding tax debt. They need immediate help.",
   "industry": "Tax",

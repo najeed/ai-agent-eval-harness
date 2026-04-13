@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find Local Government Representative",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13079-find-local-representative"
   },
   "description": "A citizen wants to find out who their city council representative is.",
   "industry": "Public Sector",

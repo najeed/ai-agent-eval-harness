@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Select Photo for a Press Release",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13677-select-photo-for-press-release"
   },
   "description": "A media relations coordinator is writing a press release about a player winning an award and needs to select an official photo to include.",
   "industry": "Sports",

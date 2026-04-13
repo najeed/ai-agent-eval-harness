@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inline Inspection (PIG) Tool Tracking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14198-inline-inspection-tool-tracking"
   },
   "description": "A control room operator is tracking the real-time progress of a PIG as it travels through a natural gas pipeline.",
   "industry": "Utilities",

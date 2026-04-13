@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Record the Disposal of a Fixed Asset",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00016-record-asset-disposal"
   },
   "description": "The company has sold an old piece of equipment and the accountant needs to remove it from the books.",
   "industry": "Accounting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Clock In for a Shift",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13401-clock-in-for-shift"
   },
   "description": "A store associate arrives for their shift and needs to clock in.",
   "industry": "Retail",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Correct an Error on an Application",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11984-correct-application-error"
   },
   "description": "An agent made a typo in an applicant's date of birth on a life insurance application that is pending review.",
   "industry": "Insurance",

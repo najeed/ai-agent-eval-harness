@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dorm Room Maintenance Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11013-dorm-maintenance-request"
   },
   "description": "A student reports that the light in their dorm room is not working.",
   "industry": "Education",

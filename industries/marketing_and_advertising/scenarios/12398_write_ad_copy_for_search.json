@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write Google Ads Copy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12398-write-ad-copy-for-search"
   },
   "description": "A copywriter needs to create three distinct ad headlines and two descriptions for a new Google Ads campaign.",
   "industry": "Marketing and Advertising",

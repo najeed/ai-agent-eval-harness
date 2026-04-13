@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Open-Hole Wireline Logging Job",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12789-plan-wireline-logging-job"
   },
   "description": "After a well has been drilled to total depth, a geologist plans a wireline logging job to get high-resolution data about the formations.",
   "industry": "Oil and Gas",

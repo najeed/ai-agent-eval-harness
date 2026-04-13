@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Move-In Funds",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13173-process-move-in-funds"
   },
   "description": "A new tenant is moving in and has submitted their first month's rent and security deposit. The PM must process these funds.",
   "industry": "Real Estate",

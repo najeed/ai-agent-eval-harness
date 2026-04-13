@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare a Monthly Income Statement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00010-prepare-income-statement"
   },
   "description": "The controller needs a draft of the monthly income statement for management review.",
   "industry": "Accounting",

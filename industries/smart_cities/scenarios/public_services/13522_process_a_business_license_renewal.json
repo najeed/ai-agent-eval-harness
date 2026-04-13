@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Business License Renewal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13522-process-a-business-license-renewal"
   },
   "description": "A small business owner has submitted an online application to renew their business license. An operator must process it.",
   "industry": "Smart Cities",

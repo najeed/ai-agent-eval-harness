@@ -29,7 +29,11 @@ async def test_handle_inspect_success(tmp_path, capsys):
     scen_path = tmp_path / "inspect_me.json"
     scen_data = {
         "aes_version": 1.4,
-        "metadata": {"name": "Inspection Test", "compliance_level": "Standard"},
+        "metadata": {
+            "id": "inspect-test",
+            "name": "Inspection Test",
+            "compliance_level": "Standard",
+        },
         "industry": "finance",
         "description": "Verify it prints everything.",
         "workflow": {"nodes": [{"id": "t1", "task_description": "task"}], "edges": []},

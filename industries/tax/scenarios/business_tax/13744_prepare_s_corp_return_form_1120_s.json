@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare S-Corp Return (Form 1120-S)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13744-prepare-s-corp-return-form-1120-s"
   },
   "description": "An S-Corporation needs its annual income tax return prepared.",
   "industry": "Tax",

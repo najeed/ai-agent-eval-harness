@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Equipment Calibration Schedule",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12889-manage-equipment-calibration-schedule"
   },
   "description": "A metrology engineer needs to manage the annual calibration schedule for all critical equipment in a manufacturing facility.",
   "industry": "Pharmaceuticals and Life Sciences",

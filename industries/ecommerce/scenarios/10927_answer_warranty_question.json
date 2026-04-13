@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Answer Product Warranty Question",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10927-answer-warranty-question"
   },
   "description": "A customer wants to know the warranty period for an electronic device they are considering buying.",
   "industry": "Ecommerce",

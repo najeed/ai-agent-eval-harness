@@ -33,31 +33,35 @@ def import_trace_as_scenario(trace_path: Path, industry: str, output_dir: Path) 
     if not history:
         raise ValueError("No conversation history found in trace.")
 
-    scenario_id = f"drift-{uuid.uuid4().hex[:8]}"
+    identifier = f"drift-{uuid.uuid4().hex[:8]}"
 
-    # Create scenario structure
+    # Create scenario structure (Transition to AES v1.4.0 Identity)
     scenario = {
-        "scenario_id": scenario_id,
-        "version": "2.0.0",
-        "title": f"Imported Drift: {trace_path.name}",
+        "aes_version": 1.4,
+        "id": identifier,
         "industry": industry,
         "use_case": "production_replay",
-        "core_function": "drift_management",
+        "metadata": {
+            "id": identifier,
+            "name": f"Imported Drift: {trace_path.name}",
+            "compliance_level": "Standard",
+        },
         "description": f"Automatically imported from production trace: {trace_path.name}",
-        "tasks": [
-            {
-                "task_id": "imported_task_1",
-                "description": "Replay production trace and verify outcome.",
-                "expected_outcome": "Outcome matches production ground truth (if provided).",
-                "required_tools": [],  # To be filled by user if needed
-                "success_criteria": [{"metric": "generic_accuracy", "threshold": 0.5}],
-            }
-        ],
-        "ground_truth_history": history,  # Store the original trace for comparison
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "node_1",
+                    "task_description": "Replay production trace and verify outcome.",
+                    "success_criteria": [{"metric": "generic_accuracy", "threshold": 0.8}],
+                }
+            ],
+            "edges": [],
+        },
+        "ground_truth_history": history,
     }
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    output_file = output_dir / f"{scenario_id}.json"
+    output_file = output_dir / f"{identifier}.json"
 
     with open(output_file, "w") as f:
         json.dump(scenario, f, indent=2)

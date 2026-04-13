@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Maritime Patrol Aircraft Management",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10886-c2-asset-management-maritime-patrol"
   },
   "description": "A C2 operator must manage a fleet of maritime patrol aircraft (MPA) to maintain surveillance over a large ocean area.",
   "industry": "Defense",

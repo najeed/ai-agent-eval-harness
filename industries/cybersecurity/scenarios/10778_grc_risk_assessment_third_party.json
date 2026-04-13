@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Third-Party Breach Risk Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10778-grc-risk-assessment-third-party"
   },
   "description": "A third-party vendor announces they have suffered a data breach. A GRC analyst must assess the risk to their own company.",
   "industry": "Cybersecurity",

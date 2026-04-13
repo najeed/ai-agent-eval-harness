@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About Missing Application Document",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11017-missing-application-document"
   },
   "description": "An applicant received an email that their application is incomplete and wants to know what is missing.",
   "industry": "Education",

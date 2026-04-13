@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Documents from a Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12161-request-client-documents"
   },
   "description": "To respond to discovery, a paralegal needs to request a specific set of documents from the client.",
   "industry": "Legal",

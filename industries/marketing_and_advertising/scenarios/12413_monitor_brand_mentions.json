@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Brand Mentions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12413-monitor-brand-mentions"
   },
   "description": "A brand manager needs to monitor social media and news outlets for mentions of their brand.",
   "industry": "Marketing and Advertising",

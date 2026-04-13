@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate a Seller Net Sheet",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13292-calculate-seller-net-sheet"
   },
   "description": "A seller is considering an offer and wants to know how much money they will walk away with after all costs. The agent must prepare a seller net sheet.",
   "industry": "Real Estate",

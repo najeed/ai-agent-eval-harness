@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assess Schedule Impact of a Change Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10629-assess-impact-of-change-order"
   },
   "description": "A client-approved change order to add a new room will add 10 days of work. A PM must assess the impact on the project's completion date.",
   "industry": "Construction",

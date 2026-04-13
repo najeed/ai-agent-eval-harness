@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Curate a 'Back to School' Collection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10921-curate-a-product-collection"
   },
   "description": "A merchandiser wants to create a new curated collection page for a 'Back to School' campaign.",
   "industry": "Ecommerce",

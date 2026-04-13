@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Partner Deal Registration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11719-process-partner-deal-registration"
   },
   "description": "A reseller partner submits a new deal registration for a lead they have sourced.",
   "industry": "Information Technology Product",

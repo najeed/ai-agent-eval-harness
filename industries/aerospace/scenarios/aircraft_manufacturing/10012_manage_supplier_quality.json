@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Supplier Quality Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10012-manage-supplier-quality"
   },
   "description": "A batch of fasteners from a supplier has failed incoming quality inspection. A quality engineer must manage the non-conformance.",
   "industry": "Aerospace",

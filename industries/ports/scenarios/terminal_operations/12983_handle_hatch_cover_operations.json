@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Hatch Cover Operations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12983-handle-hatch-cover-operations"
   },
   "description": "Before loading containers into a vessel's hold, the large hatch covers must be removed.",
   "industry": "Ports",

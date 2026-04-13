@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reorganize Warehouse Layout",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14367-reorganize-warehouse-layout"
   },
   "description": "To improve efficiency, a warehouse manager wants to reorganize the layout, moving high-velocity items closer to the shipping docks.",
   "industry": "Wholesale",

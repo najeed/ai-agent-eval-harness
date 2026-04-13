@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Estoppel Certificates",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13347-review-estoppel-certificates"
   },
   "description": "As part of due diligence for a commercial property purchase, the buyer's agent must collect and review estoppel certificates from all tenants.",
   "industry": "Real Estate",

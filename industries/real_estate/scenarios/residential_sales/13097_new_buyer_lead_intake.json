@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Buyer Lead Intake",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13097-new-buyer-lead-intake"
   },
   "description": "A potential home buyer submits a web form. The agent must create a new client profile, document their needs, and schedule an initial consultation.",
   "industry": "Real Estate",

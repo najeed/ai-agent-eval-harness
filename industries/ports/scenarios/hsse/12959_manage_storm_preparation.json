@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Port Preparations for a Coming Storm",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12959-manage-storm-preparation"
   },
   "description": "A hurricane is forecast to approach the port. The emergency manager must coordinate preparations to secure the facility.",
   "industry": "Ports",

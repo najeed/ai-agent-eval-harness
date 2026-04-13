@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Forecast Seasonal Demand",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12228-forecast-seasonal-demand"
   },
   "description": "An inventory analyst needs to forecast demand for a seasonal item (e.g., winter coats) to inform purchasing decisions.",
   "industry": "Logistics and Warehousing",

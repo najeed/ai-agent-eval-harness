@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Forecast Energy Production from Solar Farm",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13581-forecast-energy-production-from-solar-farm"
   },
   "description": "A grid operator needs a forecast of the expected energy production from the city's main solar farm for the next day to plan other generation.",
   "industry": "Smart Cities",

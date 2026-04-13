@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Imported Drift: sample_trace.json",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "drift-44360adb"
   },
   "description": "Automatically imported from production trace: sample_trace.json",
   "industry": "telecom",

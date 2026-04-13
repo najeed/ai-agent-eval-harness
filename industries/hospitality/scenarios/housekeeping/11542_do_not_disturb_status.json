@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle 'Do Not Disturb' Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11542-do-not-disturb-status"
   },
   "description": "A housekeeper arrives at a room to clean it but sees the 'Do Not Disturb' sign on the door.",
   "industry": "Hospitality",

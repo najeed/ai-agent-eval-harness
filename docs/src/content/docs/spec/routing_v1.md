@@ -10,7 +10,7 @@ Capability-Based Routing decouples the **Intent** of a scenario (what capabiliti
 Scenarios SHOULD NOT define hardcoded endpoints. Instead, they define required capabilities:
 ```json
 {
-  "scenario_id": "loan_approval_01",
+  "id": "loan_approval_01",
   "capabilities": ["fintech_api"]
 }
 ```
@@ -23,7 +23,7 @@ The Core (Harness) resolves capabilities using a tiered strategy:
 4. **Harness Default**: Global `AGENT_API_URL` environment variables.
 
 # 4. Routing Manifest
-The manifest is stored in `.aes/config/routing/manifest.json`. See [Routing JSON Schema](file:///c:/Users/najee/OneDrive/Documents/Projects/spec/routing/routing.schema.json).
+The manifest is stored in `.aes/config/routing/manifest.json`. See [Routing JSON Schema](/spec/routing/routing.schema.json).
 
 ## Example:
 ```json

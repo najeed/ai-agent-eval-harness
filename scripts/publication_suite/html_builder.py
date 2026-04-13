@@ -15,7 +15,7 @@ HTML_TEMPLATE = """
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AgentEval Comparative Leaderboard</title>
+    <title>AgentV Comparative Leaderboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #e0e0e0; margin: 0; }
@@ -56,7 +56,7 @@ HTML_TEMPLATE = """
     {% if is_pilot %}<div class="watermark">PILOT PREVIEW</div>{% endif %}
     
     <div class="hero">
-        <h1>AgentEval Verified Leaderboard</h1>
+        <h1>AgentV Verified Leaderboard</h1>
         <p>Comparative Benchmarking Analysis | Confidence: 95% (Wilson Score)</p>
     </div>
 
@@ -109,20 +109,22 @@ HTML_TEMPLATE = """
             <table>
                 <thead>
                     <tr>
-                        <th>Scenario ID</th>
+                        <th>ID</th>
                         {% for agent_data in agents %}
                         <th>{{ agent_data.name }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for s_id in scenario_ids %}
+                    {% for identifier in identifiers %}
                     <tr>
-                        <td><code>{{ s_id }}</code></td>
+                        <td><code>{{ identifier }}</code></td>
                         {% for agent_data in agents %}
                         <td>
-                            {% if s_id in agent_data.scenarios %}
-                                {{ "%.1f"|format(agent_data.scenarios[s_id].pass_rate * 100) }}%
+                            {% if identifier in agent_data.scenarios %}
+                                {{ "%.1f"|format(
+                                    agent_data.scenarios[identifier].pass_rate * 100
+                                ) }}%
                             {% else %}
                                 N/A
                             {% endif %}
@@ -202,11 +204,11 @@ class HTMLBuilder:
         )
 
         prepared_agents = []
-        all_scenario_ids = set()
+        all_identifiers = set()
 
         for data in self.agents_data:
             scenarios = data.get("scenarios", {})
-            all_scenario_ids.update(scenarios.keys())
+            all_identifiers.update(scenarios.keys())
 
             # Calculate averages for the agent
             total_pass = sum(s["pass_rate"] for s in scenarios.values())
@@ -239,7 +241,7 @@ class HTMLBuilder:
         template = Template(HTML_TEMPLATE)
         html_content = template.render(
             agents=prepared_agents,
-            scenario_ids=sorted(list(all_scenario_ids)),
+            identifiers=sorted(list(all_identifiers)),
             is_pilot=self.is_pilot,
             run_count=5 if self.is_pilot else 100,
         )

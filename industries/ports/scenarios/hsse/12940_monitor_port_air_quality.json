@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Port Air Quality",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12940-monitor-port-air-quality"
   },
   "description": "An environmental officer needs to check the port's air quality monitoring system for compliance with regulations.",
   "industry": "Ports",

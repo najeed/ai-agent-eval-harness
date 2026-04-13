@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Tax-Loss Harvesting Opportunities",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11226-tax-loss-harvesting"
   },
   "description": "An advisor wants to identify opportunities to sell securities at a loss to offset capital gains for a client.",
   "industry": "Finance",

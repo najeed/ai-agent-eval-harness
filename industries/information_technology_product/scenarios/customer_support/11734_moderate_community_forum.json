@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Moderate Community Forum Post",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11734-moderate-community-forum"
   },
   "description": "An inappropriate and non-constructive post has been flagged in the public community forum.",
   "industry": "Information Technology Product",

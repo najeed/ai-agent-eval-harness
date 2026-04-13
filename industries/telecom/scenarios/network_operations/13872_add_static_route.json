@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provision a Static Route",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13872-add-static-route"
   },
   "description": "A customer needs a static route added to the network to reach a private resource.",
   "industry": "Telecom",

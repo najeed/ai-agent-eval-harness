@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Setup a Payment Arrangement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13878-setup-payment-arrangement"
   },
   "description": "A customer is unable to pay their full bill and requests to set up a payment arrangement.",
   "industry": "Telecom",

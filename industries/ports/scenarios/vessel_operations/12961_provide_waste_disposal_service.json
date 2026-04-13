@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Vessel Waste Disposal Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12961-provide-waste-disposal-service"
   },
   "description": "A vessel at berth requests the disposal of garbage as per MARPOL regulations. The agent must arrange it.",
   "industry": "Ports",

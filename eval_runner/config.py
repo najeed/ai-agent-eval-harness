@@ -36,6 +36,7 @@ def _get_project_version() -> str:
 
 
 VERSION = _get_project_version()
+AES_VERSION = 1.4
 _TEMP_DIR_CACHE = None
 
 
@@ -57,7 +58,7 @@ _SHIM_REGISTRY_CACHE = None
 
 
 class RegistryManager:
-    """Manages the lifecycle and hygiene of the authoritative shim configuration manifest."""
+    """Manages the lifecycle and hygiene of the shim configuration manifest."""
 
     @classmethod
     def _redact_sensitive_data(cls, data):

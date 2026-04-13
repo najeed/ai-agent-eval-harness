@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel an Order Before Shipping",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12217-cancel-order-before-shipping"
   },
   "description": "A customer requests to cancel an order that has been processed but not yet shipped.",
   "industry": "Logistics and Warehousing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "GPS Jamming Attack Response",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10885-cyber-threat-response-jamming"
   },
   "description": "An operator of a drone reports that they are losing their GPS signal due to suspected enemy jamming.",
   "industry": "Defense",

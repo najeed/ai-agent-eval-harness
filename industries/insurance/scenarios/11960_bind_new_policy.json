@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Bind a New Life Insurance Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11960-bind-new-policy"
   },
   "description": "An applicant has been approved and has paid their first premium. The agent needs to officially bind the policy.",
   "industry": "Insurance",

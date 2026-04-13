@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Inventory Turnover",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00079-analyze-inventory-turnover"
   },
   "description": "A financial analyst wants to calculate the inventory turnover ratio to assess how efficiently the company is managing its inventory.",
   "industry": "Accounting",

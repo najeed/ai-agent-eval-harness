@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document In-Process Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10543-document-in-process-check"
   },
   "description": "A plant operator needs to perform a required in-process check (e.g., pH measurement) and record the result in the electronic batch record.",
   "industry": "Chemicals",

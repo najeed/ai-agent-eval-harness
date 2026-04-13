@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Backup - Backup Job Failed Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11827-backup-job-failed"
   },
   "description": "The backup system sends an alert that the nightly backup job for a client's SQL server has failed.",
   "industry": "Information Technology Service",

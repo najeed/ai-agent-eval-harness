@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Charity Ticket Donation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14280-manage-charity-ticket-donation"
   },
   "description": "A local charity requests a donation of four tickets to an upcoming family show for their fundraising auction.",
   "industry": "Venues",

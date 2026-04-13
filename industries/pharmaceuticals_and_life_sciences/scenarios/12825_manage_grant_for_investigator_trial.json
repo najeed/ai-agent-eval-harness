@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Grant for Investigator-Initiated Trial",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12825-manage-grant-for-investigator-trial"
   },
   "description": "An MSL must process a grant request from an investigator who wants to conduct their own study using the company's drug.",
   "industry": "Pharmaceuticals and Life Sciences",

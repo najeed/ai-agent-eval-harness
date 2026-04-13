@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add Travel Insurance to Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13968-add-travel-insurance"
   },
   "description": "A customer who booked a vacation package wants to add travel insurance.",
   "industry": "Tourism",

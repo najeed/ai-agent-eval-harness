@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft Project Proposal from Client Brief",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00101-draft-project-proposal"
   },
   "description": "An agent must draft a project proposal based on a client's initial project brief document.",
   "industry": "Consulting",

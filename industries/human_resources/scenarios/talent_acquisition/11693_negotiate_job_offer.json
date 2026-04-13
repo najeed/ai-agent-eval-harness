@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Negotiate a Job Offer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11693-negotiate-job-offer"
   },
   "description": "A top candidate has received an offer but wants to negotiate for a higher salary.",
   "industry": "Human Resources",

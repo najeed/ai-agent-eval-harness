@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Islanding Detection and Response",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14155-islanding-detection"
   },
   "description": "A large solar farm's connection to the main grid is lost, but it continues to energize a section of the distribution network, creating a dangerous 'island'. The system must detect this and trip the solar farm offline.",
   "industry": "Utilities",

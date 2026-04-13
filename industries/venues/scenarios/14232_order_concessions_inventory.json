@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Order Concessions Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14232-order-concessions-inventory"
   },
   "description": "A food and beverage manager needs to place the weekly order for non-perishable items like popcorn kernels, cups, and napkins.",
   "industry": "Venues",

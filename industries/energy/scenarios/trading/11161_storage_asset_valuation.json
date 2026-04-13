@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Energy Storage Asset Valuation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11161-storage-asset-valuation"
   },
   "description": "An investment analyst needs to determine the valuation of a standalone battery storage asset based on its potential future revenues.",
   "industry": "Energy",

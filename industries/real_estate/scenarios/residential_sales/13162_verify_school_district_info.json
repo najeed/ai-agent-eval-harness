@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify School District Information",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13162-verify-school-district-info"
   },
   "description": "A buyer client's primary concern is being in a specific high school's attendance zone. The agent must verify this for a property.",
   "industry": "Real Estate",

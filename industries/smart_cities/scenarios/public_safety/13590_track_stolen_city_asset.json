@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Stolen City Asset",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13590-track-stolen-city-asset"
   },
   "description": "A GPS tracker on a valuable city-owned asset (like a high-end mower from the parks department) indicates it has left its designated area.",
   "industry": "Smart Cities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Stuff a Container at the CFS",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12990-stuff-container-at-cfs"
   },
   "description": "Multiple small shipments of export cargo are at the CFS and need to be consolidated (stuffed) into a single container.",
   "industry": "Ports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Firewall Rules",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13869-audit-firewall-rules"
   },
   "description": "As part of a security audit, an agent must find and flag any firewall rules that are overly permissive (e.g., 'allow any any').",
   "industry": "Telecom",

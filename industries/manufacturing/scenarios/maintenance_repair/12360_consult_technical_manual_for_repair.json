@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Consult a Technical Manual for a Repair",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12360-consult-technical-manual-for-repair"
   },
   "description": "A technician is working on an unfamiliar piece of equipment and needs to access its technical service manual.",
   "industry": "Manufacturing",

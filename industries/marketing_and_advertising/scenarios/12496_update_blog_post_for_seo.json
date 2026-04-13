@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Old Blog Post for SEO",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12496-update-blog-post-for-seo"
   },
   "description": "An SEO specialist has identified an old blog post that is getting some traffic but could be updated to rank higher. They need to 'refresh' the content.",
   "industry": "Marketing and Advertising",

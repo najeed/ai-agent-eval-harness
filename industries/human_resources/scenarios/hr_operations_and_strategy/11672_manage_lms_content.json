@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage LMS Content",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11672-manage-lms-content"
   },
   "description": "An L&D specialist needs to upload a new version of a compliance training video to the LMS.",
   "industry": "Human Resources",

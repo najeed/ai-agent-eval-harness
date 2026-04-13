@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Quality Control of Corrective Actions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10401-audit-quality-control-of-corrective-actions"
   },
   "description": "A quality auditor reviews the process for implementing corrective actions that result from customer complaints.",
   "industry": "Audit",

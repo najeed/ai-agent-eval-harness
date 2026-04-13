@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Guest Request for Accessible Seating",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14218-handle-accessibility-request"
   },
   "description": "A guest who purchased standard tickets has since broken their leg and now requires wheelchair accessible seating.",
   "industry": "Venues",

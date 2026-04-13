@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Complaint About Service Experience",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10421-complaint-about-service-experience"
   },
   "description": "A customer is upset because their vehicle was returned dirty after a recent service appointment.",
   "industry": "Automotive",

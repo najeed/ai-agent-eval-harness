@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Virtual Kit (Bill of Materials)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12248-create-virtual-kit"
   },
   "description": "A marketing team wants to sell a new product bundle online. An inventory analyst must create a virtual kit in the system so that when the kit is sold, the system allocates the component inventory.",
   "industry": "Logistics and Warehousing",

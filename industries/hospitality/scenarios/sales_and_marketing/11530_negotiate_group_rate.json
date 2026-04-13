@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Negotiate Group Room Rate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11530-negotiate-group-rate"
   },
   "description": "A client for a large conference wants to negotiate a lower room rate than was initially proposed.",
   "industry": "Hospitality",

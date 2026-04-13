@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Property Tax Abatement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13053-process-tax-abatement"
   },
   "description": "A senior citizen is applying for a property tax abatement (reduction) based on their age and income.",
   "industry": "Public Sector",

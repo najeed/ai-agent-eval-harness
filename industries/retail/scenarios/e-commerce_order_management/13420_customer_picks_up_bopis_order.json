@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Picks Up BOPIS Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13420-customer-picks-up-bopis-order"
   },
   "description": "A customer arrives in-store to pick up their 'Buy Online, Pick up In Store' order.",
   "industry": "Retail",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manually Set Up Related Products",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10988-set-up-related-products"
   },
   "description": "A merchandiser wants to manually define a set of 'related products' to display on a specific product page (e.g., showing the matching charger and case for a phone).",
   "industry": "Ecommerce",

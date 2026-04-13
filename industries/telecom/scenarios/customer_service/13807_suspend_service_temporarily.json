@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Temporarily Suspend Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13807-suspend-service-temporarily"
   },
   "description": "A customer is traveling for three months and wants to suspend their line to avoid charges.",
   "industry": "Telecom",

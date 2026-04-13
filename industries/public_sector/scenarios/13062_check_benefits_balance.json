@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check EBT Card Balance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13062-check-benefits-balance"
   },
   "description": "A SNAP recipient wants to check the current balance on their EBT card.",
   "industry": "Public Sector",

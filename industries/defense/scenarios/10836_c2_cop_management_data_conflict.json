@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolving Conflicting COP Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10836-c2-cop-management-data-conflict"
   },
   "description": "A friendly aircraft's IFF system is malfunctioning, causing it to appear as an 'unidentified' track on the COP, dangerously close to an air defense zone.",
   "industry": "Defense",

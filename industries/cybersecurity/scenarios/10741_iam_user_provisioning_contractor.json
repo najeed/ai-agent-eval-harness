@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Contractor Onboarding",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10741-iam-user-provisioning-contractor"
   },
   "description": "An IAM analyst must provision a temporary account for a contractor with access that automatically expires at the end of their contract.",
   "industry": "Cybersecurity",

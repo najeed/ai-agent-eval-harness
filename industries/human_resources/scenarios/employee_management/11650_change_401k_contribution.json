@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change 401(k) Contribution Rate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11650-change-401k-contribution"
   },
   "description": "An employee wants to increase their 401(k) contribution percentage.",
   "industry": "Human Resources",

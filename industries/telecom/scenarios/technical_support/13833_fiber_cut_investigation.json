@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advanced Diagnostics - Suspected Fiber Cut",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13833-fiber-cut-investigation"
   },
   "description": "An entire neighborhood loses internet service simultaneously. The agent must investigate for a potential fiber cut.",
   "industry": "Telecom",

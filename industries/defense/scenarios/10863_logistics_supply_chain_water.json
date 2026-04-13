@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Potable Water Resupply in Arid Environment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10863-logistics-supply-chain-water"
   },
   "description": "A logistics officer must plan the production and distribution of potable water for a battalion operating in the desert.",
   "industry": "Defense",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze A/B Test Results for a Headline",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12057-analyze-ab-test-results-for-a-headline"
   },
   "description": "An A/B test was run on two different headlines for an article. An editor must analyze the results to see which performed better.",
   "industry": "Journalism",

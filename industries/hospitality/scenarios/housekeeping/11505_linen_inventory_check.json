@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Linen Inventory Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11505-linen-inventory-check"
   },
   "description": "The head of housekeeping needs to check the current inventory levels for clean towels.",
   "industry": "Hospitality",

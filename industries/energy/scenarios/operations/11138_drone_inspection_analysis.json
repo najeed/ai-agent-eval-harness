@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Drone Inspection Imagery of Wind Turbine Blades",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11138-drone-inspection-analysis"
   },
   "description": "An asset inspector is reviewing high-resolution images from a drone inspection of a wind turbine blade to identify and classify defects.",
   "industry": "Energy",

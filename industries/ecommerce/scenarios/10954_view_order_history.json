@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Help Customer View Order History",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10954-view-order-history"
   },
   "description": "A customer is on the phone and wants to know the date and total of their last three orders.",
   "industry": "Ecommerce",

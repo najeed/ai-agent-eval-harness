@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Multiple Offer Situation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13310-handle-multiple-offer-situation"
   },
   "description": "A listing agent receives multiple offers on a property and must advise the seller on how to proceed.",
   "industry": "Real Estate",

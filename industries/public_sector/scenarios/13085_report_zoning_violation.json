@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Zoning Violation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13085-report-zoning-violation"
   },
   "description": "A citizen reports that a neighbor is running a commercial business out of their home in a residential-only zone.",
   "industry": "Public Sector",

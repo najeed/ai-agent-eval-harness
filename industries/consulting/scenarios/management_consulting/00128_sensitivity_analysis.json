@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Sensitivity Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00128-sensitivity-analysis"
   },
   "description": "Given a financial model, an agent must perform a sensitivity analysis by changing key input variables.",
   "industry": "Consulting",

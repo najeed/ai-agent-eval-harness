@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Geotechnical Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11443-review-geotechnical-report"
   },
   "description": "A civil engineer needs to review the geotechnical report for a site to determine the required foundation design for a new building.",
   "industry": "Heavy Industries",

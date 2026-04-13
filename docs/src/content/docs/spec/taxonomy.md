@@ -27,6 +27,7 @@ All failures are classified using the `FailureCategory` standard. These codes ar
 | `INFRA_OOM` | Out-of-Memory condition detected in the sandbox or agent process. |
 | `INFRA_DISK_QUOTA` | Workspace disk usage exceeded allowed limits. |
 | `INFRA_DOCKER_FAILURE` | Containerization layer disruption (e.g., daemon crash). |
+| `INFRA_RESOURCE_EXHAUSTED` | Hardware spike (CPU > 90% or OOM) correlated with tool failure. |
 
 ### Logic & Reasoning (`LOGIC_`)
 | Code | Trigger |
@@ -35,6 +36,8 @@ All failures are classified using the `FailureCategory` standard. These codes ar
 | `LOGIC_REFUSAL` | The agent explicitly refused to perform the task (often due to safety alignment). |
 | `LOGIC_PLANNING_ERROR` | A flaw in the agent's strategy led to a dead-end or invalid state. |
 | `LOGIC_STATE_MISMATCH` | Contradiction between agent intent and actual environment effects. |
+| `LOGIC_UNCERTAINTY` | Agent expresses confusion or doubt in thoughts/utterances. |
+| `LOGIC_ABANDONMENT` | Agent issues a 'finished' status but lacks task metrics (Soft Quit). |
 
 ### Policy & Security (`POLICY_` / `SECURITY_`)
 | Code | Trigger |
@@ -67,13 +70,16 @@ AgentV includes a high-fidelity PII scanner designed for industrial compliance (
 
 ## 🔬 Baseline Analyzers (Core)
 
-The Core harness registers two authoritative analyzers by default:
+The Core harness registers two analyzers by default:
 
 ### 1. ProtocolAnalyzer
 Maintains **Protocol Affinity** by verifying that the agent stays within the interaction limits defined in the tool registry. It detects state-divergence when the environment snapshot doesn't match the expected structural effect of an action.
 
 ### 2. LoopAnalyzer
-Detects **Cyclical Reasoning**. It uses a logic-aware window (default: 10 turns) to identify if an agent is stuck in a repetitive loop (e.g., a "Try-Hard" loop with slightly varied parameters but identical results).
+Detects **Cyclical Reasoning** and **Logical Stalls**.
+- **Fuzzy Matching**: Identifies rephrased agent thoughts that indicate circular planning.
+- **Action Normalization**: Strips command flags (e.g., `git commit -m`) to catch stalls where an agent repeats the same base action with jittered parameters.
+- **Cycle Detection**: Uses a logic-aware window (default: 10 turns) to identify if an agent is stuck in an A -> B -> A loop.
 
 ---
 

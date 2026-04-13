@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Ground Convoy Route Deconfliction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10829-mission-planning-route-deconfliction-ground"
   },
   "description": "A planner must deconflict the routes of two separate convoys (one supply, one combat) and a scheduled artillery fire mission.",
   "industry": "Defense",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Cycle Count",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12308-perform-cycle-count"
   },
   "description": "A warehouse operator is tasked with performing a cycle count for a specific inventory item at a production line.",
   "industry": "Manufacturing",

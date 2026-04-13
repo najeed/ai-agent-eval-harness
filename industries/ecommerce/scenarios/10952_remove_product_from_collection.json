@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Remove Product from a Collection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10952-remove-product-from-collection"
   },
   "description": "A product that was part of a seasonal collection is no longer relevant and needs to be removed from that collection page.",
   "industry": "Ecommerce",

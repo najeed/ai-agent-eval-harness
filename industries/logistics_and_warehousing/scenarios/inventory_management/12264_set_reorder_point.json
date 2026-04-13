@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set a Reorder Point for a New Item",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12264-set-reorder-point"
   },
   "description": "A new product is being introduced. An inventory planner must set its initial reorder point and safety stock levels in the system.",
   "industry": "Logistics and Warehousing",

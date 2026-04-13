@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate Daily Mark-to-Market P&L",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12773-manage-mark-to-market-pnl"
   },
   "description": "A risk analyst calculates the daily profit and loss (P&L) for a trader's portfolio of physical and financial oil contracts by marking them to the market.",
   "industry": "Oil and Gas",

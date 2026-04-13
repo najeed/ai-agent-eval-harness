@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set a Travel Notification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11223-travel-notification"
   },
   "description": "A customer is traveling internationally and wants to put a travel notification on their credit card to avoid it being blocked.",
   "industry": "Finance",

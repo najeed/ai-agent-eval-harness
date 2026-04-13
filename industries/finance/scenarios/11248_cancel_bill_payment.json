@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel a Scheduled Bill Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11248-cancel-bill-payment"
   },
   "description": "A customer scheduled a bill payment but now needs to cancel it before it is sent.",
   "industry": "Finance",

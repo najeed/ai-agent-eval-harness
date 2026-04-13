@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a New Annual Budget",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11243-create-annual-budget"
   },
   "description": "An FP&A manager is starting the annual budgeting process and needs to create the initial budget template for department heads.",
   "industry": "Finance",

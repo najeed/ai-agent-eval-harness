@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct and Document an Emergency Drill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10595-conduct-emergency-drill"
   },
   "description": "An EHS specialist is conducting a planned fire drill for the site.",
   "industry": "Chemicals",

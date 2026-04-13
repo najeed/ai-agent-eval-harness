@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pipeline Leak Detection Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12701-pipeline-leak-detection"
   },
   "description": "A control room operator receives an alert from the leak detection system and must verify if it's a real leak or a false alarm.",
   "industry": "Oil and Gas",

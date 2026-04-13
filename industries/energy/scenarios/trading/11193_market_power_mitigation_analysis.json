@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Market Power Mitigation Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11193-market-power-mitigation-analysis"
   },
   "description": "An ISO market monitor is analyzing bidding behavior to detect if a generator is attempting to exercise market power (i.e., 'economic withholding').",
   "industry": "Energy",

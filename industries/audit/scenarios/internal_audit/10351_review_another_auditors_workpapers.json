@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Another Auditor's Workpapers",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10351-review-another-auditors-workpapers"
   },
   "description": "An audit manager performs a quality review of a junior auditor's workpapers before the audit is finalized.",
   "industry": "Audit",

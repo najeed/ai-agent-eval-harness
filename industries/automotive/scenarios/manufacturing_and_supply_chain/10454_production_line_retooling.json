@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Production Line Retooling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10454-production-line-retooling"
   },
   "description": "A production manager needs to plan for a scheduled shutdown of the assembly line to retool for the next model year.",
   "industry": "Automotive",

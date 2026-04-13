@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "SSL Certificate Expiration Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11786-certificate-expiration-alert"
   },
   "description": "An automated alert indicates that the SSL certificate for the main application domain will expire in 14 days.",
   "industry": "Information Technology Product",

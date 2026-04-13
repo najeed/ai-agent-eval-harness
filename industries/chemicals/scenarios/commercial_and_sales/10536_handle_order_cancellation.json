@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Order Cancellation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10536-handle-order-cancellation"
   },
   "description": "A customer calls to cancel an order that was placed yesterday.",
   "industry": "Chemicals",

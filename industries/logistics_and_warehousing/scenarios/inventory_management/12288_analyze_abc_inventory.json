@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform ABC Inventory Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12288-analyze-abc-inventory"
   },
   "description": "An analyst wants to classify all products into A, B, or C categories based on their value and sales volume to prioritize inventory management efforts.",
   "industry": "Logistics and Warehousing",

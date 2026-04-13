@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Denied Boarding Due to Overbooking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13954-handle-denied-boarding"
   },
   "description": "A flight is overbooked, and a passenger is involuntarily denied boarding. The agent must handle the situation.",
   "industry": "Tourism",

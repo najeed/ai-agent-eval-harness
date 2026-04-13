@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Geological Block Model",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12597-update-block-model"
   },
   "description": "A resource geologist incorporates new drillhole assay data into the geological block model to refine the resource estimate.",
   "industry": "Mining",

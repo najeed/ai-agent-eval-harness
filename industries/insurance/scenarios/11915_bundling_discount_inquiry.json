@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquiry About Bundling Discount",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11915-bundling-discount-inquiry"
   },
   "description": "A customer has an auto policy and is calling to see if they can get a discount by adding a renters policy.",
   "industry": "Insurance",

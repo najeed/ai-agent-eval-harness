@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cloud - Resize Azure VM",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11835-cloud-resize-azure-vm"
   },
   "description": "A client reports that an application running on an Azure VM is slow. Monitoring shows the VM has high CPU usage.",
   "industry": "Information Technology Service",

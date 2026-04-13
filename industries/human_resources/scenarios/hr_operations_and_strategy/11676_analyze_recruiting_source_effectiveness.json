@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Recruiting Source Effectiveness",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11676-analyze-recruiting-source-effectiveness"
   },
   "description": "The head of talent acquisition wants a report showing which recruiting sources (e.g., LinkedIn, employee referrals, career site) produce the most hires.",
   "industry": "Human Resources",

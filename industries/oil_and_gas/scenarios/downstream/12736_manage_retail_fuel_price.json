@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Retail Gas Station Prices",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12736-manage-retail-fuel-price"
   },
   "description": "A pricing analyst for a retail fuel brand needs to update the gasoline and diesel prices for a set of stations based on competitor prices and market costs.",
   "industry": "Oil and Gas",

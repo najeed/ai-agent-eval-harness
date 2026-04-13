@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Line Strike Emergency Response",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14180-line-strike-emergency-response"
   },
   "description": "A third-party construction crew has struck a natural gas distribution line. The system must manage the immediate response.",
   "industry": "Utilities",

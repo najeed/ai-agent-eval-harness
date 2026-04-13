@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up a Tax Payment Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13014-setup-tax-payment-plan"
   },
   "description": "A citizen owes back taxes and wants to set up a monthly payment plan.",
   "industry": "Public Sector",

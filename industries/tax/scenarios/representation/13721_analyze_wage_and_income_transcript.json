@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Wage and Income Transcript",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13721-analyze-wage-and-income-transcript"
   },
   "description": "A tax professional is preparing a return for a new client and wants to ensure all income sources are included.",
   "industry": "Tax",

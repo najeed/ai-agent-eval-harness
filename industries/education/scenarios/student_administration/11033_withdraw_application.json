@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Withdraw Application",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11033-withdraw-application"
   },
   "description": "An applicant who has been accepted wishes to withdraw their application as they have decided to attend another university.",
   "industry": "Education",

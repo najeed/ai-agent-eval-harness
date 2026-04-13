@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Access Request Workflow",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10792-iam-governance-access-request"
   },
   "description": "A user requests access to a new application. The request must go through a formal approval workflow.",
   "industry": "Cybersecurity",

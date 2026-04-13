@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan a Drone Scouting Mission",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10120-drone-scouting-mission"
   },
   "description": "A farmer wants to create a flight plan for a drone to scout a 160-acre field for signs of nitrogen stress.",
   "industry": "Agriculture",

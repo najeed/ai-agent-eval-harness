@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Weigh a Container for SOLAS Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12975-weigh-a-container"
   },
   "description": "An export container arrives at the gate, but it does not have a Verified Gross Mass (VGM) certificate as required by SOLAS. The port must weigh it.",
   "industry": "Ports",

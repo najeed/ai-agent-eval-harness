@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Supplier Product Discontinuation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14384-handle-supplier-product-discontinuation"
   },
   "description": "A supplier announces they are discontinuing a product. An agent must manage the transition.",
   "industry": "Wholesale",

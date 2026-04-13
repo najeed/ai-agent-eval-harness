@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Marketing SWOT Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12487-create-marketing-swot-analysis"
   },
   "description": "A strategist is preparing for a planning session and needs to create a SWOT (Strengths, Weaknesses, Opportunities, Threats) analysis for the marketing department.",
   "industry": "Marketing and Advertising",

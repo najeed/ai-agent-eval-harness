@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cathodic Protection Monitoring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14141-cathodic-protection-monitoring"
   },
   "description": "An integrity engineer checks the status of the cathodic protection system, which prevents corrosion on a steel gas pipeline.",
   "industry": "Utilities",

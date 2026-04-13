@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare for Final Walk-Through",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13267-prepare-for-final-walkthrough"
   },
   "description": "The final walk-through is scheduled for tomorrow. The agent needs to prepare a checklist for their buyer client.",
   "industry": "Real Estate",

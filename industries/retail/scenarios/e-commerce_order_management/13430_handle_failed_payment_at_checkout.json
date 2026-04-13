@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Failed Payment at Checkout",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13430-handle-failed-payment-at-checkout"
   },
   "description": "A customer tries to place an online order, but their credit card payment is declined.",
   "industry": "Retail",

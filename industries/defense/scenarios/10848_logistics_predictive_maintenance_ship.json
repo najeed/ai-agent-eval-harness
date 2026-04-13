@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Naval Vessel Predictive Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10848-logistics-predictive-maintenance-ship"
   },
   "description": "A ship's monitoring system detects unusual vibration in a propeller shaft, indicating a potential future failure.",
   "industry": "Defense",

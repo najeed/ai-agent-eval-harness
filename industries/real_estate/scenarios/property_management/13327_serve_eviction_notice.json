@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Serve an Eviction Notice for Non-Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13327-serve-eviction-notice"
   },
   "description": "A tenant has failed to pay rent for two months despite warnings. The property manager must begin the formal eviction process.",
   "industry": "Real Estate",

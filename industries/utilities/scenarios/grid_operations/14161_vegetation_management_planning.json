@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Vegetation Management Planning using LiDAR",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14161-vegetation-management-planning"
   },
   "description": "A planner uses LiDAR data to identify trees that are encroaching on transmission line right-of-ways and need to be trimmed.",
   "industry": "Utilities",

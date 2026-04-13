@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboard a New Customer and Set Credit Limit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00034-onboard-new-customer-credit"
   },
   "description": "A salesperson has signed a new customer. The credit team needs to set them up in the system and establish an initial credit limit.",
   "industry": "Accounting",

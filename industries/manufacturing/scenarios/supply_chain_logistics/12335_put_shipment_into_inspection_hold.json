@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Put a Received Shipment into an Inspection Hold",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12335-put-shipment-into-inspection-hold"
   },
   "description": "A shipment of a critical component has arrived, but it requires quality inspection before it can be used in production.",
   "industry": "Manufacturing",

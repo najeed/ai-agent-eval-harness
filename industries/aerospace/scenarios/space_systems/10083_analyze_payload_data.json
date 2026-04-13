@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Scientific Payload Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10083-analyze-payload-data"
   },
   "description": "After downloading data from a space telescope, a scientist needs to process and analyze it to search for exoplanets.",
   "industry": "Aerospace",

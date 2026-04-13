@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send an Engagement Letter to a New Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12173-send-engagement-letter"
   },
   "description": "After a new client agrees to retain the firm, a paralegal needs to send them the official engagement letter for signature.",
   "industry": "Legal",

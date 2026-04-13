@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check E-file Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13728-check-e-file-status"
   },
   "description": "A taxpayer wants to know if their e-filed return has been accepted by the IRS.",
   "industry": "Tax",

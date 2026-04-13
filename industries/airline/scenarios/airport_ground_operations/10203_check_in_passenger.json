@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check-in a Passenger with Baggage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10203-check-in-passenger"
   },
   "description": "A passenger arrives at the airport check-in counter for their international flight and needs to check in and drop off one bag.",
   "industry": "Airline",

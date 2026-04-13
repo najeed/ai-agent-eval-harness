@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request an Extension of Time",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12132-request-an-extension"
   },
   "description": "An attorney needs to request a 14-day extension from opposing counsel to respond to a set of discovery requests.",
   "industry": "Legal",

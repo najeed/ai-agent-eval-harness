@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Aircraft Fueling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10274-handle-aircraft-fueling"
   },
   "description": "A ramp agent must oversee the fueling of an aircraft to ensure the correct amount of fuel is loaded.",
   "industry": "Airline",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Oversee Site Clearing and Grading",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13380-oversee-site-clearing-and-grading"
   },
   "description": "A developer is starting a new project and must oversee the initial site preparation.",
   "industry": "Real Estate",

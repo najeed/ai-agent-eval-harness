@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Insider Threat Cyber Forensics",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10840-cyber-forensics-insider-threat"
   },
   "description": "An analyst must investigate suspicious network activity from an insider's account, including large data transfers to an external device.",
   "industry": "Defense",

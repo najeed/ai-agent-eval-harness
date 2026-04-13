@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Grade Crossing Malfunction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14077-handle-grade-crossing-malfunction"
   },
   "description": "A citizen reports that the lights at a railroad grade crossing are flashing, but no train is coming. A dispatcher must investigate.",
   "industry": "Transportation",

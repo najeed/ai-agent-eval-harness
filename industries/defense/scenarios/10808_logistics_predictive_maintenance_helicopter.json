@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Helicopter Predictive Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10808-logistics-predictive-maintenance-helicopter"
   },
   "description": "A maintenance officer receives an alert from a helicopter's health and usage monitoring system (HUMS) predicting an impending gearbox failure.",
   "industry": "Defense",

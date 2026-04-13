@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve an Invoice GL Coding Error",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00048-resolve-invoice-coding-error"
   },
   "description": "A department manager has rejected a non-PO invoice approval request because it was coded to the wrong GL account.",
   "industry": "Accounting",

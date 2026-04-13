@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Product Arbitrage Opportunity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12726-analyze-arbitrage-opportunity"
   },
   "description": "A trader analyzes price differences for diesel between the US Gulf Coast and Europe to see if an arbitrage opportunity exists.",
   "industry": "Oil and Gas",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to an Ethics Hotline Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11663-respond-to-ethics-hotline"
   },
   "description": "An anonymous report has been submitted through the ethics hotline alleging fraudulent expense reporting by a manager.",
   "industry": "Human Resources",

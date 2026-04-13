@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue Form 1099-NEC to a Contractor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13758-issue-form-1099-nec-to-contractor"
   },
   "description": "A business paid a consultant $5,000 during the year and needs to issue them a Form 1099-NEC.",
   "industry": "Tax",

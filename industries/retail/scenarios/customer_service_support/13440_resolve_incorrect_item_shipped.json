@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Incorrect Item Shipped",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13440-resolve-incorrect-item-shipped"
   },
   "description": "A customer received the wrong item in their online order and contacts customer service via chat.",
   "industry": "Retail",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an Online Return by Mail",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13438-process-online-return-by-mail"
   },
   "description": "A customer service agent processes a returned package that a customer mailed back from an online order.",
   "industry": "Retail",

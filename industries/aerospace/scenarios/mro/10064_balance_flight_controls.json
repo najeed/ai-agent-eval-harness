@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Balance a Flight Control Surface",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10064-balance-flight-controls"
   },
   "description": "After being repainted, an aileron must be re-balanced to prevent aerodynamic flutter.",
   "industry": "Aerospace",

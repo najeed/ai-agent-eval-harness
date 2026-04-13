@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Group Ticket Sale",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13641-process-group-ticket-sale"
   },
   "description": "A company wants to buy a block of 50 tickets for a game for a corporate outing.",
   "industry": "Sports",

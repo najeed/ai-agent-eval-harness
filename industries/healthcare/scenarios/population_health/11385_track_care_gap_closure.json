@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Care Gap Closure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11385-track-care-gap-closure"
   },
   "description": "A population health manager wants to see if their outreach campaign for diabetic eye exams has been effective.",
   "industry": "Healthcare",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Open Electrical Pedestal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14171-report-open-pedestal"
   },
   "description": "A resident reports that a green electrical box (pedestal) in their front yard is open, with wires exposed.",
   "industry": "Utilities",

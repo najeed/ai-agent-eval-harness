@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Use VAR to Review a Disputed Goal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13600-use-var-to-review-goal"
   },
   "description": "A goal is scored in a soccer match, but the referee suspects an offside violation. The Video Assistant Referee (VAR) must review the play.",
   "industry": "Sports",

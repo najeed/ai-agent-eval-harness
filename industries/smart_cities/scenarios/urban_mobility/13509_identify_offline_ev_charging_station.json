@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Offline EV Charging Station",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13509-identify-offline-ev-charging-station"
   },
   "description": "A citizen reports that an EV charging station is not working. An operator needs to verify the status and dispatch a technician.",
   "industry": "Smart Cities",

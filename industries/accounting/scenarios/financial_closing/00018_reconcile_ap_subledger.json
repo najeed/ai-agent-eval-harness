@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reconcile AP Sub-Ledger to General Ledger",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00018-reconcile-ap-subledger"
   },
   "description": "At month-end, an accountant needs to ensure the total of the Accounts Payable aging report ties to the AP account balance in the general ledger.",
   "industry": "Accounting",

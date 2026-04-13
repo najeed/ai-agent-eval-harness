@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Shipping Notification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13427-provide-shipping-notification"
   },
   "description": "An online order is picked up by the shipping carrier. The system needs to notify the customer.",
   "industry": "Retail",

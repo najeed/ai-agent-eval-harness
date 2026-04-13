@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Stakeholder Disagreement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10690-resolve-stakeholder-disagreement"
   },
   "description": "The architect and the structural engineer disagree on a design detail. The PM must facilitate a resolution.",
   "industry": "Construction",

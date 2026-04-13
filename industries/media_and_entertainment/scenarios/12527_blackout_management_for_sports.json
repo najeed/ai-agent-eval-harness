@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Regional Blackout for a Sports Game",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12527-blackout-management-for-sports"
   },
   "description": "Due to broadcast rights, a live football game must be blacked out for viewers in a specific city. An agent must apply the blackout rule.",
   "industry": "Media and Entertainment",

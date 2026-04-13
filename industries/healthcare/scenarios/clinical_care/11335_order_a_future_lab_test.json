@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Order a Future Lab Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11335-order-a-future-lab-test"
   },
   "description": "A physician wants a patient to have a follow-up lab test (e.g., A1c) done in three months. They need to place a future order.",
   "industry": "Healthcare",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare for Oral Argument",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12154-prepare-for-oral-argument"
   },
   "description": "An attorney is preparing for an oral argument before an appellate court and needs to anticipate potential questions from the judges.",
   "industry": "Legal",

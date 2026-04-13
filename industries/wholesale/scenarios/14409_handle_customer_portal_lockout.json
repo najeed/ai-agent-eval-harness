@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Customer Portal Account Lockout",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14409-handle-customer-portal-lockout"
   },
   "description": "A retailer's employee has been locked out of the online ordering portal after too many failed login attempts.",
   "industry": "Wholesale",

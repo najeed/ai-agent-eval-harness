@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Product Genealogy Search",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12346-perform-product-genealogy-search"
   },
   "description": "To investigate a quality trend, an engineer needs to find all finished products that were made using a specific lot of raw material.",
   "industry": "Manufacturing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare and Submit a Periodic Safety Update Report (PSUR)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12817-submit-periodic-safety-report"
   },
   "description": "A pharmacovigilance specialist must prepare and submit a PSUR to a regulatory authority.",
   "industry": "Pharmaceuticals and Life Sciences",

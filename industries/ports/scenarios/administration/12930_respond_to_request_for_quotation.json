@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a Request for Quotation (RFQ)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12930-respond-to-request-for-quotation"
   },
   "description": "A new shipping line requests a quotation for stevedoring and other port services.",
   "industry": "Ports",

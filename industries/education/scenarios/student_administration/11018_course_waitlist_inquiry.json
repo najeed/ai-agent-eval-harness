@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Position on Course Waitlist",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11018-course-waitlist-inquiry"
   },
   "description": "A student who is on a waitlist for a full course wants to know their position.",
   "industry": "Education",

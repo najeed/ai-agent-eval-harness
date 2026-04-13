@@ -10,7 +10,6 @@ from eval_runner.plugins import manager
 
 from .. import config
 from .auth import auth_bp
-from .auth_manager import Permission, require_permission
 from .demo_agent import demo_bp
 from .routes import core_bp, register_core_routes, trust_bp
 
@@ -53,9 +52,38 @@ def create_app():
     app.register_blueprint(trust_bp)
     app.register_blueprint(demo_bp)
 
+    @app.before_request
+    def trace_request():
+        import sys
+
+        sys.stderr.write(
+            f"   [Trace] {flask.request.method} {flask.request.path} "
+            f"(Endpoint: {flask.request.endpoint})\n"
+        )
+        sys.stderr.flush()
+
+    @app.after_request
+    def trace_response(response):
+        import sys
+
+        sys.stderr.write(f"   [Trace] Status: {response.status_code}\n")
+        sys.stderr.flush()
+        return response
+
     # Hardened API Error Handlers (Prevents "Unexpected token <" regressions)
     @app.errorhandler(405)
     def handle_405(e):
+        import sys
+
+        sys.stderr.write(
+            f"   [API] 405 Method Not Allowed - URL: {flask.request.url}, "
+            f"Method: {flask.request.method}\n"
+        )
+        sys.stderr.write(
+            f"   [API] 405 DEBUG - Rule: {flask.request.url_rule}, "
+            f"Args: {flask.request.view_args}\n"
+        )
+        sys.stderr.flush()
         return flask.jsonify(
             {
                 "error": "Method Not Allowed: This endpoint does not accept the requested HTTP method.",  # noqa: E501
@@ -63,13 +91,8 @@ def create_app():
             }
         ), 405
 
-    # Hardened Route Precedence (v1.2.3)
-    # Explicitly register the login handler to bypass blueprint shadowing/405
-    from .auth import login as login_handler
-
-    app.add_url_rule(
-        "/api/auth/login", view_func=login_handler, methods=["POST"], strict_slashes=False
-    )
+    # Hardened Route Precedence (v1.5.0 Sync)
+    # Industrial Standard: Use blueprint-first registration only.
 
     # Load external hooks for zero-touch discovery
     manager.load_plugins()
@@ -109,12 +132,6 @@ def create_app():
 
     # Endpoint to serve the unified navigation menu (API Priority)
     app.config["NAV_REGISTRY"] = nav_registry
-
-    @app.route("/api/nav")
-    @require_permission(Permission.SCENARIOS_READ)
-    def get_nav():
-        # Add dynamic markers if needed (e.g. active states)
-        return flask.jsonify(app.config["NAV_REGISTRY"])
 
     # Industrial Diagnostic: Audit the physical route map (v1.4.1 Hardening)
     print("\n--- Industrial Route Map Audit ---", flush=True)

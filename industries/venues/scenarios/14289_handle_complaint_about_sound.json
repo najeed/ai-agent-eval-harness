@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Guest Complaint About Sound",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14289-handle-complaint-about-sound"
   },
   "description": "A guest complains that the sound at a concert is painfully loud in their section.",
   "industry": "Venues",

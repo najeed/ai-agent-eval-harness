@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Insurance Eligibility",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11301-verify-insurance-eligibility"
   },
   "description": "A front desk staff member needs to verify a patient's insurance eligibility for an upcoming appointment.",
   "industry": "Healthcare",

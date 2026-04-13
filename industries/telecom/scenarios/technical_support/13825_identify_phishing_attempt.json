@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Security - Identify Phishing Attempt",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13825-identify-phishing-attempt"
   },
   "description": "A customer reports receiving a suspicious text message claiming to be from the company, asking for personal details.",
   "industry": "Telecom",

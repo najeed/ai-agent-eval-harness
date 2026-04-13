@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Use Data Analytics to Find Duplicate Payments",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10318-use-data-analytics-to-find-duplicates"
   },
   "description": "An auditor uses data analytics to search for potential duplicate payments in the accounts payable ledger.",
   "industry": "Audit",

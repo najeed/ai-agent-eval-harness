@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to Medical Information Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12800-medical-information-request"
   },
   "description": "A medical information specialist must respond to an unsolicited email inquiry from a Healthcare Professional (HCP) about the off-label use of a drug.",
   "industry": "Pharmaceuticals and Life Sciences",

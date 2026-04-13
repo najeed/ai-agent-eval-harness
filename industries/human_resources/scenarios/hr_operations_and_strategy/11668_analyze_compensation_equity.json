@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Compensation Equity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11668-analyze-compensation-equity"
   },
   "description": "A compensation analyst is conducting a pay equity study to check for gender- or race-based pay gaps.",
   "industry": "Human Resources",

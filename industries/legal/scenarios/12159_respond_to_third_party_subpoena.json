@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a Third-Party Subpoena",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12159-respond-to-third-party-subpoena"
   },
   "description": "A company (not a party to the lawsuit) receives a subpoena for documents. In-house counsel must manage the response.",
   "industry": "Legal",

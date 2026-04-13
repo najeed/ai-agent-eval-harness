@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Install an Avionics Suite",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10047-install-avionics-suite"
   },
   "description": "An avionics technician needs to install and connect all the components of an avionics suite in an aircraft cockpit.",
   "industry": "Aerospace",

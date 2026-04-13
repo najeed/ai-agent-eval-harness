@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Cable Bolt Installation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12667-manage-cable-bolt-installation"
   },
   "description": "An underground ground support crew installs long cable bolts into the roof of a tunnel to ensure long-term stability.",
   "industry": "Mining",

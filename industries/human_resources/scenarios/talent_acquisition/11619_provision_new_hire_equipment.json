@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provision New Hire Equipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11619-provision-new-hire-equipment"
   },
   "description": "As part of the onboarding process, HR needs to trigger a request for IT to provision a laptop and phone for a new hire.",
   "industry": "Human Resources",

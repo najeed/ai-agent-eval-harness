@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Financing Pre-Approval Application",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10403-financing-pre-approval"
   },
   "description": "A customer wants to apply for financing pre-approval before visiting the dealership.",
   "industry": "Automotive",

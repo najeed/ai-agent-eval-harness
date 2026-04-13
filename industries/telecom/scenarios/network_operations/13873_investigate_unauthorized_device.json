@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Unauthorized Device on Network",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13873-investigate-unauthorized-device"
   },
   "description": "The security system detects an unknown device connected to a corporate network port. The agent must investigate.",
   "industry": "Telecom",

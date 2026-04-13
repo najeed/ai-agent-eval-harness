@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Preventive Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14014-schedule-preventive-maintenance"
   },
   "description": "A truck is approaching a mileage threshold for its scheduled 'A-Service' preventive maintenance. A fleet manager must schedule the service.",
   "industry": "Transportation",

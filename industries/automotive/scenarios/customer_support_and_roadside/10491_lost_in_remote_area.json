@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Lost in Remote Area with No Cell Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10491-lost-in-remote-area"
   },
   "description": "A customer in an area with no cell service uses the car's satellite-based emergency button to ask for directions.",
   "industry": "Automotive",

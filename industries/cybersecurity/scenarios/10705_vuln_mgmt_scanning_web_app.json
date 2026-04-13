@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Web Application Vulnerability Scan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10705-vuln-mgmt-scanning-web-app"
   },
   "description": "A vulnerability analyst must run a dynamic application security test (DAST) against a new public-facing web application before it goes live.",
   "industry": "Cybersecurity",

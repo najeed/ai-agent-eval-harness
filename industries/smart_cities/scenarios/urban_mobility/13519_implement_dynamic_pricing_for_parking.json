@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Implement Dynamic Pricing for Parking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13519-implement-dynamic-pricing-for-parking"
   },
   "description": "To manage demand, an operator implements dynamic pricing for a downtown parking garage where prices increase as occupancy rises.",
   "industry": "Smart Cities",

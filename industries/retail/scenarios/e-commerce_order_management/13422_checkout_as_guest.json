@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Checkout as a Guest",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13422-checkout-as-guest"
   },
   "description": "A new customer wants to place an order without creating an account.",
   "industry": "Retail",

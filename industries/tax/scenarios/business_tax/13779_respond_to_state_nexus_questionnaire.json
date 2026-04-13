@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a State Nexus Questionnaire",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13779-respond-to-state-nexus-questionnaire"
   },
   "description": "A business receives a questionnaire from a state's Department of Revenue asking about its activities in the state to determine if it has tax nexus.",
   "industry": "Tax",

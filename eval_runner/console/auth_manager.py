@@ -111,6 +111,11 @@ def require_permission(permission_node: str):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
+            # [INDUSTRIAL DIAGNOSTIC]: Log all permission checks for forensic auditing
+            print(
+                f"   [Auth] Checking permission '{permission_node}' for path: {request.path}",
+                flush=True,
+            )
             provider = get_auth_provider()
             user = session.get("user")
 

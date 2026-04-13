@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle In-App Feedback",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14108-handle-app-feedback"
   },
   "description": "A rider leaves feedback through the app suggesting a new feature. This feedback needs to be categorized and routed to the product team.",
   "industry": "Transportation",

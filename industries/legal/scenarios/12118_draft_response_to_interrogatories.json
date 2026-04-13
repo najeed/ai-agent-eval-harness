@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft Responses to Interrogatories",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12118-draft-response-to-interrogatories"
   },
   "description": "A litigation associate must draft responses to a set of written interrogatories (questions) served by the opposing party.",
   "industry": "Legal",

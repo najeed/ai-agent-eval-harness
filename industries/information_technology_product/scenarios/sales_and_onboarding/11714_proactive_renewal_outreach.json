@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Proactive Renewal Outreach",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11714-proactive-renewal-outreach"
   },
   "description": "An Account Manager reaches out to a customer 90 days before their annual subscription is set to renew.",
   "industry": "Information Technology Product",

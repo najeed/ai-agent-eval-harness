@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Airspace Route Deconfliction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10809-mission-planning-route-deconfliction"
   },
   "description": "A planner must deconflict the flight paths of a strike package, an ISR drone, and a refueling tanker in a compressed airspace.",
   "industry": "Defense",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Stuck Pipe Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12709-stuck-pipe-incident-analysis"
   },
   "description": "While drilling, the drill string becomes stuck. A remote operations engineer must analyze real-time data to determine the cause and recommend a course of action.",
   "industry": "Oil and Gas",

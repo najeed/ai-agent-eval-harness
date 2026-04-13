@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Chemical Storage Compatibility",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10600-check-chemical-compatibility"
   },
   "description": "A warehouse operator needs to store a new chemical and must check if it is compatible to be stored near another chemical.",
   "industry": "Chemicals",

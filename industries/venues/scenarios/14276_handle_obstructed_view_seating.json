@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sell Obstructed View Seats",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14276-handle-obstructed-view-seating"
   },
   "description": "A customer wants to buy the cheapest available tickets for a sold-out show, which are marked as 'obstructed view'.",
   "industry": "Venues",

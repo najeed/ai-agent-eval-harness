@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Company Reorganization",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11631-manage-company-reorganization"
   },
   "description": "A company is reorganizing two departments, which will result in changes to reporting structures.",
   "industry": "Human Resources",

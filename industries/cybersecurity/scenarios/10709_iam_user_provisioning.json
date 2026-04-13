@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Employee Onboarding",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10709-iam-user-provisioning"
   },
   "description": "An IAM analyst must provision a new account and access for a new employee starting in the marketing department.",
   "industry": "Cybersecurity",

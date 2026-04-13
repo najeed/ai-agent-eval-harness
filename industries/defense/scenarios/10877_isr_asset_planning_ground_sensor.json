@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Unattended Ground Sensor Planning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10877-isr-asset-planning-ground-sensor"
   },
   "description": "An intelligence officer must plan the placement of unattended ground sensors (UGS) to monitor a key trail used by insurgents.",
   "industry": "Defense",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshoot Low Batch Yield",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10513-troubleshoot-batch-yield-issue"
   },
   "description": "A recently completed batch has a significantly lower yield than expected. A process engineer must investigate the cause by analyzing batch data.",
   "industry": "Chemicals",

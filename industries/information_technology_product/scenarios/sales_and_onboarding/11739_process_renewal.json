@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Subscription Renewal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11739-process-renewal"
   },
   "description": "A customer has agreed to renew their annual contract.",
   "industry": "Information Technology Product",

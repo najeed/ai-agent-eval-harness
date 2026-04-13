@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Empty Container Pickup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12984-process-empty-container-pickup"
   },
   "description": "A truck arrives at the gate to pick up an empty container to take to a shipper for loading.",
   "industry": "Ports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a 'Best Of' Collection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12058-create-a-best-of-collection"
   },
   "description": "At the end of the year, an editor wants to create a collection of the publication's 10 best investigative reports from that year.",
   "industry": "Journalism",

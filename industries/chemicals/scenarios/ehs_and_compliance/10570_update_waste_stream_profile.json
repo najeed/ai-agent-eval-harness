@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Waste Stream Profile",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10570-update-waste-stream-profile"
   },
   "description": "A process change will introduce a new component into a waste stream. The EHS specialist must update the waste profile.",
   "industry": "Chemicals",

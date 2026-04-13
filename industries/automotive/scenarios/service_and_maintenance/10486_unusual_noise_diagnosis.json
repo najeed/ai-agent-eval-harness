@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Diagnose Unusual Noise",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10486-unusual-noise-diagnosis"
   },
   "description": "A customer reports a 'clicking' noise from the front wheel when turning.",
   "industry": "Automotive",

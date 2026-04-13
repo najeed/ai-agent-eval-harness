@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Preventive Maintenance for a Crane",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12904-schedule-crane-maintenance"
   },
   "description": "A ship-to-shore (STS) crane is due for its 500-hour preventive maintenance check. The maintenance planner must schedule it.",
   "industry": "Ports",

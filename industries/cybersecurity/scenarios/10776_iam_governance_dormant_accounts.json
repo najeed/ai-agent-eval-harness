@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dormant Account Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10776-iam-governance-dormant-accounts"
   },
   "description": "An analyst must run a quarterly report to find accounts that have not been used for over 90 days and disable them.",
   "industry": "Cybersecurity",

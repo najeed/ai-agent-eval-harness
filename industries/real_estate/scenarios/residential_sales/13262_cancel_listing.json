@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Listing Cancellation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13262-cancel-listing"
   },
   "description": "A seller has decided not to sell their home and wants to cancel the listing agreement.",
   "industry": "Real Estate",

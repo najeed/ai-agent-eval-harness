@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Third-Party Provider Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11765-third-party-provider-outage"
   },
   "description": "A key feature of the product stops working because a third-party data provider's API is down.",
   "industry": "Information Technology Product",

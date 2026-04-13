@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Connect Student with Peer Mentor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11070-connect-student-with-mentor"
   },
   "description": "A first-year student is feeling overwhelmed and wants to be connected with a peer mentor.",
   "industry": "Education",

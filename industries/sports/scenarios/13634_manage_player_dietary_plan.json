@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Player Dietary Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13634-manage-player-dietary-plan"
   },
   "description": "A team nutritionist needs to create a personalized dietary plan for a player looking to gain muscle mass.",
   "industry": "Sports",

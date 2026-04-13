@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Fuel Purchase",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14086-process-fuel-purchase"
   },
   "description": "A driver uses a company fuel card to buy fuel. The transaction must be logged and associated with their truck.",
   "industry": "Transportation",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a VTS System Failure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12966-handle-vts-system-failure"
   },
   "description": "The primary radar for the Vessel Traffic Service (VTS) fails. The operator must switch to backup procedures.",
   "industry": "Ports",

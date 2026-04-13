@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft Board Meeting Minutes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12110-draft-board-meeting-minutes"
   },
   "description": "A corporate paralegal needs to draft the official minutes for a recent board of directors meeting.",
   "industry": "Legal",

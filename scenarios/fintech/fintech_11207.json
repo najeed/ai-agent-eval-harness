@@ -1,40 +1,40 @@
 {
-    "aes_version": 1.4,
-    "scenario_id": "fintech_11207",
-    "metadata": {
-        "name": "Fintech Series 11207",
-        "industry": "fintech",
-        "attribution": "Enterprise Team",
-        "version": "1.0",
-        "compliance_level": "Gold",
-        "capabilities": [],
-        "standards_registry": []
-    },
-    "description": "Automated fintech stress test 11207.",
-    "complexity_level": "medium",
+  "aes_version": 1.4,
+  "metadata": {
+    "name": "Fintech Series 11207",
     "industry": "fintech",
-    "workflow": {
-        "nodes": [
-            {
-                "id": "task_1",
-                "task_description": "Perform standard financial action 11207.",
-                "expected_outcome": {
-                    "type": "typed_value",
-                    "data_type": "object",
-                    "value": {
-                        "status": "success"
-                    }
-                }
-            }
-        ],
-        "edges": []
-    },
-    "evaluation": {
-        "metrics": [
-            {
-                "metric": "tool_call_correctness",
-                "threshold": 1.0
-            }
-        ]
-    }
+    "attribution": "Enterprise Team",
+    "version": "1.0",
+    "compliance_level": "Gold",
+    "capabilities": [],
+    "standards_registry": [],
+    "id": "fintech_11207"
+  },
+  "description": "Automated fintech stress test 11207.",
+  "complexity_level": "medium",
+  "industry": "fintech",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "task_1",
+        "task_description": "Perform standard financial action 11207.",
+        "expected_outcome": {
+          "type": "typed_value",
+          "data_type": "object",
+          "value": {
+            "status": "success"
+          }
+        }
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "metrics": [
+      {
+        "metric": "tool_call_correctness",
+        "threshold": 1.0
+      }
+    ]
+  }
 }

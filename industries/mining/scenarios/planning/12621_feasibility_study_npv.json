@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Feasibility Study Economic Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12621-feasibility-study-npv"
   },
   "description": "A mining engineer performs an economic analysis for a new mine project, calculating its Net Present Value (NPV) to determine if it is financially viable.",
   "industry": "Mining",

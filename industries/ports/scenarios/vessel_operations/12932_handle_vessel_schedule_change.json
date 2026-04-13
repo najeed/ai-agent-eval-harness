@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Vessel Schedule Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12932-handle-vessel-schedule-change"
   },
   "description": "An agent reports their vessel is delayed by 12 hours due to bad weather. The scheduler must adjust the berth plan.",
   "industry": "Ports",

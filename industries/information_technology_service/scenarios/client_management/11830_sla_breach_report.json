@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "SLA Reporting - Report on SLA Breach",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11830-sla-breach-report"
   },
   "description": "A client has inquired about a specific high-priority ticket that they feel took too long to resolve.",
   "industry": "Information Technology Service",

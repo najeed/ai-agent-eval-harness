@@ -19,12 +19,17 @@ from .plugins import BaseEvalPlugin
 class FlightRecorderPlugin(BaseEvalPlugin):
     """Subscribes to all core events and writes them to run.jsonl files."""
 
+    _subscribed = False
+
     def __init__(self):
         import eval_runner.config as config
 
         self.log_dir = Path(os.getenv("RUN_LOG_DIR", str(config.RUN_LOG_DIR)))
         self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
         self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
+
+        self._enforce_safety_floor()
+
         self.run_id = "unknown"
         self.master_log_path = self.log_dir / "run.jsonl"
         self.per_run_log_path = None
@@ -38,10 +43,30 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self._private_key_path = os.getenv("EVAL_SIGNING_KEY")
         self._audit_level = int(os.getenv("AUDIT_LEVEL", "2"))
 
-        from . import events
+        # [Event Duplication Remediation]
+        # Only subscribe to the global event bus once (Singleton Pattern)
+        if not FlightRecorderPlugin._subscribed:
+            from . import events
 
-        # Subscribe to the event bus
-        events.subscribe(self.handle_event)
+            events.subscribe(self.handle_event)
+            FlightRecorderPlugin._subscribed = True
+            print("   [FlightRecorder] Registered singleton event listener.")
+
+    def _enforce_safety_floor(self):
+        """
+        [Forensic Safety Floor] (v1.5.0)
+        Prevents "Black Hole" configurations where no telemetry is recorded.
+        If both logging paths are disabled, forces Vaulted isolation.
+        """
+        if not self.per_run and not self.master:
+            sys.stderr.write(
+                "⚠️  [FlightRecorder] [WARNING] Industrial Safety Override: Zero-Logging detected.\n"
+            )
+            sys.stderr.write(
+                "⚠️  [FlightRecorder] Reclaiming Isolated Vault "
+                "(RUN_LOG_PER_RUN=true) for compliance.\n"
+            )
+            self.per_run = True
 
     def handle_event(self, event: Event):
         """Callback for EventEmitter."""
@@ -62,12 +87,24 @@ class FlightRecorderPlugin(BaseEvalPlugin):
             self.log_dir = Path(os.getenv("RUN_LOG_DIR", str(config.RUN_LOG_DIR)))
             self.per_run = os.getenv("RUN_LOG_PER_RUN", "true").lower() == "true"
             self.master = os.getenv("RUN_LOG_MASTER", "true").lower() == "true"
+
+            self._enforce_safety_floor()
+
             self.log_rotate_count = int(os.getenv("RUN_LOG_ROTATE_COUNT", "0"))
             self.master_log_path = self.log_dir / "run.jsonl"
 
             self.run_id = data.get("run_id", "unknown")
-            self.per_run_log_path = self.log_dir / f"{self.run_id}.jsonl"
-            self.log_dir.mkdir(parents=True, exist_ok=True)
+
+            # [AES v1.5.0] Enforce Run-ID Directory Affinity
+            # Telemetry MUST reside within the forensic vault directory
+            if self.per_run:
+                self.run_vault_dir = self.log_dir / self.run_id
+                self.per_run_log_path = self.run_vault_dir / "run.jsonl"
+
+                # Ensure the vault exists before opening handles
+                self.run_vault_dir.mkdir(parents=True, exist_ok=True)
+            else:
+                self.per_run_log_path = None
 
             if self.log_rotate_count > 0:
                 self.rotate_logs()
@@ -86,6 +123,8 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         def _write_buffered(path, content):
             # [WinHardening] Persistent handles to bypass WinError 145/F-Lock contention
             if str(path) not in self._handles:
+                # Ensure parent directory exists (Defensive for industrial stability)
+                Path(path).parent.mkdir(parents=True, exist_ok=True)
                 self._handles[str(path)] = open(path, "a", encoding="utf-8", buffering=1)
             self._handles[str(path)].write(content)
 
@@ -131,20 +170,36 @@ class FlightRecorderPlugin(BaseEvalPlugin):
         self.finalize_run()
 
     def rotate_logs(self):
-        """Keeps only the latest N run-<id>.jsonl files."""
-        run_files = sorted(
-            self.log_dir.glob("*.jsonl"), key=lambda x: x.stat().st_mtime, reverse=True
-        )
-        run_files = [f for f in run_files if f.name != "run.jsonl" and f.is_file()]
+        """
+        Industrial-Grade Vault Rotation.
+        Keeps only the latest N run subdirectories (vaults) based on disk state.
+        This ignores root-level flat files, enforcing the vaulted methodology.
+        """
+        try:
+            # 1. Collect only Vault Directories
+            vaults = [d for d in self.log_dir.iterdir() if d.is_dir()]
 
-        if len(run_files) > self.log_rotate_count:
-            for old_file in run_files[self.log_rotate_count :]:
-                try:
-                    old_file.unlink()
-                except Exception as e:
-                    sys.stderr.write(
-                        f"   [FlightRecorder] [WARNING] Error rotating log {old_file.name}: {e}\n"
-                    )
+            # 2. Sort by modification time (Latest first)
+            targets = sorted(vaults, key=lambda x: x.stat().st_mtime, reverse=True)
+
+            if len(targets) > self.log_rotate_count:
+                # [Retention Policy Enforcement]
+                for old_vault in targets[self.log_rotate_count :]:
+                    try:
+                        import shutil
+
+                        # Industrial purge of the entire vault directory
+                        shutil.rmtree(old_vault)
+                    except Exception as e:
+                        sys.stderr.write(
+                            "[FlightRecorder] [WARNING] Error rotating log vault "
+                            f"{old_vault.name}: {e}\n"
+                        )
+        except Exception as e:
+            # Robust defensive catch for IO/Permission errors during scan
+            sys.stderr.write(
+                f"   [FlightRecorder] [ERROR] Scan failure during vault rotation: {e}\n"
+            )
 
     def flush(self):
         """Explicit flush trigger."""

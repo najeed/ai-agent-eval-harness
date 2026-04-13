@@ -14,7 +14,7 @@ The most common mistake in AI diagnostics is confusing a symptom for a root caus
 | **Trigger** | Root Cause | A logic loop where the agent calls `ls` repeatedly. |
 | **Symptom** | Terminal Status | `INFRA_TIMEOUT` (The run ended because of the loop). |
 
-The Causal Chain ensures that the **reasoning error** (the loop) is the authoritative classification, rather than the secondary effect (the timeout).
+The Causal Chain ensures that the **reasoning error** (the loop) is the classification, rather than the secondary effect (the timeout).
 
 ---
 

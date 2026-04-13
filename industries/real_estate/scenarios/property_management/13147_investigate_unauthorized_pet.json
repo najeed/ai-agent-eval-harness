@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Unauthorized Pet",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13147-investigate-unauthorized-pet"
   },
   "description": "During a routine inspection, a property manager notices evidence of an unauthorized pet (e.g., a dog bowl).",
   "industry": "Real Estate",

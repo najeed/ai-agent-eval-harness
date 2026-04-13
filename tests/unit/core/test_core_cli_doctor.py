@@ -49,7 +49,7 @@ def test_cli_run_attempts(capsys, tmp_path, monkeypatch):
             "sys.argv",
             ["agentv", "run", "--scenario", "test_scenario.json", "--attempts", "2"],
         ),
-        patch("eval_runner.loader.load_scenario", return_value={"scenario_id": "test"}),
+        patch("eval_runner.loader.load_scenario", return_value={"id": "test"}),
         patch("eval_runner.plugins.manager.load_plugins"),
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_run,
     ):
@@ -64,8 +64,10 @@ def test_cli_run_attempts(capsys, tmp_path, monkeypatch):
 def test_cli_replay_valid(tmp_path, monkeypatch):
     # Test 'replay' with --run-id
     monkeypatch.chdir(tmp_path)
-    # Create trace file matching the run_id
-    trace_file = tmp_path / "test-run.jsonl"
+    # Create vaulted trace file matching the run_id
+    run_dir = tmp_path / "test-run"
+    run_dir.mkdir()
+    trace_file = run_dir / "run.jsonl"
     trace_file.write_text("{}", encoding="utf-8")
 
     with (

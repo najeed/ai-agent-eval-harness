@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Form 941, Employer's Quarterly Federal Tax Return",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13701-prepare-form-941"
   },
   "description": "A small business with 3 employees needs to file its quarterly payroll tax return, Form 941.",
   "industry": "Tax",

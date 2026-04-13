@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inspect Incoming Goods for Quality",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14324-inspect-incoming-goods-for-quality"
   },
   "description": "A shipment of a new product arrives from a supplier, and a sample must be inspected for quality before the shipment is accepted.",
   "industry": "Wholesale",

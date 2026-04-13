@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Restaurant Health Inspection Results",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13016-check-inspection-results"
   },
   "description": "A citizen wants to check the latest health inspection report for a specific restaurant.",
   "industry": "Public Sector",

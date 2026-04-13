@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate a Client Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12111-generate-client-invoice"
   },
   "description": "At the end of the month, a billing coordinator needs to generate an invoice for a client.",
   "industry": "Legal",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Credit Card Chargeback",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11576-chargeback-dispute"
   },
   "description": "The hotel receives a chargeback notice from a credit card company; a former guest is disputing their entire stay's charges.",
   "industry": "Hospitality",

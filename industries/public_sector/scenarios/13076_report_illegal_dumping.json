@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Illegal Dumping",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13076-report-illegal-dumping"
   },
   "description": "A citizen reports that someone has illegally dumped a large amount of trash on a vacant public lot.",
   "industry": "Public Sector",

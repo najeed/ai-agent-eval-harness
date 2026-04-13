@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provision Software Upgrade on Core Router",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13860-software-upgrade-router"
   },
   "description": "A core network router needs a scheduled software upgrade during a maintenance window.",
   "industry": "Telecom",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Execute Blast Pattern",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12617-execute-blast-pattern"
   },
   "description": "A blast crew foreman oversees the execution of a designed blast, including drilling the holes and charging them with explosives.",
   "industry": "Mining",

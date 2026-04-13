@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book Travel for Film Festival",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12593-book-travel-for-film-festival"
   },
   "description": "A film has been accepted into an international film festival. An agent needs to book flights and hotels for the director and two lead actors.",
   "industry": "Media and Entertainment",

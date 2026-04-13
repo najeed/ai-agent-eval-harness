@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Walk-in Guest at a Busy Restaurant",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11546-handle-walk-in-at-restaurant"
   },
   "description": "A party of four arrives at the hotel restaurant without a reservation on a busy night.",
   "industry": "Hospitality",

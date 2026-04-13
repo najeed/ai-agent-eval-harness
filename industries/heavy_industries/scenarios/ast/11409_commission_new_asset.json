@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Commission a New Asset",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11409-commission-new-asset"
   },
   "description": "A new conveyor belt system has been installed. A commissioning engineer must run it through a series of tests before it can be handed over to operations.",
   "industry": "Heavy Industries",

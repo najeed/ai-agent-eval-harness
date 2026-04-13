@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Benchmark Client KPIs",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00123-benchmark-client-kpis"
   },
   "description": "An agent must compare a client's Key Performance Indicators (KPIs) against industry benchmarks.",
   "industry": "Consulting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Proofread a Blog Post",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12440-proofread-blog-post"
   },
   "description": "Before publishing, a content manager needs to proofread a blog post for spelling, grammar, and adherence to brand voice.",
   "industry": "Marketing and Advertising",

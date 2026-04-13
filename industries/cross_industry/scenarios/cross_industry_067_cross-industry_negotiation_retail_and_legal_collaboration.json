@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cross-Industry Negotiation: Retail & Legal Collaboration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "cross-industry-067-cross-industry-negotiation-retail-and-legal-collaboration"
   },
   "description": "An AI agent must bridge a complex data and policy gap between the Retail and Legal sectors.",
   "industry": "Meta-Industry",

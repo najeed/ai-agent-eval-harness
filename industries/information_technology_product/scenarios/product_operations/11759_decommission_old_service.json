@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Decommission Old Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11759-decommission-old-service"
   },
   "description": "An old, legacy microservice is being replaced by a new one and needs to be safely decommissioned.",
   "industry": "Information Technology Product",

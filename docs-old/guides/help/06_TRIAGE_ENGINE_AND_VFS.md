@@ -1,18 +1,18 @@
-# 🕵️ How AgentEval Isolates Root Causes (State-Level Triage)
+# 🕵️ How AgentV Isolates Root Causes (State-Level Triage)
 
-AgentEval isolates the root cause of an agent's failure by moving beyond simple log analysis and into **State-Level Trajectory Triage**. It works across three distinct layers:
+AgentV isolates the root cause of an agent's failure by moving beyond simple log analysis and into **State-Level Trajectory Triage**. It works across three distinct layers:
 
 ## 1. The "State Parity" Check (VFS Delta)
-Unlike standard benchmarks that only check the agent's final text response, AgentEval maintains a **Virtual File System (VFS)**.
+Unlike standard benchmarks that only check the agent's final text response, AgentV maintains a **Virtual File System (VFS)**.
 
 *   **VFS-Aware Shims**: Every World Shim (Database, Jira, Git, etc.) is "VFS-aware."
-*   **State Comparison**: When an agent executes a tool, AgentEval compares the resulting system state against the "Ground Truth" defined in the scenario.
+*   **State Comparison**: When an agent executes a tool, AgentV compares the resulting system state against the "Ground Truth" defined in the scenario.
 *   **Patient Zero**: If the agent queries the wrong table or fails to commit a file, the State Divergence is marked immediately as the "Patient Zero" step.
 
 ---
 
 ## 2. Heuristic Triage Engine (`triage.py`)
-AgentEval uses a specialized engine to scan the entire execution trace for failure patterns:
+AgentV uses a specialized engine to scan the entire execution trace for failure patterns:
 
 *   **Stall Detection**: Identifies if an agent is "looping" (e.g., calling the same `list_dir` 3 times without changing its behavior).
 *   **Tool-Level Exceptions**: Captures internal simulator errors (e.g., a "404 Not Found" from the API Shim) that the agent might have ignored or misinterpreted.
@@ -29,7 +29,7 @@ In the Visual Debugger, the **"Isolate Root Cause"** feature automatically scrol
 | **Logic** | Loops & Stalls | Identifies when an agent's reasoning has hit a dead-end. |
 | **Security** | Policy Violations | Pinpoints exactly which guardrail was triggered and why. |
 
-By combining these, AgentEval can distinguish between an agent that hallucinated a tool's existence vs. an agent that used the right tool but with the wrong parameters.
+By combining these, AgentV can distinguish between an agent that hallucinated a tool's existence vs. an agent that used the right tool but with the wrong parameters.
 
 ---
 
@@ -43,7 +43,7 @@ By combining these, AgentEval can distinguish between an agent that hallucinated
 
 ## 4. Stratified Failure Taxonomy (v1.3)
 
-To achieve industrial-grade diagnostics, AgentEval has transitioned from brittle error string matching to a formal, **NIST-aligned Failure Registry**.
+To achieve industrial-grade diagnostics, AgentV has transitioned from brittle error string matching to a formal, **NIST-aligned Failure Registry**.
 
 ### Hierarchical Root-Cause Analysis
 Failures are no longer treated as "generic errors." They are stratified into hierarchical categories:

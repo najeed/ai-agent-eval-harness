@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Routine Equipment Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10628-manage-equipment-maintenance"
   },
   "description": "A notification indicates that a backhoe is due for its 250-hour service. The site manager must schedule this maintenance.",
   "industry": "Construction",

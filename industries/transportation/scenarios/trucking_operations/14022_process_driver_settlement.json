@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Driver Settlement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14022-process-driver-settlement"
   },
   "description": "An owner-operator has completed several loads. A settlement specialist needs to process their pay.",
   "industry": "Transportation",

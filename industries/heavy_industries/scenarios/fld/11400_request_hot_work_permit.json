@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Hot Work Permit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11400-request-hot-work-permit"
   },
   "description": "A field crew needs to perform welding in an operational area and must obtain a hot work permit from the site safety office.",
   "industry": "Heavy Industries",

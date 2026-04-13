@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Project Risks",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00111-identify-project-risks"
   },
   "description": "Based on a project plan, an agent must identify potential risks and suggest mitigation strategies.",
   "industry": "Consulting",

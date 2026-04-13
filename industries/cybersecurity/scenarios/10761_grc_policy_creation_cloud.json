@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cloud Security Policy Creation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10761-grc-policy-creation-cloud"
   },
   "description": "As the company moves to the cloud, a GRC analyst must create a new Cloud Security Policy from scratch.",
   "industry": "Cybersecurity",

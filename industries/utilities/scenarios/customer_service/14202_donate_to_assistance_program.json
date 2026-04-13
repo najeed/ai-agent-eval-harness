@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Donate to Bill Assistance Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14202-donate-to-assistance-program"
   },
   "description": "A customer wants to make a one-time donation to the utility's charitable fund that helps low-income customers pay their bills.",
   "industry": "Utilities",

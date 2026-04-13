@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Solar Farm Site Feasibility Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11100-solar-site-feasibility"
   },
   "description": "An agent must assess a potential land parcel for its suitability for a new utility-scale solar farm.",
   "industry": "Energy",

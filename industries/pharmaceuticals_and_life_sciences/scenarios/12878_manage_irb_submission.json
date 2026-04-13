@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Institutional Review Board (IRB) Submission",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12878-manage-irb-submission"
   },
   "description": "A CRA must submit a new clinical trial protocol to the Institutional Review Board (IRB) for a specific hospital.",
   "industry": "Pharmaceuticals and Life Sciences",

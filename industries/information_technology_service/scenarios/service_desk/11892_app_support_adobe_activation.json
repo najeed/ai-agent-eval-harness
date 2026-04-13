@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Application Support - Adobe Creative Cloud Activation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11892-app-support-adobe-activation"
   },
   "description": "A user reports their Adobe Creative Cloud applications are showing as a trial, even though the company has a license.",
   "industry": "Information Technology Service",

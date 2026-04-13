@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare a Privilege Log",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12109-prepare-privilege-log"
   },
   "description": "After a document review, a litigation paralegal needs to create a privilege log for all documents that were withheld from production based on attorney-client privilege.",
   "industry": "Legal",

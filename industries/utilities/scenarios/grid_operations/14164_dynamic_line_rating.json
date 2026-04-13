@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dynamic Line Rating",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14164-dynamic-line-rating"
   },
   "description": "The system uses real-time weather data to calculate the actual, dynamic thermal rating of a transmission line, allowing more power to flow than its static rating would suggest.",
   "industry": "Utilities",

@@ -27,17 +27,17 @@ def save_trajectory(scenario: dict, results: list, base_dir: Path | None = None)
 
     timestamp = datetime.now().astimezone().strftime("%Y%m%d_%H%M%S")
     iso_timestamp = datetime.now().astimezone().isoformat()
-    # v1.2 meta vs legacy
+    # Centralized identity (AES v1.4.0)
     metadata_block = scenario.get("metadata", {})
-    scenario_id = scenario.get("scenario_id") or metadata_block.get("id") or "unknown"
+    scenario_identifier = scenario.get("id", "unknown")
     title = scenario.get("title") or metadata_block.get("name") or "Unnamed Scenario"
-    industry = scenario.get("industry") or metadata_block.get("industry")
+    industry = scenario.get("industry") or metadata_block.get("industry") or "generic"
 
-    filename = f"{scenario_id}_{timestamp}.json"
+    filename = f"{scenario_identifier}_{timestamp}.json"
 
     output = {
         "metadata": {
-            "scenario_id": scenario_id,
+            "id": scenario_identifier,
             "title": title,
             "industry": industry,
             "timestamp": iso_timestamp,
@@ -134,12 +134,10 @@ def generate_html_report(
     report_dir.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    metadata_block = scenario.get("metadata", {})
-    scenario_id = scenario.get("scenario_id") or metadata_block.get("id") or "unknown"
-    scenario.get("title") or metadata_block.get("name") or "Unnamed Scenario"
+    scenario_identifier = scenario.get("id", "unknown")
 
     prefix = "standalone_" if standalone else "report_"
-    filename = f"{prefix}{scenario_id}_{timestamp}.html"
+    filename = f"{prefix}{scenario_identifier}_{timestamp}.html"
     filepath = report_dir / filename
 
     # Check for verification manifest
@@ -324,7 +322,7 @@ def generate_html_report(
             <div>
                 <h1>Evaluation Report</h1>
                 <p style="color: var(--sub)">
-                    Scenario: {scenario.get("title")} ({scenario_id}) • 
+                    Scenario: {scenario.get("title")} ({scenario_identifier}) • 
                     {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
                 </p>
             </div>
@@ -382,10 +380,10 @@ def generate_report(
     print("=" * 50)
 
     metadata_block = scenario.get("metadata", {})
-    scenario_id = scenario.get("scenario_id") or metadata_block.get("id") or "unknown"
+    scenario_identifier = scenario.get("id", "unknown")
     title = scenario.get("title") or metadata_block.get("name") or "Unnamed Scenario"
 
-    print(f"Scenario: {title} ({scenario_id})")
+    print(f"Scenario: {title} ({scenario_identifier})")
 
     protocol = (metadata or {}).get("protocol", "http")
     agent_target = (metadata or {}).get("agent", "Unknown")

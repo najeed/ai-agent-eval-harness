@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage the Final Walk-Through",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13334-manage-final-walkthrough"
   },
   "description": "The buyer's agent coordinates and conducts the final walk-through of the property just before closing.",
   "industry": "Real Estate",

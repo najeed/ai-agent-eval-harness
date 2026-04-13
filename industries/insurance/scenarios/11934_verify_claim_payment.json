@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify a Claim Payment was Sent",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11934-verify-claim-payment"
   },
   "description": "A life insurance beneficiary is calling to check if their claim payment has been mailed.",
   "industry": "Insurance",

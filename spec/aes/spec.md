@@ -14,7 +14,8 @@ AES is a standardized format for defining portable and robust AI agent benchmark
 
 ### 1. Metadata
 Details about the benchmark suite (name, industry, tags).
-- `capabilities`: [v1.4] List of required infrastructure components (e.g., `fintech_loan_api`).
+- `id`: **Mandatory** unique forensic identifier.
+- `capabilities`: List of required infrastructure components (e.g., `fintech_loan_api`).
 - `standards_registry`: Alignment with global standards (ISO 42001, NIST AI RMF, etc.).
 
 ### 2. World Shim Configuration

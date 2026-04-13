@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Zoning Regulations for a Property",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13168-verify-zoning-regulations"
   },
   "description": "A client wants to buy a property to operate a small cafe. The agent must verify the property's zoning allows for this use.",
   "industry": "Real Estate",

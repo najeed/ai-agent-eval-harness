@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Freight Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14038-create-freight-invoice"
   },
   "description": "A load has been delivered. An agent must create and send an invoice to the customer.",
   "industry": "Transportation",

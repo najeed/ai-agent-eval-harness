@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Autonomous Weed Detection and Spot Spraying",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10110-weed-detection-and-spraying"
   },
   "description": "An autonomous drone identifies weeds in a cotton field and needs to generate a spot spraying mission.",
   "industry": "Agriculture",

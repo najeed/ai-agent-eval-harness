@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a BOGO Promotion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10940-create-bogo-promotion"
   },
   "description": "A marketing manager wants to create a 'Buy One, Get One Free' promotion for a specific brand of shoes.",
   "industry": "Ecommerce",

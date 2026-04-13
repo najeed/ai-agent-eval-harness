@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Proof of Insurance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11905-request-proof-of-insurance"
   },
   "description": "A customer needs a new auto insurance ID card because they lost their old one.",
   "industry": "Insurance",

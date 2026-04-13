@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Access an Electrical Schematic",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12368-access-electrical-schematic"
   },
   "description": "A technician is troubleshooting a control panel and needs the electrical schematic for the machine.",
   "industry": "Manufacturing",

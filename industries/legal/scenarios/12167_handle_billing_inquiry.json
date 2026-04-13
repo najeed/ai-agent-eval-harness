@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Client Billing Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12167-handle-billing-inquiry"
   },
   "description": "A client has a question about a specific line item on their invoice. A billing coordinator needs to provide an explanation.",
   "industry": "Legal",

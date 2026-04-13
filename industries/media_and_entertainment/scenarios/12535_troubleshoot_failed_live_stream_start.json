@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshoot Failed Live Stream Start",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12535-troubleshoot-failed-live-stream-start"
   },
   "description": "A scheduled live stream for a gaming tournament fails to start at its designated time.",
   "industry": "Media and Entertainment",

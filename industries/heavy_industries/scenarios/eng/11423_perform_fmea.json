@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Failure Mode and Effects Analysis (FMEA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11423-perform-fmea"
   },
   "description": "An engineer is leading an FMEA session for a new piece of heavy machinery to proactively identify and mitigate potential failure modes.",
   "industry": "Heavy Industries",

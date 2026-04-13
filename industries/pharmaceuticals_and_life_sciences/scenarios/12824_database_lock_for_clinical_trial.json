@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare for Clinical Trial Database Lock",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12824-database-lock-for-clinical-trial"
   },
   "description": "A data manager is preparing for the final database lock of a completed clinical trial.",
   "industry": "Pharmaceuticals and Life Sciences",

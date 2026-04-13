@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Provider Performance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11389-analyze-provider-performance"
   },
   "description": "A medical director wants to compare the performance of different primary care providers on key quality measures.",
   "industry": "Healthcare",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Crime Pattern Using Predictive Analytics",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13560-identify-crime-pattern-using-predictive-analytics"
   },
   "description": "An analyst uses the system to find a pattern in a series of recent commercial burglaries.",
   "industry": "Smart Cities",

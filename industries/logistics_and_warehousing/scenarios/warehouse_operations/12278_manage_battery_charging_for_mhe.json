@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Battery Charging for MHE",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12278-manage-battery-charging-for-mhe"
   },
   "description": "A forklift's battery is low. The operator must swap it for a charged one at a battery station.",
   "industry": "Logistics and Warehousing",

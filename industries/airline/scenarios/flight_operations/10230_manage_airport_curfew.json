@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage an Airport Curfew",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10230-manage-airport-curfew"
   },
   "description": "A flight is delayed and now risks arriving at its destination after the airport's nightly noise curfew. An OCC controller must decide what to do.",
   "industry": "Airline",

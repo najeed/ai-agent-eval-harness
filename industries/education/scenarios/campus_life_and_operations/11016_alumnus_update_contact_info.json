@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Alumnus Updates Contact Information",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11016-alumnus-update-contact-info"
   },
   "description": "An alumnus calls to update their home address and employer information to stay connected with the university.",
   "industry": "Education",

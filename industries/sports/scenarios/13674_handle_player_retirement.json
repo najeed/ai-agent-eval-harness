@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Player's Retirement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13674-handle-player-retirement"
   },
   "description": "A long-time veteran player announces their retirement. The team must process the retirement and plan a farewell ceremony.",
   "industry": "Sports",

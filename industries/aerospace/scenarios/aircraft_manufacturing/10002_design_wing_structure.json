@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Design a New Wing Structure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10002-design-wing-structure"
   },
   "description": "An engineer needs to design a new composite wing structure for a next-generation aircraft, focusing on weight reduction and strength.",
   "industry": "Aerospace",

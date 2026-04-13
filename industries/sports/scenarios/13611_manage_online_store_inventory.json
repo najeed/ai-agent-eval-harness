@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Online Merchandise Store Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13611-manage-online-store-inventory"
   },
   "description": "A team's new home jersey is selling out quickly online. An agent needs to check inventory and order more.",
   "industry": "Sports",

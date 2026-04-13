@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cloud - Migrate VM to Different Region",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11869-cloud-migrate-vm-region"
   },
   "description": "For latency reasons, a client wants to move an Azure VM from the 'East US' region to the 'West US' region.",
   "industry": "Information Technology Service",

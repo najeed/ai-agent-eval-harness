@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Literature Search for Adverse Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12837-literature-search-for-ae"
   },
   "description": "A pharmacovigilance scientist must conduct a literature search to identify any published case reports for a specific drug-event combination.",
   "industry": "Pharmaceuticals and Life Sciences",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Secure Construction Financing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13323-secure-construction-financing"
   },
   "description": "A developer needs to secure a loan to finance the construction of a new condominium project.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Last-Minute Booking Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14265-handle-last-minute-booking"
   },
   "description": "A company wants to book a small meeting room for 10 people for tomorrow.",
   "industry": "Venues",

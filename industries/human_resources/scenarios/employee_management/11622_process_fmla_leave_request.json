@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an FMLA Leave Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11622-process-fmla-leave-request"
   },
   "description": "An employee needs to request a leave of absence under the Family and Medical Leave Act (FMLA).",
   "industry": "Human Resources",

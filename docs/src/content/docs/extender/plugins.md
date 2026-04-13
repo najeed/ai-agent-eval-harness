@@ -33,7 +33,7 @@ from eval_runner.plugins import BaseEvalPlugin
 
 class MyCustomPlugin(BaseEvalPlugin):
     def before_evaluation(self, context):
-        print(f"Starting evaluation for {context.scenario_id}!")
+        print(f"Starting evaluation for {context.identifier}!")
 
     def on_tool_request(self, context, tool_name, args):
         if tool_name == "sensitive_tool":

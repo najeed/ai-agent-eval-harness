@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Low Disk Space Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11743-low-disk-space-alert"
   },
   "description": "A server is running low on disk space, which could cause a service failure if not addressed.",
   "industry": "Information Technology Product",

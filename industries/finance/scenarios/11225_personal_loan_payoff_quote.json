@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Personal Loan Payoff Quote",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11225-personal-loan-payoff-quote"
   },
   "description": "A customer wants to know the total amount required to pay off their personal loan today.",
   "industry": "Finance",

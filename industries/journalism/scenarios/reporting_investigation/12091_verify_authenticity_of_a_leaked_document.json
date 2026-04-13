@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Authenticity of a Leaked Document",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12091-verify-authenticity-of-a-leaked-document"
   },
   "description": "A reporter receives a supposedly leaked document. They must take steps to verify it is real before reporting on it.",
   "industry": "Journalism",

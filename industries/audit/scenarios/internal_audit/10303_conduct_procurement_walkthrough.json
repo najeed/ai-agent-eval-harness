@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct a Procure-to-Pay Process Walkthrough",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10303-conduct-procurement-walkthrough"
   },
   "description": "As part of a procurement audit, an auditor conducts a walkthrough of the process with a procurement specialist.",
   "industry": "Audit",

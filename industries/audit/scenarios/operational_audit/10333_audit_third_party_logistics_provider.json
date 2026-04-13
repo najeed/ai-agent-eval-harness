@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit a Third-Party Logistics (3PL) Provider",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10333-audit-third-party-logistics-provider"
   },
   "description": "An operational auditor reviews the performance of the company's primary 3PL provider.",
   "industry": "Audit",

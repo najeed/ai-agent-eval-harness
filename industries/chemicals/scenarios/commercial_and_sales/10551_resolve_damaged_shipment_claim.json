@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Damaged Shipment Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10551-resolve-damaged-shipment-claim"
   },
   "description": "A customer reports that a shipment arrived with several damaged drums. The company needs to process the claim and send a replacement.",
   "industry": "Chemicals",

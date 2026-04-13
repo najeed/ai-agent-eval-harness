@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Quote Auto Insurance with a Poor Driving Record",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11963-quote-with-bad-driving-record"
   },
   "description": "A potential customer with multiple accidents and tickets is requesting an auto insurance quote.",
   "industry": "Insurance",

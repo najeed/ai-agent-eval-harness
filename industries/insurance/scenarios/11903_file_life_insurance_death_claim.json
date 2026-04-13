@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Life Insurance Death Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11903-file-life-insurance-death-claim"
   },
   "description": "The beneficiary of a life insurance policy calls to report the death of the insured and start the claims process.",
   "industry": "Insurance",

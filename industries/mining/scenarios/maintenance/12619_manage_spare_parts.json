@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Critical Spare Parts",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12619-manage-spare-parts"
   },
   "description": "A maintenance planner reviews the inventory of a critical spare part (e.g., a large motor for a mill) and ensures a spare is on hand.",
   "industry": "Mining",

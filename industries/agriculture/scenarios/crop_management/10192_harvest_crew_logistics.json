@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate Harvest Crew Logistics",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10192-harvest-crew-logistics"
   },
   "description": "A manager of a large hand-harvested fruit operation needs to coordinate crews, equipment, and transport across multiple ranches.",
   "industry": "Agriculture",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Specialty Crop Harvest Logistics",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10176-specialty-crop-harvest-logistics"
   },
   "description": "A lettuce grower needs to coordinate the harvest and cooling of their crop to meet a grocery store's delivery window.",
   "industry": "Agriculture",

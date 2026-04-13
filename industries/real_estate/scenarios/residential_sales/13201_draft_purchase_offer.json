@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft a Purchase Offer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13201-draft-purchase-offer"
   },
   "description": "A buyer client is ready to make an offer on a property. The agent must draft the residential purchase agreement.",
   "industry": "Real Estate",

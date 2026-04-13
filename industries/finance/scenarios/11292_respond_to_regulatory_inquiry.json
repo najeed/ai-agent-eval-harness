@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a Regulatory Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11292-respond-to-regulatory-inquiry"
   },
   "description": "A financial regulator has sent an inquiry requesting trade data for a specific time period.",
   "industry": "Finance",

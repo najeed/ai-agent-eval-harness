@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Showing Feedback",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13277-request-showing-feedback"
   },
   "description": "An agent showed a listing yesterday. The listing agent needs to request feedback from them.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Print Labels for Lab Samples",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10584-print-labels-for-lab-samples"
   },
   "description": "A lab technician is preparing several new solutions and needs to print chemical-resistant labels with the material name, concentration, and expiration date.",
   "industry": "Chemicals",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Ground Force Activity Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10822-isr-data-fusion-ground"
   },
   "description": "An analyst must fuse ground sensor data, drone video, and communications intelligence to assess an enemy's intent in a specific sector.",
   "industry": "Defense",

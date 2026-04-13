@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply Flash Sale Pricing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10905-apply-flash-sale-pricing"
   },
   "description": "A marketing manager wants to apply a 24-hour 20% discount to an entire category of products for a flash sale.",
   "industry": "Ecommerce",

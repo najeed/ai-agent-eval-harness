@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Major Equipment Shutdown",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11401-plan-major-equipment-shutdown"
   },
   "description": "A maintenance planner needs to schedule a 10-day major overhaul for a primary crusher at a mine site, coordinating all required resources.",
   "industry": "Heavy Industries",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Adverse Event Report from Patient",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12797-adverse-event-intake"
   },
   "description": "An agent must process a telephoned-in adverse event (AE) report from a patient, ensuring all necessary information is captured for regulatory reporting.",
   "industry": "Pharmaceuticals and Life Sciences",

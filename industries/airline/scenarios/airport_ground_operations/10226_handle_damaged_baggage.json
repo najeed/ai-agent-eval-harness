@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Damaged Baggage Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10226-handle-damaged-baggage"
   },
   "description": "A passenger's checked bag has arrived on the carousel with significant damage (e.g., a broken wheel, a large tear).",
   "industry": "Airline",

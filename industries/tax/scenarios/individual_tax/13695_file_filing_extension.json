@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Filing Extension",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13695-file-filing-extension"
   },
   "description": "A taxpayer is not ready to file their return by the deadline and needs to file an extension.",
   "industry": "Tax",

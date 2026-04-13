@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate Utility Transfer for Closing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13177-coordinate-utility-transfer"
   },
   "description": "A few days before closing, the TC needs to remind the buyer and seller to arrange for the transfer of utilities.",
   "industry": "Real Estate",

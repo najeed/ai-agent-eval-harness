@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Board of Directors Financial Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11279-create-board-of-directors-report"
   },
   "description": "An FP&A director needs to create the financial package for the upcoming quarterly board of directors meeting.",
   "industry": "Finance",

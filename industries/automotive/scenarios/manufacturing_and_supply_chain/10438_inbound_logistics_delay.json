@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inbound Logistics Delay",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10438-inbound-logistics-delay"
   },
   "description": "A train carrying essential chassis components has been delayed due to weather, impacting the start of the next production shift.",
   "industry": "Automotive",

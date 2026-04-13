@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Stateful Customer Update",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "stateful-test"
   },
   "description": "Verify that the agent can update a customer's plan and that the harness correctly tracks the state change.",
   "industry": "telecom",

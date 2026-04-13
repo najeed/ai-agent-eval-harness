@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Check-in with Mobile Key",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13950-handle-check-in-with-mobile-key"
   },
   "description": "A guest who has pre-checked in on their mobile app arrives at the hotel and wants to get their mobile key.",
   "industry": "Tourism",

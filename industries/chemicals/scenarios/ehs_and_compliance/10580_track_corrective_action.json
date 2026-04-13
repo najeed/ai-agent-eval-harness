@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Corrective Action to Completion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10580-track-corrective-action"
   },
   "description": "An EHS specialist needs to follow up on a Corrective and Preventive Action (CAPA) that was assigned after a safety audit to ensure it was completed.",
   "industry": "Chemicals",

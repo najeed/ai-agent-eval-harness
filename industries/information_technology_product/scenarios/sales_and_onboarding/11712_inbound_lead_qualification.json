@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inbound Lead Qualification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11712-inbound-lead-qualification"
   },
   "description": "A new lead comes in from the website's 'Contact Sales' form. The agent must qualify the lead before assigning it to an Account Executive.",
   "industry": "Information Technology Product",

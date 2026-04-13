@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assess Hail Damage Using Drone Imagery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10145-hail-damage-assessment"
   },
   "description": "After a hailstorm, an insurance adjuster uses a drone to assess the percentage of crop damage in a field.",
   "industry": "Agriculture",

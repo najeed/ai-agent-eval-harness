@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advise on Charitable Contribution of Appreciated Stock",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13775-advise-on-charitable-contribution-of-stock"
   },
   "description": "A taxpayer wants to make a large charitable donation and owns highly appreciated stock. They want to know the most tax-efficient way to donate.",
   "industry": "Tax",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Single-Customer Performance Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11795-investigate-single-customer-issue"
   },
   "description": "A single, high-value customer reports that the application is slow only for them, while other customers are unaffected.",
   "industry": "Information Technology Product",

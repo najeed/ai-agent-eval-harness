@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Corporate Social Responsibility (CSR) Strategy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00199-corporate-social-responsibility-strategy"
   },
   "description": "An agent must draft a CSR strategy for a client that aligns with their brand values.",
   "industry": "Consulting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Adjust Service for a Special Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14039-adjust-service-for-special-event"
   },
   "description": "A major concert is scheduled. A service planner must add extra late-night train service to accommodate the crowds.",
   "industry": "Transportation",

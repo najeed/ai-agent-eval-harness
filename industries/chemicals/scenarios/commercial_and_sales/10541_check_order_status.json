@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Checks Order Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10541-check-order-status"
   },
   "description": "A customer calls to get an update on an order they placed last week.",
   "industry": "Chemicals",

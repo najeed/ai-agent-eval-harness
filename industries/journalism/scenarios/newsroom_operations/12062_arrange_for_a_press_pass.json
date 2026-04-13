@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Arrange for a Press Pass",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12062-arrange-for-a-press-pass"
   },
   "description": "A reporter needs a press pass to gain access to a secure event, like a political convention.",
   "industry": "Journalism",

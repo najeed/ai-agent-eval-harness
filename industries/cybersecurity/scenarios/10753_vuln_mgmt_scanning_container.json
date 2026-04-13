@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Container Image Vulnerability Scan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10753-vuln-mgmt-scanning-container"
   },
   "description": "An analyst must scan a new Docker container image for known vulnerabilities in its OS packages and libraries before it can be deployed to production.",
   "industry": "Cybersecurity",

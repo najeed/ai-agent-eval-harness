@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue Store Credit for a Return",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10926-issue-store-credit-for-return"
   },
   "description": "A customer returns an item without a receipt and opts for store credit instead of a refund.",
   "industry": "Ecommerce",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Special Operations Infiltration Resource Planning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10894-mission-planning-resource-allocation-special-ops"
   },
   "description": "A planner must select the best infiltration method for a special operations team: a quiet electric vehicle, a helicopter, or a HALO jump.",
   "industry": "Defense",

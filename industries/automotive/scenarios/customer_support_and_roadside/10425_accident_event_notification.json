@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Automatic Accident Notification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10425-accident-event-notification"
   },
   "description": "A vehicle's telematics system automatically detects a collision and alerts the support center.",
   "industry": "Automotive",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Redeem Miles for a Cabin Upgrade",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10205-redeem-miles-for-upgrade"
   },
   "description": "A frequent flyer member wants to use their miles to upgrade from Economy to Business Class on an existing booking.",
   "industry": "Airline",

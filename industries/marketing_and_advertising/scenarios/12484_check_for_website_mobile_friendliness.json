@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check for Website Mobile-Friendliness",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12484-check-for-website-mobile-friendliness"
   },
   "description": "An SEO specialist needs to check if a website is considered mobile-friendly by Google.",
   "industry": "Marketing and Advertising",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Detect Pedestrian Jaywalking Hotspot",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13564-detect-pedestrian-jaywalking-hotspot"
   },
   "description": "An analyst reviews camera footage to identify locations where pedestrians frequently cross the street unsafely, suggesting the need for a new crosswalk.",
   "industry": "Smart Cities",

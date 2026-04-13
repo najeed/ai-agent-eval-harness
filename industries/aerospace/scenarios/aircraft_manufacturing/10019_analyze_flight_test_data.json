@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Flight Test Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10019-analyze-flight-test-data"
   },
   "description": "After a flight test, an engineer must analyze the collected data to verify the aircraft's performance against its design model.",
   "industry": "Aerospace",

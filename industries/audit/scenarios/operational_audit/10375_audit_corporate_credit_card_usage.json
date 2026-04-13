@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Corporate Credit Card Usage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10375-audit-corporate-credit-card-usage"
   },
   "description": "An auditor analyzes corporate credit card data to identify potential policy violations or fraudulent use.",
   "industry": "Audit",

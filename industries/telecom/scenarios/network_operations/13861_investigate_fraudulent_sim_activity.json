@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Fraudulent SIM Activity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13861-investigate-fraudulent-sim-activity"
   },
   "description": "The system flags a SIM card for making an unusually high volume of international calls, indicating potential fraud.",
   "industry": "Telecom",

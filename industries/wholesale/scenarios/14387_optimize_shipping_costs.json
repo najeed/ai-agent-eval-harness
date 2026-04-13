@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Optimize Shipping Costs",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14387-optimize-shipping-costs"
   },
   "description": "A logistics manager needs to choose the most cost-effective shipping carrier for an order.",
   "industry": "Wholesale",

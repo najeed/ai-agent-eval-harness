@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find an Expert Source for a Science Story",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11998-find-an-expert-source-for-a-science-story"
   },
   "description": "A reporter is writing about a new medical breakthrough and needs to find a qualified, independent expert to comment on the research.",
   "industry": "Journalism",

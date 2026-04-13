@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Phishing Email",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11095-report-phishing-email"
   },
   "description": "A staff member receives a suspicious email asking for their password and reports it to IT.",
   "industry": "Education",

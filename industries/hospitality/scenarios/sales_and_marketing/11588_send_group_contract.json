@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send a Contract for a Group Block",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11588-send-group-contract"
   },
   "description": "A client has verbally agreed to a group block proposal, and the sales manager needs to send a formal contract.",
   "industry": "Hospitality",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze High-Throughput Screening Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12821-compound-screening-analysis"
   },
   "description": "A scientist needs to analyze data from a high-throughput screening (HTS) campaign to identify 'hit' compounds.",
   "industry": "Pharmaceuticals and Life Sciences",

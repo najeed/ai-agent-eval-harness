@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Project Kick-off Deck",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00181-project-kickoff-deck"
   },
   "description": "An agent must create a standard project kick-off presentation from an SOW.",
   "industry": "Consulting",

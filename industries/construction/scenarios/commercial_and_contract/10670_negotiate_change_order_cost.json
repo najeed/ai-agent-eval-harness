@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Negotiate Change Order Cost",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10670-negotiate-change-order-cost"
   },
   "description": "A subcontractor has submitted a change order proposal that the PM believes is overpriced. The PM needs to negotiate a lower price.",
   "industry": "Construction",

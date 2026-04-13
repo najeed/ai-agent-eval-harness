@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Substation Transformer Health Monitoring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11142-transformer-health-monitoring"
   },
   "description": "An agent is monitoring a large substation transformer for signs of degradation using dissolved gas analysis (DGA).",
   "industry": "Energy",

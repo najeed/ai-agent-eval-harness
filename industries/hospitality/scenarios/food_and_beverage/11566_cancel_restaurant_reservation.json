@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel a Restaurant Reservation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11566-cancel-restaurant-reservation"
   },
   "description": "A guest calls to cancel their dinner reservation for tonight.",
   "industry": "Hospitality",

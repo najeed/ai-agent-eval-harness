@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Return for Gig Economy Worker",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13765-prepare-return-for-gig-economy-worker"
   },
   "description": "A driver for a ride-sharing service needs their tax return prepared, including income from a 1099-K and vehicle expenses.",
   "industry": "Tax",

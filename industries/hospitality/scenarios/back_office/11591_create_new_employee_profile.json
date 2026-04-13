@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create New Employee Profile",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11591-create-new-employee-profile"
   },
   "description": "A new front desk agent has been hired and needs to be set up in the HR and property management systems.",
   "industry": "Hospitality",

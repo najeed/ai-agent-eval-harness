@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit SOX Entity-Level Controls",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10321-audit-sox-entity-level-controls"
   },
   "description": "An auditor assesses the company-wide (entity-level) controls as part of the annual Sarbanes-Oxley (SOX) compliance audit.",
   "industry": "Audit",

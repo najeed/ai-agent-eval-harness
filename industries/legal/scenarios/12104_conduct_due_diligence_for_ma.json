@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Legal Due Diligence",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12104-conduct-due-diligence-for-ma"
   },
   "description": "As part of an M&A transaction, a junior associate needs to review a target company's key contracts to identify any legal risks.",
   "industry": "Legal",

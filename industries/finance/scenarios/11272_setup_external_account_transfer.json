@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set up External Account for Transfers",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11272-setup-external-account-transfer"
   },
   "description": "A customer wants to link an account from another bank to be able to transfer funds.",
   "industry": "Finance",

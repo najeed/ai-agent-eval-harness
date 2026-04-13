@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Product Reimbursement Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12865-handle-product-reimbursement-inquiry"
   },
   "description": "A physician's office calls to inquire about the reimbursement status and coding for a new injectable drug.",
   "industry": "Pharmaceuticals and Life Sciences",

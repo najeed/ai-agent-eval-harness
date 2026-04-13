@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Renewal with Price Increase",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11774-handle-renewal-price-increase"
   },
   "description": "A customer is up for renewal, but the price for their plan has increased since last year. The Account Manager needs to communicate this and secure the renewal.",
   "industry": "Information Technology Product",

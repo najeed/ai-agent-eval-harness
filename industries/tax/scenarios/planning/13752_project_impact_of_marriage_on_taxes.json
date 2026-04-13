@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Impact of Marriage on Taxes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13752-project-impact-of-marriage-on-taxes"
   },
   "description": "A couple plans to get married and wants to understand how it will affect their combined tax liability (the 'marriage penalty' or 'bonus').",
   "industry": "Tax",

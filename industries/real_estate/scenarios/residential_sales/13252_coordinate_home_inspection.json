@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate a Home Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13252-coordinate-home-inspection"
   },
   "description": "A buyer client needs to schedule their home inspection within the contingency period.",
   "industry": "Real Estate",

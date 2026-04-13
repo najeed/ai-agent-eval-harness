@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Medical Baseline Allowance Application",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14150-medical-baseline-application"
   },
   "description": "A customer with a medical condition that requires powered equipment at home is applying for the Medical Baseline program to receive a larger electricity allowance at the lowest rate.",
   "industry": "Utilities",

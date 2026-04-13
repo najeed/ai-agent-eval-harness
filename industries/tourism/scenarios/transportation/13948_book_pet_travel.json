@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book Pet Travel in Cabin",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13948-book-pet-travel"
   },
   "description": "A passenger wants to book a flight and bring their small dog in the cabin.",
   "industry": "Tourism",

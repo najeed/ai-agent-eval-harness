@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Rerun a Lab Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11370-rerun-a-lab-test"
   },
   "description": "A lab result is questionable or inconsistent with the patient's clinical picture. A lab supervisor decides to rerun the test.",
   "industry": "Healthcare",

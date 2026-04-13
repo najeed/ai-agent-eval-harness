@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reschedule Service Appointment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10423-reschedule-service-appointment"
   },
   "description": "A customer needs to reschedule an existing service appointment for next week.",
   "industry": "Automotive",

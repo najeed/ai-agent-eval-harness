@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Open a Commercial Line of Credit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11254-open-commercial-line-of-credit"
   },
   "description": "A corporate client needs to open a line of credit to manage working capital.",
   "industry": "Finance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply for Unemployment Benefits",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12997-apply-for-unemployment"
   },
   "description": "A recently laid-off citizen needs to apply for unemployment insurance benefits online.",
   "industry": "Public Sector",

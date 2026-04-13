@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cross-sell - Internet to Mobile Customer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13839-cross-sell-internet-to-mobile-customer"
   },
   "description": "During a call, a mobile-only customer mentions they are unhappy with their current internet provider. The agent should try to sell them home internet.",
   "industry": "Telecom",

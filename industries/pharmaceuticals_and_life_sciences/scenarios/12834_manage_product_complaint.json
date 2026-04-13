@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Product Quality Complaint",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12834-manage-product-complaint"
   },
   "description": "A pharmacist calls to complain that a batch of tablets appears discolored. A quality specialist must handle the complaint.",
   "industry": "Pharmaceuticals and Life Sciences",

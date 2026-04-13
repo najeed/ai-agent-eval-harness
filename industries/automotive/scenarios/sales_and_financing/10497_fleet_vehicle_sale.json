@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Fleet Vehicle Sale",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10497-fleet-vehicle-sale"
   },
   "description": "A local business wants to purchase 10 identical cargo vans for their delivery fleet.",
   "industry": "Automotive",

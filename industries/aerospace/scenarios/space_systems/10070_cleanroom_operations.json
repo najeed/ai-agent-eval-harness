@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Maintain Cleanroom Environment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10070-cleanroom-operations"
   },
   "description": "A cleanroom technician must monitor and maintain the environment where a satellite is being assembled to prevent contamination.",
   "industry": "Aerospace",

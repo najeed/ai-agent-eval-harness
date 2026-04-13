@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Flickering Lights",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14116-report-flickering-lights"
   },
   "description": "A customer reports that the lights in their entire house have been flickering for the past hour.",
   "industry": "Utilities",

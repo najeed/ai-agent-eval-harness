@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage an Engine Test Cell",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10098-manage-engine-test-cell"
   },
   "description": "After an engine overhaul, it must be run in a test cell to verify its performance before it can be returned to service.",
   "industry": "Aerospace",

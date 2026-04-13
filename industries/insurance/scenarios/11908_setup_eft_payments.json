@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up Automatic EFT Payments",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11908-setup-eft-payments"
   },
   "description": "A customer wants to have their monthly premium automatically deducted from their checking account.",
   "industry": "Insurance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Use Digital Twin to Plan Tree Planting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13553-use-digital-twin-to-plan-tree-planting"
   },
   "description": "A city planner wants to plant new trees and uses the digital twin to ensure they won't conflict with underground utilities.",
   "industry": "Smart Cities",

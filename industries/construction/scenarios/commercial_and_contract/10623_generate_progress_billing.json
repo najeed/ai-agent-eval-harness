@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Monthly Progress Billing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10623-generate-progress-billing"
   },
   "description": "The project accountant needs to prepare the monthly progress billing (pay application) to send to the client.",
   "industry": "Construction",

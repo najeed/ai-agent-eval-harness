@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Allocate Corporate Overheads",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00031-cost-allocation"
   },
   "description": "At month-end, an accountant needs to allocate shared corporate costs (e.g., rent, IT) to the different business units based on headcount.",
   "industry": "Accounting",

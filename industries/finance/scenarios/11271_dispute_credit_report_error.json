@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispute Credit Report Error",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11271-dispute-credit-report-error"
   },
   "description": "A customer has found an error on their credit report that originates from their account with the bank and wants it corrected.",
   "industry": "Finance",

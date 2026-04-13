@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Policy Exception Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10729-grc-policy-exception-request"
   },
   "description": "A developer requests a temporary exception to the security policy that blocks outbound traffic so they can connect to a new third-party API for testing.",
   "industry": "Cybersecurity",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Correct a Misleading Viral Rumor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12073-correct-a-misleading-viral-rumor"
   },
   "description": "A false rumor about a public figure is spreading rapidly on social media. A journalist must quickly publish a story to debunk it.",
   "industry": "Journalism",

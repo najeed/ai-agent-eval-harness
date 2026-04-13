@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Artwork for Packaging Components",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12869-manage-artwork-for-packaging"
   },
   "description": "A labeling specialist must coordinate the update of artwork for a product carton following a change to the prescribing information.",
   "industry": "Pharmaceuticals and Life Sciences",

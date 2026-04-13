@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report and Replace Lost Student ID Card",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11014-report-lost-id-card"
   },
   "description": "A student has lost their ID card and needs to deactivate it and get a replacement.",
   "industry": "Education",

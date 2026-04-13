@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Friendly Fire Prevention via COP",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10856-c2-cop-management-friendly-fire-prevention"
   },
   "description": "An operator notices a ground unit has called for an air strike dangerously close to another friendly unit's position.",
   "industry": "Defense",

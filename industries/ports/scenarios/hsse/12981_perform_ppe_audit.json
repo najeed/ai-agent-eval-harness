@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a PPE Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12981-perform-ppe-audit"
   },
   "description": "A safety officer performs a random audit in the terminal to ensure all workers are wearing the correct Personal Protective Equipment (PPE).",
   "industry": "Ports",

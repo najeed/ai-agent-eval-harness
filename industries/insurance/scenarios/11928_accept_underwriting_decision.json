@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Accept Underwriting Decision and Pay for Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11928-accept-underwriting-decision"
   },
   "description": "An applicant for life insurance has been approved at a higher rate than quoted (rated) and decides to accept the offer.",
   "industry": "Insurance",

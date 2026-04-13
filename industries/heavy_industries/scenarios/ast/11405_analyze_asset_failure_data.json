@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Asset Failure Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11405-analyze-asset-failure-data"
   },
   "description": "A reliability engineer is analyzing frequent failures of a specific type of gearbox to find the root cause and improve its maintenance strategy.",
   "industry": "Heavy Industries",

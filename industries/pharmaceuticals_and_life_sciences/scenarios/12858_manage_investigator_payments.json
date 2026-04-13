@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Investigator Site Payments",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12858-manage-investigator-payments"
   },
   "description": "A clinical finance specialist needs to process a payment to a clinical trial site based on completed patient visits.",
   "industry": "Pharmaceuticals and Life Sciences",

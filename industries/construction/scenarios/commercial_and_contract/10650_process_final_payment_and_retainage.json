@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Final Payment and Release of Retainage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10650-process-final-payment-and-retainage"
   },
   "description": "The project is complete and all punch list items are closed. The accountant must process the final payment to a subcontractor, including the release of held retainage.",
   "industry": "Construction",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Distribution of Dailies",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12525-manage-dailies-distribution"
   },
   "description": "An agent needs to process the raw footage from a day's shoot (dailies) and make it securely available for review by the director and producers.",
   "industry": "Media and Entertainment",

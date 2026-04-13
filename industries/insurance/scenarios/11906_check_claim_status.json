@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check on an Existing Claim Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11906-check-claim-status"
   },
   "description": "A customer who filed a home insurance claim for water damage a week ago is calling for an update.",
   "industry": "Insurance",

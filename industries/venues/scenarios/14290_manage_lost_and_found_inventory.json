@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Lost and Found Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14290-manage-lost-and-found-inventory"
   },
   "description": "An operations manager needs to process items that have been in lost and found for more than 30 days.",
   "industry": "Venues",

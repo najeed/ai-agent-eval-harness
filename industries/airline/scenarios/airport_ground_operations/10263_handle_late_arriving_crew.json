@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Late Arriving Crew",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10263-handle-late-arriving-crew"
   },
   "description": "The flight crew for a departing flight is late arriving from their inbound flight. A ground operations agent must manage the delay.",
   "industry": "Airline",

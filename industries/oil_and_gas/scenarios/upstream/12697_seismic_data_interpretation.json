@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Seismic Data Interpretation for Prospect ID",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12697-seismic-data-interpretation"
   },
   "description": "A geoscientist analyzes a new 3D seismic survey to identify potential hydrocarbon traps and define a drilling prospect.",
   "industry": "Oil and Gas",

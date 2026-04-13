@@ -14,7 +14,7 @@ class MockArgs:
 async def test_aes_validation_success(tmp_path, capsys):
     aes_data = {
         "aes_version": 1.4,
-        "metadata": {"name": "test", "compliance_level": "Standard"},
+        "metadata": {"name": "test", "id": "test_id", "compliance_level": "Standard"},
         "description": "test description",
         "industry": "general",
         "workflow": {"nodes": [{"id": "node_1", "task_description": "hi"}], "edges": []},
@@ -54,6 +54,7 @@ async def test_aes_validation_with_complexity_level(tmp_path, capsys):
         "aes_version": 1.4,
         "metadata": {
             "name": "complexity_test",
+            "id": "complexity_id",
             "compliance_level": "Regulatory_Audit",
             "standards_registry": ["ISO_20022"],
         },

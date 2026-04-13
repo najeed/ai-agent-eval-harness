@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Nodal Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12787-perform-nodal-analysis"
   },
   "description": "A production engineer performs nodal analysis on a well to identify bottlenecks in the production system (from reservoir to separator) and find opportunities to increase flow.",
   "industry": "Oil and Gas",

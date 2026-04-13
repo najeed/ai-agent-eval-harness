@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Fighter Pilot Readiness Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10833-logistics-personnel-readiness-pilot"
   },
   "description": "A squadron commander needs to ensure all pilots are current on their training and certifications before a major exercise.",
   "industry": "Defense",

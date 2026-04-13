@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Root Cause Analysis (RCA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12657-root-cause-analysis"
   },
   "description": "After a major failure of a gearbox, a reliability engineer leads a team to perform a formal Root Cause Analysis to prevent recurrence.",
   "industry": "Mining",

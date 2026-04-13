@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Complete the Annual EEO-1 Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11655-complete-eeo1-report"
   },
   "description": "A compliance specialist needs to compile and submit the company's annual EEO-1 report to the government.",
   "industry": "Human Resources",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft an Internal Audit Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10306-draft-audit-report"
   },
   "description": "An audit manager needs to draft the final report for a marketing expenses audit.",
   "industry": "Audit",

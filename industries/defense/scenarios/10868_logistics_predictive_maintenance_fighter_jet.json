@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Fighter Jet Landing Gear Predictive Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10868-logistics-predictive-maintenance-fighter-jet"
   },
   "description": "Sensors on a fighter jet's landing gear indicate abnormal stress during recent landings, predicting a potential failure.",
   "industry": "Defense",

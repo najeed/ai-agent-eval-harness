@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Reports Service Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13795-service-outage-report"
   },
   "description": "A customer calls to report a total loss of mobile service. The agent must check for known outages and provide an estimated time for resolution.",
   "industry": "Telecom",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Preventive Maintenance on Asset",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13058-schedule-preventive-maintenance"
   },
   "description": "A public works manager is scheduling annual preventive maintenance for a city-owned HVAC unit.",
   "industry": "Public Sector",

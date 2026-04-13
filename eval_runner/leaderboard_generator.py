@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from .trace_utils import load_events
@@ -10,7 +11,9 @@ class LeaderboardGenerator:
     def generate_markdown(runs_dir: str) -> str:
         """Generates a Markdown leaderboard table from traces in a directory."""
         path = Path(runs_dir)
-        traces = list(path.glob("*.jsonl"))
+        # --- [INDUSTRIAL DISCOVERY] ---
+        # Strictly scan for authoritative vault traces. Flat files in the root are ignored.
+        traces = list(path.glob("*/run.jsonl"))
 
         stats = []
         for tp in traces:
@@ -19,17 +22,35 @@ class LeaderboardGenerator:
                 run_start = next((e for e in events if e.get("event") == "run_start"), {})
                 meta = run_start.get("metadata", {})
 
-                # 1. Improved Attribution
-                agent_name = meta.get("agent_name") or meta.get("agent")
+                # 1. Authoritative Attribution
+                # Priority: Manifest Metadata > Event Metadata > Vault Directory Name
+                manifest_path = tp.parent / "run_manifest.json"
+                manifest_data = {}
+                is_certified = False
+
+                if manifest_path.exists():
+                    try:
+                        with open(manifest_path, encoding="utf-8") as f:
+                            manifest_data = json.load(f)
+                            is_certified = True
+                    except Exception as e:
+                        import logging
+
+                        logging.error(f"   [Leaderboard] Manifest Read Failure for {tp}: {e}")
+
+                agent_name = (
+                    manifest_data.get("metadata", {}).get("agent_name")
+                    or meta.get("agent_name")
+                    or meta.get("agent")
+                )
+
                 if not agent_name:
-                    # Fallback: Clean up filename (e.g., run-accuracy-test-123 -> Accuracy-Test)
-                    clean_name = tp.stem.replace("run-", "").replace("-test", "")
-                    # Convert kebab-case to Title Case
-                    agent_name = " ".join(
-                        [w.capitalize() for w in clean_name.split("-") if not w.isdigit()]
-                    )
-                    if not agent_name:
-                        agent_name = tp.stem
+                    # Identity resolved from Vault directory name
+                    agent_name = tp.parent.name
+
+                # Add Industrial Certification Badge
+                if is_certified:
+                    agent_name = f"🏅 {agent_name}"
 
                 # Simple pass rate calculation
                 evals = [e for e in events if e.get("event") == "evaluation"]
@@ -61,10 +82,13 @@ class LeaderboardGenerator:
                         "agent": agent_name,
                         "pass_rate": pass_rate,
                         "tasks": f"{successful_tasks}/{total_tasks}",
-                        "file": tp.name,
+                        "file": str(tp.relative_to(path)),
                     }
                 )
-            except Exception:
+            except Exception as e:
+                import logging
+
+                logging.error(f"   [Leaderboard] Trace Aggregation Failure for {tp}: {e}")
                 continue
 
         if not stats:

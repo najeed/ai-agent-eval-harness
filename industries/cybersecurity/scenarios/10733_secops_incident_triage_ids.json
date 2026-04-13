@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Network IDS Alert Triage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10733-secops-incident-triage-ids"
   },
   "description": "A SOC analyst receives an alert from a network Intrusion Detection System (IDS) for a potential SQL injection attempt against a web server.",
   "industry": "Cybersecurity",

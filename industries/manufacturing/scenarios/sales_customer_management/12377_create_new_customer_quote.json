@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a New Customer Quote",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12377-create-new-customer-quote"
   },
   "description": "A sales representative needs to create a quote for a potential new customer for a standard product.",
   "industry": "Manufacturing",

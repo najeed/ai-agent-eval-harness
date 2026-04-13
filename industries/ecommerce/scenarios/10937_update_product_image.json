@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Main Product Image",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10937-update-product-image"
   },
   "description": "The marketing team has provided a new, higher-quality main image for a best-selling product.",
   "industry": "Ecommerce",

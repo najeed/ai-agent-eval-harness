@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Document Review for Relevance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12100-conduct-document-review-for-relevance"
   },
   "description": "A paralegal is assigned a batch of 1,000 documents in an e-discovery platform and must code them for relevance to the case.",
   "industry": "Legal",

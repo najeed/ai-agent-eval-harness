@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Owner Distribution",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13271-process-owner-distribution"
   },
   "description": "After paying all monthly expenses, the agent needs to send the remaining net income to the property owner.",
   "industry": "Real Estate",

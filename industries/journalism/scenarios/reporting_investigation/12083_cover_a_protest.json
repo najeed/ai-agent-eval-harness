@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cover a Protest",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12083-cover-a-protest"
   },
   "description": "A reporter is sent to cover a protest. They need to report on the size of the crowd, their message, and any interactions with counter-protesters or police.",
   "industry": "Journalism",

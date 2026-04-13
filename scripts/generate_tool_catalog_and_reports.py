@@ -13,13 +13,13 @@ examples = {}
 for path in glob.glob(os.path.join(root, "**", "scenarios", "*.json"), recursive=True):
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
-    sid = data.get("scenario_id")
+    sid = data.get("id")
     for t in data.get("tasks", []):
         tid = t.get("task_id")
         for tool in t.get("required_tools", []) or []:
             counts[tool] += 1
             if tool not in examples:
-                examples[tool] = {"scenario_id": sid, "task_id": tid, "path": path}
+                examples[tool] = {"id": sid, "task_id": tid, "path": path}
 
 catalog = {
     "generated_at": datetime.datetime.utcnow().isoformat() + "Z",
@@ -46,7 +46,7 @@ report = []
 for path in glob.glob(os.path.join(root, "**", "scenarios", "*.json"), recursive=True):
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
-    sid = data.get("scenario_id")
+    sid = data.get("id")
     for t in data.get("tasks", []):
         tid = t.get("task_id")
         for sc in t.get("success_criteria", []):
@@ -54,7 +54,7 @@ for path in glob.glob(os.path.join(root, "**", "scenarios", "*.json"), recursive
             if thr in (0.5, 1.0):
                 report.append(
                     {
-                        "scenario_id": sid,
+                        "id": sid,
                         "path": path,
                         "task_id": tid,
                         "metric": sc.get("metric"),
@@ -84,7 +84,7 @@ with open(md_report_path, "w", encoding="utf-8") as f:
     f.write("|---|---|---|---|---|\n")
     for e in report[:200]:
         f.write(
-            f"| {e['scenario_id']} | {e['task_id']} | {e.get('metric', '')} | {e['threshold']} | {e['path']} |\n"  # noqa: E501
+            f"| {e['id']} | {e['task_id']} | {e.get('metric', '')} | {e['threshold']} | {e['path']} |\n"  # noqa: E501
         )
 
 print(f"Wrote tool catalog: {json_path}")

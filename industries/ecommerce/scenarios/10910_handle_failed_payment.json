@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Failed Payment Transaction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10910-handle-failed-payment"
   },
   "description": "An automated alert flags an order where the customer's payment was declined. An agent needs to contact the customer to resolve it.",
   "industry": "Ecommerce",

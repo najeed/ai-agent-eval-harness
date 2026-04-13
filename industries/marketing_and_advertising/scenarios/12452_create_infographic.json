@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create an Infographic",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12452-create-infographic"
   },
   "description": "A content marketer wants to turn a data-heavy blog post into a more visually engaging infographic.",
   "industry": "Marketing and Advertising",

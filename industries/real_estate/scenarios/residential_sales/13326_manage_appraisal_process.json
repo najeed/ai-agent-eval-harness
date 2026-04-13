@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage the Appraisal Process",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13326-manage-appraisal-process"
   },
   "description": "After a contract is signed, the buyer's lender orders an appraisal. The listing agent must provide information to the appraiser.",
   "industry": "Real Estate",

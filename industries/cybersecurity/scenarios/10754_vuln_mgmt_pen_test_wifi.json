@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Wireless Network Penetration Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10754-vuln-mgmt-pen-test-wifi"
   },
   "description": "A penetration tester is tasked with cracking the password for the corporate guest Wi-Fi network.",
   "industry": "Cybersecurity",

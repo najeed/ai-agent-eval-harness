@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft an Affidavit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12157-draft-affidavit"
   },
   "description": "In support of a motion, an attorney needs to draft an affidavit for a witness to sign, attesting to certain facts.",
   "industry": "Legal",

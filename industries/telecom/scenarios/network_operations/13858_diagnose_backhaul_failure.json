@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Diagnose Cell Tower Failure - Backhaul",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13858-diagnose-backhaul-failure"
   },
   "description": "A cell tower is online but not passing traffic. The agent suspects a backhaul link failure.",
   "industry": "Telecom",

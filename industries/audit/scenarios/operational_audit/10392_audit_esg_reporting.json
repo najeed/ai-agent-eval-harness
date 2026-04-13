@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Environmental, Social, and Governance (ESG) Reporting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10392-audit-esg-reporting"
   },
   "description": "An auditor reviews the data and processes used to create the company's annual ESG report.",
   "industry": "Audit",

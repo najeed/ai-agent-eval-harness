@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book a Cruise Cabin",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13956-book-cruise-cabin"
   },
   "description": "A couple wants to book an oceanview cabin on a 7-night Caribbean cruise.",
   "industry": "Tourism",

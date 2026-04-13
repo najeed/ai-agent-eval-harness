@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book Adjoining Hotel Rooms",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13935-book-adjoining-rooms"
   },
   "description": "A family requires two adjoining rooms for their stay.",
   "industry": "Tourism",

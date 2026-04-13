@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Pick Face Stockout",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12290-handle-pick-face-stockout"
   },
   "description": "A picker is directed to a location, but finds it empty. They must report the stockout so it can be resolved.",
   "industry": "Logistics and Warehousing",

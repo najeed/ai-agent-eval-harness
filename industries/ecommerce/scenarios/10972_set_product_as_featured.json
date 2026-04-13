@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set a Product as Featured on Homepage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10972-set-product-as-featured"
   },
   "description": "A merchandiser wants to feature a new, high-margin product in the 'Featured Products' section of the homepage.",
   "industry": "Ecommerce",

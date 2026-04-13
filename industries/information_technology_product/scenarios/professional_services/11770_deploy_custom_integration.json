@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deploy Custom Integration to Production",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11770-deploy-custom-integration"
   },
   "description": "A custom integration has passed UAT and is ready to be deployed to the customer's production environment.",
   "industry": "Information Technology Product",

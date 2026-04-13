@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Wastewater Compliance Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14143-wastewater-compliance-report"
   },
   "description": "A plant manager needs to generate a monthly Discharge Monitoring Report (DMR) for the environmental regulator.",
   "industry": "Utilities",

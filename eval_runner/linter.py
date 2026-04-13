@@ -41,8 +41,13 @@ class ScenarioLinter:
             return results
 
         try:
+            import yaml
+
             with open(p, encoding="utf-8") as f:
-                data = json.load(f)
+                if p.suffix in [".yaml", ".yml", ".aes"]:
+                    data = yaml.safe_load(f)
+                else:
+                    data = json.load(f)
         except Exception as e:
             results["status"] = "fail"
             results["errors"].append(f"Invalid JSON: {str(e)}")
@@ -98,6 +103,10 @@ class ScenarioLinter:
             results["errors"].append("Metadata must be a JSON object")
             results["status"] = "fail"
         else:
+            if "id" not in metadata:
+                results["errors"].append("Missing mandatory forensic identifier: 'metadata.id'")
+                results["status"] = "fail"
+                results["score"] -= 40
             if "attribution" not in metadata:
                 results["warnings"].append("Missing recommended field: 'metadata.attribution'")
                 results["score"] -= 10

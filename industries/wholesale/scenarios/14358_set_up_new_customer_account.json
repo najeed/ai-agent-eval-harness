@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up a New Customer Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14358-set-up-new-customer-account"
   },
   "description": "A new retailer needs to be set up in the system before they can place their first order.",
   "industry": "Wholesale",

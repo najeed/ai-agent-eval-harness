@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Policy Dividend Option",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11989-change-dividend-option"
   },
   "description": "A participating whole life policyholder wants to change their dividend option from 'Paid in Cash' to 'Purchase Paid-Up Additions'.",
   "industry": "Insurance",

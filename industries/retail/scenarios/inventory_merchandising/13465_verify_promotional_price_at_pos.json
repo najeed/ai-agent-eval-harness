@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Promotional Price at POS",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13465-verify-promotional-price-at-pos"
   },
   "description": "A customer disputes the price of an item at checkout, saying it was on sale. The associate needs to verify the promotion.",
   "industry": "Retail",

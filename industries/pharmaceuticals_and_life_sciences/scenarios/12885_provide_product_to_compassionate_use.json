@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Product via Compassionate Use",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12885-provide-product-to-compassionate-use"
   },
   "description": "A physician requests access to an investigational drug for a seriously ill patient who is not eligible for a clinical trial (compassionate use).",
   "industry": "Pharmaceuticals and Life Sciences",

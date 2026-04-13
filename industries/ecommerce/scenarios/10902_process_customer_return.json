@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Customer Return for Refund",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10902-process-customer-return"
   },
   "description": "A customer service agent needs to process a return for a customer who was unsatisfied with their purchase.",
   "industry": "Ecommerce",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Rotable Parts Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10081-manage-rotable-parts"
   },
   "description": "An MRO facility manages a pool of rotable parts (repairable components). An agent must track a part through its entire repair and reuse cycle.",
   "industry": "Aerospace",

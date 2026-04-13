@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshoot a Ground Station Link",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10046-troubleshoot-ground-station-link"
   },
   "description": "A ground station is unable to establish a command link with a satellite. An operator must troubleshoot the issue.",
   "industry": "Aerospace",

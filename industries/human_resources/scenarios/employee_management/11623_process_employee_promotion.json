@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an Employee Promotion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11623-process-employee-promotion"
   },
   "description": "A manager wants to promote a direct report, which includes a title change and a salary increase.",
   "industry": "Human Resources",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Name on a Ticket",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13967-change-name-on-ticket"
   },
   "description": "A passenger booked a flight but made a typo in their last name. They need to correct it to match their ID.",
   "industry": "Tourism",

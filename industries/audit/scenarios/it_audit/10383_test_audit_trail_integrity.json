@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Test Audit Trail Integrity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10383-test-audit-trail-integrity"
   },
   "description": "An IT auditor tests to ensure that application audit trails cannot be altered.",
   "industry": "Audit",

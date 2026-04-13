@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Adherence to Brand Guidelines",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10380-audit-adherence-to-brand-guidelines"
   },
   "description": "A compliance auditor reviews marketing materials to ensure they comply with the company's official brand guidelines.",
   "industry": "Audit",

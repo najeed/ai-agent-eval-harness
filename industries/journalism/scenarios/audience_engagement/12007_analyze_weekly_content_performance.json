@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Weekly Content Performance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12007-analyze-weekly-content-performance"
   },
   "description": "An editor wants to review the performance of all articles published last week to understand what resonated with the audience.",
   "industry": "Journalism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue Campus-Wide Emergency Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11062-issue-emergency-alert"
   },
   "description": "Campus administration has decided to close the campus due to a severe weather event and needs to send an emergency alert.",
   "industry": "Education",

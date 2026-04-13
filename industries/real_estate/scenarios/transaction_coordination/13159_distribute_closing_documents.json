@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Distribute Final Closing Documents",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13159-distribute-closing-documents"
   },
   "description": "After a successful closing, the TC must create a final package of all transaction documents for the client.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Concrete Test Cylinder Samples",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10691-manage-concrete-testing-samples"
   },
   "description": "During a concrete pour, a technician takes test cylinders. The site manager must ensure they are correctly labeled and stored before being picked up by the lab.",
   "industry": "Construction",

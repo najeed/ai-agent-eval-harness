@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Low Water Pressure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14123-low-water-pressure-report"
   },
   "description": "A customer calls to report that their water pressure has been very low all day.",
   "industry": "Utilities",

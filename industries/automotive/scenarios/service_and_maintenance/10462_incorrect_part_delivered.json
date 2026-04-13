@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Incorrect Part Delivered for Repair",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10462-incorrect-part-delivered"
   },
   "description": "A technician discovers that the wrong part was delivered for a scheduled repair, delaying the job.",
   "industry": "Automotive",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Reports Check Engine Light",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10407-check-engine-light-diagnosis"
   },
   "description": "A customer's check engine light has come on, and they want to know what the problem is.",
   "industry": "Automotive",

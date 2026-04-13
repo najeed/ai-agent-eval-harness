@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue a Litigation Hold Notice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12138-send-document-retention-notice"
   },
   "description": "When new litigation is anticipated, an in-house counsel must issue a litigation hold notice to all relevant employees to preserve documents.",
   "industry": "Legal",

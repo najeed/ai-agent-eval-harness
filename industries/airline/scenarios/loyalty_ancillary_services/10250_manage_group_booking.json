@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Group Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10250-manage-group-booking"
   },
   "description": "The leader of a group booking needs to submit the final list of passenger names.",
   "industry": "Airline",

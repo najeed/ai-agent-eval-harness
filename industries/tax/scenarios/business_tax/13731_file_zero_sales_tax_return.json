@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Zero Sales Tax Return",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13731-file-zero-sales-tax-return"
   },
   "description": "A new business was registered for sales tax but had no sales during its first quarter. It still needs to file a return.",
   "industry": "Tax",

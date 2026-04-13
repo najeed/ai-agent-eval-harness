@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Accrue Monthly Property Taxes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00060-accrue-property-taxes"
   },
   "description": "Property taxes are paid twice a year, but for accurate monthly financial statements, the expense must be accrued each month.",
   "industry": "Accounting",

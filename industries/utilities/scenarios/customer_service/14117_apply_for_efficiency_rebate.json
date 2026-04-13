@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply for Energy Efficiency Rebate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14117-apply-for-efficiency-rebate"
   },
   "description": "A customer has purchased a new energy-efficient air conditioner and wants to apply for a $100 rebate.",
   "industry": "Utilities",

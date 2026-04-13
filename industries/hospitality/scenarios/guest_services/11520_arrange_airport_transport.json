@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Concierge Request - Arrange Airport Transport",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11520-arrange-airport-transport"
   },
   "description": "A guest needs the concierge to arrange a car service to the airport for their departure tomorrow.",
   "industry": "Hospitality",

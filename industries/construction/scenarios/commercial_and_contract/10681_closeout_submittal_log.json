@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Close Out the Submittal Log",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10681-closeout-submittal-log"
   },
   "description": "As part of project closeout, a project engineer must ensure every item in the submittal log has been reviewed and closed.",
   "industry": "Construction",

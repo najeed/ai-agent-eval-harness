@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Live-Tweet a Sporting Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12032-live-tweet-a-sporting-event"
   },
   "description": "A sports reporter is covering a championship game and needs to provide real-time updates and commentary on Twitter.",
   "industry": "Journalism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft a Motion for Summary Judgment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12103-draft-motion-for-summary-judgment"
   },
   "description": "A litigation associate needs to draft a motion for summary judgment, arguing that there are no genuine disputes of material fact.",
   "industry": "Legal",

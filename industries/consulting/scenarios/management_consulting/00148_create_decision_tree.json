@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Decision Tree",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00148-create-decision-tree"
   },
   "description": "An agent must create a decision tree to help a client decide whether to launch a new product.",
   "industry": "Consulting",

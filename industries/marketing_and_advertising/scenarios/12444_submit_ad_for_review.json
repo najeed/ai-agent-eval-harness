@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Submit Ad for Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12444-submit-ad-for-review"
   },
   "description": "A designer has finished creating a new set of ads and needs to submit them to the client for approval.",
   "industry": "Marketing and Advertising",

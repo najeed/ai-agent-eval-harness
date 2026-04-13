@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up a 301 Redirect",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12472-set-up-redirect-for-old-page"
   },
   "description": "An old webpage is being deleted, and an SEO specialist needs to set up a 301 (permanent) redirect to send users and search engines to a new, relevant page.",
   "industry": "Marketing and Advertising",

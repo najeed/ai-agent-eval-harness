@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct an Exit Interview",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11611-conduct-exit-interview"
   },
   "description": "An employee has resigned, and HR needs to conduct an exit interview to gather feedback.",
   "industry": "Human Resources",

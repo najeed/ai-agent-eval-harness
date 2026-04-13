@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Reefer Container at the Gate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12962-manage-reefer-at-gate"
   },
   "description": "A truck arrives to drop off a reefer container with perishable goods. The gate process includes an extra step.",
   "industry": "Ports",

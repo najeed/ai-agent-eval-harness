@@ -3,6 +3,8 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "predev": "robocopy ..\\spec public\\spec /MIR /NFL /NDL /NJH /NJS /nc /ns /np || exit 0",
+    "prebuild": "robocopy ..\\spec public\\spec /MIR /NFL /NDL /NJH /NJS /nc /ns /np || exit 0",
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",

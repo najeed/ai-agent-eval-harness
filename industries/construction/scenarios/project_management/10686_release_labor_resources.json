@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Release Labor Resources",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10686-release-labor-resources"
   },
   "description": "The framing phase is complete. The PM needs to release the framing crew from the project so they can be assigned elsewhere.",
   "industry": "Construction",

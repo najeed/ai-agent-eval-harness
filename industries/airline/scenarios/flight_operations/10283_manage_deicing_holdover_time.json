@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage De-icing Holdover Time",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10283-manage-deicing-holdover-time"
   },
   "description": "After being de-iced, a flight is delayed on the ground. The pilot must track the holdover time to ensure the de-icing fluid remains effective.",
   "industry": "Airline",

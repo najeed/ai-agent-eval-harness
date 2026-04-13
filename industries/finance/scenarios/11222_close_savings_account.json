@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Close Savings Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11222-close-savings-account"
   },
   "description": "A customer wants to close their savings account and transfer the balance to their checking account.",
   "industry": "Finance",

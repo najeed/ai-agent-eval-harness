@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Release a Stuck User License",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11789-release-stuck-license"
   },
   "description": "A user's license is 'stuck' to a machine that is no longer available, and they need it released so they can activate it on a new machine.",
   "industry": "Information Technology Product",

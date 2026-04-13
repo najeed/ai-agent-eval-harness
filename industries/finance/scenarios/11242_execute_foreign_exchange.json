@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Execute a Foreign Exchange (FX) Spot Trade",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11242-execute-foreign-exchange"
   },
   "description": "A corporate treasury needs to convert 1 million EUR to USD to fund US operations.",
   "industry": "Finance",

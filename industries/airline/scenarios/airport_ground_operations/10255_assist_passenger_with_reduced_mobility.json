@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assist a Passenger with Reduced Mobility (PRM)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10255-assist-passenger-with-reduced-mobility"
   },
   "description": "A passenger who requested wheelchair assistance has arrived at the check-in desk. The agent must ensure they are assisted to the gate.",
   "industry": "Airline",

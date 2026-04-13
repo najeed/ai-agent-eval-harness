@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review IT Asset Management",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10382-review-it-asset-management"
   },
   "description": "An IT auditor reviews the process for tracking IT assets like laptops and servers.",
   "industry": "Audit",

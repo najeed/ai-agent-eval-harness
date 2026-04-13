@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Customer with Revised ETA",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14066-update-customer-eta"
   },
   "description": "A driver is delayed by weather. The dispatcher must provide the customer with a new estimated time of arrival (ETA).",
   "industry": "Transportation",

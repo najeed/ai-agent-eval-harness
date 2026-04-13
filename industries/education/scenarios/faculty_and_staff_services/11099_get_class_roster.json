@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Get a Class Roster",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11099-get-class-roster"
   },
   "description": "A professor needs a printable roster for their class to take attendance on the first day.",
   "industry": "Education",

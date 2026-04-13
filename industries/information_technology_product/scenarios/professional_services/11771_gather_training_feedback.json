@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Gather Post-Training Feedback",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11771-gather-training-feedback"
   },
   "description": "After a training session, the consultant sends out a feedback survey to attendees.",
   "industry": "Information Technology Product",

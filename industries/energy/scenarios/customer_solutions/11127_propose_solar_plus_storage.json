@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Propose Solar Plus Storage Solution",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11127-propose-solar-plus-storage"
   },
   "description": "A sales agent is creating a proposal for a commercial customer for a rooftop solar and battery storage system.",
   "industry": "Energy",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate a List of Top-Selling Products",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10951-generate-a-list-of-top-selling-products"
   },
   "description": "A marketing manager needs a report of the top 10 best-selling products from the last quarter to plan a new campaign.",
   "industry": "Ecommerce",

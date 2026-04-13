@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book Team Hotel for Away Game",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13624-book-team-hotel"
   },
   "description": "A travel manager needs to book a block of hotel rooms for the team for an upcoming away game.",
   "industry": "Sports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Client Onboarding - Handover to Service Desk",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11890-client-onboarding-handover-to-service"
   },
   "description": "The onboarding project for a new client is complete, and a formal handover meeting is held with the service desk team.",
   "industry": "Information Technology Service",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add a Joint Owner to an Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11270-add-joint-owner-to-account"
   },
   "description": "A customer wants to add their spouse as a joint owner with rights of survivorship to their checking account.",
   "industry": "Finance",

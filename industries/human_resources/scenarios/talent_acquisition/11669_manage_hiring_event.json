@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Campus Hiring Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11669-manage-hiring-event"
   },
   "description": "A university recruiting team is managing a career fair, including registering candidates and tracking applications.",
   "industry": "Human Resources",

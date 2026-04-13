@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Price Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13461-perform-a-price-change"
   },
   "description": "A category manager has decided to permanently lower the price of an item. A store associate needs to update the shelf label.",
   "industry": "Retail",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Financial Forecast",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11219-update-financial-forecast"
   },
   "description": "An FP&A analyst needs to update the quarterly revenue forecast based on new sales data.",
   "industry": "Finance",

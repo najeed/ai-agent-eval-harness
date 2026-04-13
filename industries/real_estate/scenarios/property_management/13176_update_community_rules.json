@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update and Distribute Community Rules",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13176-update-community-rules"
   },
   "description": "A property management company is updating the community rules for an apartment complex (e.g., new pool hours).",
   "industry": "Real Estate",

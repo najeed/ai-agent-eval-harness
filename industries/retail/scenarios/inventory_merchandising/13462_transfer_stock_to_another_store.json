@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Transfer Stock to Another Store",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13462-transfer-stock-to-another-store"
   },
   "description": "A nearby store is out of a key item, and the district manager has asked this store to transfer some of its stock to them.",
   "industry": "Retail",

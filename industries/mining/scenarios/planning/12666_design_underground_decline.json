@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Design Underground Decline Access",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12666-design-underground-decline"
   },
   "description": "A mining engineer designs the main decline (a spiral tunnel) that will serve as the primary access for trucks and equipment into a new underground mine.",
   "industry": "Mining",

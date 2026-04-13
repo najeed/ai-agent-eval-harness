@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate Asset Depreciation Schedule",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10197-asset-depreciation-schedule"
   },
   "description": "An accountant for a farm needs to calculate the annual depreciation for a new tractor for tax purposes.",
   "industry": "Agriculture",

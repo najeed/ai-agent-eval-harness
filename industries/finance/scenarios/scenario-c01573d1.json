@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Loan Approval Agent",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "scenario-c01573d1"
   },
   "description": "The Loan Approval Agent is an AI-powered assistant that evaluates loan applications based on specific financial criteria. It uses external tools to verify credit scores and perform debt-to-income (DTI) calculations.",
   "industry": "finance",

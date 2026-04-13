@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Customer Bankruptcy Filing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14397-handle-customer-bankruptcy"
   },
   "description": "A customer files for bankruptcy. The finance department must file a claim for any outstanding debt.",
   "industry": "Wholesale",

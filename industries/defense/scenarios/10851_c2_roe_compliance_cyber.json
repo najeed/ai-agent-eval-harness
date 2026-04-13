@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cyber Attack ROE Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10851-c2-roe-compliance-cyber"
   },
   "description": "A cyber commander must verify that a proposed cyberattack against an adversary's infrastructure complies with the Law of Armed Conflict and specific ROE.",
   "industry": "Defense",

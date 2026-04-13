@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Bates Stamp Documents for Production",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12171-bate-stamp-documents"
   },
   "description": "A paralegal needs to apply unique Bates stamp numbers to a set of documents before producing them in discovery.",
   "industry": "Legal",

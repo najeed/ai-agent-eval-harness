@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan a Satellite's Orbit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10003-plan-satellite-orbit"
   },
   "description": "A mission planner needs to design a stable orbit for a new Earth observation satellite that provides coverage of specific regions.",
   "industry": "Aerospace",

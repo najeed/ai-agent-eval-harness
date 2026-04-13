@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Full Policy Surrender",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11957-process-policy-surrender"
   },
   "description": "A whole life policyholder wants to surrender their policy for its cash value.",
   "industry": "Insurance",

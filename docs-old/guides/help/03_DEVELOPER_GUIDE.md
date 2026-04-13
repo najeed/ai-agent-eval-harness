@@ -19,10 +19,10 @@ This guide is for engineers building on or extending the harness.
 
 ## 1.5 Zero-Hardcode Versioning (SSOT)
 
-To maintain industrial auditability, AgentEval follows a **Single Source of Truth (SSOT)** for all versioning. Do NOT hardcode version strings (e.g. `1.3.0`) in logic or tests.
+To maintain industrial auditability, AgentV follows a **Single Source of Truth (SSOT)** for all versioning. Do NOT hardcode version strings (e.g. `1.3.0`) in logic or tests.
 
 ### Programmatic Access
-Always import the authoritative version from the core config:
+Always import the version from the core config:
 ```python
 from eval_runner import config
 print(f"Harness Version: {config.VERSION}")
@@ -141,9 +141,12 @@ def on_tool_request(self, context: TurnContext, tool_name: str, args: dict) -> b
 ### 4.3 Extending the Integrated Visual Suite (Native GUI)
 The Visual Suite uses a **Secure Handoff** architecture and provides integrated high-level features like the **Visual Scenario Editor** (persists directly to disk) and the **Visual DNA Debugger** (taps into engine events).
 
-#### Secure Handoff Workflow:
+#### Secure Industrial Handoff:
 1. **JWT Issuance**: The frontend requests a short-lived (60s) handoff token from `/api/auth/handoff`.
 2. **Authentication**: The plugin route must be decorated with `@handoff_required` to verify this token.
+3. **Consolidated API**: All industrial triggers (e.g., `/api/v1/evaluate`, `/api/v1/certify`) reside under the `v1/` sub-prefix.
+    - **`POST /api/v1/evaluate`**: Requires `path` (scenario JSON); returns `run_id`.
+    - **`POST /api/v1/certify`**: Requires `run_id`; returns a cryptographically signed VC manifest.
 3. **Dual Rendering Modes**:
    - **Mode A (Native SDUI)**: If the endpoint returns `application/json` with a UI spec, the console renders it using native React components.
    - **Mode B (Secure WebView)**: If it returns HTML, the console renders an authenticated WebView.
@@ -257,7 +260,7 @@ The `ToolSandbox` now supports automated environment management via lifecycle ho
 Cleanup is conditional based on the scenario metadata:
 ```json
 {
-  "scenario_id": "example-123",
+  "id": "example-123",
   "metadata": {
     "cleanup_workspace": true
   }
@@ -331,10 +334,11 @@ def admin_settings():
 
 The harness uses an **ED25519-based signing protocol** to ensure the integrity of evaluation artifacts.
 
-### 12.1 Signing Workflow
-- **Key Generation**: If `AES_PRIVATE_KEY` is missing from `.env`, the engine auto-generates a key in `.aes/keys/`.
-- **Manifest Signing**: The `ArtifactPlugin` generates an `audit_manifest.json` for every run, containing hashes of all traces and reports, signed by the system's private key.
-- **Verification**: Use `agentv verify --run-id <id>` to validate the signature against the public key.
+### 12.1 Industrial Signing Workflow (AES v1.5.0 Strict)
+- **Zero-Inference Policy**: Certification MUST include an explicit `run_id`. Speculative inference from parent directories is prohibited.
+- **Vault Affinity**: Traces MUST reside in a compliant industrial vault (`runs/<run_id>/run.jsonl`) or in the master log (`runs/run.jsonl`).
+- **Zero-Copy Signing**: Traces are signed directly within the vault to ensure forensic sidecars remain relative and portable.
+- **Verification**: Use `agentv verify --run-id <id>` to validate the signature against the public key using the industrial trust gate.
 
 ### 12.2 CI/CD Hard Gates
 The `gate` command enforces these signatures in pipeline environments, preventing unverified or tampered results from passing the build.
@@ -392,7 +396,7 @@ Because the backend uses **Permission-Based Access Control (PBAC)**, standard `f
 
 ## 🛠️ 15 Cumulative Industrial Registry (v1.3.0)
 
-To support high-stakes, multi-tenant agent evaluations, AgentEval v1.3.0 implements a **Cumulative Distributed Registry**. This architecture ensures that core infrastructure remains stable while allowing custom extensions and local configurations to layer their own state on top of the baseline. They are consumed in the following order:
+To support high-stakes, multi-tenant agent evaluations, AgentV v1.3.0 implements a **Cumulative Distributed Registry**. This architecture ensures that core infrastructure remains stable while allowing custom extensions and local configurations to layer their own state on top of the baseline. They are consumed in the following order:
 
 - `00_*.json` — Core extensions or base infrastructural layers.
 - `10_*.json` — Vertical industry extensions (Fintech, Healthcare).

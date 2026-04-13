@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Water Main Break",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13069-report-water-main-break"
   },
   "description": "A citizen reports water gushing from the street, indicating a likely water main break.",
   "industry": "Public Sector",

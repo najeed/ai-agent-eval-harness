@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Select Material for Corrosive Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11439-select-material-for-corrosive-service"
   },
   "description": "A mechanical engineer is designing a tank for storing a corrosive chemical and must select an appropriate, cost-effective material.",
   "industry": "Heavy Industries",

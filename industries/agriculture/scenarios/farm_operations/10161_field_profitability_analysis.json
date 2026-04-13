@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Field-Level Profitability",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10161-field-profitability-analysis"
   },
   "description": "At the end of the year, a farm manager wants to analyze the profitability of each individual field.",
   "industry": "Agriculture",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Schedule Delay Due to Weather",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10601-schedule-delay-weather"
   },
   "description": "A project manager must update the project schedule to account for three days of lost work due to severe weather.",
   "industry": "Construction",

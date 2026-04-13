@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Bank Account Analysis Statement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00067-bank-fee-analysis"
   },
   "description": "The treasurer receives the monthly account analysis statement from the bank and needs to verify the fees charged for services like wires, ACH, and lockbox processing.",
   "industry": "Accounting",

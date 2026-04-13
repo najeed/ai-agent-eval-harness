@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Validate Soil Moisture Sensor Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10182-sensor-data-validation"
   },
   "description": "A soil moisture sensor is giving erratic readings. The agent needs to diagnose if the sensor is faulty.",
   "industry": "Agriculture",

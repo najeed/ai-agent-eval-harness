@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Attorney CLE Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12184-check-for-cle-compliance"
   },
   "description": "A firm administrator needs to check the Continuing Legal Education (CLE) compliance status for all attorneys in the firm ahead of the annual reporting deadline.",
   "industry": "Legal",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Daily Team Huddle",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13411-conduct-daily-team-huddle"
   },
   "description": "A manager starts the day by leading a team huddle to communicate daily sales goals and priorities.",
   "industry": "Retail",

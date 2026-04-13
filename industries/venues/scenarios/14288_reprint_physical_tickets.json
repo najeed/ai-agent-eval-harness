@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reprint Physical Tickets",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14288-reprint-physical-tickets"
   },
   "description": "A guest arrives at the box office saying they left their printed tickets at home.",
   "industry": "Venues",

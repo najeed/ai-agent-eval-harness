@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Flight Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10204-create-flight-plan"
   },
   "description": "A flight dispatcher needs to create the operational flight plan for a flight from London (LHR) to Dubai (DXB).",
   "industry": "Airline",

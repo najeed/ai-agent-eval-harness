@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit the Capital Expenditure (CapEx) Process",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10359-audit-capital-expenditure-process"
   },
   "description": "An auditor reviews the process for approving large capital expenditures.",
   "industry": "Audit",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Negotiate a Vendor Contract Renewal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11575-negotiate-vendor-contract"
   },
   "description": "The contract with the hotel's landscaping vendor is up for renewal, and the general manager wants to negotiate better terms.",
   "industry": "Hospitality",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Bulk Update Product Tags for SEO",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10944-bulk-update-product-tags"
   },
   "description": "An SEO specialist wants to add a new tag (e.g., 'eco-friendly') to a list of products to improve their search filterability.",
   "industry": "Ecommerce",

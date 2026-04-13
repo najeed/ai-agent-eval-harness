@@ -151,7 +151,7 @@ def isolate_plugin_registry(tmp_path, monkeypatch):
     with open(registry_file, "w", encoding="utf-8") as f:
         json.dump({"plugins": []}, f)
 
-    # Monkeypatch the authoritative paths in plugins.py
+    # Monkeypatch the paths in plugins.py
     from eval_runner import plugins
 
     monkeypatch.setattr(plugins, "PERSISTENT_PLUGINS_PATH", registry_file)

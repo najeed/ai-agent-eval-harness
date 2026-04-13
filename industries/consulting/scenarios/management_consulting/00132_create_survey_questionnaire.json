@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Customer Survey Questionnaire",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00132-create-survey-questionnaire"
   },
   "description": "To gather customer feedback for a client, an agent must create a survey questionnaire.",
   "industry": "Consulting",

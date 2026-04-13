@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Guest Uses Express Check-out",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11579-express-check-out"
   },
   "description": "A guest who is in a hurry drops their key at the desk and asks to be checked out, requesting the receipt be emailed.",
   "industry": "Hospitality",

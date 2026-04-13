@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispatch Quay Crane to a Vessel",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12910-dispatch-crane-to-vessel"
   },
   "description": "A vessel has berthed and is ready to begin cargo operations. A dispatcher must assign cranes to start discharging containers.",
   "industry": "Ports",

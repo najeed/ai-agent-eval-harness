@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Subcontractor Progress Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11402-process-subcontractor-invoice"
   },
   "description": "A subcontractor has submitted an invoice for work completed last month. The project controls team must verify the progress claimed before approving payment.",
   "industry": "Heavy Industries",

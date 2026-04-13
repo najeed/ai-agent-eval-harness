@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Customer Referral Bonus",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11790-process-referral-bonus"
   },
   "description": "An existing customer referred a new customer who has just signed up. The existing customer is now owed a referral bonus.",
   "industry": "Information Technology Product",

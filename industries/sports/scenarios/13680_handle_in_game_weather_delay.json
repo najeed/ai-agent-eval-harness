@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle In-Game Weather Delay",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13680-handle-in-game-weather-delay"
   },
   "description": "A lightning storm forces a temporary suspension of a game. The league official on site must manage the delay.",
   "industry": "Sports",

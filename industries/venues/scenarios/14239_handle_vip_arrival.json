@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a VIP Arrival",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14239-handle-vip-arrival"
   },
   "description": "The CEO of a major sponsor is arriving for a game and needs to be escorted to their suite.",
   "industry": "Venues",

@@ -69,7 +69,7 @@ class PublicationPlugin(BaseEvalPlugin):
 
         summary = {
             "run_fingerprint": self._generate_fingerprint(context),
-            "scenario_id": context.scenario_id,
+            "id": context.identifier,
             "agent": agent_name,
             "timestamp": datetime.now().isoformat(),
             "runs": len(pass_flags),
@@ -108,8 +108,8 @@ class PublicationPlugin(BaseEvalPlugin):
     def _generate_fingerprint(self, context):
         args = context.metadata.get("args", {})
         seed = args.get("seed", 0) or 0
-        scenario_id = context.scenario_id
-        raw = f"{scenario_id}-{seed}-{datetime.now().strftime('%Y%m%d')}"
+        identifier = context.identifier
+        raw = f"{identifier}-{seed}-{datetime.now().strftime('%Y%m%d')}"
         return hashlib.sha256(raw.encode()).hexdigest()[:12]
 
     def _wilson_score_interval(self, p, n):
@@ -156,7 +156,7 @@ class PublicationPlugin(BaseEvalPlugin):
             with open(baseline_path) as f:
                 baselines = json.load(f)
 
-            s_id = summary["scenario_id"]
+            s_id = summary["id"]
             if s_id in baselines:
                 old_rate = baselines[s_id].get("pass_rate", 0)
                 new_rate = summary["metrics"]["pass_rate"]

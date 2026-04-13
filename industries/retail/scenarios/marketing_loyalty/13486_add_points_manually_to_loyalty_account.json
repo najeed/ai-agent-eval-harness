@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add Points Manually to Loyalty Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13486-add-points-manually-to-loyalty-account"
   },
   "description": "A customer forgot to use their loyalty card during a previous purchase. A customer service agent needs to add the points manually.",
   "industry": "Retail",

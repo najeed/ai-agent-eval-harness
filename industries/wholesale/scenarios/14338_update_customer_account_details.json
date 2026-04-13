@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Customer Account Details",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14338-update-customer-account-details"
   },
   "description": "A retailer has moved to a new location and needs to update their billing and shipping addresses.",
   "industry": "Wholesale",

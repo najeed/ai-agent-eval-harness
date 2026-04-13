@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Adjust Production Schedule for Rush Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10528-adjust-production-schedule"
   },
   "description": "Sales has accepted a high-priority rush order that must be inserted into an already full production schedule.",
   "industry": "Chemicals",

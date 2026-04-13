@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Maintenance Parts Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14082-manage-parts-inventory"
   },
   "description": "A mechanic uses a part (e.g., a filter) for a repair. The inventory system must be updated, and the part reordered if stock is low.",
   "industry": "Transportation",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Authorize Access to a Secure Facility",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13523-authorize-access-to-a-secure-facility"
   },
   "description": "A contractor needs temporary access to a secure room in a city building. An operator must grant them access for a specific time window.",
   "industry": "Smart Cities",

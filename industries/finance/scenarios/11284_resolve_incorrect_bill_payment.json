@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Incorrect Bill Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11284-resolve-incorrect-bill-payment"
   },
   "description": "A customer used bill pay to send money to a utility company, but entered the wrong account number and the payment was not credited.",
   "industry": "Finance",

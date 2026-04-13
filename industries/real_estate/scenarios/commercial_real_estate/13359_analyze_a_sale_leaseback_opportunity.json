@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze a Sale-Leaseback Opportunity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13359-analyze-a-sale-leaseback-opportunity"
   },
   "description": "An investment agent is analyzing a deal where a company wants to sell its corporate headquarters and lease it back from the new owner.",
   "industry": "Real Estate",

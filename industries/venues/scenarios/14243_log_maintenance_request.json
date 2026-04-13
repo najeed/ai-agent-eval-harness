@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Log a Facility Maintenance Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14243-log-maintenance-request"
   },
   "description": "An usher notices a broken armrest on a seat and reports it.",
   "industry": "Venues",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Guest-Caused Room Damage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11594-report-room-damage"
   },
   "description": "After a guest checks out, housekeeping finds significant damage to the room (e.g., a broken chair, stained carpet).",
   "industry": "Hospitality",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document Patient Education",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11330-document-patient-education"
   },
   "description": "A nurse has just educated a newly diagnosed diabetic patient on how to use a glucose meter. This education must be documented.",
   "industry": "Healthcare",

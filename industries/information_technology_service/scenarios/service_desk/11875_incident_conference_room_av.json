@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Incident - Conference Room AV Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11875-incident-conference-room-av"
   },
   "description": "A user reports they are unable to get the presentation to show on the main screen in a conference room.",
   "industry": "Information Technology Service",

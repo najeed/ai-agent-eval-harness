@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Fire Alarm at City Library",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13533-investigate-fire-alarm-at-city-library"
   },
   "description": "A fire alarm is triggered at the city library after hours. An operator must verify the alarm and dispatch the fire department.",
   "industry": "Smart Cities",

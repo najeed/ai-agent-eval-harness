@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "E-file a State Tax Return",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13712-e-file-state-tax-return"
   },
   "description": "After filing the federal return, a taxpayer needs to e-file their state income tax return.",
   "industry": "Tax",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Remediation of a Prior Audit Finding",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10317-track-remediation-of-prior-finding"
   },
   "description": "An auditor follows up on a high-risk finding from a previous audit to ensure it has been remediated by management.",
   "industry": "Audit",

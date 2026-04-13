@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Shipping Document Discrepancy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10507-resolve-shipping-document-discrepancy"
   },
   "description": "A shipment is held at a port because the batch number on the bill of lading does not match the batch number on the container. Logistics must resolve this urgently.",
   "industry": "Chemicals",

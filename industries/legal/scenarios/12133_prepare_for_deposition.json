@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare a Witness for Deposition",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12133-prepare-for-deposition"
   },
   "description": "An attorney needs to prepare a key witness for an upcoming deposition.",
   "industry": "Legal",

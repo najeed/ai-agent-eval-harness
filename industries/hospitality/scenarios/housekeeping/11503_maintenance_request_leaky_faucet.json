@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Maintenance Request - Leaky Faucet",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11503-maintenance-request-leaky-faucet"
   },
   "description": "A guest reports a leaky faucet in their bathroom.",
   "industry": "Hospitality",

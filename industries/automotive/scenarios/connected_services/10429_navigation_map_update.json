@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "In-Car Navigation Map Update Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10429-navigation-map-update"
   },
   "description": "A customer is asking how to update the maps in their car's built-in navigation system.",
   "industry": "Automotive",

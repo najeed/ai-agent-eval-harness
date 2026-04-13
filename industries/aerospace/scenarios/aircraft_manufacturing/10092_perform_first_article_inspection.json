@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a First Article Inspection (FAI)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10092-perform-first-article-inspection"
   },
   "description": "When a supplier produces a part for the first time, a quality engineer must perform an FAI to verify that their production process creates a part that conforms to the drawing.",
   "industry": "Aerospace",

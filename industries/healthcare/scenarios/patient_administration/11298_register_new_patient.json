@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Register a New Patient",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11298-register-new-patient"
   },
   "description": "A front desk staff member needs to register a new patient for their first appointment.",
   "industry": "Healthcare",

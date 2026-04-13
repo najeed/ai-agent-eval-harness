@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage In-Pit Crushing and Conveying",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12658-manage-in-pit-crushing"
   },
   "description": "An operator manages an in-pit crushing and conveying (IPCC) system, where ore is crushed inside the pit and transported out via conveyor, instead of by truck.",
   "industry": "Mining",

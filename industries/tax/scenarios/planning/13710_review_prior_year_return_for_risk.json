@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Prior Year Return for Audit Risk",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13710-review-prior-year-return-for-risk"
   },
   "description": "A new client wants their previous year's tax return, prepared by someone else, reviewed for potential audit risks.",
   "industry": "Tax",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Land Lease Agreement Management",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11164-land-lease-agreement-management"
   },
   "description": "A land manager needs to track and manage upcoming payments for dozens of land lease agreements for a solar project.",
   "industry": "Energy",

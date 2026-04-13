@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Top Performing Content of the Month",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12574-identify-top-performing-content"
   },
   "description": "A content manager wants a report on the top 10 most-watched movies and TV shows on the streaming platform for the previous month.",
   "industry": "Media and Entertainment",

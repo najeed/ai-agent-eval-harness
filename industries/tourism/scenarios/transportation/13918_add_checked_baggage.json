@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add Checked Baggage to Flight Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13918-add-checked-baggage"
   },
   "description": "A customer who already has a flight booking needs to add one piece of checked luggage.",
   "industry": "Tourism",

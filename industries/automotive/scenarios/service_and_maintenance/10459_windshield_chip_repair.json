@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Windshield Chip Repair",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10459-windshield-chip-repair"
   },
   "description": "A customer has a small chip in their windshield and wants to know if it can be repaired.",
   "industry": "Automotive",

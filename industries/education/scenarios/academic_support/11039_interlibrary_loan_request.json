@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request an Interlibrary Loan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11039-interlibrary-loan-request"
   },
   "description": "A graduate student needs a book for their research that is not available in the university's library system.",
   "industry": "Education",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispute a Minibar Charge on Folio",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13913-dispute-minibar-charge"
   },
   "description": "A guest checking out is disputing a charge for a minibar item they claim they did not consume.",
   "industry": "Tourism",

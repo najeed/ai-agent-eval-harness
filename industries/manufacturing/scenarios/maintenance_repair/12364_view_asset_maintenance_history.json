@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "View Asset Maintenance History",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12364-view-asset-maintenance-history"
   },
   "description": "A technician is investigating a recurring problem with a machine and wants to review its entire maintenance history.",
   "industry": "Manufacturing",

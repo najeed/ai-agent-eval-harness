@@ -21,15 +21,15 @@ class ContributeWizard:
             input("2. Enter Industry (e.g., 'retail', 'finance', 'telecom'): ").strip() or "generic"
         )
 
-        scenario_id = title.lower().replace(" ", "-")
-        filename = f"{scenario_id}.json"
+        id_val = title.lower().replace(" ", "-")
+        filename = f"{id_val}.json"
         target_dir = Path("industries") / industry / "scenarios"
         target_dir.mkdir(parents=True, exist_ok=True)
         target_path = target_dir / filename
 
         print(f"\n[Scaffold] Creating {filename}...")
         stub = {
-            "scenario_id": scenario_id,
+            "id": id_val,
             "title": title,
             "description": f"Evaluation for {title} in the {industry} industry.",
             "industry": industry,
@@ -87,7 +87,7 @@ class ContributeWizard:
         print("=" * 60)
         print(f"1. Open {target_path} and fill in the 'tasks' section.")
         print("2. Run 'agentv lint scenarios/' to verify again.")
-        print(f"3. Run 'git checkout -b contrib/{scenario_id}'")
+        print(f"3. Run 'git checkout -b contrib/{id_val}'")
         print("4. Commit and push your changes to GitHub.")
         print("5. Open a Pull Request! We appreciate your contribution.")
         print("=" * 60 + "\n")

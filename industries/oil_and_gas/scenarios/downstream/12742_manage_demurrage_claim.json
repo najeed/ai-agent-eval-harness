@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Shipping Demurrage Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12742-manage-demurrage-claim"
   },
   "description": "A vessel chartered to deliver crude oil was delayed from unloading at the terminal. The shipowner submits a demurrage claim for the extra time.",
   "industry": "Oil and Gas",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Security Deposit Refund",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13218-process-security-deposit-refund"
   },
   "description": "A tenant has moved out. After inspection, the agent must calculate and process the security deposit refund.",
   "industry": "Real Estate",

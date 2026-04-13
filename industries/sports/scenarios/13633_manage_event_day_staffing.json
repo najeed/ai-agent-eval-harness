@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Event Day Staffing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13633-manage-event-day-staffing"
   },
   "description": "On game day, several ushers call in sick. A manager needs to adjust staffing levels to ensure all sections are covered.",
   "industry": "Sports",

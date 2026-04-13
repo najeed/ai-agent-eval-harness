@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Food Allergy Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14244-handle-food-allergy-inquiry"
   },
   "description": "A guest with a severe peanut allergy asks a concession stand worker which items are safe for them to eat.",
   "industry": "Venues",

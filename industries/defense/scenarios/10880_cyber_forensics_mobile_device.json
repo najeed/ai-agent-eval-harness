@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Mobile Device Forensics",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10880-cyber-forensics-mobile-device"
   },
   "description": "An analyst must conduct a forensic analysis of a captured enemy combatant's smartphone to extract intelligence.",
   "industry": "Defense",

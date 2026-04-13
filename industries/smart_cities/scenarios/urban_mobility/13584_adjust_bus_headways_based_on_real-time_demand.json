@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Adjust Bus Headways Based on Real-Time Demand",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13584-adjust-bus-headways-based-on-real-time-demand"
   },
   "description": "Passenger demand on a certain route is higher than usual. An operator increases bus frequency to reduce wait times.",
   "industry": "Smart Cities",

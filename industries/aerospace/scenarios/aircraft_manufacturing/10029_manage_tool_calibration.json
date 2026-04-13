@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Tool Calibration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10029-manage-tool-calibration"
   },
   "description": "A metrology technician needs to manage the calibration schedule for torque wrenches used on the assembly line.",
   "industry": "Aerospace",

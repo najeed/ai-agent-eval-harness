@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Quality Control Testing Records",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10334-review-quality-control-testing-records"
   },
   "description": "A quality auditor reviews the testing records for a batch of manufactured products.",
   "industry": "Audit",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Student Placed on Academic Probation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11038-student-placed-on-academic-probation"
   },
   "description": "A student has received a notification that their GPA has dropped below 2.0 and they are on academic probation. They are calling for guidance.",
   "industry": "Education",

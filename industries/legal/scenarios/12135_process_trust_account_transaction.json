@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Trust Account Transaction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12135-process-trust-account-transaction"
   },
   "description": "A firm receives a settlement check on behalf of a client, which must be deposited into the client's trust account.",
   "industry": "Legal",

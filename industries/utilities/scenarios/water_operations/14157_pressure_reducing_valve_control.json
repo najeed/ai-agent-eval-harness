@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pressure Reducing Valve (PRV) Control",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14157-pressure-reducing-valve-control"
   },
   "description": "The system needs to adjust a PRV to manage pressure in a water distribution zone with changing demand.",
   "industry": "Utilities",

@@ -7,14 +7,14 @@ def test_triage_connection_error():
             "metrics": [{"success": False}],
             "conversation_history": [
                 {
-                    "role": "system",
+                    "identity": "system_id",
                     "content": {"status": "error", "message": "Connection refused"},
                 }
             ],
         }
     ]
     TriageEngine.apply_triage(results)
-    assert results[0].get("triage_tag") == "CONNECTION_ERROR"
+    assert results[0].get("triage_tag") == "INFRA_CONNECTION_FAILED"
 
 
 def test_triage_policy_violation():
@@ -25,7 +25,7 @@ def test_triage_policy_violation():
             "task_id": "t1",
             "metrics": [{"success": False}],
             "conversation_history": [
-                {"role": "environment", "content": {"status": "policy_violation"}}
+                {"identity": "env_id", "content": {"status": "policy_violation"}}
             ],
         }
     ]
@@ -40,11 +40,11 @@ def test_triage_tool_error():
         {
             "task_id": "t1",
             "metrics": [{"success": False}],
-            "conversation_history": [{"role": "environment", "content": {"status": "error"}}],
+            "conversation_history": [{"identity": "env_id", "content": {"status": "error"}}],
         }
     ]
     TriageEngine.apply_triage(results)
-    assert results[0].get("triage_tag") == "TOOL_ERROR"
+    assert results[0].get("triage_tag") == "INFRA_SIMULATOR_EXCEPTION"
 
 
 def test_triage_success_no_tag():
@@ -57,10 +57,11 @@ def test_triage_success_no_tag():
 def test_identify_root_cause_policy():
     from eval_runner.triage import TriageEngine
 
+    # Policy violations stay anchored at the detection point (direct result)
     history = [
         {"role": "user", "content": "hello"},
-        {"role": "agent", "content": {"action": "think"}},
-        {"role": "environment", "content": {"status": "policy_violation"}},
+        {"role": "agent", "identity": "agent_id", "content": {"action": "think"}},
+        {"identity": "env_id", "content": {"status": "policy_violation"}},
     ]
     assert TriageEngine.identify_root_cause_index(history) == 2
 
@@ -68,9 +69,10 @@ def test_identify_root_cause_policy():
 def test_identify_root_cause_tool_error():
     from eval_runner.triage import TriageEngine
 
+    # Infrastructure errors anchor to the preceding agent stimulus
     history = [
-        {"role": "agent", "content": {"action": "tool_x"}},  # Index 0
-        {"role": "environment", "content": {"status": "error"}},  # Index 1
+        {"role": "agent", "identity": "agent_id", "content": {"action": "tool_x"}},  # Index 0
+        {"identity": "env_id", "content": {"status": "error"}},  # Index 1
     ]
     assert TriageEngine.identify_root_cause_index(history) == 0
 
@@ -78,9 +80,10 @@ def test_identify_root_cause_tool_error():
 def test_identify_root_cause_fallback():
     from eval_runner.triage import TriageEngine
 
+    # Fallback anchors to the last agent action in history
     history = [
-        {"role": "agent", "content": {"action": "bad_decision"}},  # Index 0
-        {"role": "run_end", "status": "failed"},  # Index 1
+        {"role": "agent", "identity": "agent_id", "content": {"action": "bad_decision"}},  # Index 0
+        {"event": "run_end", "status": "failed"},  # Index 1
     ]
     assert TriageEngine.identify_root_cause_index(history) == 0
 
@@ -89,8 +92,14 @@ def test_identify_root_cause_metric_failure():
     from eval_runner.triage import TriageEngine
 
     history = [
-        {"role": "agent", "content": {"action": "bad_answer"}},  # Index 0
-        {"event": "evaluation", "metric": "clarity", "success": False, "value": 0.2},  # Index 1
+        {"role": "agent", "identity": "agent_id", "content": {"action": "bad_answer"}},  # Index 0
+        {
+            "event": "evaluation",
+            "identity": "system_id",
+            "metric": "clarity",
+            "success": False,
+            "value": 0.2,
+        },  # Index 1
     ]
     # Should point to the agent action at index 0
     assert TriageEngine.identify_root_cause_index(history) == 0
@@ -116,7 +125,6 @@ def test_triage_apply_triage_error_handling():
     # Test apply_triage when a result item is malformed (missing required keys)
     results = [{"not_a_task": True}]
     TriageEngine.apply_triage(results)
-    # Success verified by no exception being raised
 
 
 if __name__ == "__main__":

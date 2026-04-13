@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Integrate Payload on Satellite",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10010-integrate-payload-on-satellite"
   },
   "description": "Engineers in a cleanroom must integrate a high-resolution camera payload onto a satellite bus.",
   "industry": "Aerospace",

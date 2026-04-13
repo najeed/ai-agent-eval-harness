@@ -25,7 +25,7 @@ def test_no_silent_exception_blocks():
 
 
 def test_all_schemas_indexed():
-    """Verify that the Universal Registry indexes all 5 authoritative forensic schemas."""
+    """Verify that the Universal Registry indexes all 5 forensic schemas."""
     from eval_runner.loader import get_universal_registry
 
     registry = get_universal_registry()

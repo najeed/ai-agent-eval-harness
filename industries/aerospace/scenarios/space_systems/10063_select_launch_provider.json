@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Select a Launch Provider",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10063-select-launch-provider"
   },
   "description": "A satellite program manager needs to select a launch provider to get their new satellite into orbit.",
   "industry": "Aerospace",

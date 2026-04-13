@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Artist Cancellation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14269-handle-artist-cancellation"
   },
   "description": "A major artist has canceled their upcoming concert due to illness. The event manager must handle the fallout.",
   "industry": "Venues",

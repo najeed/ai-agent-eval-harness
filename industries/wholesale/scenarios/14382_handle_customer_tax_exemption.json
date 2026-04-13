@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Customer's Tax-Exempt Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14382-handle-customer-tax-exemption"
   },
   "description": "A new customer (e.g., a school or non-profit) is tax-exempt and provides their exemption certificate.",
   "industry": "Wholesale",

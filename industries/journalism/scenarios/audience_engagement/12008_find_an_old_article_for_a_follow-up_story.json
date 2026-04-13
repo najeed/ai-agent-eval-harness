@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find an Old Article for a Follow-Up Story",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12008-find-an-old-article-for-a-follow-up-story"
   },
   "description": "A reporter is writing a follow-up to a story published five years ago and needs to find the original article in the digital archive.",
   "industry": "Journalism",

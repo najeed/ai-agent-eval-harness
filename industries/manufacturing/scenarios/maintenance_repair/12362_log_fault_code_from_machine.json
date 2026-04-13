@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Log a Fault Code from a Machine",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12362-log-fault-code-from-machine"
   },
   "description": "A machine has thrown a fault code. A technician needs to log this code in the maintenance ticket to aid in diagnosis.",
   "industry": "Manufacturing",

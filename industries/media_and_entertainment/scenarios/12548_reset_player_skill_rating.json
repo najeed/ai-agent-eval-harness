@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Player Requests Skill Rating Reset",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12548-reset-player-skill-rating"
   },
   "description": "A long-absent player returns to a competitive game and requests their skill rating (MMR) be reset because they are out of practice.",
   "industry": "Media and Entertainment",

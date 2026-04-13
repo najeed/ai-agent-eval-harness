@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Select Best Parcel Carrier",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12235-select-parcel-carrier"
   },
   "description": "When packing a small e-commerce order, the system must automatically select the cheapest parcel carrier for the required service level.",
   "industry": "Logistics and Warehousing",

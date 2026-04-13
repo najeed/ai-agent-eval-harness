@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deploy Satellite Solar Arrays",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10056-deploy-solar-array"
   },
   "description": "After a satellite reaches its final orbit, a ground controller must send the command to deploy its stowed solar arrays.",
   "industry": "Aerospace",

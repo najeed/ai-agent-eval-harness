@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Server & Network - Investigate High Server CPU",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11859-network-investigate-high-cpu"
   },
   "description": "An RMM alert indicates a client's remote desktop server has had sustained 100% CPU usage for over an hour.",
   "industry": "Information Technology Service",

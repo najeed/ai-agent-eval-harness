@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Repurpose an Article as a Video Script",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12039-repurpose-an-article-as-a-video-script"
   },
   "description": "A popular article is being turned into a short video. An editor needs to adapt the text into a script suitable for narration.",
   "industry": "Journalism",

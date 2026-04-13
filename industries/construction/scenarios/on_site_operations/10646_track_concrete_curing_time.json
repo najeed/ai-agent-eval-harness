@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Concrete Curing Time",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10646-track-concrete-curing-time"
   },
   "description": "After a concrete slab is poured, the site manager must track its curing time and test results before allowing heavy equipment on it.",
   "industry": "Construction",

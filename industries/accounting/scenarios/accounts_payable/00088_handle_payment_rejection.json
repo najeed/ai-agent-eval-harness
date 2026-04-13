@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Rejected ACH Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00088-handle-payment-rejection"
   },
   "description": "A payment in an ACH payment run has been rejected by the bank due to incorrect vendor banking information.",
   "industry": "Accounting",

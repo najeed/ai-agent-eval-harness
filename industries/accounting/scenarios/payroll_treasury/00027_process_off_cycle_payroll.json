@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an Off-Cycle Payroll for a Terminated Employee",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00027-process-off-cycle-payroll"
   },
   "description": "A terminated employee must be paid their final wages. This requires an off-cycle payroll run.",
   "industry": "Accounting",

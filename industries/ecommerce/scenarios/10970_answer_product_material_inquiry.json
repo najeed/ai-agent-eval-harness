@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Answer Product Material Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10970-answer-product-material-inquiry"
   },
   "description": "A customer with an allergy asks what materials a specific piece of jewelry is made of.",
   "industry": "Ecommerce",

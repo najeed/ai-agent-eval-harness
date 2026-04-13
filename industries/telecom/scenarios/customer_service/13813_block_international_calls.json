@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Block International Calls",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13813-block-international-calls"
   },
   "description": "A customer wants to block all outgoing international calls from their phone to prevent accidental charges.",
   "industry": "Telecom",

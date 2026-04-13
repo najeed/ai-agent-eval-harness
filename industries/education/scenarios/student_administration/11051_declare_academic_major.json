@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Declare Academic Major",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11051-declare-academic-major"
   },
   "description": "A second-year student needs to officially declare their academic major.",
   "industry": "Education",

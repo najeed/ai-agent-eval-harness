@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue a Request for Information List",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10335-issue-request-for-information-list"
   },
   "description": "At the start of fieldwork, an auditor sends a formal request list (sometimes called a PBC list) to the auditee.",
   "industry": "Audit",

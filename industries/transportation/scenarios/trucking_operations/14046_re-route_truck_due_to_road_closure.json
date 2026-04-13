@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Re-route a Truck Due to Road Closure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14046-re-route-truck-due-to-road-closure"
   },
   "description": "A dispatcher receives an alert about an unexpected highway closure on a driver's route. They must re-route the driver.",
   "industry": "Transportation",

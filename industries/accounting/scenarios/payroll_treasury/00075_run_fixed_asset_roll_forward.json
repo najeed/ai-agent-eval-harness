@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Run a Fixed Asset Roll-Forward Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00075-run-fixed-asset-roll-forward"
   },
   "description": "For audit purposes, an accountant needs to prepare a fixed asset roll-forward, which shows the movement in the asset accounts from the beginning to the end of the year.",
   "industry": "Accounting",

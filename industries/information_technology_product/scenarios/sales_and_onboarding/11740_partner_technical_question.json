@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Partner Asks Pre-Sales Technical Question",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11740-partner-technical-question"
   },
   "description": "A reseller partner contacts the channel manager with a technical question from a potential customer about API rate limits.",
   "industry": "Information Technology Product",

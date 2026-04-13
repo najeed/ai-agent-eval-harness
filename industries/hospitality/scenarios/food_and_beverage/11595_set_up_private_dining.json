@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set up a Private Dining Room",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11595-set-up-private-dining"
   },
   "description": "A VIP guest has requested a private dining experience in a separate room.",
   "industry": "Hospitality",

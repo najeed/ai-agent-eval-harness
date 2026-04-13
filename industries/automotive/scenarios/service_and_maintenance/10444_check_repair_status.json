@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Checks on Repair Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10444-check-repair-status"
   },
   "description": "A customer whose car is in for service is calling to get a status update.",
   "industry": "Automotive",

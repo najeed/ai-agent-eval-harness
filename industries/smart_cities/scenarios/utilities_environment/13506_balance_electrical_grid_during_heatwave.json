@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Balance Electrical Grid During Heatwave",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13506-balance-electrical-grid-during-heatwave"
   },
   "description": "A heatwave is causing record electricity demand. An operator must prevent a blackout by balancing the grid.",
   "industry": "Smart Cities",

@@ -103,7 +103,7 @@ async def test_sandbox_lifecycle(tmp_path):
     test_ws = tmp_path / "sandbox_test_ws"
     scenario = {
         "aes_version": 1.4,
-        "scenario_id": "lifecycle-test",
+        "id": "lifecycle-test",
         "metadata": {"cleanup_workspace": True},
     }
     sandbox = ToolSandbox(scenario)
@@ -121,7 +121,7 @@ async def test_sandbox_lifecycle(tmp_path):
 async def test_sandbox_cleanup_persistence(tmp_path):
     """Verify that cleanup_workspace=False preserves the directory."""
     test_ws = tmp_path / "persist_test_ws"
-    scenario = {"scenario_id": "persist-test", "metadata": {"cleanup_workspace": False}}
+    scenario = {"id": "persist-test", "metadata": {"cleanup_workspace": False}}
     sandbox = ToolSandbox(scenario)
     sandbox.workspace_dir = str(test_ws)
 
@@ -203,7 +203,7 @@ def test_abstract_sandbox_propagate_bus():
     from eval_runner.tool_sandbox import ToolSandbox
 
     mock_bus = MagicMock()
-    scenario = {"scenario_id": "bus-test", "agent_topology": {"agent_a": {"writes": ["*"]}}}
+    scenario = {"id": "bus-test", "agent_topology": {"agent_a": {"writes": ["*"]}}}
     sandbox = ToolSandbox(scenario, event_bus=mock_bus)
 
     # Check propagation

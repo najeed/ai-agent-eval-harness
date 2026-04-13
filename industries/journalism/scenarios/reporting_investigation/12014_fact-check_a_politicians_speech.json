@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Fact-Check a Politician's Speech",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12014-fact-check-a-politicians-speech"
   },
   "description": "A politician has just given a major speech. A fact-checker needs to verify the claims and statistics used in the speech.",
   "industry": "Journalism",

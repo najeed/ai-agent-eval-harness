@@ -6,7 +6,7 @@ To ensure `dataproc-engine` outputs are consumable by AES evaluation agents, the
 
 ```json
 {
-  "scenario_id": "string (e.g., finance-sec-aapl-assets)",
+  "id": "string (e.g., finance-sec-aapl-assets)",
   "version": "2.0.0",
   "title": "string",
   "description": "string",

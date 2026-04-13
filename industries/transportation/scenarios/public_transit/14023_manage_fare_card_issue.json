@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Fare Card Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14023-manage-fare-card-issue"
   },
   "description": "A passenger reports that their registered smart card is not working at the turnstile. A customer service agent must investigate.",
   "industry": "Transportation",

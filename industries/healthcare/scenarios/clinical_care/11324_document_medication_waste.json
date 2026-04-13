@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document Medication Waste",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11324-document-medication-waste"
   },
   "description": "A nurse administered only part of a controlled substance and needs another nurse to witness and co-sign the documentation of the wasted portion.",
   "industry": "Healthcare",

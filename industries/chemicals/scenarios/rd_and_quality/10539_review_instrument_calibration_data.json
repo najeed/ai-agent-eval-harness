@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Instrument Calibration Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10539-review-instrument-calibration-data"
   },
   "description": "A lab supervisor must review and approve the recent calibration results for a critical analytical instrument.",
   "industry": "Chemicals",

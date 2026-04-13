@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Use Tax Accrual",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00072-manage-use-tax-accrual"
   },
   "description": "An AP clerk processes an invoice from an out-of-state vendor who did not charge sales tax. The company is required to self-assess and remit use tax.",
   "industry": "Accounting",

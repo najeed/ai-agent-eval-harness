@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Site Dust Control",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10688-manage-dust-control"
   },
   "description": "On a windy day, the site is generating a lot of dust. The superintendent must implement dust control measures to comply with environmental regulations.",
   "industry": "Construction",

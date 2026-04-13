@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Reasonable Accommodation Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13356-handle-reasonable-accommodation-request"
   },
   "description": "A tenant with a disability requests to install grab bars in the bathroom as a reasonable accommodation under the Fair Housing Act.",
   "industry": "Real Estate",

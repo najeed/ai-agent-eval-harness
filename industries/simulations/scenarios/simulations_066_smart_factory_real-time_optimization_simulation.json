@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Smart Factory Real-time Optimization Simulation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "simulations-066-smart-factory-real-time-optimization-simulation"
   },
   "description": "Agent must manage a high-fidelity Smart Factory simulation with streaming telemetry.",
   "industry": "Meta-Industry",

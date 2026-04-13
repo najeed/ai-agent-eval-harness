@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage VBS Slot Release",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12941-manage-vbs-slot-release"
   },
   "description": "Due to increased productivity, the terminal can handle more trucks. The gate manager decides to release more appointment slots.",
   "industry": "Ports",

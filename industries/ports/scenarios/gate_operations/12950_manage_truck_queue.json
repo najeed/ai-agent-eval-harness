@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Truck Queue during Peak Hours",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12950-manage-truck-queue"
   },
   "description": "During a busy period, the truck queue outside the gate is getting long. The gate manager must take action to speed up processing.",
   "industry": "Ports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Daily Crude Oil Storage Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12702-storage-tank-inventory"
   },
   "description": "A terminal operator must reconcile the measured inventory in a crude oil storage tank with the book inventory from the scheduling system.",
   "industry": "Oil and Gas",

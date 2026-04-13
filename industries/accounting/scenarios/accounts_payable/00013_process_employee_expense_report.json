@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an Employee Expense Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00013-process-employee-expense-report"
   },
   "description": "An employee has submitted an expense report for a business trip, including airfare, meals, and lodging, with attached receipts.",
   "industry": "Accounting",

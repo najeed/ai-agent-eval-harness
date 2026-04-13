@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Course Prerequisites",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11059-check-course-prerequisites"
   },
   "description": "A curriculum committee member needs to verify the official prerequisites for an existing course before approving a new, dependent course.",
   "industry": "Education",

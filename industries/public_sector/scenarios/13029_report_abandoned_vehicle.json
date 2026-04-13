@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report an Abandoned Vehicle",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13029-report-abandoned-vehicle"
   },
   "description": "A citizen wants to report a car that has been parked on their street for several weeks and appears to be abandoned.",
   "industry": "Public Sector",

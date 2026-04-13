@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Petrophysical Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12747-perform-petrophysical-analysis"
   },
   "description": "A petrophysicist analyzes well log data to calculate key reservoir properties like porosity, water saturation, and permeability.",
   "industry": "Oil and Gas",

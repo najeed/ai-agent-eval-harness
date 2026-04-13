@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change an Ad's Destination URL",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12445-change-ad-destination-url"
   },
   "description": "A landing page URL has changed, and a manager needs to update a live ad to point to the new page.",
   "industry": "Marketing and Advertising",

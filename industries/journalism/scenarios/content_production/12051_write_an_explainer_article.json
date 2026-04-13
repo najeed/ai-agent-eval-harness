@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write an Explainer Article",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12051-write-an-explainer-article"
   },
   "description": "A complex topic is in the news (e.g., a new piece of legislation). A reporter needs to write an 'explainer' article that breaks it down for a general audience.",
   "industry": "Journalism",

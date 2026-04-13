@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About Room Service Menu After Hours",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11568-inquire-about-room-service-menu"
   },
   "description": "A guest calls late at night asking what is available from room service.",
   "industry": "Hospitality",

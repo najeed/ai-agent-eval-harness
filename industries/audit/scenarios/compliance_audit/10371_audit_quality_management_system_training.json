@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Quality Management System Training",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10371-audit-quality-management-system-training"
   },
   "description": "A quality auditor verifies that all employees in a manufacturing role have completed their required QMS training.",
   "industry": "Audit",

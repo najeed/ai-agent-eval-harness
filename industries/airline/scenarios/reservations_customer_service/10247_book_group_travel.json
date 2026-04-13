@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book Group Travel",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10247-book-group-travel"
   },
   "description": "A school group of 20 students and 2 teachers wants to book travel for a field trip.",
   "industry": "Airline",

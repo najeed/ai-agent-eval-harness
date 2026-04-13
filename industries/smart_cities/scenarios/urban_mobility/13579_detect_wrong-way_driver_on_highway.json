@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Detect Wrong-Way Driver on Highway",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13579-detect-wrong-way-driver-on-highway"
   },
   "description": "Sensors and cameras on a highway detect a vehicle traveling in the wrong direction. An operator must take immediate action.",
   "industry": "Smart Cities",

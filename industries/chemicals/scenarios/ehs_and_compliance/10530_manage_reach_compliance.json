@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage REACH Compliance for New Product",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10530-manage-reach-compliance"
   },
   "description": "A new chemical product is planned for sale in the EU. An EHS specialist must ensure all substances are registered under REACH regulations.",
   "industry": "Chemicals",

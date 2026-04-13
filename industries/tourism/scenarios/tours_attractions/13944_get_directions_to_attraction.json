@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Get Directions to an Attraction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13944-get-directions-to-attraction"
   },
   "description": "A tourist asks for the best way to get to the Louvre Museum using public transportation.",
   "industry": "Tourism",

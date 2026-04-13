@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Print SSCC Pallet Labels",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12246-print-sscc-labels"
   },
   "description": "After building a pallet for a large retail customer, the operator must generate and apply a Serial Shipping Container Code (SSCC) label for compliance.",
   "industry": "Logistics and Warehousing",

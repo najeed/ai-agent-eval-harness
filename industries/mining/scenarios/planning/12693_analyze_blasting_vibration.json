@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Blasting Vibration Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12693-analyze-blasting-vibration"
   },
   "description": "After a blast, an engineer analyzes the data from vibration monitors to ensure the blast complied with environmental limits.",
   "industry": "Mining",

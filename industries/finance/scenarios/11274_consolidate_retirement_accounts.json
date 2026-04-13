@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Consolidate Retirement Accounts (Rollover)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11274-consolidate-retirement-accounts"
   },
   "description": "A new client wants to roll over an old 401(k) from a previous employer into a new IRA.",
   "industry": "Finance",

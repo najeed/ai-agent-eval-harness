@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sign up for Paperless Billing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14153-sign-up-for-paperless-billing"
   },
   "description": "A customer wants to stop receiving paper bills and switch to paperless e-bills.",
   "industry": "Utilities",

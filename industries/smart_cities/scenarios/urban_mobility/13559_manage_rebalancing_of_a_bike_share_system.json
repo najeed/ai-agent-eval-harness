@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Rebalancing of a Bike Share System",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13559-manage-rebalancing-of-a-bike-share-system"
   },
   "description": "Data shows that all bike share docks in a residential area are full, while docks in the downtown area are empty. An operator must rebalance the system.",
   "industry": "Smart Cities",

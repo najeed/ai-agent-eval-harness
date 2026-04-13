@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Failing Electrical Transformer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13591-identify-failing-electrical-transformer"
   },
   "description": "Sensors on a transformer show its temperature is steadily rising and its oil quality is degrading, indicating it is at high risk of failure.",
   "industry": "Smart Cities",

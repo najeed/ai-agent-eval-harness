@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Compress Schedule Using Fast-Tracking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10641-compress-schedule-fast-tracking"
   },
   "description": "To shorten the project duration, a PM decides to use fast-tracking by starting the electrical rough-in while structural steel work is still ongoing.",
   "industry": "Construction",

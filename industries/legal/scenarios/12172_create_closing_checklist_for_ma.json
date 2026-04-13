@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Closing Checklist for an M&A Deal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12172-create-closing-checklist-for-ma"
   },
   "description": "A corporate associate needs to create a closing checklist that details all the documents that need to be signed and actions that need to be taken to close a deal.",
   "industry": "Legal",

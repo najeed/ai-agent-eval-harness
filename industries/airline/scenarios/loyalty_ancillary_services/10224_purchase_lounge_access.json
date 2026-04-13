@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Purchase Lounge Access",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10224-purchase-lounge-access"
   },
   "description": "A passenger without elite status wants to purchase a one-time pass to the airline's airport lounge.",
   "industry": "Airline",

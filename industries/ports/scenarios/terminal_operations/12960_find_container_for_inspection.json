@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find a Container for Customs Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12960-find-container-for-inspection"
   },
   "description": "Customs authorities have ordered a physical inspection of a specific container. A planner must find it and arrange for it to be moved to the inspection area.",
   "industry": "Ports",

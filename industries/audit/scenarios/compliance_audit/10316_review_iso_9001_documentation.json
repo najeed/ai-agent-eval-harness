@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review ISO 9001 Documentation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10316-review-iso-9001-documentation"
   },
   "description": "As part of a quality audit, an auditor reviews the documentation for the company's ISO 9001 certified Quality Management System (QMS).",
   "industry": "Audit",

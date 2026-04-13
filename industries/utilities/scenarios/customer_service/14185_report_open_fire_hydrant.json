@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Open Fire Hydrant",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14185-report-open-fire-hydrant"
   },
   "description": "A citizen calls to report that a fire hydrant is open and gushing water.",
   "industry": "Utilities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Decline a Life Insurance Application",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11936-decline-underwriting-application"
   },
   "description": "An underwriter has reviewed an application and must decline it due to significant health risks.",
   "industry": "Insurance",

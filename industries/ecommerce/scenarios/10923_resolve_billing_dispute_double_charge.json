@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Billing Dispute - Double Charge",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10923-resolve-billing-dispute-double-charge"
   },
   "description": "A customer claims they were charged twice for a single order.",
   "industry": "Ecommerce",

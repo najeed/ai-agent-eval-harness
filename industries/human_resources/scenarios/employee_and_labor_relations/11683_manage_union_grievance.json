@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Union Grievance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11683-manage-union-grievance"
   },
   "description": "A union representative has filed a grievance on behalf of an employee, alleging a violation of the collective bargaining agreement (CBA).",
   "industry": "Human Resources",

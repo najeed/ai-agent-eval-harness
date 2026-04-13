@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Personalized Product Recommendations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10912-create-personalized-recommendations"
   },
   "description": "A customer is browsing a product page. The system should display personalized recommendations for related products.",
   "industry": "Ecommerce",

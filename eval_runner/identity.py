@@ -24,7 +24,9 @@ class IdentityService:
     """
 
     @staticmethod
-    def get_private_key(identity_id: str = "system_id") -> ed25519.Ed25519PrivateKey:
+    def get_private_key(
+        identity_id: str = "system_id", auto_provision: bool = True
+    ) -> ed25519.Ed25519PrivateKey:
         """
         Resolves a private key by ID.
         Priority:
@@ -75,10 +77,14 @@ class IdentityService:
             )
 
         # Auto-provision identity if missing for local developer experience
+        if not auto_provision:
+            return None
         return IdentityService._provision_local_identity(identity_id)
 
     @staticmethod
-    def get_public_key(identity_id: str = "system_id") -> ed25519.Ed25519PublicKey:
+    def get_public_key(
+        identity_id: str = "system_id", auto_provision: bool = True
+    ) -> ed25519.Ed25519PublicKey:
         target_path = (config.TRUST_ROOT / identity_id).resolve()
         base_path = config.TRUST_ROOT.resolve()
         try:
@@ -96,8 +102,9 @@ class IdentityService:
         # Fallback to derivation from private key if public is missing
         if not key_path.exists():
             try:
-                priv = IdentityService.get_private_key(identity_id)
-                return priv.public_key()
+                priv = IdentityService.get_private_key(identity_id, auto_provision=False)
+                if priv:
+                    return priv.public_key()
             except Exception as e:
                 logger.debug(f"Public key derivation fallback failed for {identity_id}: {e}")
 
@@ -110,6 +117,8 @@ class IdentityService:
                 raise
 
         # Auto-provision identity if missing for local developer experience
+        if not auto_provision:
+            return None
         return IdentityService.get_private_key(identity_id).public_key()
 
     @staticmethod

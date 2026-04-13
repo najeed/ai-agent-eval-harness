@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Project Earned Value",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11482-track-earned-value"
   },
   "description": "A project controls engineer needs to calculate the earned value for a work package to assess its performance.",
   "industry": "Heavy Industries",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Social Media Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13492-create-social-media-campaign"
   },
   "description": "A social media manager is creating a campaign to promote a flash sale.",
   "industry": "Retail",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Inventory Obsolescence Reserve",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10354-review-inventory-obsolescence-reserve"
   },
   "description": "An operational auditor reviews the process for identifying slow-moving inventory and calculating the necessary reserve.",
   "industry": "Audit",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "High CPU Alert on Database",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11723-high-cpu-alert"
   },
   "description": "Monitoring systems alert that the primary database server is experiencing sustained high CPU usage.",
   "industry": "Information Technology Product",

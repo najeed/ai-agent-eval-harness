@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Robotic Arm Calibration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10487-robotic-arm-calibration"
   },
   "description": "A robotic arm that installs windshields requires routine recalibration.",
   "industry": "Automotive",

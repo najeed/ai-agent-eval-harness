@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Execute a Financial Swap Trade",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12750-execute-swap-trade"
   },
   "description": "A trader needs to hedge their exposure to floating gasoline prices. They decide to enter into a fixed-for-floating price swap.",
   "industry": "Oil and Gas",

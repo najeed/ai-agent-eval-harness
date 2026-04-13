@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Appraisal Process",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13129-manage-appraisal-process"
   },
   "description": "The TC needs to coordinate the property appraisal for a financed transaction.",
   "industry": "Real Estate",

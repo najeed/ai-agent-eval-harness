@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Rail Car Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12978-manage-rail-car-inspection"
   },
   "description": "Before a train is loaded, each empty rail car must be inspected for damage or debris.",
   "industry": "Ports",

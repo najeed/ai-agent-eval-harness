@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provision VPN for New Business Customer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13864-provision-new-business-customer-vpn"
   },
   "description": "A new enterprise customer requires a secure VPN tunnel to be configured between their office and the telecom network.",
   "industry": "Telecom",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Manual Gate Entry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12957-process-manual-gate-entry"
   },
   "description": "The gate's OCR camera system fails. The clerk must process a truck's entry manually.",
   "industry": "Ports",

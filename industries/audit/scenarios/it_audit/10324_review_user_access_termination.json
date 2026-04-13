@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review User Access Termination Process",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10324-review-user-access-termination"
   },
   "description": "An IT auditor checks if employee access is promptly removed upon termination.",
   "industry": "Audit",

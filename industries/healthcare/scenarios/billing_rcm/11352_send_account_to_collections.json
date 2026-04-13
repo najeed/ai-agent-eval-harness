@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Account to Collections",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11352-send-account-to-collections"
   },
   "description": "A patient has a large, old balance and has not responded to multiple statements. The account needs to be sent to a third-party collections agency.",
   "industry": "Healthcare",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Enroll Customer in Loyalty Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10908-enroll-customer-in-loyalty-program"
   },
   "description": "During a support interaction, a customer expresses interest in the loyalty program. The agent needs to enroll them.",
   "industry": "Ecommerce",

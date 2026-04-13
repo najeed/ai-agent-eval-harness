@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find Images for a Blog Post",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12480-find-images-for-blog-post"
   },
   "description": "A content manager needs to find 2-3 licensed stock photos to include in a new blog post.",
   "industry": "Marketing and Advertising",

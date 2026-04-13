@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add Guarantor to Patient Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11317-add-guarantor-to-patient-account"
   },
   "description": "A pediatric patient is being seen, and their parent needs to be added as the financial guarantor for the account.",
   "industry": "Healthcare",

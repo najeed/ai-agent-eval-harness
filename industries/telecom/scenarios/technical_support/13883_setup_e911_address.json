@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Setup e911 Address for VoIP Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13883-setup-e911-address"
   },
   "description": "A customer with a VoIP (internet phone) service needs to set or update their e911 address for emergency services.",
   "industry": "Telecom",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Adjust Reservoir Release for Flood Control",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13571-adjust-reservoir-release-for-flood-control"
   },
   "description": "Heavy rain is forecasted, and a reservoir is already near full capacity. An operator must proactively release water to create storage capacity and prevent downstream flooding.",
   "industry": "Smart Cities",

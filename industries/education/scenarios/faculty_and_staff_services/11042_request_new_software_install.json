@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request New Software Installation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11042-request-new-software-install"
   },
   "description": "A faculty member needs specialized statistical software installed on their university-owned computer.",
   "industry": "Education",

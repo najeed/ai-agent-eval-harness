@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Copyright Claim on a User's Live Stream",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12591-handle-copyright-claim-on-user-stream"
   },
   "description": "During a user's live stream on a platform like Twitch, an automated system detects copyrighted music being played in the background and issues a copyright strike.",
   "industry": "Media and Entertainment",

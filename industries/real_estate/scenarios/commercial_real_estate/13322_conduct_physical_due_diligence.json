@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Physical Due Diligence on an Apartment Building",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13322-conduct-physical-due-diligence"
   },
   "description": "A buyer's agent must coordinate physical inspections for a 100-unit apartment building under contract.",
   "industry": "Real Estate",

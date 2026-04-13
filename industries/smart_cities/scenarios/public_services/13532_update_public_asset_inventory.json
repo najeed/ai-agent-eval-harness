@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Public Asset Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13532-update-public-asset-inventory"
   },
   "description": "A new public park has been completed. An operator must add the new assets (benches, playground equipment) to the city's asset management system.",
   "industry": "Smart Cities",

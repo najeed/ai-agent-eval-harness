@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Collaborate on a Data-Driven Story",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12011-collaborate-on-a-data-driven-story"
   },
   "description": "A reporter and a data journalist are collaborating on a story. They need a shared space to work on the data, analysis, and draft.",
   "industry": "Journalism",

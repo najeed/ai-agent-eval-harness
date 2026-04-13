@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Trial Extension Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11713-trial-extension-request"
   },
   "description": "A user on a 14-day trial requests an extension because they didn't have enough time to evaluate the product.",
   "industry": "Information Technology Product",

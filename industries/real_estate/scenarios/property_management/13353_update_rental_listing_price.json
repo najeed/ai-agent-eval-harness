@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Rental Listing Price",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13353-update-rental-listing-price"
   },
   "description": "A rental unit has been on the market for 30 days with little interest. The property manager decides to reduce the price.",
   "industry": "Real Estate",

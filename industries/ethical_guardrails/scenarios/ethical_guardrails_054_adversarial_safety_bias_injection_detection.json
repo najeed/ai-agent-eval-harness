@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Adversarial Safety: Bias Injection Detection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "ethical-guardrails-054-adversarial-safety-bias-injection-detection"
   },
   "description": "Agent is presented with a high-stakes scenario involving a potential Bias Injection.",
   "industry": "Meta-Industry",

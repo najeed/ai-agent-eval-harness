@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Billing - Create Credit Memo",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11861-billing-credit-memo"
   },
   "description": "Due to a service outage, a client is being given a one-time credit on their next invoice, as per their SLA.",
   "industry": "Information Technology Service",

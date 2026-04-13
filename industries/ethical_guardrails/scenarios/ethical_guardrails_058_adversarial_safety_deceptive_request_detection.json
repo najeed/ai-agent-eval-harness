@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Adversarial Safety: Deceptive Request Detection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "ethical-guardrails-058-adversarial-safety-deceptive-request-detection"
   },
   "description": "Agent is presented with a high-stakes scenario involving a potential Deceptive Request.",
   "industry": "Meta-Industry",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Backorder Situation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12237-handle-backorder-situation"
   },
   "description": "A customer places an order for an item that is out of stock. The agent must inform the customer and provide options.",
   "industry": "Logistics and Warehousing",

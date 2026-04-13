@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify a Large Check Deposit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11283-verify-check-deposit"
   },
   "description": "A customer has deposited a large, out-of-state check, and the bank needs to place a hold on the funds for verification.",
   "industry": "Finance",

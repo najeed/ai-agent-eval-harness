@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Grid Impact of Building Electrification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11195-analyze-building-electrification-impact"
   },
   "description": "A distribution planner needs to forecast the grid impact of a city's policy to ban natural gas in new construction, leading to all-electric homes.",
   "industry": "Energy",

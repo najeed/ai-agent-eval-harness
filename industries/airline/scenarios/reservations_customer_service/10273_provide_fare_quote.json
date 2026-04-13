@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide a Fare Quote",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10273-provide-fare-quote"
   },
   "description": "A customer calls to ask for the price of a round-trip flight without wanting to book it yet.",
   "industry": "Airline",

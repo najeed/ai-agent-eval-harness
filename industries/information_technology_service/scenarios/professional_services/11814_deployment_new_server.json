@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deployment - New Server Installation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11814-deployment-new-server"
   },
   "description": "As part of a project, a technician is deploying a new physical server in a client's server room.",
   "industry": "Information Technology Service",

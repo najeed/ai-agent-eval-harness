@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Home Internet Troubleshooting - Slow Speed",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13814-home-internet-slow-speed"
   },
   "description": "A customer reports their home internet service is very slow. The agent must diagnose the cause.",
   "industry": "Telecom",

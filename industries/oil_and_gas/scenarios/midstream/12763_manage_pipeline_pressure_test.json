@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Pipeline Hydrostatic Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12763-manage-pipeline-pressure-test"
   },
   "description": "An integrity engineer manages a hydrostatic pressure test on a newly constructed pipeline to ensure it is safe to operate.",
   "industry": "Oil and Gas",

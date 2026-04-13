@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Auto Insurance Deductible",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11969-change-deductible"
   },
   "description": "A customer wants to lower their monthly premium by raising their collision deductible.",
   "industry": "Insurance",

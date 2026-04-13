@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate Closing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13113-coordinate-closing"
   },
   "description": "A transaction has received the 'clear to close' from the lender. The TC must coordinate the final steps.",
   "industry": "Real Estate",

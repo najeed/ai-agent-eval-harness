@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assess Clinical Trial Feasibility",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12854-assess-trial-feasibility"
   },
   "description": "A clinical scientist needs to assess the feasibility of a proposed trial design by analyzing patient data.",
   "industry": "Pharmaceuticals and Life Sciences",

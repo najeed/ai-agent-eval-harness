@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Immigration Case",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11679-handle-immigration-case"
   },
   "description": "HR is sponsoring a work visa (e.g., H-1B) for a new hire and must work with outside counsel to file the petition.",
   "industry": "Human Resources",

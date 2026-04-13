@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Claim with Disputing Beneficiaries (Interpleader)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11990-handle-interpleader"
   },
   "description": "Two beneficiaries of a life insurance policy are disputing who should receive the proceeds.",
   "industry": "Insurance",

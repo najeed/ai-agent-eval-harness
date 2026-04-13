@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Word Cloud from Customer Reviews",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12482-create-a-word-cloud"
   },
   "description": "An analyst wants to create a word cloud from customer reviews to quickly visualize the most frequently mentioned terms.",
   "industry": "Marketing and Advertising",

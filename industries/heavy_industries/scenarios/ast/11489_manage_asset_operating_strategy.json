@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Asset Operating Strategy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11489-manage-asset-operating-strategy"
   },
   "description": "A reliability engineer is reviewing the overall maintenance and operating strategy for a critical asset to ensure it is optimized for performance and life.",
   "industry": "Heavy Industries",

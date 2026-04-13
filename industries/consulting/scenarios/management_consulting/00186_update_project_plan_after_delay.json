@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Project Plan After Delay",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00186-update-project-plan-after-delay"
   },
   "description": "A key milestone in a project was delayed by 2 weeks. An agent must update the project plan to reflect this.",
   "industry": "Consulting",

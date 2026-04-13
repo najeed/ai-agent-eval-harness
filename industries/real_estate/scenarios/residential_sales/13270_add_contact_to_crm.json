@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add a New Contact to CRM",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13270-add-contact-to-crm"
   },
   "description": "An agent meets a potential client at an open house and needs to add them to their CRM for follow-up.",
   "industry": "Real Estate",

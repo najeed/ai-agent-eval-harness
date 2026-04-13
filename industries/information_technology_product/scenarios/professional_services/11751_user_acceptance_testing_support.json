@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Acceptance Testing (UAT) Support",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11751-user-acceptance-testing-support"
   },
   "description": "During the UAT phase of a project, a customer reports that a configured workflow is not behaving as expected.",
   "industry": "Information Technology Product",

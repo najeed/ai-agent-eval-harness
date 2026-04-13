@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Demurrage Charges",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10592-manage-demurrage-charges"
   },
   "description": "A railcar of raw material was not unloaded in time, and the railroad has issued a demurrage charge (a late fee).",
   "industry": "Chemicals",

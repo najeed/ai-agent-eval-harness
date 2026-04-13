@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Property's Flood Zone Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13175-check-flood-zone-status"
   },
   "description": "A buyer is interested in a property near a river and wants to know if it's in a flood zone, which would require flood insurance.",
   "industry": "Real Estate",

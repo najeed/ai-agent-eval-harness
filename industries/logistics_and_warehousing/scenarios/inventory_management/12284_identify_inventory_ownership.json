@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Inventory Ownership (3PL)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12284-identify-inventory-ownership"
   },
   "description": "In a multi-client 3PL warehouse, an operator needs to know which client owns the inventory in a specific location.",
   "industry": "Logistics and Warehousing",

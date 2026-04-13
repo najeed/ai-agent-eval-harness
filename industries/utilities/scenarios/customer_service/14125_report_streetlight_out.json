@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Streetlight Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14125-report-streetlight-out"
   },
   "description": "A resident calls to report that a streetlight on their street has been out for several days.",
   "industry": "Utilities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "PPA Price Negotiation Support",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11101-ppa-price-negotiation"
   },
   "description": "An energy trader needs to analyze market data to propose a competitive price for a 10-year Power Purchase Agreement (PPA) with a corporate off-taker.",
   "industry": "Energy",

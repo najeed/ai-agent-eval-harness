@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Backup - Restore Deleted File",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11805-backup-restore-file"
   },
   "description": "An end-user accidentally deleted an important file from a shared network drive and needs it restored from last night's backup.",
   "industry": "Information Technology Service",

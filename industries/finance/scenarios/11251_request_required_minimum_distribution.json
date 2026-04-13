@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Required Minimum Distribution (RMD)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11251-request-required-minimum-distribution"
   },
   "description": "A client of retirement age needs to take their annual RMD from their IRA.",
   "industry": "Finance",

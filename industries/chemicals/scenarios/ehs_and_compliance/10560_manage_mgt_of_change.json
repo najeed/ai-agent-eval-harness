@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Management of Change (MOC) Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10560-manage-mgt-of-change"
   },
   "description": "An engineer proposes changing a pipe's material of construction. An MOC must be created to assess the safety and environmental impact.",
   "industry": "Chemicals",

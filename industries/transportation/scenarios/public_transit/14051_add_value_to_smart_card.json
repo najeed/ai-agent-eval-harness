@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add Value to a Smart Card",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14051-add-value-to-smart-card"
   },
   "description": "A passenger is at a station kiosk and wants to add $20 to their transit smart card.",
   "industry": "Transportation",

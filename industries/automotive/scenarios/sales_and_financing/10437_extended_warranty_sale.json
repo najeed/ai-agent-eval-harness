@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sell Extended Warranty",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10437-extended-warranty-sale"
   },
   "description": "A customer's factory warranty is about to expire. A salesperson calls to offer an extended warranty plan.",
   "industry": "Automotive",

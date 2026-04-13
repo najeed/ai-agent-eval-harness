@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Retailer Going Out of Business",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14369-handle-retailer-going-out-of-business"
   },
   "description": "A retail customer has gone out of business and has outstanding invoices. An agent must attempt to collect the final payment.",
   "industry": "Wholesale",

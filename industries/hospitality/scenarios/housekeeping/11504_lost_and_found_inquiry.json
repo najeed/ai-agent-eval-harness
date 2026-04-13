@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Lost and Found Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11504-lost-and-found-inquiry"
   },
   "description": "A guest who checked out yesterday calls to report they may have left a phone charger in their room.",
   "industry": "Hospitality",

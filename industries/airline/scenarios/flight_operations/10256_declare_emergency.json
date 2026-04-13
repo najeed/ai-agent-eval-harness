@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Declare an Emergency",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10256-declare-emergency"
   },
   "description": "A flight crew detects smoke in the cockpit and must declare an emergency and divert immediately.",
   "industry": "Airline",

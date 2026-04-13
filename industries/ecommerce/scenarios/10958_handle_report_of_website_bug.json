@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Report of a Website Bug",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10958-handle-report-of-website-bug"
   },
   "description": "A customer reports that the 'Add to Cart' button is not working on a specific product page.",
   "industry": "Ecommerce",

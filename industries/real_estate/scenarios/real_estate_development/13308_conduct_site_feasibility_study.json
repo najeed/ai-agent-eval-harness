@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Site Feasibility Study",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13308-conduct-site-feasibility-study"
   },
   "description": "A developer is considering purchasing a parcel of land for a new apartment complex and needs a feasibility study.",
   "industry": "Real Estate",

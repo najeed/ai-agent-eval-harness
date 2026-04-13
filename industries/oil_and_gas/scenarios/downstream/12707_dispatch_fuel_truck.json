@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispatch Fuel Truck to Retail Station",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12707-dispatch-fuel-truck"
   },
   "description": "A dispatcher receives a low inventory alert from a gas station and must dispatch a fuel truck to prevent a stock-out.",
   "industry": "Oil and Gas",

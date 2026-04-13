@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Workers' Compensation Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11691-manage-workers-comp-claim"
   },
   "description": "An employee was injured on the job and needs to file a workers' compensation claim.",
   "industry": "Human Resources",

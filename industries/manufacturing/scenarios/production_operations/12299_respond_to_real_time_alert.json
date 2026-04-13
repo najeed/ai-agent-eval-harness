@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to Real-time Production Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12299-respond-to-real-time-alert"
   },
   "description": "An operator receives a real-time alert from a CNC machine indicating a tool is nearing its wear limit.",
   "industry": "Manufacturing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Work Order Progress",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12302-track-work-order-progress"
   },
   "description": "A production supervisor wants to check the progress of a specific high-priority work order.",
   "industry": "Manufacturing",

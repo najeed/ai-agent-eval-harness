@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Third-Party Software Patching",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10739-vuln-mgmt-patching-third-party"
   },
   "description": "A vulnerability is discovered in a widely used third-party library (e.g., Log4j). An analyst must find all applications using the library and coordinate patching.",
   "industry": "Cybersecurity",

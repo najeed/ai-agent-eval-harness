@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Launch Countdown",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10016-manage-launch-countdown"
   },
   "description": "A launch director is managing the final countdown for a rocket launch. They must monitor all systems and give the final 'go' for launch.",
   "industry": "Aerospace",

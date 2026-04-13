@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Vehicle Damaged During Shipping",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10450-vehicle-shipping-damage"
   },
   "description": "A dealership reports that a new vehicle has arrived from the factory with a dent, which occurred during transport.",
   "industry": "Automotive",

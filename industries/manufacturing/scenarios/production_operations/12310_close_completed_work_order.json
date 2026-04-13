@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Close a Completed Work Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12310-close-completed-work-order"
   },
   "description": "A work order has been fully completed and all units have passed final inspection. It needs to be closed.",
   "industry": "Manufacturing",

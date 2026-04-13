@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Street Sweeping Based on Air Quality Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13551-schedule-street-sweeping-based-on-air-quality-data"
   },
   "description": "To combat particulate matter pollution, an operator schedules street sweeping on roads with high dust levels detected by mobile sensors.",
   "industry": "Smart Cities",

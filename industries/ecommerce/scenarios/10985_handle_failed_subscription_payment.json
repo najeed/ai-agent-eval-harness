@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Failed Subscription Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10985-handle-failed-subscription-payment"
   },
   "description": "A customer's recurring subscription payment fails due to an expired credit card. The system needs to handle this gracefully.",
   "industry": "Ecommerce",

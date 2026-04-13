@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Contract Abstraction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12183-create-contract-abstraction"
   },
   "description": "For a large portfolio of real estate leases, a paralegal needs to create 'abstractions' or summaries of each lease, extracting key data into a spreadsheet.",
   "industry": "Legal",

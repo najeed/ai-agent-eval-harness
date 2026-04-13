@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Public Meeting Minutes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13074-request-meeting-minutes"
   },
   "description": "A citizen wants a copy of the approved minutes from last month's school board meeting.",
   "industry": "Public Sector",

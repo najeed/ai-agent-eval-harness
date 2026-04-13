@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage C-Store Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12786-manage-c-store-inventory"
   },
   "description": "A manager of a gas station with a convenience store (C-store) needs to reorder drinks and snacks.",
   "industry": "Oil and Gas",

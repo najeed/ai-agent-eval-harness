@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Post a Patient Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11340-post-patient-payment"
   },
   "description": "A front desk staff member collects a copay from a patient at check-in and needs to post the payment.",
   "industry": "Healthcare",

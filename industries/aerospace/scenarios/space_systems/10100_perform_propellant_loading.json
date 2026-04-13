@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Propellant Loading",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10100-perform-propellant-loading"
   },
   "description": "At the launch pad, a team must safely load highly volatile propellants (e.g., liquid hydrogen, liquid oxygen) into a rocket.",
   "industry": "Aerospace",

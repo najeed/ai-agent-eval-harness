@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "High-Value Individual Identification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10847-isr-target-id-personnel"
   },
   "description": "An analyst must use facial recognition on drone footage to confirm the identity of a high-value individual (HVI) at a meeting.",
   "industry": "Defense",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Minor Hydraulic Oil Spill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12917-manage-spill-response"
   },
   "description": "A terminal tractor has a hydraulic line break, causing a small oil spill on the quay. An environmental officer must manage the cleanup.",
   "industry": "Ports",

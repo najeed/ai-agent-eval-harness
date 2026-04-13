@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Guest Room Change Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11539-room-change-request"
   },
   "description": "A guest is unhappy with their room's location (e.g., too close to the elevator) and requests a different room.",
   "industry": "Hospitality",

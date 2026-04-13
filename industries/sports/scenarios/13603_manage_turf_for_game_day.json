@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Turf for Game Day",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13603-manage-turf-for-game-day"
   },
   "description": "A groundskeeper needs to ensure the stadium's natural grass field is in optimal condition for an upcoming game.",
   "industry": "Sports",

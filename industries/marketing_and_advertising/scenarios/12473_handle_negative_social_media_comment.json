@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Negative Social Media Comment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12473-handle-negative-social-media-comment"
   },
   "description": "A customer has left an angry comment on a brand's Facebook post about a negative experience. A social media manager needs to respond.",
   "industry": "Marketing and Advertising",

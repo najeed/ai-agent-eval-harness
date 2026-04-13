@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Customer Churn Risk",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10983-identify-customer-churn-risk"
   },
   "description": "A system analyzes customer behavior to identify those at risk of churning (i.e., ceasing to be a customer).",
   "industry": "Ecommerce",

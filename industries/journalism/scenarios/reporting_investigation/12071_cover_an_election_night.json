@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cover an Election Night",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12071-cover-an-election-night"
   },
   "description": "A political reporter is responsible for covering election results as they come in.",
   "industry": "Journalism",

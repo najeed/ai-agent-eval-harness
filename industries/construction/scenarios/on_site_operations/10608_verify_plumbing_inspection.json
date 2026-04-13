@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Plumbing Rough-in Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10608-verify-plumbing-inspection"
   },
   "description": "A project manager needs to verify that the plumbing rough-in has passed the city inspection before the drywall crew can start.",
   "industry": "Construction",

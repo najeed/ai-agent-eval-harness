@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Room Noise Complaint",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13947-handle-room-noise-complaint"
   },
   "description": "A guest calls the front desk at 11 PM to complain about a loud party in the adjacent room.",
   "industry": "Tourism",

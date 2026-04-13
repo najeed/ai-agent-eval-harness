@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Monthly Subscription Billing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10938-handle-subscription-billing"
   },
   "description": "The system needs to process recurring monthly payments for all customers subscribed to a 'Coffee of the Month' club.",
   "industry": "Ecommerce",

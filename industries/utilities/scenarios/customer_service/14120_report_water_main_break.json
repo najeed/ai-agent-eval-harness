@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Water Main Break",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14120-report-water-main-break"
   },
   "description": "A driver calls to report a large amount of water bubbling up from a street, suspecting a water main break.",
   "industry": "Utilities",

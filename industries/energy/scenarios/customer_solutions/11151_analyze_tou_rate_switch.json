@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Customer Switch to Time-of-Use Rate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11151-analyze-tou-rate-switch"
   },
   "description": "A customer on a flat electricity rate wants to know if they would save money by switching to a Time-of-Use (TOU) rate.",
   "industry": "Energy",

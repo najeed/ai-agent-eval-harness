@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate with Closing Attorney/Title Company",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13342-coordinate-with-closing-attorney"
   },
   "description": "A transaction coordinator must ensure the closing attorney has all necessary documents and information to prepare for closing.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Comparative Market Analysis (CMA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13099-prepare-cma-for-seller"
   },
   "description": "A homeowner is considering selling and asks for an estimate of their property's value. The agent needs to prepare a CMA report.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Account Takeover Suspicion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14100-handle-account-takeover-suspicion"
   },
   "description": "The system detects a suspicious login to a rider's account from a new device in a different country, followed by a trip request.",
   "industry": "Transportation",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Publish an Agency's Annual Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13055-publish-annual-report"
   },
   "description": "A public agency is ready to publish its annual financial report to its website for public access.",
   "industry": "Public Sector",

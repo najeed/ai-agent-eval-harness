@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Estimate Project Hours",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11775-estimate-project-hours"
   },
   "description": "A salesperson asks a Professional Services consultant to estimate the number of hours required for a potential project.",
   "industry": "Information Technology Product",

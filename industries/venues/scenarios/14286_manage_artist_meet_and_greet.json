@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage an Artist Meet and Greet",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14286-manage-artist-meet-and-greet"
   },
   "description": "A limited number of fans have purchased VIP packages that include a pre-show meet and greet with the artist.",
   "industry": "Venues",

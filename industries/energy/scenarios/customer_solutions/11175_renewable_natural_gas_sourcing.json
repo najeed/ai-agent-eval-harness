@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Renewable Natural Gas (RNG) Sourcing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11175-renewable-natural-gas-sourcing"
   },
   "description": "A large industrial customer wants to source Renewable Natural Gas (RNG) to reduce the carbon footprint of their thermal processes.",
   "industry": "Energy",

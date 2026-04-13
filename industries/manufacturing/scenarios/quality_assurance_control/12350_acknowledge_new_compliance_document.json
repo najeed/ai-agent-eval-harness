@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Acknowledge new version of a compliance document",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12350-acknowledge-new-compliance-document"
   },
   "description": "A new version of a safety procedure has been released. An operator needs to acknowledge that they have read and understood it.",
   "industry": "Manufacturing",

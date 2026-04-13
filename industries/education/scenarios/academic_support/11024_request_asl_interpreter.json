@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request ASL Interpreter for Class",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11024-request-asl-interpreter"
   },
   "description": "A deaf student needs to request an American Sign Language (ASL) interpreter for one of their newly registered classes.",
   "industry": "Education",

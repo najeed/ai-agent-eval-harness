@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Shipping Temperature Excursion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12859-handle-shipping-temperature-excursion"
   },
   "description": "A shipment of a refrigerated product arrives at a pharmacy, and the temperature monitor shows it went above the required 8\u00b0C for 4 hours.",
   "industry": "Pharmaceuticals and Life Sciences",

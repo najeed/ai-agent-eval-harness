@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Return of a Gift",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13450-handle-return-of-gift"
   },
   "description": "A customer wants to return a gift they received. They have a gift receipt.",
   "industry": "Retail",

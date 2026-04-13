@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Account Risk Profile",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11276-change-account-risk-profile"
   },
   "description": "A client has received a promotion and wants to increase their risk tolerance from 'Balanced' to 'Growth'.",
   "industry": "Finance",

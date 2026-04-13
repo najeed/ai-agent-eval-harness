@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Amend a Government Contract",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13083-amend-contract"
   },
   "description": "A vendor and a government agency need to amend an existing contract to extend its duration.",
   "industry": "Public Sector",

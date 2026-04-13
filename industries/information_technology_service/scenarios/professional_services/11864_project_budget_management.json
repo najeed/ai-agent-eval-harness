@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Management - Budget Management",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11864-project-budget-management"
   },
   "description": "A project manager reviews the budget for an ongoing project and sees that it is at risk of going over budget.",
   "industry": "Information Technology Service",

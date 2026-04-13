@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Ingest and QC a New TV Series Episode",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12503-ingest-new-tv-series-episode"
   },
   "description": "A new episode of a flagship TV series has been delivered by the production house and must be ingested and quality checked before its premiere.",
   "industry": "Media and Entertainment",

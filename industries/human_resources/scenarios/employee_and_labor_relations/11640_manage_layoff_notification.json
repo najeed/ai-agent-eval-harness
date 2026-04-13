@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Layoff Notification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11640-manage-layoff-notification"
   },
   "description": "As part of a reduction in force, an HRBP must support a manager in notifying an employee that their position has been eliminated.",
   "industry": "Human Resources",

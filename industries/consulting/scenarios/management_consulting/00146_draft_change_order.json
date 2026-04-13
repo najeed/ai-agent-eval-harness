@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft a Change Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00146-draft-change-order"
   },
   "description": "The scope of a project has changed. An agent must draft a change order document.",
   "industry": "Consulting",

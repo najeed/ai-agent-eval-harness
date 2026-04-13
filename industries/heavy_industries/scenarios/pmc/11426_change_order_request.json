@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Change Order Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11426-change-order-request"
   },
   "description": "The client has requested a change to the project scope (e.g., adding a new building). A project manager must create a formal change order.",
   "industry": "Heavy Industries",

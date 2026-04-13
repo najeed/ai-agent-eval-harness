@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Field After a Concert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13628-prepare-field-after-concert"
   },
   "description": "A stadium hosted a concert, and the grounds crew needs to prepare the grass field for a soccer game in two days.",
   "industry": "Sports",

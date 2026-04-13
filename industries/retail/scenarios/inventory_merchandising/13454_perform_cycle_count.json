@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Cycle Count",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13454-perform-cycle-count"
   },
   "description": "A store associate is assigned to perform a cycle count for the 'men's denim' category to verify inventory accuracy.",
   "industry": "Retail",

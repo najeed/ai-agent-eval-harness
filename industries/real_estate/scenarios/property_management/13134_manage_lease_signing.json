@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate New Lease Signing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13134-manage-lease-signing"
   },
   "description": "An approved applicant is ready to sign their lease. The PM needs to prepare and send the lease agreement.",
   "industry": "Real Estate",

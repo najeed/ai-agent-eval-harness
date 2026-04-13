@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set up Refund Direct Deposit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13697-setup-refund-direct-deposit"
   },
   "description": "A taxpayer is due a refund and wants it deposited directly into their checking account.",
   "industry": "Tax",

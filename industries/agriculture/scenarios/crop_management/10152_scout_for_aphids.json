@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Scout for Soybean Aphids",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10152-scout-for-aphids"
   },
   "description": "An agronomist needs to scout a soybean field to determine if the aphid population has reached the economic threshold for treatment.",
   "industry": "Agriculture",

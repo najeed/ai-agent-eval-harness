@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Lot Tracking for Recalls",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14371-handle-lot-tracking"
   },
   "description": "A wholesaler of food products must track lot numbers to manage potential recalls.",
   "industry": "Wholesale",

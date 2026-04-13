@@ -103,7 +103,7 @@ The `PluginManager` triggers these hooks synchronously, ensuring a deterministic
 v1.3 introduces a "Hybrid" approach to environment orchestration, decoupling the physical infrastructure state from the functional evaluation logic.
 
 ### Decoupled Configuration Protocol
-The framework now consumes a centralized **Hybrid Registry** (`shim_resources.json`) that serves as the authoritative source for all environmental resources (API endpoints, DB credentials, Git branches).
+The framework now consumes a centralized **Hybrid Registry** (`shim_resources.json`) that serves as the source for all environmental resources (API endpoints, DB credentials, Git branches).
 
 1.  **Declarative Manifest (`shim_resources.json`)**: Version-controlled, environment-agnostic resource definitions.
 2.  **Local Secrets Overlay (`shim_resources.local.json`)**: Git-ignored, developer-specific credential storage (replaces `.env`).

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Broken Streetlight",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13009-report-broken-streetlight"
   },
   "description": "A resident reports that a streetlight on their block has been out for several days.",
   "industry": "Public Sector",

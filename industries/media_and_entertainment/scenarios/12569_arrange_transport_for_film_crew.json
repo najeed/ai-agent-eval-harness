@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Arrange Transportation for Film Crew",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12569-arrange-transport-for-film-crew"
   },
   "description": "A production coordinator needs to arrange transportation for a 50-person film crew to a remote shooting location.",
   "industry": "Media and Entertainment",

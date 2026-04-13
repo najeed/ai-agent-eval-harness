@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cross-sell New Product Module",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11758-add-product-module"
   },
   "description": "The company releases a new 'Advanced Analytics' module. An Account Manager contacts existing customers to sell them the new add-on.",
   "industry": "Information Technology Product",

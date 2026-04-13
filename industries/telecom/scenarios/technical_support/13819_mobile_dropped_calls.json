@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Mobile Troubleshooting - Dropped Calls",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13819-mobile-dropped-calls"
   },
   "description": "A customer complains about frequently dropped calls in a specific location (e.g., their home).",
   "industry": "Telecom",

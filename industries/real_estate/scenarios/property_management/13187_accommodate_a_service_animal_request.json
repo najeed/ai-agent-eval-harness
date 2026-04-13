@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Reasonable Accommodation Request for a Service Animal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13187-accommodate-a-service-animal-request"
   },
   "description": "A new applicant for a 'no pets' building states they have a service animal. The PM must handle the request correctly under the Fair Housing Act.",
   "industry": "Real Estate",

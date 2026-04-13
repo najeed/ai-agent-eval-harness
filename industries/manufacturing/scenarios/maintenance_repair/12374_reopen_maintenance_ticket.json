@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Re-open a Maintenance Ticket",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12374-reopen-maintenance-ticket"
   },
   "description": "A repair that was marked as 'complete' yesterday has failed again. The operator needs to re-open the original ticket.",
   "industry": "Manufacturing",

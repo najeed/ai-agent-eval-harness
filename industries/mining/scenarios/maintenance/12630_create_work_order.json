@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Corrective Maintenance Work Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12630-create-work-order"
   },
   "description": "A field operator notices a leak on a pipeline and creates a work order in the system for maintenance to repair it.",
   "industry": "Mining",

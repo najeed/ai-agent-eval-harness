@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Return to Vendor (RTV)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13470-process-a-return-to-vendor"
   },
   "description": "A shipment of items arrived damaged from the manufacturer and needs to be returned for credit.",
   "industry": "Retail",

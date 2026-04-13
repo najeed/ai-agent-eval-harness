@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Guest Ejection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14267-handle-guest-ejection"
   },
   "description": "Security has ejected a guest for violating the venue's code of conduct. Guest services must document the incident.",
   "industry": "Venues",

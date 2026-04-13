@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Drawing Revisions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11463-manage-drawing-revisions"
   },
   "description": "An engineer has made a change to a drawing. The document controller must ensure it is issued as a new revision.",
   "industry": "Heavy Industries",

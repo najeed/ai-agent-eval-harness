@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request to Cancel Service with Retention Offer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13803-cancel-service-request-retention"
   },
   "description": "A customer wants to cancel due to high price. The agent must attempt a retention offer.",
   "industry": "Telecom",

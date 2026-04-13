@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Remotely Dim Streetlights for Energy Savings",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13503-remotely-dim-streetlights-for-energy-savings"
   },
   "description": "During late-night hours, an operator needs to dim streetlights in a commercial district to save energy.",
   "industry": "Smart Cities",

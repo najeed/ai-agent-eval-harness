@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customize a Private Tour",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13945-customize-private-tour"
   },
   "description": "A client wants to create a custom full-day private tour of London, including the Tower of London, Buckingham Palace, and a specific pub for lunch.",
   "industry": "Tourism",

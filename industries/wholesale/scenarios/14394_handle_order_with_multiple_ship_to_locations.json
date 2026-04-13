@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Order with Multiple Ship-To Locations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14394-handle-order-with-multiple-ship-to-locations"
   },
   "description": "A retail chain places a single large order but needs parts of it shipped to different store locations.",
   "industry": "Wholesale",

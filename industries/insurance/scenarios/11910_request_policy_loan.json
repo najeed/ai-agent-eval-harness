@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Loan Against Policy Cash Value",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11910-request-policy-loan"
   },
   "description": "A whole life policyholder wants to take a loan against the cash value of their policy.",
   "industry": "Insurance",

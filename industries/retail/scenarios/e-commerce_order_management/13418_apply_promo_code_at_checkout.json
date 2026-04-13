@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply a Promo Code at Checkout",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13418-apply-promo-code-at-checkout"
   },
   "description": "A customer is at the checkout page and wants to apply a promotional code for a discount.",
   "industry": "Retail",

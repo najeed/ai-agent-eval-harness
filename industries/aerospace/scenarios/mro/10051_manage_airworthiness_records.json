@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Aircraft Airworthiness Records",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10051-manage-airworthiness-records"
   },
   "description": "A records administrator is responsible for maintaining the complete and compliant set of maintenance and airworthiness records for an aircraft.",
   "industry": "Aerospace",

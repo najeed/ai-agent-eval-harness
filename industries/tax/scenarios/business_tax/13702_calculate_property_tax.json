@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate Business Property Tax",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13702-calculate-property-tax"
   },
   "description": "A manufacturing company needs to calculate its annual property tax based on the assessed value of its factory.",
   "industry": "Tax",

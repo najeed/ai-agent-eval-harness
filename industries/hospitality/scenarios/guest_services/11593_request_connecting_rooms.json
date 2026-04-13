@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Connecting Rooms",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11593-request-connecting-rooms"
   },
   "description": "A family booking two rooms requests that they be connecting rooms.",
   "industry": "Hospitality",

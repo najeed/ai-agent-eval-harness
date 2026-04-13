@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Digital Ad Campaign for a Rivalry Game",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13652-create-digital-ad-campaign"
   },
   "description": "A team's marketing department wants to run a targeted digital ad campaign to boost ticket sales for an upcoming rivalry game.",
   "industry": "Sports",

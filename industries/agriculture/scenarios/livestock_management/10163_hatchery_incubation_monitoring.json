@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Hatchery Incubation Conditions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10163-hatchery-incubation-monitoring"
   },
   "description": "A hatchery manager needs to ensure the incubators are maintaining the correct temperature and humidity for optimal chick hatching.",
   "industry": "Agriculture",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Get Client Approval on Ad Copy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12476-get-client-approval-on-copy"
   },
   "description": "A copywriter has finished writing ad copy and needs to get approval from the client before it goes live.",
   "industry": "Marketing and Advertising",

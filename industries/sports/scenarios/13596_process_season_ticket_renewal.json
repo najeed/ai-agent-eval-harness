@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Season Ticket Renewal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13596-process-season-ticket-renewal"
   },
   "description": "A season ticket holder wants to renew their tickets for the upcoming season but wishes to move to a different seat.",
   "industry": "Sports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Room Status to Clean",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11522-update-room-to-clean"
   },
   "description": "A housekeeper has finished cleaning a room and needs to update its status so it can be assigned to a new guest.",
   "industry": "Hospitality",

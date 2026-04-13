@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue a Rent Increase Notice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13190-issue-rent-increase-notice"
   },
   "description": "A landlord wants to increase the rent for a month-to-month tenant. The PM must issue a legally compliant notice.",
   "industry": "Real Estate",

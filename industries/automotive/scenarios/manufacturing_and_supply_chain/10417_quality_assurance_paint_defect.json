@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Quality Assurance Flag for Paint Defect",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10417-quality-assurance-paint-defect"
   },
   "description": "An automated optical inspection system has flagged a newly painted car door for a paint defect (orange peel).",
   "industry": "Automotive",

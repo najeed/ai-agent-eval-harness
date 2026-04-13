@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Bulk Update Website Meta Titles",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12448-update-website-meta-titles"
   },
   "description": "An SEO specialist wants to update the meta titles for all product pages to a new, standardized format.",
   "industry": "Marketing and Advertising",

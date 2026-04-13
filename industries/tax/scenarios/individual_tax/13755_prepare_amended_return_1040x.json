@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Amended U.S. Individual Income Tax Return (1040-X)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13755-prepare-amended-return-1040x"
   },
   "description": "A taxpayer realizes they forgot to include a deduction on a previously filed return and wants to amend it.",
   "industry": "Tax",

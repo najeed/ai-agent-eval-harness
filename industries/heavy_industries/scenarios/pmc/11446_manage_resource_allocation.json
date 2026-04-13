@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Project Resource Allocation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11446-manage-resource-allocation"
   },
   "description": "A project manager sees that a key engineer is overallocated for the next month and must reassign some of their tasks.",
   "industry": "Heavy Industries",

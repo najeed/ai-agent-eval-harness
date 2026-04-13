@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review IT Change Management Process",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10319-review-change-management-process"
   },
   "description": "An IT auditor reviews the process for making changes to production systems.",
   "industry": "Audit",

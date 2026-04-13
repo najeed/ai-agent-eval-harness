@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About a Life Insurance Claim Denial",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11919-inquire-about-claim-denial"
   },
   "description": "A beneficiary is calling because their life insurance claim was denied, and they want to understand why.",
   "industry": "Insurance",

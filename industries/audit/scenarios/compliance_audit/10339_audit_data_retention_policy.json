@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Data Retention Policy Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10339-audit-data-retention-policy"
   },
   "description": "An auditor checks if data is being disposed of in accordance with the company's data retention policy.",
   "industry": "Audit",

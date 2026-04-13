@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Edit Audio for a Podcast",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12064-edit-audio-for-a-podcast"
   },
   "description": "A podcast producer needs to edit a recorded interview, removing mistakes, long pauses, and 'ums' and 'ahs'.",
   "industry": "Journalism",

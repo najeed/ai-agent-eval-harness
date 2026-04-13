@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Correct a Trade Error",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11252-correct-trade-error"
   },
   "description": "A trade was executed in the wrong client account by mistake and needs to be corrected.",
   "industry": "Finance",

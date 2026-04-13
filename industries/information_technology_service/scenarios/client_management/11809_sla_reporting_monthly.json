@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "SLA Reporting - Generate Monthly Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11809-sla-reporting-monthly"
   },
   "description": "An account manager needs to generate the monthly SLA and performance report for a key client.",
   "industry": "Information Technology Service",

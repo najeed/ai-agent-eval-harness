@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Property Owner Contact Information",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13278-update-owner-contact-info"
   },
   "description": "A property owner has a new phone number. They've emailed the property manager to update their file.",
   "industry": "Real Estate",

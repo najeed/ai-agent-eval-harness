@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform AML Check on New Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11229-aml-check-new-client"
   },
   "description": "As part of onboarding, a new client must be checked against AML and sanctions watchlists.",
   "industry": "Finance",

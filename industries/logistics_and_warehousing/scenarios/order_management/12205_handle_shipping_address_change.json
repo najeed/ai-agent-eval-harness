@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Shipping Address Change Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12205-handle-shipping-address-change"
   },
   "description": "A customer calls to change the shipping address for an order that has not yet been shipped.",
   "industry": "Logistics and Warehousing",

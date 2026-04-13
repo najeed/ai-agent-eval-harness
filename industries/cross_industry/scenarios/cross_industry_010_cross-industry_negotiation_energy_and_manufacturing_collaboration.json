@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cross-Industry Negotiation: Energy & Manufacturing Collaboration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "cross-industry-010-cross-industry-negotiation-energy-and-manufacturing-collaboration"
   },
   "description": "An AI agent must bridge a complex data and policy gap between the Energy and Manufacturing sectors.",
   "industry": "Meta-Industry",

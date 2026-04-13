@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate a Certificate of Analysis (CoA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12351-generate-certificate-of-analysis"
   },
   "description": "A batch of product has passed final testing and needs a Certificate of Analysis (CoA) to be sent with the shipment.",
   "industry": "Manufacturing",

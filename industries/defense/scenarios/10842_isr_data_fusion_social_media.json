@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Open Source Intelligence (OSINT) Fusion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10842-isr-data-fusion-social-media"
   },
   "description": "An OSINT analyst must fuse social media posts, news reports, and satellite imagery to assess battle damage after a strike.",
   "industry": "Defense",

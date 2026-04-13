@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a Negative Product Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13477-respond-to-negative-product-review"
   },
   "description": "A customer has left a 1-star review for a product on the website. A customer service agent needs to respond.",
   "industry": "Retail",

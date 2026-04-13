@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Technical SEO Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12432-perform-technical-seo-audit"
   },
   "description": "An SEO specialist needs to run a technical audit on a client's website to find issues like broken links and slow page speed.",
   "industry": "Marketing and Advertising",

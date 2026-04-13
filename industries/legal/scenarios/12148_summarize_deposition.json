@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Summarize a Deposition Transcript",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12148-summarize-deposition"
   },
   "description": "A junior lawyer needs to create a concise summary of a key witness's deposition testimony.",
   "industry": "Legal",

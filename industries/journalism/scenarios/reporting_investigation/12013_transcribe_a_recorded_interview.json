@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Transcribe a Recorded Interview",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12013-transcribe-a-recorded-interview"
   },
   "description": "A reporter has a one-hour audio recording of an interview and needs a written transcript to pull quotes from.",
   "industry": "Journalism",

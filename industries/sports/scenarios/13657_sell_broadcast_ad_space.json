@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sell Broadcast Ad Space",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13657-sell-broadcast-ad-space"
   },
   "description": "A company wants to buy a 30-second ad spot during the broadcast of an upcoming championship game.",
   "industry": "Sports",

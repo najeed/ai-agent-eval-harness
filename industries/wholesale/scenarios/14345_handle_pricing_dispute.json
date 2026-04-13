@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Pricing Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14345-handle-pricing-dispute"
   },
   "description": "A retailer claims they were invoiced at a higher price than what was on their original purchase order.",
   "industry": "Wholesale",

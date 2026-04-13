@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Securely Distribute Press Screener",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12557-distribute-press-screener"
   },
   "description": "A film studio needs to send a secure, watermarked screener of a new movie to a list of approved journalists before its release.",
   "industry": "Media and Entertainment",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply Tiered Shipping Rates",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10992-apply-tiered-shipping-rates"
   },
   "description": "The company has a tiered shipping rate structure (e.g., free shipping over $50). The system must apply the correct rate at checkout.",
   "industry": "Ecommerce",

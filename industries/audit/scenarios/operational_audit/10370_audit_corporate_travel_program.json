@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit the Corporate Travel Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10370-audit-corporate-travel-program"
   },
   "description": "An operational auditor reviews the corporate travel program to identify cost-saving opportunities.",
   "industry": "Audit",

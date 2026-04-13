@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add a Driver to an Auto Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11899-add-driver-to-policy"
   },
   "description": "A policyholder wants to add their newly licensed teenage son to their auto insurance policy.",
   "industry": "Insurance",

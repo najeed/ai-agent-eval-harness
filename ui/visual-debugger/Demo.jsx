@@ -19,7 +19,7 @@ const LazyDebugger = ({ runId, highlightFailure = false, apiFetch }) => {
         </div>
     );
     const VD = window.VisualDebugger;
-    return <VD runId={runId} highlightFailure={highlightFailure} onNotify={() => {}} apiFetch={apiFetch} />;
+    return <VD runId={runId} highlightFailure={highlightFailure} onNotify={() => { }} apiFetch={apiFetch} />;
 };
 
 const Demo = ({ apiFetch }) => {
@@ -108,7 +108,7 @@ const Demo = ({ apiFetch }) => {
                                 </div>
                             </div>
                             <div className="text-center pt-8">
-                                <button onClick={nextStep} className="px-10 py-4 bg-blue-600 text-white font-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-xl shadow-blue-500/20 uppercase tracking-widest text-sm">The AgentEval Difference</button>
+                                <button onClick={nextStep} className="px-10 py-4 bg-blue-600 text-white font-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-xl shadow-blue-500/20 uppercase tracking-widest text-sm">The AgentV Difference</button>
                             </div>
                         </div>
                     </div>
@@ -118,8 +118,8 @@ const Demo = ({ apiFetch }) => {
                     <div className="flex-1 flex flex-col h-full animate-in zoom-in duration-700">
                         <div className="p-6 border-b border-slate-800 bg-[#0b0e14]/50 backdrop-blur-xl flex justify-between items-center">
                             <div>
-                                <h2 className="text-xl font-black text-white">AgentEval Replay</h2>
-                                <p className="text-xs text-slate-500 italic mt-1 font-medium">"Now let's replay the same run using AgentEval. We skip the logs and go straight to the execution timeline."</p>
+                                <h2 className="text-xl font-black text-white">AgentV Replay</h2>
+                                <p className="text-xs text-slate-500 italic mt-1 font-medium">"Now let's replay the same run using AgentV. We skip the logs and go straight to the execution timeline."</p>
                             </div>
                             <button onClick={nextStep} className="px-6 py-2 bg-white text-black font-black rounded-full text-[10px] uppercase tracking-widest z-50">Isolate Root Cause</button>
                         </div>
@@ -138,7 +138,7 @@ const Demo = ({ apiFetch }) => {
                                 </div>
                                 <h3 className="text-lg font-black mb-3">Root Cause Isolation</h3>
                                 <p className="text-[11px] font-bold mb-4 opacity-90 leading-relaxed text-blue-100">
-                                    "The AgentEval Engine automatically highlighted the logic breach. The agent used a stale risk threshold of 0.65 instead of the current policy of 0.85."
+                                    "The AgentV Engine automatically highlighted the logic breach. The agent used a stale risk threshold of 0.65 instead of the current policy of 0.85."
                                 </p>
                                 <div className="space-y-2 font-mono text-[9px] bg-black/40 p-3 rounded-xl border border-white/5 mb-4">
                                     <div className="flex justify-between">
@@ -210,7 +210,7 @@ const Demo = ({ apiFetch }) => {
                         <div className="max-w-5xl w-full">
                             <div className="text-center mb-16">
                                 <h2 className="text-4xl font-black text-white mb-4">CI/CD for Agents</h2>
-                                <p className="text-xl text-slate-400 font-medium italic">"With AgentEval, you don't just fix one bug. You build a regression suite that runs on every commit."</p>
+                                <p className="text-xl text-slate-400 font-medium italic">"With AgentV, you don't just fix one bug. You build a regression suite that runs on every commit."</p>
                             </div>
                             <div className="grid grid-cols-5 gap-6">
                                 <div className="space-y-4 pt-12">

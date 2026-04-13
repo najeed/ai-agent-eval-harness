@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book a Guaranteed Delivery Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12279-book-guaranteed-delivery"
   },
   "description": "A critical shipment must arrive by a specific time. The planner must book a guaranteed service with an LTL carrier.",
   "industry": "Logistics and Warehousing",

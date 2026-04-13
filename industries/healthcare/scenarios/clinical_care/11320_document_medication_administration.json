@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document Medication Administration (BCMA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11320-document-medication-administration"
   },
   "description": "A nurse is administering a scheduled medication to an inpatient and must document it using Barcode Medication Administration (BCMA).",
   "industry": "Healthcare",

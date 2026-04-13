@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a BOPIS Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13416-process-bopis-order"
   },
   "description": "A customer has placed a 'Buy Online, Pick up In Store' (BOPIS) order. A store associate needs to prepare it.",
   "industry": "Retail",

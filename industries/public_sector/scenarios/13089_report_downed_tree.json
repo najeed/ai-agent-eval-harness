@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Downed Tree Blocking a Road",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13089-report-downed-tree"
   },
   "description": "A citizen reports that a large tree has fallen and is completely blocking a public road.",
   "industry": "Public Sector",

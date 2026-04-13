@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule New Vehicle Delivery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10405-schedule-vehicle-delivery"
   },
   "description": "A customer has completed a purchase and needs to schedule the delivery and handover of their new car.",
   "industry": "Automotive",

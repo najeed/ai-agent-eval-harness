@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Call Center Efficiency",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10344-review-call-center-efficiency"
   },
   "description": "An operational auditor analyzes call center data to identify opportunities for improvement.",
   "industry": "Audit",

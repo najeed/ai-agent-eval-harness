@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Vessel Agent Query about Port Charges",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12944-handle-vessel-agent-query"
   },
   "description": "A vessel agent calls to get an estimate of port charges for an upcoming vessel call.",
   "industry": "Ports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel a Hotel Reservation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13911-cancel-hotel-reservation"
   },
   "description": "A customer needs to cancel their upcoming hotel reservation.",
   "industry": "Tourism",

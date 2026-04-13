@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Proactively Handle a Late Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10977-handle-late-shipment"
   },
   "description": "A fulfillment delay means an order will not ship on time. The agent must proactively notify the customer.",
   "industry": "Ecommerce",

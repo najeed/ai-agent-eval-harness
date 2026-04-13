@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Underground Backfill Operations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12645-manage-underground-backfill"
   },
   "description": "After a stope has been mined out in an underground mine, it must be filled with backfill (e.g., cemented rock fill) to provide ground support.",
   "industry": "Mining",

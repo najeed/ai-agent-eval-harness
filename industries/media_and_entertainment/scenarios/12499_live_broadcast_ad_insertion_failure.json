@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Live Broadcast Ad Insertion Failure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12499-live-broadcast-ad-insertion-failure"
   },
   "description": "During a live sports broadcast, an automated alert indicates that an ad failed to play in its designated slot.",
   "industry": "Media and Entertainment",

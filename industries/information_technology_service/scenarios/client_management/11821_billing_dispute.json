@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Billing - Handle Billing Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11821-billing-dispute"
   },
   "description": "A client is disputing a charge on their invoice for 'After-Hours Project Work' that they claim was not approved.",
   "industry": "Information Technology Service",

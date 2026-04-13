@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Duplicate Campaign for a New Region",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12489-duplicate-campaign-for-new-region"
   },
   "description": "A successful campaign in the US needs to be duplicated and launched in Canada.",
   "industry": "Marketing and Advertising",

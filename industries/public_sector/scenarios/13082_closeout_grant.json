@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Close Out a Grant",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13082-closeout-grant"
   },
   "description": "A non-profit has completed its grant-funded project and is submitting its final report to close out the grant.",
   "industry": "Public Sector",

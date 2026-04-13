@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Flotation Reagent Dosing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12606-manage-flotation-reagent"
   },
   "description": "A metallurgist adjusts the dosing rate of a collector reagent in a flotation circuit to improve copper recovery.",
   "industry": "Mining",

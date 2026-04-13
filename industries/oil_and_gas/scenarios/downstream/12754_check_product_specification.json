@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Jet Fuel Specification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12754-check-product-specification"
   },
   "description": "A salesperson receives an inquiry from an airline for jet fuel. They need to confirm their product meets the required international specification (e.g., ASTM D1655).",
   "industry": "Oil and Gas",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Multi-Family Investment Property",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13115-analyze-investment-property"
   },
   "description": "An investor client is interested in a 10-unit apartment building and needs an analysis of its financial performance.",
   "industry": "Real Estate",

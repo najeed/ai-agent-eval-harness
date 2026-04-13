@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sort Cattle for Market",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10175-sort-cattle-by-weight"
   },
   "description": "A feedlot manager needs to sort a pen of cattle, sending all animals over a certain weight to market.",
   "industry": "Agriculture",

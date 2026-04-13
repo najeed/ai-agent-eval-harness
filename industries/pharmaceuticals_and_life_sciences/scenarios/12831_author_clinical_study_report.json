@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Author a Clinical Study Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12831-author-clinical-study-report"
   },
   "description": "A medical writer must author a clinical study report (CSR) following the analysis of a completed trial.",
   "industry": "Pharmaceuticals and Life Sciences",

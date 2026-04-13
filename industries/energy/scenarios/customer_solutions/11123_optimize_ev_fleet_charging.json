@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Optimize EV Fleet Charging Schedule",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11123-optimize-ev-fleet-charging"
   },
   "description": "A fleet manager needs to create a charging schedule for 50 electric delivery vans to minimize electricity costs while ensuring all vehicles are fully charged by 6 AM.",
   "industry": "Energy",

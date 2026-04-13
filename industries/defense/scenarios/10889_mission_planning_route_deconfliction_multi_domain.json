@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Multi-Domain Route Deconfliction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10889-mission-planning-route-deconfliction-multi-domain"
   },
   "description": "A planner must deconflict a mission that involves a satellite pass, a high-altitude reconnaissance aircraft, and a ground patrol all operating in the same area at the same time.",
   "industry": "Defense",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Campaign Finance Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13073-file-campaign-finance-report"
   },
   "description": "The treasurer for a political campaign is filing a quarterly campaign finance disclosure report.",
   "industry": "Public Sector",

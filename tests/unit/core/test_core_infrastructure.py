@@ -89,7 +89,7 @@ async def test_runner_orchestration(monkeypatch):
     )
 
     scenario = {
-        "scenario_id": "test_scenario",
+        "id": "test_scenario",
         "workflow": {"nodes": [{"id": "t1", "task_description": "test task"}], "edges": []},
     }
 

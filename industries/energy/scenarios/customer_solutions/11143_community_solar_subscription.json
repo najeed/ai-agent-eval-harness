@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Community Solar Program Subscription",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11143-community-solar-subscription"
   },
   "description": "A residential customer wants to sign up for a local community solar program to support renewable energy and receive bill credits.",
   "industry": "Energy",

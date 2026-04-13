@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Field Topography for Drainage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10140-topography-analysis-drainage"
   },
   "description": "A farmer wants to analyze a high-resolution elevation map of a field to identify areas where water ponds and plan for drainage tile installation.",
   "industry": "Agriculture",

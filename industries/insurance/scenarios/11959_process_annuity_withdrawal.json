@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an Annuity Withdrawal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11959-process-annuity-withdrawal"
   },
   "description": "An annuity holder requests a partial withdrawal from their contract.",
   "industry": "Insurance",

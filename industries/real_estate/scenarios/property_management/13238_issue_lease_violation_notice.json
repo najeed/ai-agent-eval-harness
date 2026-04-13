@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue a Lease Violation Notice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13238-issue-lease-violation-notice"
   },
   "description": "A routine inspection revealed an unauthorized pet in a tenant's unit. The agent must issue a formal notice to cure or quit.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Complains About Poor Recommendations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12502-content-recommendation-feedback"
   },
   "description": "A long-time user of a streaming service complains that their content recommendations are irrelevant.",
   "industry": "Media and Entertainment",

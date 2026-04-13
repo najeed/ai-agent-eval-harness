@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Therapy Plan of Care",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11365-create-therapy-plan-of-care"
   },
   "description": "Following an initial evaluation, an occupational therapist needs to create a plan of care for a new patient.",
   "industry": "Healthcare",

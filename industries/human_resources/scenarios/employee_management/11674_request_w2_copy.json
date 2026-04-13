@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Copy of W-2 Form",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11674-request-w2-copy"
   },
   "description": "A former employee needs a copy of their W-2 from the previous year for tax purposes.",
   "industry": "Human Resources",

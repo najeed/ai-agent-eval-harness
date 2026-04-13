@@ -13,7 +13,7 @@ def test_mutator_typo():
     """Verify typo mutation replaces characters."""
     scenario = {
         "aes_version": 1.4,
-        "scenario_id": "typo_test",
+        "id": "typo_test",
         "title": "Typo Test",
         "industry": "test",
         "description": "test",
@@ -33,7 +33,7 @@ def test_mutator_ambiguity():
     """Verify ambiguity mutation adds confusing phrases."""
     scenario = {
         "aes_version": 1.4,
-        "scenario_id": "ambiguity_test",
+        "id": "ambiguity_test",
         "title": "Ambiguity Test",
         "industry": "test",
         "description": "test",
@@ -51,7 +51,7 @@ def test_mutator_injection():
     """Verify injection mutation adds adversarial instructions."""
     scenario = {
         "aes_version": 1.4,
-        "scenario_id": "injection_test",
+        "id": "injection_test",
         "title": "Injection Test",
         "industry": "test",
         "description": "test",

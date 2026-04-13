@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Complete a PM Checklist",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12361-complete-pm-checklist"
   },
   "description": "A technician is performing a scheduled preventive maintenance task and needs to complete the associated checklist.",
   "industry": "Manufacturing",

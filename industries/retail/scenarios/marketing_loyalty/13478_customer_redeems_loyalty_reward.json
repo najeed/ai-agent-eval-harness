@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Redeems Loyalty Reward",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13478-customer-redeems-loyalty-reward"
   },
   "description": "A loyalty member has enough points for a $5 discount and wants to apply it to their purchase.",
   "industry": "Retail",

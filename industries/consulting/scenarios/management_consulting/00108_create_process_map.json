@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Process Map",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00108-create-process-map"
   },
   "description": "Based on a workshop transcript describing a client's procurement process, an agent must create a visual process map.",
   "industry": "Consulting",

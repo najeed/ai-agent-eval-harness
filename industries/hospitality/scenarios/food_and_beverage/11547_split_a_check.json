@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Split a Check at Dinner",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11547-split-a-check"
   },
   "description": "A table of four guests asks their server to split the check evenly between them.",
   "industry": "Hospitality",

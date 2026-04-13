@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Optimize Solar Panel Cleaning Schedule",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13566-optimize-solar-panel-cleaning-schedule"
   },
   "description": "An operator analyzes energy output and soiling data from solar panels on city buildings to schedule cleanings only when needed.",
   "industry": "Smart Cities",

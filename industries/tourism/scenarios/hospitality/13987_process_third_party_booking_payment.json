@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Payment for Third-Party Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13987-process-third-party-booking-payment"
   },
   "description": "A guest checking out booked through a third-party website (e.g., Expedia) and needs to pay for incidental charges.",
   "industry": "Tourism",

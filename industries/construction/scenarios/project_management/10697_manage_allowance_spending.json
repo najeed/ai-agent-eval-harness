@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Spending Against an Allowance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10697-manage-allowance-spending"
   },
   "description": "The contract includes a $20,000 allowance for light fixtures. The PM must help the client make selections while staying within this allowance.",
   "industry": "Construction",

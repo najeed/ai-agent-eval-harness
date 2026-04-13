@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Vessel's Waste Log",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12988-manage-vessel-waste-log"
   },
   "description": "As part of an environmental inspection, an officer must check a vessel's garbage and oil record books for compliance.",
   "industry": "Ports",

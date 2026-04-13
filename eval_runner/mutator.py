@@ -75,9 +75,15 @@ def mutate_scenario(scenario: dict, mutation_type: str = "typos") -> dict:
         for node in nodes:
             node["task_description"] += injection
 
-    # Update title and ID
-    if "scenario_id" in new_scenario:
-        new_scenario["scenario_id"] += f"_mutated_{mutation_type}"
+    # Update title and ID (AES v1.4.0)
+    suffix = f"_mutated_{mutation_type}"
+
+    if "id" in new_scenario:
+        new_scenario["id"] += suffix
+
+    if "metadata" in new_scenario and "id" in new_scenario["metadata"]:
+        new_scenario["metadata"]["id"] += suffix
+
     if "title" in new_scenario:
         new_scenario["title"] += f" (Mutated: {mutation_type})"
 

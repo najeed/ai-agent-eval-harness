@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Management - Get Milestone Sign-off",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11847-project-get-client-signoff"
   },
   "description": "A project manager needs to get formal client sign-off for a major project milestone before proceeding to the next phase.",
   "industry": "Information Technology Service",

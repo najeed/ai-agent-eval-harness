@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Maintenance Request - Room Too Cold",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11543-room-temperature-issue"
   },
   "description": "A guest reports that their room's air conditioning is stuck on and the room is too cold.",
   "industry": "Hospitality",

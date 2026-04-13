@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Negotiate a Commercial Lease",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13313-negotiate-commercial-lease"
   },
   "description": "A landlord's agent and a tenant's agent are negotiating the terms of a 5-year lease for a retail space.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check for Design Standard Updates",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11455-check-for-design-standard-updates"
   },
   "description": "Before starting a new design, an engineer must check if any of the relevant industry design codes (e.g., ASME, API) have been updated.",
   "industry": "Heavy Industries",

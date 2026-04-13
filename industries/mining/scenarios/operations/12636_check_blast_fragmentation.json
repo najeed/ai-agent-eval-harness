@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Blast Fragmentation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12636-check-blast-fragmentation"
   },
   "description": "After a blast, an engineer uses a photo-analysis system to check the rock fragmentation to ensure it is suitable for the shovel and crusher.",
   "industry": "Mining",

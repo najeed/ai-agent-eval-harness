@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Succession Planning for a Key Role",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11615-conduct-succession-planning"
   },
   "description": "An HR business partner is facilitating a succession planning meeting for a 'Director of Engineering' role.",
   "industry": "Human Resources",

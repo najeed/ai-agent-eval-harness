@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Anonymize a Source in a Draft",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12060-anonymize-a-source-in-a-draft"
   },
   "description": "A story uses an anonymous source. An editor must ensure the draft does not contain any details that could inadvertently identify the person.",
   "industry": "Journalism",

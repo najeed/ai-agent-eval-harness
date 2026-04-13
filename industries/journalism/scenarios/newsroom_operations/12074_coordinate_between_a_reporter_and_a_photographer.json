@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate Between a Reporter and a Photographer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12074-coordinate-between-a-reporter-and-a-photographer"
   },
   "description": "An editor needs to make sure a reporter and a photographer, who are in different locations, meet up at the right time and place for an assignment.",
   "industry": "Journalism",

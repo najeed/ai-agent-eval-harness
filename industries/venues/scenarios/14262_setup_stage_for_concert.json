@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set up Stage for a Concert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14262-setup-stage-for-concert"
   },
   "description": "The operations crew needs to set up the stage, lighting, and sound system for a touring concert.",
   "industry": "Venues",

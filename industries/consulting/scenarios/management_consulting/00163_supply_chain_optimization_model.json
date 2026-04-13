@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Supply Chain Optimization",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00163-supply-chain-optimization-model"
   },
   "description": "An agent must analyze shipping data to recommend a more optimal distribution center location.",
   "industry": "Consulting",

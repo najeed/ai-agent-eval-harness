@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Equipment Operating Hours",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11472-track-equipment-operating-hours"
   },
   "description": "A supervisor needs to log the daily operating hours for a piece of heavy equipment (e.g., a bulldozer) for maintenance tracking.",
   "industry": "Heavy Industries",

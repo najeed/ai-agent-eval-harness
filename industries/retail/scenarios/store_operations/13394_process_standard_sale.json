@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Standard Sale",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13394-process-standard-sale"
   },
   "description": "A store associate needs to process a standard cash purchase for a customer at the Point of Sale (POS) system.",
   "industry": "Retail",

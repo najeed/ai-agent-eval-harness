@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Shift Handover",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10573-conduct-shift-handover"
   },
   "description": "At the end of a shift, a plant operator must formally hand over control of the process to the operator on the next shift.",
   "industry": "Chemicals",

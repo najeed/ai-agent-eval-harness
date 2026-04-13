@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Evaluate Toll Manufacturing Partner",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10582-evaluate-tolling-partner"
   },
   "description": "To meet excess demand, the company is considering using a toll manufacturer. A planner must evaluate the financial viability.",
   "industry": "Chemicals",

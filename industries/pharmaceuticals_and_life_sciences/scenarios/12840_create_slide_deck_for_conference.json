@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Slide Deck for Medical Conference",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12840-create-slide-deck-for-conference"
   },
   "description": "An MSL needs to create a slide presentation summarizing recent clinical trial data for an upcoming medical conference.",
   "industry": "Pharmaceuticals and Life Sciences",

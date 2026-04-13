@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Title and Registration Paperwork",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10493-title-and-registration-processing"
   },
   "description": "A dealership's back-office staff needs to process the title application and registration for a recently sold vehicle.",
   "industry": "Automotive",

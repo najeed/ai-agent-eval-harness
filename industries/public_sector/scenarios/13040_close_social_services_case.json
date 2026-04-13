@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Close a Social Services Case",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13040-close-social-services-case"
   },
   "description": "A client in a job training program has successfully found employment, and the social worker needs to close their case.",
   "industry": "Public Sector",

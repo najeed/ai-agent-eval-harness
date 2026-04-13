@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Farm Input Inventory Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10119-inventory-management-inputs"
   },
   "description": "A farmer is preparing for planting and needs to know if they have enough seed and fertilizer on hand.",
   "industry": "Agriculture",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Project Entitlements",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13309-manage-project-entitlements"
   },
   "description": "A developer needs to secure the necessary permits and approvals (entitlements) from the city for a new retail development.",
   "industry": "Real Estate",

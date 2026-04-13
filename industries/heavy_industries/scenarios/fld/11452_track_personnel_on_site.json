@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Personnel on Site",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11452-track-personnel-on-site"
   },
   "description": "During an emergency drill, a safety officer needs to get a headcount of all personnel at the designated muster points.",
   "industry": "Heavy Industries",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cross-Industry Negotiation: Finance & Public Sector Collaboration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "cross-industry-084-cross-industry-negotiation-finance-and-public-sector-collaboration"
   },
   "description": "An AI agent must bridge a complex data and policy gap between the Finance and Public Sector sectors.",
   "industry": "Meta-Industry",

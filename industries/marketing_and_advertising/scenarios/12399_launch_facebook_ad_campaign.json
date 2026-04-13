@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Launch Facebook Ad Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12399-launch-facebook-ad-campaign"
   },
   "description": "A media buyer needs to set up and launch a new ad campaign on Facebook targeting a specific audience.",
   "industry": "Marketing and Advertising",

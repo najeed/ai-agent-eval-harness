@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Self-Defense ROE Compliance Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10871-c2-roe-compliance-self-defense"
   },
   "description": "A ship's captain is being approached by fast-attack craft and must determine if they have demonstrated hostile intent, authorizing engagement in self-defense under the ROE.",
   "industry": "Defense",

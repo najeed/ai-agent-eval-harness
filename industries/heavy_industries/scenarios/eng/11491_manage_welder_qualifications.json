@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Welder Qualifications",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11491-manage-welder-qualifications"
   },
   "description": "A quality manager needs to verify that a welder is qualified to perform a specific type of weld before they start work.",
   "industry": "Heavy Industries",

@@ -276,10 +276,10 @@ const ScenarioExplorer = ({ onNotify, searchQuery = "", apiFetch }) => {
 
 const ScenarioEditor = () => {
     const initialState = {
-        aes_version: 1.2,
+        aes_version: 1.4,
         metadata: { name: 'New Scenario', compliance_level: 'Standard' },
         industry: 'generic',
-        scenario_id: 'scenario-custom-1',
+        id: 'scenario-custom-1',
         title: 'New Scenario',
         tasks: [{ id: 'start_node', description: 'Agent should verify user identity' }]
     };
@@ -312,9 +312,9 @@ const ScenarioEditor = () => {
 
     const handleGenerate = () => {
         const aes = {
-            aes_version: 1.2,
+            aes_version: 1.4,
             metadata: {
-                id: scenario.scenario_id,
+                id: scenario.id,
                 name: scenario.title,
                 compliance_level: scenario.metadata.compliance_level
             },
@@ -381,8 +381,8 @@ const ScenarioEditor = () => {
                             <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Scenario ID</label>
                             <input
                                 type="text"
-                                value={scenario.scenario_id}
-                                onChange={(e) => setScenario({ ...scenario, scenario_id: e.target.value })}
+                                value={scenario.id}
+                                onChange={(e) => setScenario({ ...scenario, id: e.target.value })}
                                 className="w-full bg-slate-900 border border-slate-800 rounded-xl py-3 px-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-mono"
                             />
                         </div>

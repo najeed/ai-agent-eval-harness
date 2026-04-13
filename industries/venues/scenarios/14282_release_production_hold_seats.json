@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Release Production Hold Seats",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14282-release-production-hold-seats"
   },
   "description": "The production manager for a concert has determined they don't need a block of seats that was on hold, and they can now be sold to the public.",
   "industry": "Venues",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage the Master Production Schedule",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10045-manage-production-schedule"
   },
   "description": "A production planner must adjust the master production schedule due to a supplier delay for a critical component.",
   "industry": "Aerospace",

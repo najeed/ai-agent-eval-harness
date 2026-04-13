@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Management - Weekly Status Update",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11813-project-management-weekly-update"
   },
   "description": "A project manager needs to provide a weekly status update to a client for an ongoing project.",
   "industry": "Information Technology Service",

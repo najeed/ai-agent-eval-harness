@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle In-Flight Turbulence",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10227-handle-in-flight-turbulence"
   },
   "description": "A flight encounters unexpected severe turbulence. The flight and cabin crew must respond to ensure safety.",
   "industry": "Airline",

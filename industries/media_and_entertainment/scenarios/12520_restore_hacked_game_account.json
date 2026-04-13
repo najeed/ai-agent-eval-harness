@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Restore a Hacked Game Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12520-restore-hacked-game-account"
   },
   "description": "A player reports their account was compromised, their password changed, and valuable in-game items were stolen.",
   "industry": "Media and Entertainment",

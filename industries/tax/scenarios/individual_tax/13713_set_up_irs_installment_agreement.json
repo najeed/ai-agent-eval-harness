@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set up IRS Installment Agreement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13713-set-up-irs-installment-agreement"
   },
   "description": "A taxpayer owes taxes but cannot pay the full amount at once. They want to set up a monthly payment plan with the IRS.",
   "industry": "Tax",

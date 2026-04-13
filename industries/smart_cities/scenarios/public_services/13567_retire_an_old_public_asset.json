@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Retire an Old Public Asset",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13567-retire-an-old-public-asset"
   },
   "description": "A public fountain is being decommissioned. An operator must update the city's asset records.",
   "industry": "Smart Cities",

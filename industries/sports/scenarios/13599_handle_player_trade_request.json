@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Player Trade Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13599-handle-player-trade-request"
   },
   "description": "A star player has requested a trade. The General Manager needs to find a suitable trade partner.",
   "industry": "Sports",

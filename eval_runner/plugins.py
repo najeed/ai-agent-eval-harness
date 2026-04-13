@@ -448,7 +448,7 @@ class PluginManager:
         if not class_name:
             raise ValueError(f"CRITICAL: Failed to resolve class_name for {module_path}")
 
-        # Schema Alignment: Determine authoritative name and ID
+        # Schema Alignment: Determine name and ID
         pid = plugin_id or class_name.lower()
         pname = name or pid
 

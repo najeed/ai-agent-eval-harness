@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "SSO Service Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10726-iam-auth-sso-failure"
   },
   "description": "The company's Single Sign-On (SSO) provider is having an outage, preventing all users from logging into cloud applications. An analyst must manage the incident.",
   "industry": "Cybersecurity",

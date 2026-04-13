@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Locate Specific Vehicle in Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10445-locate-vehicle-in-inventory"
   },
   "description": "A customer is looking for a very specific configuration (model, trim, color, options). A salesperson needs to check inventory at their own and nearby dealerships.",
   "industry": "Automotive",

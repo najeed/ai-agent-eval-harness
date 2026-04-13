@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Suspend and Resume a Transaction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13406-suspend-and-resume-a-transaction"
   },
   "description": "A customer at checkout realizes they forgot an item and needs to leave the line to get it. The associate needs to suspend the transaction to help the next customer.",
   "industry": "Retail",

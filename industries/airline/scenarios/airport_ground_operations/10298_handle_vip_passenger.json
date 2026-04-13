@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a VIP Passenger",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10298-handle-vip-passenger"
   },
   "description": "A VIP (e.g., a celebrity or high-profile government official) is traveling. Ground staff must provide special handling.",
   "industry": "Airline",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Gate Security Breach",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10267-handle-security-breach"
   },
   "description": "A person has run past the gate agent without a valid boarding pass. The agent must initiate a security response.",
   "industry": "Airline",

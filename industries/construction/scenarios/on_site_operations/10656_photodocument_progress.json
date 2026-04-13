@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Photo-document Project Progress",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10656-photodocument-progress"
   },
   "description": "A project engineer needs to take weekly progress photos from established photo points around the site.",
   "industry": "Construction",

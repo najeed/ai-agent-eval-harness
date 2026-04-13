@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Subscription Payment Method",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10975-update-subscription-payment-method"
   },
   "description": "A customer with a recurring subscription needs to update the credit card used for their monthly payments.",
   "industry": "Ecommerce",

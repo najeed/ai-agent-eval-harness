@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Operate a Robotic Arm in Space",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10096-operate-robotic-arm"
   },
   "description": "An operator on the ground needs to command a robotic arm on a satellite to grab and reposition a payload.",
   "industry": "Aerospace",

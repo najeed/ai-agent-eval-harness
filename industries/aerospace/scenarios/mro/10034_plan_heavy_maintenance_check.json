@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan a C-Check (Heavy Maintenance)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10034-plan-heavy-maintenance-check"
   },
   "description": "A maintenance planner is creating the work package for an upcoming C-check on a commercial airliner.",
   "industry": "Aerospace",

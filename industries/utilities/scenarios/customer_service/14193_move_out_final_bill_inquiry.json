@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquiry about Final Bill after Move-Out",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14193-move-out-final-bill-inquiry"
   },
   "description": "A customer who recently moved out is calling to ask about their final bill, which seems high.",
   "industry": "Utilities",

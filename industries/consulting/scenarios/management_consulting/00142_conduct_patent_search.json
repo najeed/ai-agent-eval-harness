@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct a Patent Search",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00142-conduct-patent-search"
   },
   "description": "For a client developing a new product, an agent must conduct a preliminary patent search for similar inventions.",
   "industry": "Consulting",

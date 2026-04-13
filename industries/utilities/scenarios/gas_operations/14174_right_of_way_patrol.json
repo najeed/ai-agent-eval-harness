@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Gas Pipeline Right-of-Way Patrol",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14174-right-of-way-patrol"
   },
   "description": "A technician is patrolling a gas pipeline right-of-way and observes unauthorized construction activity near the pipeline.",
   "industry": "Utilities",

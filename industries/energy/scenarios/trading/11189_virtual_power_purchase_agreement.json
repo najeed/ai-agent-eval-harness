@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Structure a Virtual PPA (VPPA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11189-virtual-power-purchase-agreement"
   },
   "description": "A corporate buyer wants to sign a Virtual Power Purchase Agreement (VPPA) to support a new wind farm and receive its RECs, without taking physical delivery of the power.",
   "industry": "Energy",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About Policy Cash Value",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11981-inquire-about-cash-value"
   },
   "description": "A whole life policyholder wants to know the current cash value of their policy.",
   "industry": "Insurance",

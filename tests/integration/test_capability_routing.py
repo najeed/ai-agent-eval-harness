@@ -49,7 +49,7 @@ def isolated_routing(tmp_path):
 def test_session_resolves_capability_on_init(isolated_routing):
     """Verify that SessionManager resolves capabilities and emits the routing event."""
     scenario = {
-        "scenario_id": "test_routing_id",
+        "id": "test_routing_id",
         "capabilities": ["fintech_loan_api"],
         "workflow": {"nodes": [], "edges": []},
     }
@@ -78,7 +78,7 @@ def test_session_resolves_capability_on_init(isolated_routing):
 def test_session_routing_cli_override(isolated_routing):
     """Verify that CLI overrides (passed via metadata) win over capability routing."""
     scenario = {
-        "scenario_id": "test_routing_id",
+        "id": "test_routing_id",
         "capabilities": ["fintech_loan_api"],
         "workflow": {"nodes": [], "edges": []},
     }
@@ -106,7 +106,7 @@ def test_session_fallback_to_default(isolated_routing):
     RoutingRegistry.reload()
 
     scenario = {
-        "scenario_id": "test_routing_id",
+        "id": "test_routing_id",
         "capabilities": ["unknown_cap"],
         "workflow": {"nodes": [], "edges": []},
     }

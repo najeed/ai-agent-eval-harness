@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Ransomware Forensic Data Recovery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10860-cyber-forensics-data-recovery"
   },
   "description": "A critical server has been hit by ransomware, encrypting all files. A forensics analyst must attempt to recover the data without paying the ransom.",
   "industry": "Defense",

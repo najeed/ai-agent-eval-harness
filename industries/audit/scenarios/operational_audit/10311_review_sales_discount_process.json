@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Sales Discounting Process",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10311-review-sales-discount-process"
   },
   "description": "An operational auditor analyzes the process for applying discounts to sales orders to identify potential revenue leakage.",
   "industry": "Audit",

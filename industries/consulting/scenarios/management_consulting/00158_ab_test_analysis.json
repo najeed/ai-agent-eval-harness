@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "A/B Test Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00158-ab-test-analysis"
   },
   "description": "An agent must analyze the results of an A/B test to determine if a new website design increased conversion rates.",
   "industry": "Consulting",

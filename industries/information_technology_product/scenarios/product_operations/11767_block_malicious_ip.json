@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Block Malicious IP",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11767-block-malicious-ip"
   },
   "description": "A threat intelligence feed identifies an IP address that is attempting to brute-force user accounts.",
   "industry": "Information Technology Product",

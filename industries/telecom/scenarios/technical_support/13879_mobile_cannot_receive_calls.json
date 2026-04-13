@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Mobile Troubleshooting - Cannot Receive Calls",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13879-mobile-cannot-receive-calls"
   },
   "description": "A customer can make calls but cannot receive any. All incoming calls go straight to voicemail.",
   "industry": "Telecom",

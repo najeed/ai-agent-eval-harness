@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Weekly In-Game Tournament",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12544-schedule-weekly-in-game-tournament"
   },
   "description": "An esports manager needs to schedule the regular weekly tournament in the game's system.",
   "industry": "Media and Entertainment",

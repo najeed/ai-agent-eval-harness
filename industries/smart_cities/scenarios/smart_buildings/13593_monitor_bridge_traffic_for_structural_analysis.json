@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Bridge Traffic for Structural Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13593-monitor-bridge-traffic-for-structural-analysis"
   },
   "description": "Structural engineers need to know the weight of vehicles that have crossed a bridge to calibrate their structural health models.",
   "industry": "Smart Cities",

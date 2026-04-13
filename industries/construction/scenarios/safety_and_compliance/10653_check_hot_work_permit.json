@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check for Hot Work Permit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10653-check-hot-work-permit"
   },
   "description": "A foreman sees a welder preparing to work and must first ensure a hot work permit has been issued for the area.",
   "industry": "Construction",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Site Access Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11492-manage-site-access-request"
   },
   "description": "A new subcontractor employee needs to be granted access to the construction site.",
   "industry": "Heavy Industries",

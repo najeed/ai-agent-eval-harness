@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Recruiting Dashboard",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11685-create-recruiting-dashboard"
   },
   "description": "The VP of HR wants a dashboard to track key recruiting metrics like time-to-fill, cost-per-hire, and open requisitions.",
   "industry": "Human Resources",

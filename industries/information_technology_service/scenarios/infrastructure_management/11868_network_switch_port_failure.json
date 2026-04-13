@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Server & Network - Switch Port Failure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11868-network-switch-port-failure"
   },
   "description": "A user whose computer is connected via an Ethernet cable reports they have no network connection.",
   "industry": "Information Technology Service",

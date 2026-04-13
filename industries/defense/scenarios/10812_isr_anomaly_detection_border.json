@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Border Anomaly Detection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10812-isr-anomaly-detection-border"
   },
   "description": "An analyst must review wide-area motion imagery (WAMI) to detect anomalous activity along a monitored border.",
   "industry": "Defense",

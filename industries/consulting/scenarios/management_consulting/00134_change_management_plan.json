@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop a Change Management Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00134-change-management-plan"
   },
   "description": "For a major technology implementation project, an agent must draft a change management plan.",
   "industry": "Consulting",

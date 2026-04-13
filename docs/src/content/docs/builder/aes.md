@@ -17,7 +17,8 @@ AES is an industrial-grade specification used to define benchmarks that are fram
 ## 2. Core Schema (v1.4)
 
 ### Metadata (`metadata`)
-Stricter requirements to ensure environment reproducibility.
+Stricter requirements to ensure environment reproducibility and forensic traceability.
+- **`id`**: (Required) Global unique forensic identifier (slug-style).
 - **`capabilities`**: (Required) Skills required to solve the scenario (e.g., `web_navigation`, `sql_generation`).
 - **`standards_registry`**: (Optional) Regulatory mapping (e.g., `ISO_20022`, `NIST`).
 - **`aes_version`**: Must be set to `1.4`.

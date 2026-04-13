@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advise on Tax-Loss Harvesting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13770-advise-on-tax-loss-harvesting"
   },
   "description": "An investor has significant capital gains for the year and wants to sell some losing investments to offset those gains.",
   "industry": "Tax",

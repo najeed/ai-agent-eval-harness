@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Extend a CAPA Due Date",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12353-extend-capa-due-date"
   },
   "description": "The team investigating a CAPA needs more time for their root cause analysis. A manager needs to approve an extension.",
   "industry": "Manufacturing",

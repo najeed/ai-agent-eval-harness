@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispute Subcontractor Invoice for Incomplete Work",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10627-dispute-subcontractor-invoice"
   },
   "description": "A project manager receives an invoice from a subcontractor for work that is only 50% complete. The invoice must be disputed.",
   "industry": "Construction",

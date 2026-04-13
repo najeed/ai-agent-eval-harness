@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Warehouse Safety Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14383-manage-warehouse-safety-inspection"
   },
   "description": "A warehouse manager needs to conduct a routine safety inspection.",
   "industry": "Wholesale",

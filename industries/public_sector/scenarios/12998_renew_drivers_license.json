@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Renew a Driver's License Online",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12998-renew-drivers-license"
   },
   "description": "A citizen needs to renew their driver's license and wants to complete the process online.",
   "industry": "Public Sector",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Shipment Discrepancy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12322-handle-shipment-discrepancy"
   },
   "description": "A receiving clerk received a shipment where the quantity is less than what was on the packing slip.",
   "industry": "Manufacturing",

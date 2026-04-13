@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Request for Certificate of Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10506-customer-request-for-coa"
   },
   "description": "A customer calls requesting the Certificate of Analysis (CoA) for a specific batch of product they recently received.",
   "industry": "Chemicals",

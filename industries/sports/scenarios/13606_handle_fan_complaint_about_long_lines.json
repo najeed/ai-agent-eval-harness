@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Fan Complaint About Long Lines",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13606-handle-fan-complaint-about-long-lines"
   },
   "description": "A fan emails customer support to complain about long lines at the concession stands during a recent game.",
   "industry": "Sports",

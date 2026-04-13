@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Protocol an Imaging Study",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11371-protocol-an-imaging-study"
   },
   "description": "A radiologist needs to review an order for a 'CT Abdomen' and select the specific technical protocol for the CT technologist to use (e.g., with or without contrast).",
   "industry": "Healthcare",

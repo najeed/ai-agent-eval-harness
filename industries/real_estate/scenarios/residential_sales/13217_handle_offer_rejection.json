@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Offer Rejection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13217-handle-offer-rejection"
   },
   "description": "A buyer's offer was rejected by the seller. The agent needs to inform the buyer and discuss next steps.",
   "industry": "Real Estate",

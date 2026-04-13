@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Roll Back a Failed Game Patch",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12596-roll-back-a-failed-game-patch"
   },
   "description": "A new game patch has introduced a critical bug causing widespread crashes. The patch must be rolled back immediately.",
   "industry": "Media and Entertainment",

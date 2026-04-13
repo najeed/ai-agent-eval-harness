@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft a Demand Letter for Unpaid Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12191-draft-demand-letter"
   },
   "description": "A client has not been paid by a customer. An attorney needs to draft a demand letter before filing a lawsuit.",
   "industry": "Legal",

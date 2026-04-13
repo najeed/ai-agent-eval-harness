@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Cabin Pressurization Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10097-perform-cabin-pressurization-test"
   },
   "description": "On the ground, engineers must test the aircraft's pressurization system to ensure it can hold pressure and has no leaks.",
   "industry": "Aerospace",

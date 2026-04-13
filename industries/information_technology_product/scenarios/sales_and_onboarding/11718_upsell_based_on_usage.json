@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Upsell to Higher Tier Based on Usage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11718-upsell-based-on-usage"
   },
   "description": "A customer on the 'Pro' plan consistently hits their API usage limits. The Account Manager should upsell them to the 'Enterprise' plan.",
   "industry": "Information Technology Product",

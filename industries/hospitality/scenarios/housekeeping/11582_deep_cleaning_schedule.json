@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule a Room for Deep Cleaning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11582-deep-cleaning-schedule"
   },
   "description": "A room is due for its quarterly deep cleaning.",
   "industry": "Hospitality",

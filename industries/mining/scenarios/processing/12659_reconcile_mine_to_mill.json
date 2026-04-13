@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reconcile Mine to Mill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12659-reconcile-mine-to-mill"
   },
   "description": "A metallurgist reconciles the tons and grade of ore that the mine claimed to have sent to the plant with what the plant actually received and processed.",
   "industry": "Mining",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Enroll in Guest Loyalty Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13914-enroll-in-loyalty-program"
   },
   "description": "A new customer wants to enroll in the hotel's loyalty program.",
   "industry": "Tourism",

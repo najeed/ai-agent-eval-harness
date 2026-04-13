@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Host a Q&A on Social Media",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12037-host-a-q&a-on-social-media"
   },
   "description": "Following a major investigation, the lead reporter hosts a live Q&A session on Twitter to answer audience questions.",
   "industry": "Journalism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Mine Rehabilitation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12653-manage-rehabilitation"
   },
   "description": "An environmental officer plans and monitors the rehabilitation of an old waste dump, which involves reshaping it and planting vegetation.",
   "industry": "Mining",

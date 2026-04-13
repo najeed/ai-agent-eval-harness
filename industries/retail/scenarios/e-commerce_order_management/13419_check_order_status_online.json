@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Order Status Online",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13419-check-order-status-online"
   },
   "description": "A customer wants to check the status of an order they placed yesterday.",
   "industry": "Retail",

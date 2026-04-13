@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "The Case of the Missing Refund",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "narrative"
   },
   "description": "Customer Jane Doe is frustrated because she returned her item two weeks ago but hasn't seen a refund for Order #OM-5566.",
   "industry": "Ecommerce",

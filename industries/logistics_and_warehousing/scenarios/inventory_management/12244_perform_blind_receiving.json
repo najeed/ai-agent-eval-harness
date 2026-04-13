@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Blind Receiving",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12244-perform-blind-receiving"
   },
   "description": "To ensure accuracy, a warehouse is configured for 'blind receiving', where operators don't see the expected PO quantity and must count from scratch.",
   "industry": "Logistics and Warehousing",

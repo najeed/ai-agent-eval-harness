@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Sample Dispatch to Lab",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12691-manage-sample-dispatch"
   },
   "description": "A geology technician prepares a batch of drill samples to be shipped from the mine site to an external laboratory for analysis.",
   "industry": "Mining",

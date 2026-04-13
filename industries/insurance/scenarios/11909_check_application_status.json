@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Life Insurance Application Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11909-check-application-status"
   },
   "description": "An applicant who applied for life insurance two weeks ago is calling to check the status.",
   "industry": "Insurance",

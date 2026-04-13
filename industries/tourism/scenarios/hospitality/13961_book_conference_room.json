@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book a Hotel Conference Room",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13961-book-conference-room"
   },
   "description": "A company needs to book a conference room for a half-day meeting for 10 people.",
   "industry": "Tourism",

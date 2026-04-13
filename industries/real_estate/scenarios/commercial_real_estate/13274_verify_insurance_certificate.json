@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Tenant's Certificate of Insurance (COI)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13274-verify-insurance-certificate"
   },
   "description": "A new commercial tenant must provide a COI before getting their keys. The agent must verify it meets the lease requirements.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Transcribe Audio Meeting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00152-transcribe-audio-meeting"
   },
   "description": "An agent must transcribe an audio file of a client workshop.",
   "industry": "Consulting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reactivate Service After Suspension",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13811-reactivate-suspended-service"
   },
   "description": "A customer who temporarily suspended their service has returned early from travel and wants to reactivate their line.",
   "industry": "Telecom",

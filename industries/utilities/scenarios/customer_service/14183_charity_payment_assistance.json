@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply Charity Pledge to Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14183-charity-payment-assistance"
   },
   "description": "A local charity has pledged to pay $200 towards a low-income customer's past-due utility bill.",
   "industry": "Utilities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Activate In-Car Wi-Fi Hotspot Trial",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10410-activate-wifi-hotspot"
   },
   "description": "A new car owner wants to activate the free trial for their in-car Wi-Fi hotspot.",
   "industry": "Automotive",

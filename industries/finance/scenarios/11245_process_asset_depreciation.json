@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Monthly Asset Depreciation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11245-process-asset-depreciation"
   },
   "description": "An accountant needs to run the monthly process to calculate and post depreciation for all fixed assets.",
   "industry": "Finance",

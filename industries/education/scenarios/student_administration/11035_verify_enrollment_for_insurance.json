@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Enrollment for Insurance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11035-verify-enrollment-for-insurance"
   },
   "description": "A student needs an official letter verifying their full-time enrollment status for their parent's health insurance company.",
   "industry": "Education",

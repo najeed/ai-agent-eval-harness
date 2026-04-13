@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Grant Fund Balance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11012-check-grant-fund-balance"
   },
   "description": "A principal investigator (PI) for a research grant needs to know the remaining balance of their grant funds.",
   "industry": "Education",

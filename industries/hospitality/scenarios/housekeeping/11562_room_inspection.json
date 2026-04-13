@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Supervisory Room Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11562-room-inspection"
   },
   "description": "A housekeeping supervisor needs to inspect a room that a housekeeper has marked as 'Clean' before it can be made available for guests.",
   "industry": "Hospitality",

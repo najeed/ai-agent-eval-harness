@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Corporate ACH Payment File",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11206-process-bulk-ach-payments"
   },
   "description": "A corporate client's treasury department needs to process a payroll file via ACH.",
   "industry": "Finance",

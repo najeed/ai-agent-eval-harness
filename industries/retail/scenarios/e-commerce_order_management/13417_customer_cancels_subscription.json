@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Cancels a Subscription",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13417-customer-cancels-subscription"
   },
   "description": "A customer logs into their account to cancel their monthly subscription box.",
   "industry": "Retail",

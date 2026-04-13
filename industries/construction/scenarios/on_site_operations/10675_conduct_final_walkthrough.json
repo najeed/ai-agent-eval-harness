@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Final Walkthrough with Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10675-conduct-final-walkthrough"
   },
   "description": "The project is substantially complete. The PM needs to conduct the final walkthrough with the client to generate the initial punch list.",
   "industry": "Construction",

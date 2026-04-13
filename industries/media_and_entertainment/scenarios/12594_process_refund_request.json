@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Refund for Accidental Purchase",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12594-process-refund-request"
   },
   "description": "A user accidentally purchased a movie on a VOD service and immediately requests a refund.",
   "industry": "Media and Entertainment",

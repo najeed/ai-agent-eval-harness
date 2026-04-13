@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Enroll in Budget Billing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14122-enroll-in-budget-billing"
   },
   "description": "A customer wants to enroll in the budget billing program to have predictable monthly payments.",
   "industry": "Utilities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Guest Preferences",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13938-update-guest-preferences"
   },
   "description": "A returning loyalty member wants to update their profile to always request a high-floor room away from the elevator.",
   "industry": "Tourism",

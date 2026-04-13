@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Reefer Container Temperature Alarm",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12902-handle-reefer-container-alarm"
   },
   "description": "The terminal monitoring system sends an alert that a refrigerated (reefer) container's temperature is out of range.",
   "industry": "Ports",

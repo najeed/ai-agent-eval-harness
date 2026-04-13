@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Variance Analysis for Management Reporting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00022-variance-analysis-reporting"
   },
   "description": "A financial analyst needs to investigate a significant variance in the 'Travel Expense' account on the income statement.",
   "industry": "Accounting",

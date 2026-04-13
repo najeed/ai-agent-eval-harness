@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve a Lost Item Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14012-resolve-lost-item-request"
   },
   "description": "A rider reports they left their phone in a driver's car. A support agent must facilitate its return.",
   "industry": "Transportation",

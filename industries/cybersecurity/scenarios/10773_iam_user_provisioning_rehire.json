@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Rehired Employee Onboarding",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10773-iam-user-provisioning-rehire"
   },
   "description": "An employee who left the company six months ago is rehired. An IAM analyst must re-enable their old account and provision new access.",
   "industry": "Cybersecurity",

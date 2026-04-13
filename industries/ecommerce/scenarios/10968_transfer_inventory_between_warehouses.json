@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Transfer Inventory Between Warehouses",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10968-transfer-inventory-between-warehouses"
   },
   "description": "To balance stock, a logistics manager needs to process an inventory transfer of 50 units of a product from the West Coast warehouse to the East Coast warehouse.",
   "industry": "Ecommerce",

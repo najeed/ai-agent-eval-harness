@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Work Breakdown Structure (WBS)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10662-create-wbs"
   },
   "description": "For a new residential home project, a PM needs to create an initial Work Breakdown Structure (WBS).",
   "industry": "Construction",

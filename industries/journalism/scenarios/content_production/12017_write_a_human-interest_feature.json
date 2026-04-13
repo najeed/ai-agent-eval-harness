@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write a Human-Interest Feature",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12017-write-a-human-interest-feature"
   },
   "description": "A reporter needs to write a long-form feature story about a local hero, focusing on narrative and character development.",
   "industry": "Journalism",

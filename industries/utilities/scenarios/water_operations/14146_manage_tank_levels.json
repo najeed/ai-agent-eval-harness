@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Water Storage Tank Levels",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14146-manage-tank-levels"
   },
   "description": "An operator monitors and controls the water levels in storage tanks across the city to ensure adequate supply and pressure.",
   "industry": "Utilities",

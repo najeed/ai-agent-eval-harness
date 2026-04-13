@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Summarize New Legislation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12179-summarize-new-legislation"
   },
   "description": "A new law has been passed that affects a client's industry. An associate needs to summarize the law and its impact for the client.",
   "industry": "Legal",

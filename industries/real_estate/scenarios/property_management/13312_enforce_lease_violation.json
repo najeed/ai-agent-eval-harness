@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Enforce a Lease Violation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13312-enforce-lease-violation"
   },
   "description": "A property manager receives a complaint about a tenant's unauthorized pet.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage an Automated Passenger Counting (APC) System",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14075-manage-passenger-counting-system"
   },
   "description": "An analyst notices that data from an APC system on a bus seems incorrect. They must investigate.",
   "industry": "Transportation",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Capture Charges from an Encounter",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11338-capture-charges-from-encounter"
   },
   "description": "A coding specialist is reviewing a physician's documentation to capture all billable charges from an office visit.",
   "industry": "Healthcare",

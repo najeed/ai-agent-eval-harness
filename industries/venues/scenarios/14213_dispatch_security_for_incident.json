@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispatch Security for an Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14213-dispatch-security-for-incident"
   },
   "description": "An usher uses their radio to report a verbal altercation between two guests in a specific section.",
   "industry": "Venues",

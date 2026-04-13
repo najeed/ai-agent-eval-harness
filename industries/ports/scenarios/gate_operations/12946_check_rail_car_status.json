@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Rail Car Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12946-check-rail-car-status"
   },
   "description": "A customer calls to ask if a specific container has been loaded onto a train that departed yesterday.",
   "industry": "Ports",

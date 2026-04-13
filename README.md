@@ -231,7 +231,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **`analyze <url>`**: Proactive agent repo scanning; auto-generates AES stubs by identifying tools and endpoints.
 - **`ci generate`**: One-click scaffolding of GitHub Actions workflows for evaluation-on-PR.
 - **`failures search`**: Intelligence-driven retrieval of edge cases from the global failure corpus.
-- **`explain`**: AI-powered trace diagnostics (loops, timeouts, PII leaks) via `--path <run.jsonl>`.
+- **`explain`**: AI-powered trace diagnostics (loops, timeouts, PII leaks) via `--run-id <id>`.
 - **`certify`**: Generate a non-repudiable Verification Certificate (VC) for a specific run trace using `--run-id`.
 - **`verify`**: Verify the cryptographic integrity of a run trace using autonomous artifact resolution via `--run-id`.
 - **`gate`**: Industrial "Hard Gating" tool for CI/CD pipelines to enforce signature and hash matches via `--run-id`.
@@ -330,8 +330,11 @@ The platform is built with a **Secure-by-Design** philosophy, complying with ent
 - **Mandatory Authentication**: Protection of all console and bridge routes via the `DASHBOARD_API_KEY`.
 See the [Security and Authentication Guide](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md) for generation and configuration instructions.
 
-### Run Trace Warning
-All evaluation execution logs are appended to `runs/run.jsonl`. Because this acts as an immutable flight recorder, the file will grow continuously. It is recommended to use the built-in trace rotation or periodically clean up this directory via `agentv cleanup-runs --days 7`.
+### 🗄️ Forensic Storage & Vaulting
+AgentV employs a **Strict Industrial Vault** methodology to protect run integrity:
+- **Individual Vaults**: By default, each execution is isolated in its own directory (`runs/<run_id>/run.jsonl`).
+- **Master Log**: A consolidated flight recorder at `runs/run.jsonl` tracks all system turns for aggregate analysis.
+- **Rotation**: The built-in rotation mechanism manages entire Vault Directories, purging historical subdirectories to maintain storage efficiency while preserving the most recent forensic artifacts. It is recommended to periodically clean up this directory via `agentv cleanup-runs`.
 
 ### Troubleshooting
 

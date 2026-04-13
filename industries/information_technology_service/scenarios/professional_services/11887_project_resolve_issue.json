@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Management - Resolve Project Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11887-project-resolve-issue"
   },
   "description": "A project is at risk of delay because a piece of hardware ordered for the project has a long lead time.",
   "industry": "Information Technology Service",

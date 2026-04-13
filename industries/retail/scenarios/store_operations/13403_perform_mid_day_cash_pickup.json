@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Mid-Day Cash Pickup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13403-perform-mid-day-cash-pickup"
   },
   "description": "A POS terminal has accumulated too much cash, and a manager needs to perform a cash pickup to move excess funds to the safe.",
   "industry": "Retail",

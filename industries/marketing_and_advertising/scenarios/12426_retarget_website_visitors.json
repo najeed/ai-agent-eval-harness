@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up a Retargeting Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12426-retarget-website-visitors"
   },
   "description": "A media buyer wants to set up a display advertising campaign that retargets all users who have visited the website in the last 30 days.",
   "industry": "Marketing and Advertising",

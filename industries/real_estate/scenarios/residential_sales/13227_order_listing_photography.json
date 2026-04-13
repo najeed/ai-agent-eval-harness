@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Order Listing Photography",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13227-order-listing-photography"
   },
   "description": "For a new listing, the agent needs to schedule a professional photographer.",
   "industry": "Real Estate",

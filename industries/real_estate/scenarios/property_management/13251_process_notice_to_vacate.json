@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Tenant's Notice to Vacate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13251-process-notice-to-vacate"
   },
   "description": "A month-to-month tenant has submitted their 30-day notice to vacate. The agent must process it.",
   "industry": "Real Estate",

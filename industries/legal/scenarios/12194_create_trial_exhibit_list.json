@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Trial Exhibit List",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12194-create-trial-exhibit-list"
   },
   "description": "In preparation for trial, a paralegal needs to create a list of all exhibits the party intends to use.",
   "industry": "Legal",

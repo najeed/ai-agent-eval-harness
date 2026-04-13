@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check on Event Setup Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11063-check-on-event-setup-status"
   },
   "description": "An event organizer calls to confirm that the tables and chairs they requested for their event have been set up.",
   "industry": "Education",

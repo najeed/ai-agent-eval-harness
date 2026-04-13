@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Billing Dispute - Unreturned Equipment Charge",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13808-dispute-equipment-charge"
   },
   "description": "A former customer is being charged for unreturned equipment they claim to have sent back.",
   "industry": "Telecom",

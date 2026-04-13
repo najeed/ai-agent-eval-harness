@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Patient's Care Team",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11387-manage-patient-care-team"
   },
   "description": "A care manager needs to add a new home health nurse to a patient's official care team.",
   "industry": "Healthcare",

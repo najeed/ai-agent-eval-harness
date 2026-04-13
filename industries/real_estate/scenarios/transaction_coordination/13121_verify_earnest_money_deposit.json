@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Earnest Money Deposit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13121-verify-earnest-money-deposit"
   },
   "description": "The TC must confirm that the buyer has deposited the earnest money with escrow by the contractual deadline.",
   "industry": "Real Estate",

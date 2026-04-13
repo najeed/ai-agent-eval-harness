@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Formal Notice of Delay",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10673-send-notice-of-delay"
   },
   "description": "Due to a permitting delay caused by the city, the PM must send a formal notice to the client to protect the company's contractual rights regarding the schedule.",
   "industry": "Construction",

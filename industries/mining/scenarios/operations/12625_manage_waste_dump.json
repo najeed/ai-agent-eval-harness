@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Waste Rock Dump Construction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12625-manage-waste-dump"
   },
   "description": "A mine operator ensures that waste rock is being placed in the waste dump according to the engineered design.",
   "industry": "Mining",

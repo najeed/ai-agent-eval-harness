@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Final Return for a Deceased Taxpayer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13788-prepare-return-for-deceased-taxpayer"
   },
   "description": "The executor of an estate needs to file the final Form 1040 for a person who passed away during the year.",
   "industry": "Tax",

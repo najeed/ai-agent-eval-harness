@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Split a Work Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12305-split-work-order"
   },
   "description": "A planner needs to split a large work order into two smaller batches to run on different machines simultaneously.",
   "industry": "Manufacturing",

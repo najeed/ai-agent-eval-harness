@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Retire a Public Asset",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13070-retire-public-asset"
   },
   "description": "A city vehicle has reached the end of its service life and needs to be retired from the asset management system and sent to auction.",
   "industry": "Public Sector",

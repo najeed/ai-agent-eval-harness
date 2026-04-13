@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Technical Application Support",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10526-provide-technical-application-support"
   },
   "description": "A customer is using a new adhesive product and asks for advice on the optimal curing temperature and time for their specific substrate.",
   "industry": "Chemicals",

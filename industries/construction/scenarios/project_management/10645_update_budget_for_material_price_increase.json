@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Budget for Material Price Increase",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10645-update-budget-for-material-price-increase"
   },
   "description": "A supplier has announced a 10% price increase for lumber. The PM must update the project budget to reflect this.",
   "industry": "Construction",

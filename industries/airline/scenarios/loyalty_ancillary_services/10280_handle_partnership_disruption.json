@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Disruption on a Partner Airline",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10280-handle-partnership-disruption"
   },
   "description": "A passenger booked through Airline A is affected by a cancellation on a connecting flight operated by partner Airline B. Airline A's agent must assist.",
   "industry": "Airline",

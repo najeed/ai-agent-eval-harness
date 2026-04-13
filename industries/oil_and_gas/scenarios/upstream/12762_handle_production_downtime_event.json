@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Production Downtime Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12762-handle-production-downtime-event"
   },
   "description": "After an unplanned shutdown of an offshore platform, a production engineer analyzes the event to correctly categorize the cause and the amount of deferred production.",
   "industry": "Oil and Gas",

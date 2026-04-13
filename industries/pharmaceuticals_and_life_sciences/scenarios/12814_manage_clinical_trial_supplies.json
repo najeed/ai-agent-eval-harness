@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Clinical Trial Supplies",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12814-manage-clinical-trial-supplies"
   },
   "description": "A clinical supply manager needs to ship investigational product (IP) to a clinical site based on their patient enrollment rate.",
   "industry": "Pharmaceuticals and Life Sciences",

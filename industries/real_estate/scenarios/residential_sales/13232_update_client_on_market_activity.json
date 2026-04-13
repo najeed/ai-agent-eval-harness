@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Seller on Market Activity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13232-update-client-on-market-activity"
   },
   "description": "A listing has been on the market for 30 days. The agent needs to provide the seller with a market activity update.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Parking Violation Hotspots",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13574-analyze-parking-violation-hotspots"
   },
   "description": "A parking enforcement manager wants to know which areas have the most parking violations to better allocate enforcement officers.",
   "industry": "Smart Cities",

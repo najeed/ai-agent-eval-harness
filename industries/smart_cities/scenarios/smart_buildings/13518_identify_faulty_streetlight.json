@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Faulty Streetlight",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13518-identify-faulty-streetlight"
   },
   "description": "The smart lighting system reports that a specific streetlight is consuming no power, indicating a fault.",
   "industry": "Smart Cities",

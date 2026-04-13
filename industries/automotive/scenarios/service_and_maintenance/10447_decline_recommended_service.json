@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Declines Recommended Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10447-decline-recommended-service"
   },
   "description": "During a service visit, a technician recommends a coolant flush, but the customer declines the service.",
   "industry": "Automotive",

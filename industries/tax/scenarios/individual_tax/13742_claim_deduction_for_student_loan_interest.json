@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Claim Deduction for Student Loan Interest",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13742-claim-deduction-for-student-loan-interest"
   },
   "description": "A taxpayer who paid student loan interest wants to claim the deduction.",
   "industry": "Tax",

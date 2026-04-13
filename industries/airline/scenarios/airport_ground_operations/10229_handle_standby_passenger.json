@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Standby Passenger",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10229-handle-standby-passenger"
   },
   "description": "A flight is full, but an employee is listed for standby travel. The gate agent must clear the standby list if seats become available.",
   "industry": "Airline",

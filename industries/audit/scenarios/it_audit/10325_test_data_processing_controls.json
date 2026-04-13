@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Test Application Data Processing Controls",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10325-test-data-processing-controls"
   },
   "description": "An IT auditor tests a financial application to ensure it correctly calculates sales commissions.",
   "industry": "Audit",

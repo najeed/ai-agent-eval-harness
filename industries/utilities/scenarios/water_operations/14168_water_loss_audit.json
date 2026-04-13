@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Annual Water Loss Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14168-water-loss-audit"
   },
   "description": "A water resource manager is conducting an annual water audit to calculate the amount of non-revenue water (NRW) in the system.",
   "industry": "Utilities",

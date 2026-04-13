@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Organize Discovery Documents",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12188-organize-discovery-documents"
   },
   "description": "A firm has received a large production of documents from the opposing party. A paralegal needs to organize them.",
   "industry": "Legal",

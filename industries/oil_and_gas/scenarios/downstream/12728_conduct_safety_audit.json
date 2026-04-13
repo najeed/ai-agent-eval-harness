@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Field Safety Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12728-conduct-safety-audit"
   },
   "description": "An HSE officer conducts a planned safety audit of a work crew performing maintenance, using a digital checklist.",
   "industry": "Oil and Gas",

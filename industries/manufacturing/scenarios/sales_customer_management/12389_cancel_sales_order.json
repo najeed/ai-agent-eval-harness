@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel a Sales Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12389-cancel-sales-order"
   },
   "description": "A customer needs to cancel an order that has been placed but has not yet entered production.",
   "industry": "Manufacturing",

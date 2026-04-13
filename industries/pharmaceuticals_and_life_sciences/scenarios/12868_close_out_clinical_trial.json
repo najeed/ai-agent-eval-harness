@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Clinical Trial Close-Out",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12868-close-out-clinical-trial"
   },
   "description": "A clinical operations lead is managing the close-out phase of a completed study.",
   "industry": "Pharmaceuticals and Life Sciences",

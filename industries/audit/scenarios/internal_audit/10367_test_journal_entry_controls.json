@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Test Journal Entry Controls",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10367-test-journal-entry-controls"
   },
   "description": "An auditor tests manual journal entries to ensure they are appropriate and properly approved.",
   "industry": "Audit",

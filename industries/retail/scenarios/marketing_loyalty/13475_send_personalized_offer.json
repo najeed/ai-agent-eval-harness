@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send a Personalized Offer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13475-send-personalized-offer"
   },
   "description": "A customer who frequently buys a specific brand of coffee has not purchased it in a while. The marketing system automatically sends them a personalized offer.",
   "industry": "Retail",

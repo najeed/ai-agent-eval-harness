@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book a Spa Appointment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13998-book-a-spa-appointment"
   },
   "description": "A hotel guest wants to book a 60-minute deep tissue massage at the hotel spa.",
   "industry": "Tourism",

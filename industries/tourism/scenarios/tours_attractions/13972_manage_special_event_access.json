@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Special Event Access",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13972-manage-special-event-access"
   },
   "description": "A museum is hosting a members-only after-hours event. An agent at the door must verify membership for entry.",
   "industry": "Tourism",

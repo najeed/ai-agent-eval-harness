@@ -7,7 +7,7 @@ import pytest
 
 @pytest.fixture
 def scenario_schema():
-    """Robustly locate the authoritative AES schema across diverse execution environments."""
+    """Robustly locate the AES schema across diverse execution environments."""
     from eval_runner import config
 
     # Cascade discovery centered on the hardened AES v1.4.0 root
@@ -44,7 +44,7 @@ def test_enforce_min_judges_and_compliance(scenario_schema):
         "aes_version": 1.4,
         "metadata": {
             "name": "Industrial Compliance Test",
-            "scenario_id": "test_pass",
+            "id": "test_pass",
             "industry": "finance",
             "compliance_level": "Regulatory_Audit",
         },
@@ -57,7 +57,7 @@ def test_enforce_min_judges_and_compliance(scenario_schema):
     invalid_meta = json.loads(json.dumps(valid_scenario))
     invalid_meta["metadata"] = {
         "name": "Fail Scenario",
-        "scenario_id": "test_fail",
+        "id": "test_fail",
         "industry": "finance",
     }
     with pytest.raises(jsonschema.ValidationError) as excinfo:

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Tenant Noise Complaint",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13214-handle-tenant-complaint"
   },
   "description": "A tenant complains about excessive noise from a neighboring unit. The agent must address the issue according to policy.",
   "industry": "Real Estate",

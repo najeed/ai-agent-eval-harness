@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Closing Settlement Statement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13216-review-settlement-statement"
   },
   "description": "Prior to closing, the agent must review the settlement statement (Closing Disclosure or HUD-1) for accuracy.",
   "industry": "Real Estate",

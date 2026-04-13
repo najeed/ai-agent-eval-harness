@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Application Support - Google Workspace Sync Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11833-app-support-google-workspace"
   },
   "description": "A user reports that their Google Drive is not syncing files from their desktop.",
   "industry": "Information Technology Service",

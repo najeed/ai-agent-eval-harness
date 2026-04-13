@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Water Main Disinfection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14182-new-water-main-disinfection"
   },
   "description": "Before a newly installed water main can be put into service, it must be flushed and disinfected.",
   "industry": "Utilities",

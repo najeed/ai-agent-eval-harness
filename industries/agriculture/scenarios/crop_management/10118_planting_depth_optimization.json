@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Optimize Corn Planting Depth",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10118-planting-depth-optimization"
   },
   "description": "A farmer wants to know the optimal planting depth for their corn based on soil moisture and temperature.",
   "industry": "Agriculture",

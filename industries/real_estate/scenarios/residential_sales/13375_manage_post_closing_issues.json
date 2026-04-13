@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Post-Closing Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13375-manage-post-closing-issues"
   },
   "description": "A week after closing, a buyer discovers a latent defect (e.g., a hidden leak) that was not disclosed. They contact their agent for help.",
   "industry": "Real Estate",

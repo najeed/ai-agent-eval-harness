@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assign Task to a Crew",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10660-assign-task-to-crew"
   },
   "description": "A foreman needs to formally assign the 'Install 1st Floor Windows' task to their crew in the task management system.",
   "industry": "Construction",

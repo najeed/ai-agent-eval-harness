@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Interpret Soil Test Results",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10164-soil-test-interpretation"
   },
   "description": "A farmer has received a soil test report and needs help interpreting the results and generating fertilizer recommendations.",
   "industry": "Agriculture",

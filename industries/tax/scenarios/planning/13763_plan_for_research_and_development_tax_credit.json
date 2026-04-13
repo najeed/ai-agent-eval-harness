@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan for R&D Tax Credit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13763-plan-for-research-and-development-tax-credit"
   },
   "description": "A tech startup wants to ensure it is properly documenting its expenses to qualify for the Research and Development (R&D) tax credit.",
   "industry": "Tax",

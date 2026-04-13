@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a New Work Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12298-create-new-work-order"
   },
   "description": "A production planner needs to create a new work order for a custom product.",
   "industry": "Manufacturing",

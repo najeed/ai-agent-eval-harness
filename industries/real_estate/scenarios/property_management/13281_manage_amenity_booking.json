@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Amenity Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13281-manage-amenity-booking"
   },
   "description": "A tenant in a managed apartment building wants to book the community party room for a weekend event.",
   "industry": "Real Estate",

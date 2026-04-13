@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Open a Certificate of Deposit (CD)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11294-open-certificate-of-deposit"
   },
   "description": "A customer wants to open a 12-month CD with $10,000.",
   "industry": "Finance",

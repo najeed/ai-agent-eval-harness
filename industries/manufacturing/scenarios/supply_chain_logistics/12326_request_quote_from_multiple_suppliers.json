@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Quote from Multiple Suppliers",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12326-request-quote-from-multiple-suppliers"
   },
   "description": "A buyer is sourcing a new component and needs to send a Request for Quote (RFQ) to several potential suppliers.",
   "industry": "Manufacturing",

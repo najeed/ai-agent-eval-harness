@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Mobile Troubleshooting - Wi-Fi Hotspot Not Working",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13887-wifi-hotspot-not-working"
   },
   "description": "A customer is trying to use their phone as a Wi-Fi hotspot, but other devices cannot connect.",
   "industry": "Telecom",

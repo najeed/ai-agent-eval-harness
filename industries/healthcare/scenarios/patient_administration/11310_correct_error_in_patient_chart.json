@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Correct an Error in a Patient Chart",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11310-correct-error-in-patient-chart"
   },
   "description": "An HIM specialist discovers a scanned document was accidentally filed in the wrong patient's chart.",
   "industry": "Healthcare",

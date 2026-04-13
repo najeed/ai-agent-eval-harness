@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Return to Stock",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12204-process-return-to-stock"
   },
   "description": "A returned item has been inspected and deemed resalable. An operator must return it to inventory.",
   "industry": "Logistics and Warehousing",

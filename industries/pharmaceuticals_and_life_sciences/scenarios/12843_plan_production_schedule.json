@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Weekly Production Schedule",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12843-plan-production-schedule"
   },
   "description": "A production planner needs to create the manufacturing schedule for the upcoming week based on demand forecasts and material availability.",
   "industry": "Pharmaceuticals and Life Sciences",

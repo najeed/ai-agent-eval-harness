@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Product Portfolio Analysis (BCG Matrix)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00164-product-portfolio-analysis"
   },
   "description": "An agent must categorize a client's products into a BCG Matrix (Stars, Cash Cows, Question Marks, Dogs) based on market share and growth rate data.",
   "industry": "Consulting",

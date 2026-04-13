@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Critical Equipment Breakdown",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10518-handle-equipment-breakdown"
   },
   "description": "A main circulation pump has failed, halting production. A maintenance technician must respond to the emergency work order.",
   "industry": "Chemicals",

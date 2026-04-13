@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add Seats Mid-Contract",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11794-add-seats-to-annual-contract"
   },
   "description": "A customer on an annual plan needs to add 20 seats mid-contract.",
   "industry": "Information Technology Product",

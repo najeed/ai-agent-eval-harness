@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Renewable Energy Certificate (REC) Purchase",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11141-renewable-energy-certificate-purchase"
   },
   "description": "A corporate sustainability officer needs to purchase RECs to cover their company's annual electricity consumption and meet their 100% renewable goal.",
   "industry": "Energy",

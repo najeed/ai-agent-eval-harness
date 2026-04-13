@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Stored Grain Condition",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10139-commodity-storage-management"
   },
   "description": "Sensors in a grain bin report a rise in temperature and CO2 levels, indicating potential spoilage.",
   "industry": "Agriculture",

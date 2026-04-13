@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Outage Map Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14189-outage-map-inquiry"
   },
   "description": "A customer is looking at the utility's public outage map and wants to know why their specific house isn't showing inside the outage polygon.",
   "industry": "Utilities",

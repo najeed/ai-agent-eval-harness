@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage New Product Formulation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10509-manage-new-product-formulation"
   },
   "description": "An R&D chemist needs to create a new formulation for an experimental product in the formulation management system.",
   "industry": "Chemicals",

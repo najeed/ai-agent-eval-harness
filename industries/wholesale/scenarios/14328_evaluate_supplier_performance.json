@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Evaluate Supplier Performance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14328-evaluate-supplier-performance"
   },
   "description": "A procurement manager needs to conduct a quarterly performance review of a key supplier.",
   "industry": "Wholesale",

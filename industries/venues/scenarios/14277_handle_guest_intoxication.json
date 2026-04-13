@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Intoxicated Guest",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14277-handle-guest-intoxication"
   },
   "description": "An usher reports a guest who appears heavily intoxicated and is bothering other patrons.",
   "industry": "Venues",

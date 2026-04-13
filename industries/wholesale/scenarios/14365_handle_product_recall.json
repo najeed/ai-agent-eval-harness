@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Product Recall",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14365-handle-product-recall"
   },
   "description": "A supplier has issued a recall for a product due to a safety issue. An agent must notify all retailers who purchased the product.",
   "industry": "Wholesale",

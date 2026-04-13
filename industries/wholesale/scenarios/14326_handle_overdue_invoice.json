@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Overdue Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14326-handle-overdue-invoice"
   },
   "description": "A customer's invoice is past its due date. A collections agent needs to contact the customer to secure payment.",
   "industry": "Wholesale",

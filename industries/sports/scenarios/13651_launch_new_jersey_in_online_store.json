@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Launch New Jersey in Online Store",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13651-launch-new-jersey-in-online-store"
   },
   "description": "A team is launching a new alternate jersey and needs to make it available for sale in the online store at a specific time.",
   "industry": "Sports",

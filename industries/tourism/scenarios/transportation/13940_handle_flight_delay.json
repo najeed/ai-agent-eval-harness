@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Flight Delay",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13940-handle-flight-delay"
   },
   "description": "A passenger's flight is delayed by 3 hours. They want to know their options.",
   "industry": "Tourism",

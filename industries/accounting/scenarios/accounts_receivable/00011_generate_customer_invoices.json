@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Customer Invoices from Shipping Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00011-generate-customer-invoices"
   },
   "description": "The company ships products and needs to generate daily invoices for all goods shipped the previous day.",
   "industry": "Accounting",

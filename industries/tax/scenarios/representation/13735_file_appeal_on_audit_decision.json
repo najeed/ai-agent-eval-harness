@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File an Appeal on an Audit Decision",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13735-file-appeal-on-audit-decision"
   },
   "description": "A client disagrees with the final decision of an IRS audit and wants to appeal.",
   "industry": "Tax",

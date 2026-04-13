@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage CRM and Sphere of Influence (SOI)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13385-manage-database-and-sphere-of-influence"
   },
   "description": "An agent wants to systematically market to their past clients and personal contacts (their SOI).",
   "industry": "Real Estate",

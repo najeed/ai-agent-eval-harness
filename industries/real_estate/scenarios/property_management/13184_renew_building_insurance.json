@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Renew Building's Hazard Insurance Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13184-renew-building-insurance"
   },
   "description": "A property's hazard insurance policy is up for renewal. The PM needs to get quotes and renew the policy.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cloud Security Posture Scan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10769-vuln-mgmt-scanning-cloud"
   },
   "description": "An analyst must run a Cloud Security Posture Management (CSPM) scan to find misconfigurations in the company's AWS environment.",
   "industry": "Cybersecurity",

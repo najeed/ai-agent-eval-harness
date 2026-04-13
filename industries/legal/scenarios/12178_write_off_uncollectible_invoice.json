@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write Off an Uncollectible Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12178-write-off-uncollectible-invoice"
   },
   "description": "After numerous attempts to collect, a firm decides to write off an old, unpaid invoice. The billing manager needs to process this.",
   "industry": "Legal",

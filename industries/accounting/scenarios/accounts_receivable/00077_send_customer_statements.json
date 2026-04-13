@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Monthly Customer Statements",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00077-send-customer-statements"
   },
   "description": "At the beginning of the month, the AR department needs to send statements of account to all customers showing their previous balance, new invoices, payments, and ending balance.",
   "industry": "Accounting",

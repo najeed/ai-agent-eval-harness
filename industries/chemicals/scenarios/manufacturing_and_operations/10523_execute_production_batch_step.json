@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Execute Production Batch Step",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10523-execute-production-batch-step"
   },
   "description": "A plant operator needs to execute a step in an electronic batch record, which involves charging a specific amount of a raw material to a reactor.",
   "industry": "Chemicals",

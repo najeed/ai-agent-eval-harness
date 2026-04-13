@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage an Open House",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13112-host-an-open-house"
   },
   "description": "An agent is holding an open house. They need to market it and manage sign-ins.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Kitting Task",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12206-perform-kitting-task"
   },
   "description": "An operator is assigned a work order to assemble a 'gift basket' kit from several individual items.",
   "industry": "Logistics and Warehousing",

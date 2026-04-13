@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Client Rejects a Change Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10643-reject-change-order"
   },
   "description": "A client reviews a change order and rejects it due to the high cost.",
   "industry": "Construction",

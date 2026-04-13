@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct an Off-the-Record Briefing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12048-conduct-an-off-the-record-briefing"
   },
   "description": "A source is willing to provide background information to help a reporter understand a complex topic, but does not want to be quoted. The reporter must conduct an 'off-the-record' briefing.",
   "industry": "Journalism",

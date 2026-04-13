@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Vernalization Requirement Fulfillment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10188-vernalization-requirement-check"
   },
   "description": "A fruit grower needs to know if their cherry orchard has received enough 'chill hours' over the winter to ensure a good bloom.",
   "industry": "Agriculture",

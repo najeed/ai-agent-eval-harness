@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Spill Cleanup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13412-handle-a-spill-cleanup"
   },
   "description": "A customer has spilled a drink. An associate needs to clean it up and document the action.",
   "industry": "Retail",

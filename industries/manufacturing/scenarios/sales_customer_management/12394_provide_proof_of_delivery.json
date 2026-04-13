@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Proof of Delivery (POD)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12394-provide-proof-of-delivery"
   },
   "description": "A customer's finance department requires a signed Proof of Delivery (POD) for a shipment before they can pay the invoice.",
   "industry": "Manufacturing",

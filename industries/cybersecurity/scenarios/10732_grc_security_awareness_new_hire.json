@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Hire Security Training",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10732-grc-security-awareness-new-hire"
   },
   "description": "A security awareness manager must ensure all new hires complete their mandatory security awareness training within 30 days of starting.",
   "industry": "Cybersecurity",

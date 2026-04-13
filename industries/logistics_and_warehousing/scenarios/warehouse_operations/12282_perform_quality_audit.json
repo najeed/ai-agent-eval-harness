@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform an Outbound Quality Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12282-perform-quality-audit"
   },
   "description": "Before an order is sealed, a quality auditor randomly selects it for an audit to verify picking and packing accuracy.",
   "industry": "Logistics and Warehousing",

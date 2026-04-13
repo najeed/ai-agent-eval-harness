@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle League Expansion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13660-handle-league-expansion"
   },
   "description": "A league is expanding and adding a new team. An administrator must manage the expansion draft.",
   "industry": "Sports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Market a Vacant Rental Unit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13317-market-vacant-rental-unit"
   },
   "description": "A property manager needs to market a newly vacant apartment to find a new tenant quickly.",
   "industry": "Real Estate",

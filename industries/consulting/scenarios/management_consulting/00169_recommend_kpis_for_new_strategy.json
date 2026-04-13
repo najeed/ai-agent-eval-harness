@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Recommend KPIs for a New Strategy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00169-recommend-kpis-for-new-strategy"
   },
   "description": "A client is launching a new strategy focused on 'customer centricity'. An agent must recommend relevant KPIs to track its success.",
   "industry": "Consulting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "View Upcoming Shift Schedule",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13405-view-upcoming-shift-schedule"
   },
   "description": "An associate wants to check their work schedule for the next week.",
   "industry": "Retail",

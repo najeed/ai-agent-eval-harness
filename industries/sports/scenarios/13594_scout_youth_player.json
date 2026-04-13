@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Scout Youth Academy Player",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13594-scout-youth-player"
   },
   "description": "A scout needs to analyze a promising youth academy player's performance data and game footage to determine if they should be offered a professional contract.",
   "industry": "Sports",

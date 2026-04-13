@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate Event Logistics with Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14216-coordinate-event-logistics"
   },
   "description": "An event manager is holding a final planning meeting with a client for their upcoming wedding reception.",
   "industry": "Venues",

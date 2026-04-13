@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Virtual Data Room for M&A",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12149-create-data-room-for-ma"
   },
   "description": "In an M&A deal, the seller's counsel needs to set up a virtual data room (VDR) for the buyer to conduct due diligence.",
   "industry": "Legal",

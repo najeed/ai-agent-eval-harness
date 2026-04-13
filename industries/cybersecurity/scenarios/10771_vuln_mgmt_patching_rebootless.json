@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Live Kernel Patching",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10771-vuln-mgmt-patching-rebootless"
   },
   "description": "An analyst must apply a critical vulnerability patch to the Linux kernel on hundreds of production servers without rebooting them.",
   "industry": "Cybersecurity",

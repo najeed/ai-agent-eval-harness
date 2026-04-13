@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Bi-Weekly Payroll",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00004-process-payroll"
   },
   "description": "A payroll specialist needs to process the bi-weekly payroll for 500 employees.",
   "industry": "Accounting",

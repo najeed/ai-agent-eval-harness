@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Loyalty Program Signup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11511-loyalty-program-signup"
   },
   "description": "During check-in, a front desk agent offers to sign up a guest for the hotel's loyalty program.",
   "industry": "Hospitality",

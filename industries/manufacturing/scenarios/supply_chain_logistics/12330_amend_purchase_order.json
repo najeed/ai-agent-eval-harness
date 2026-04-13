@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Amend a Purchase Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12330-amend-purchase-order"
   },
   "description": "Production needs to increase the quantity of a component on a purchase order that has already been submitted but not yet shipped.",
   "industry": "Manufacturing",

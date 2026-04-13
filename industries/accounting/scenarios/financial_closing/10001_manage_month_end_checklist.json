@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage the Month-End Close Checklist",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10001-manage-month-end-checklist"
   },
   "description": "The accounting manager needs to track the progress of all tasks in the month-end close process.",
   "industry": "Accounting",

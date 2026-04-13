@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About Annuity Withdrawal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11904-inquire-about-annuity-withdrawal"
   },
   "description": "An annuity contract holder wants to know how much they can withdraw and what the tax implications would be.",
   "industry": "Insurance",

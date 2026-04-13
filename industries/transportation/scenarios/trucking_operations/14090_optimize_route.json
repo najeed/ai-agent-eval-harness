@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Optimize a Multi-Stop Route",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14090-optimize-route"
   },
   "description": "A driver has a load with three delivery stops. A dispatcher needs to sequence the stops to create the most efficient route.",
   "industry": "Transportation",

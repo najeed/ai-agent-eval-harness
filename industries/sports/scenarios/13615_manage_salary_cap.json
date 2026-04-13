@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Team Salary Cap",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13615-manage-salary-cap"
   },
   "description": "A General Manager needs to sign a new player but must ensure the team stays under the league's salary cap.",
   "industry": "Sports",

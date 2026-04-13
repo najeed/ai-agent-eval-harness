@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Out-of-Specification Lab Result",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12813-quality-control-oos-investigation"
   },
   "description": "A QC analyst gets an out-of-specification (OOS) result during product release testing and must initiate an investigation.",
   "industry": "Pharmaceuticals and Life Sciences",

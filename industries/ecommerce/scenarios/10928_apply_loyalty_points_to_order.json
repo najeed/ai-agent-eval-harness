@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply Loyalty Points to an Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10928-apply-loyalty-points-to-order"
   },
   "description": "A customer wants to use their loyalty points to get a discount on their current purchase.",
   "industry": "Ecommerce",

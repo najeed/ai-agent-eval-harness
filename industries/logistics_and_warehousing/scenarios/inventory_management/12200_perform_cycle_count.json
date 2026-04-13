@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a Cycle Count",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12200-perform-cycle-count"
   },
   "description": "An inventory controller is assigned a set of locations to count to ensure inventory accuracy.",
   "industry": "Logistics and Warehousing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Run a Flash Sale on Merchandise",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13681-run-flash-sale-on-merchandise"
   },
   "description": "To clear out old inventory, a team's marketing department wants to run a 24-hour flash sale on last season's merchandise.",
   "industry": "Sports",

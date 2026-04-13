@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cloud - Investigate High AWS Bill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11820-cloud-investigate-high-bill"
   },
   "description": "A client's AWS bill is significantly higher than usual. A technician needs to investigate the cause.",
   "industry": "Information Technology Service",

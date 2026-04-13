@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sell Advance Parking Pass",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14260-sell-parking-pass"
   },
   "description": "A customer who has already purchased event tickets wants to add a pre-paid parking pass to their order.",
   "industry": "Venues",

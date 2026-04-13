@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Cross-Sell Offer on Product Page",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10999-create-cross-sell-offer-on-product-page"
   },
   "description": "On the product page for a digital camera, the system should display a 'Frequently Bought Together' section with a memory card and a camera bag.",
   "industry": "Ecommerce",

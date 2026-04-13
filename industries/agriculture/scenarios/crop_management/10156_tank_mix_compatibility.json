@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Pesticide Tank Mix Compatibility",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10156-tank-mix-compatibility"
   },
   "description": "A farmer wants to mix a herbicide and a fungicide in their sprayer tank to save a trip across the field, but needs to check if they are compatible.",
   "industry": "Agriculture",

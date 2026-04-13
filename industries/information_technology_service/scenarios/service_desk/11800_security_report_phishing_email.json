@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Security - User Reports Phishing Email",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11800-security-report-phishing-email"
   },
   "description": "An end-user reports a suspicious email that claims to be from IT and asks for their password.",
   "industry": "Information Technology Service",

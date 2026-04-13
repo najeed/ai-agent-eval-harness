@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Security Awareness Gamification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10796-grc-security-awareness-gamification"
   },
   "description": "A manager wants to increase engagement with the security awareness program by implementing gamification.",
   "industry": "Cybersecurity",

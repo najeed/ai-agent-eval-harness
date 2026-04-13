@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Asset Condition Monitoring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11497-perform-asset-condition-monitoring"
   },
   "description": "A technician is performing a routine condition monitoring route, collecting data from various assets.",
   "industry": "Heavy Industries",

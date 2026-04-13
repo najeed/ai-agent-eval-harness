@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Design Ad Creative",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12410-design-ad-creative"
   },
   "description": "A designer needs to create a set of display ads for a new campaign based on a creative brief.",
   "industry": "Marketing and Advertising",

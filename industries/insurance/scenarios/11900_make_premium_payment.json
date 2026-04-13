@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Make a Premium Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11900-make-premium-payment"
   },
   "description": "A customer calls to make a one-time payment on their homeowner's insurance policy with a credit card.",
   "industry": "Insurance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write an Executive Summary",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00110-write-executive-summary"
   },
   "description": "An agent must write a one-page executive summary of a 50-page detailed analysis report.",
   "industry": "Consulting",

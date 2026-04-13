@@ -15,13 +15,17 @@ def test_load_valid_scenario(tmp_path):
     """Test loading a valid scenario file with proper v1.2 JSON structure."""
     scenario_content = {
         "aes_version": 1.4,
-        "scenario_id": "test_scenario",
+        "id": "test_scenario",
         "title": "Test Scenario",
         "industry": "test",
         "description": "A test scenario.",
         "use_case": "Testing",
         "core_function": "Unit Test",
-        "metadata": {"name": "test_scenario", "compliance_level": "Standard"},
+        "metadata": {
+            "name": "test_scenario",
+            "id": "test_scenario",
+            "compliance_level": "Standard",
+        },
         "workflow": {
             "nodes": [
                 {
@@ -42,7 +46,7 @@ def test_load_valid_scenario(tmp_path):
     scenario_file = tmp_path / "scenario.json"
     scenario_file.write_text(json.dumps(scenario_content))
     scenario = loader.load_scenario(scenario_file)
-    assert scenario["scenario_id"] == "test_scenario"
+    assert scenario["id"] == "test_scenario"
 
 
 def test_load_invalid_scenario(tmp_path):
@@ -114,17 +118,17 @@ def test_load_dataset_single_json(tmp_path):
     scenario_file = tmp_path / "test.json"
     scenario_data = {
         "aes_version": 1.4,
-        "scenario_id": "test-123",
+        "id": "test-123",
         "title": "Test",
         "description": "Test description",
         "industry": "test",
-        "metadata": {"name": "Test", "compliance_level": "Standard"},
+        "metadata": {"name": "Test", "id": "test-123", "compliance_level": "Standard"},
         "workflow": {"nodes": [], "edges": []},
     }
     scenario_file.write_text(json.dumps(scenario_data))
     results = loader.load_dataset(scenario_file)
     assert len(results) == 1
-    assert results[0]["scenario_id"] == "test-123"
+    assert results[0]["id"] == "test-123"
 
 
 def test_load_dataset_directory(tmp_path):
@@ -133,11 +137,11 @@ def test_load_dataset_directory(tmp_path):
         json.dumps(
             {
                 "aes_version": 1.4,
-                "scenario_id": "s1",
+                "id": "s1",
                 "title": "S1",
                 "industry": "i1",
                 "description": "d1",
-                "metadata": {"name": "S1", "compliance_level": "Standard"},
+                "metadata": {"name": "S1", "id": "s1", "compliance_level": "Standard"},
                 "workflow": {"nodes": [], "edges": []},
             }
         )
@@ -146,11 +150,11 @@ def test_load_dataset_directory(tmp_path):
         json.dumps(
             {
                 "aes_version": 1.4,
-                "scenario_id": "s2",
+                "id": "s2",
                 "title": "S2",
                 "industry": "i2",
                 "description": "d2",
-                "metadata": {"name": "S2", "compliance_level": "Standard"},
+                "metadata": {"name": "S2", "id": "s2", "compliance_level": "Standard"},
                 "workflow": {"nodes": [], "edges": []},
             }
         )
@@ -159,6 +163,6 @@ def test_load_dataset_directory(tmp_path):
 
     results = loader.load_dataset(tmp_path)
     assert len(results) == 2
-    ids = [r["scenario_id"] for r in results]
+    ids = [r["id"] for r in results]
     assert "s1" in ids
     assert "s2" in ids

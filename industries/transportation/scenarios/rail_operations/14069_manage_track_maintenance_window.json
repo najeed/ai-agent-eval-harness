@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Track Maintenance Window",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14069-manage-track-maintenance-window"
   },
   "description": "A maintenance crew needs a section of track to be taken out of service for 4 hours to perform repairs.",
   "industry": "Transportation",

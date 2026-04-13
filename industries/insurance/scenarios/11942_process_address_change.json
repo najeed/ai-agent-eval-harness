@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Address Change for Policyholder",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11942-process-address-change"
   },
   "description": "A life insurance policyholder needs to update their mailing address.",
   "industry": "Insurance",

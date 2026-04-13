@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Payment Method",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11964-update-payment-method"
   },
   "description": "A customer's credit card on file has expired, and they need to update it for their recurring payments.",
   "industry": "Insurance",

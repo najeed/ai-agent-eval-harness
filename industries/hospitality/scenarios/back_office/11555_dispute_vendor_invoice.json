@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispute a Vendor Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11555-dispute-vendor-invoice"
   },
   "description": "The accounting department notices they were overcharged on an invoice from a food supplier.",
   "industry": "Hospitality",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to Proposed Trust Fund Recovery Penalty",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13747-respond-to-proposed-trust-fund-recovery-penalty"
   },
   "description": "A business owner is being held personally liable for unpaid payroll taxes (Trust Fund Recovery Penalty). They need to respond.",
   "industry": "Tax",

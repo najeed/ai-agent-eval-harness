@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Mobile Ticket Transfer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13666-handle-mobile-ticket-transfer"
   },
   "description": "A fan wants to transfer their ticket for a game to a friend.",
   "industry": "Sports",

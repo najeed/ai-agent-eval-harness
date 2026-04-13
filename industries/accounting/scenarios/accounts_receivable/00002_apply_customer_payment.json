@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply a Customer Payment with Remittance Advice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00002-apply-customer-payment"
   },
   "description": "A payment has been received from a customer via ACH, and the customer has sent a separate email with remittance advice detailing which invoices the payment covers.",
   "industry": "Accounting",

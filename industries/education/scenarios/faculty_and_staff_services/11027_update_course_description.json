@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Course Description in Catalog",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11027-update-course-description"
   },
   "description": "A professor wants to update the course description for a course they are teaching next semester.",
   "industry": "Education",

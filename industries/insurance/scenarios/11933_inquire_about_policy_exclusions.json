@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About Life Insurance Policy Exclusions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11933-inquire-about-policy-exclusions"
   },
   "description": "A policyholder wants to understand what is not covered by their life insurance policy.",
   "industry": "Insurance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Upsell - Hardware Upgrade",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13901-upsell-hardware-upgrade"
   },
   "description": "An existing customer is eligible for a phone upgrade. The agent's goal is to sell them a new device.",
   "industry": "Telecom",

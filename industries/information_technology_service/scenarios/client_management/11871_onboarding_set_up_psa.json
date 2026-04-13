@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Client Onboarding - Setup in PSA",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11871-onboarding-set-up-psa"
   },
   "description": "A new client needs to be set up in the Professional Services Automation (PSA) tool.",
   "industry": "Information Technology Service",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Customs Clearance Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12287-check-customs-clearance"
   },
   "description": "An import specialist needs to check if an international shipment has been cleared by customs.",
   "industry": "Logistics and Warehousing",

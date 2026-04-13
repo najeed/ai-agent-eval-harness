@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Execute a Contract via E-signature",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12113-review-and-sign-contract"
   },
   "description": "After negotiations are complete, an attorney needs to send a final version of a contract to both parties for electronic signature.",
   "industry": "Legal",

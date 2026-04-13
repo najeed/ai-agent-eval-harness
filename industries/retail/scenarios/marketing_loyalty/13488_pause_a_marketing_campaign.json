@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pause a Marketing Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13488-pause-a-marketing-campaign"
   },
   "description": "A marketing manager discovers an error in a scheduled email campaign and needs to pause it before it sends.",
   "industry": "Retail",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "SOX ITGC Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10763-grc-compliance-audit-sox"
   },
   "description": "An analyst must test IT General Controls (ITGCs) for a Sarbanes-Oxley (SOX) audit, specifically focusing on change management.",
   "industry": "Cybersecurity",

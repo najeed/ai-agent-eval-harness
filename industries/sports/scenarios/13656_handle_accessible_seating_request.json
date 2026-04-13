@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Accessible Seating Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13656-handle-accessible-seating-request"
   },
   "description": "A fan with a disability needs to purchase tickets in an accessible seating area.",
   "industry": "Sports",

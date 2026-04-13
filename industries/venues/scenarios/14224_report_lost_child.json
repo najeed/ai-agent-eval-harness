@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Lost Child Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14224-report-lost-child"
   },
   "description": "A frantic parent reports to a guest services booth that they cannot find their young child.",
   "industry": "Venues",

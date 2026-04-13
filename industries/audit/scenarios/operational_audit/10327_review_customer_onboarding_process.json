@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Customer Onboarding Process",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10327-review-customer-onboarding-process"
   },
   "description": "An operational auditor maps the customer onboarding process to identify delays and improve customer satisfaction.",
   "industry": "Audit",

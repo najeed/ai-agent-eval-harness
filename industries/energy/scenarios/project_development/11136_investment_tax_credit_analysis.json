@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investment Tax Credit (ITC) Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11136-investment-tax-credit-analysis"
   },
   "description": "A tax analyst needs to determine the eligible Investment Tax Credit for a new solar-plus-storage project and its impact on the project's financial returns.",
   "industry": "Energy",

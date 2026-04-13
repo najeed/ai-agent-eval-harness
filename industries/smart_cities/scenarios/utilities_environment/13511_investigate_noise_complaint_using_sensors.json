@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate Noise Complaint Using Sensors",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13511-investigate-noise-complaint-using-sensors"
   },
   "description": "A citizen files a late-night noise complaint. An operator uses noise sensors to verify and identify the source.",
   "industry": "Smart Cities",

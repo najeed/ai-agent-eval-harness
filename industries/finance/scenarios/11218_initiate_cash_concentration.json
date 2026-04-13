@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Initiate Corporate Cash Concentration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11218-initiate-cash-concentration"
   },
   "description": "A treasury manager needs to sweep funds from multiple subsidiary accounts into a central concentration account.",
   "industry": "Finance",

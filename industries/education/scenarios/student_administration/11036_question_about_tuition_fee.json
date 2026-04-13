@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Question About a Specific Tuition Fee",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11036-question-about-tuition-fee"
   },
   "description": "A student is inquiring about a 'Student Activity Fee' listed on their tuition bill.",
   "industry": "Education",

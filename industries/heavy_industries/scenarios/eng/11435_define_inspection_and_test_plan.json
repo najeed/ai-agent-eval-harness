@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Define an Inspection and Test Plan (ITP)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11435-define-inspection-and-test-plan"
   },
   "description": "A quality engineer needs to create an ITP for the fabrication of a new pressure vessel, outlining all required quality checks.",
   "industry": "Heavy Industries",

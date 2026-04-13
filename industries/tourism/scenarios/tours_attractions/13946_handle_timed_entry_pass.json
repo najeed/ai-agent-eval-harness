@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Timed-Entry Pass",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13946-handle-timed-entry-pass"
   },
   "description": "A visitor arrives at an attraction 30 minutes after their scheduled timed-entry slot.",
   "industry": "Tourism",

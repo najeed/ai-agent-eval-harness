@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Compile a Regulatory Submission Dossier",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12802-regulatory-submission-compilation"
   },
   "description": "A regulatory affairs specialist must compile documents for an Investigational New Drug (IND) application.",
   "industry": "Pharmaceuticals and Life Sciences",

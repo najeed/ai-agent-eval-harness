@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Weekly Payment Run",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00044-manage-payment-run"
   },
   "description": "The AP manager needs to create, review, and execute the weekly payment run for all due vendor invoices.",
   "industry": "Accounting",

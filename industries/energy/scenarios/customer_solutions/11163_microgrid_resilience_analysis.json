@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Microgrid Resilience Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11163-microgrid-resilience-analysis"
   },
   "description": "A hospital facility manager wants to assess how long their new microgrid (solar + battery + diesel generator) can power their critical loads during a grid outage.",
   "industry": "Energy",

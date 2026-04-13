@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan for Business Succession",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13751-plan-for-business-succession"
   },
   "description": "An aging business owner wants to create a tax-efficient plan to transfer the business to their children.",
   "industry": "Tax",

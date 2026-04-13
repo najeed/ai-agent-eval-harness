@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Mandatory Compliance Training",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11639-conduct-mandatory-training"
   },
   "description": "HR needs to ensure all employees complete their annual mandatory 'Anti-Harassment' training.",
   "industry": "Human Resources",

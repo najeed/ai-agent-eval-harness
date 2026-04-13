@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assign Tasks Based on Operator Skill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12266-assign-tasks-based-on-skill"
   },
   "description": "A task to operate a specialized piece of equipment (e.g., a turret truck) is created. The WMS must assign it only to operators certified to use that equipment.",
   "industry": "Logistics and Warehousing",

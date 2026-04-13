@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Merge LMS Course Sections",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11069-merge-lms-course-sections"
   },
   "description": "A professor is teaching multiple sections of the same course and wants to merge them into a single LMS shell to simplify content management.",
   "industry": "Education",

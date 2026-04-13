@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Order with High Fraud Risk",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12261-handle-order-with-fraud-risk"
   },
   "description": "An online order is automatically flagged by the system as having a high risk of fraud (e.g., mismatched billing/shipping addresses, proxy IP).",
   "industry": "Logistics and Warehousing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Promoter Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14293-handle-promoter-inquiry"
   },
   "description": "A concert promoter is inquiring about booking their artist for a show at the venue next year.",
   "industry": "Venues",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Vessel Stowage Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12906-create-vessel-stowage-plan"
   },
   "description": "A vessel is scheduled to load 800 export containers. The stowage planner must create the plan for where each container goes on the ship.",
   "industry": "Ports",

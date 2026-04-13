@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Log a Paint Defect for Punch List",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10607-log-paint-defect"
   },
   "description": "During a final walkthrough, a quality inspector finds an issue with the paint finish in the main lobby and needs to add it to the punch list.",
   "industry": "Construction",

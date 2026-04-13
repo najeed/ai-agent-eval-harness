@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Flight Itinerary and Receipt",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13929-request-flight-receipt"
   },
   "description": "A business traveler needs a copy of their flight itinerary and a detailed receipt for an expense report.",
   "industry": "Tourism",

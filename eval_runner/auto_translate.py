@@ -15,6 +15,8 @@ from typing import Any
 
 import aiohttp
 
+from . import config
+
 
 def extract_text(file_path: Path) -> str:
     """Extracts raw text from a variety of document formats."""
@@ -67,16 +69,14 @@ Your task is to analyze the following document and synthesize a valid JSON scena
 the official AES (Agent Eval Specification) schema.
 
 The schema requires:
-- `scenario_id`: A unique string identifier.
+- `id`: A unique string identifier.
+- `metadata`: A block containing:
+  - `id`: Should match top-level `id`.
+  - `name`: Human readable name.
 - `title`: A short string title.
 - `industry`: The industry category (e.g., telecom, healthcare, ecommerce).
 - `description`: A thorough description of the scenario.
-- `tasks`: A list of objects, each containing:
-  - `task_id`: String identifier (e.g., "t1")
-  - `description`: Instructions for the task
-  - `expected_outcome`: What should happen
-  - `success_criteria`: A list of objects with "metric" and "threshold" keys 
-    (e.g., {{"metric": "tool_correctness", "threshold": 1.0}})
+- `workflow`: A block containing the task graph (AES v1.4.0 standard).
 
 Output ONLY valid JSON. Do not include markdown formatting or explanations. 
 The response should start with {{ and end with }}.
@@ -107,13 +107,36 @@ JSON Output:
 
                 parsed_json = json.loads(response_text)
 
-                # Basic validation/repair
-                if "scenario_id" not in parsed_json:
-                    parsed_json["scenario_id"] = f"auto-{uuid.uuid4().hex[:8]}"
-                if "version" not in parsed_json:
-                    parsed_json["version"] = "2.0.0"
-                if "tasks" not in parsed_json:
-                    parsed_json["tasks"] = []
+                # Basic validation/repair (AES v1.4.0 Alignment)
+                if "id" not in parsed_json:
+                    parsed_json["id"] = f"auto-{uuid.uuid4().hex[:8]}"
+
+                if "metadata" not in parsed_json:
+                    parsed_json["metadata"] = {
+                        "id": parsed_json["id"],
+                        "name": parsed_json.get("title")
+                        or parsed_json.get("name")
+                        or "Auto Scenario",
+                        "compliance_level": "Standard",
+                    }
+                else:
+                    parsed_json["metadata"].setdefault("id", parsed_json["id"])
+                    parsed_json["metadata"].setdefault(
+                        "name", parsed_json.get("title") or "Auto Scenario"
+                    )
+                    parsed_json["metadata"].setdefault("compliance_level", "Standard")
+
+                parsed_json["aes_version"] = config.AES_VERSION
+
+                if "workflow" not in parsed_json:
+                    legacy_tasks = parsed_json.get("tasks", [])
+                    parsed_json["workflow"] = {"nodes": legacy_tasks or [], "edges": []}
+
+                # Cleanup legacy fields
+                parsed_json["aes_version"] = 1.4
+                # Maintenance: 'version' is legacy, only 'aes_version' remains.
+                parsed_json.pop("version", None)
+                parsed_json.pop("tasks", None)
 
                 return parsed_json
 

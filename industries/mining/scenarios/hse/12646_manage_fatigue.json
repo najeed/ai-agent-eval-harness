@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Operator Fatigue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12646-manage-fatigue"
   },
   "description": "A dispatcher uses a fatigue monitoring system to detect when a haul truck operator may be drowsy and need a break.",
   "industry": "Mining",

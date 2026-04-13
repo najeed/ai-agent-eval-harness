@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Quarterly Business Review (QBR) Deck",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12430-create-quarterly-business-review"
   },
   "description": "An analyst needs to prepare a slide deck for a QBR meeting, summarizing the last quarter's marketing performance.",
   "industry": "Marketing and Advertising",

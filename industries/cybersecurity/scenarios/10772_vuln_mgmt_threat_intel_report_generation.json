@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Weekly Threat Intelligence Briefing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10772-vuln-mgmt-threat-intel-report-generation"
   },
   "description": "A threat intelligence analyst must prepare the weekly threat briefing for the CISO and security leadership.",
   "industry": "Cybersecurity",

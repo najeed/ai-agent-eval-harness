@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Social Media Graphics for Game Day",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13617-create-social-media-graphics"
   },
   "description": "A team's social media manager needs to create graphics for game day, including a 'starting lineup' graphic.",
   "industry": "Sports",

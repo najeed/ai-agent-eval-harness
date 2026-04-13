@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write a Progress Note",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11322-write-progress-note"
   },
   "description": "A resident physician needs to write a SOAP (Subjective, Objective, Assessment, Plan) note for a patient they have just examined.",
   "industry": "Healthcare",

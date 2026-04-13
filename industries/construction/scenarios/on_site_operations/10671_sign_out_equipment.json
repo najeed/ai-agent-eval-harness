@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sign Out a Piece of Equipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10671-sign-out-equipment"
   },
   "description": "A carpenter needs to use a power saw from the on-site tool crib. The tool crib manager must log the checkout.",
   "industry": "Construction",

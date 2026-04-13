@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Subscription Payment Method",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13433-update-subscription-payment-method"
   },
   "description": "A customer's credit card on file for their subscription has expired. They need to update it.",
   "industry": "Retail",

@@ -40,7 +40,7 @@ This script creates a `records.csv` with industry-specific schemas (e.g., policy
 All scenarios are validated at load time against the AES schema. Your scenario **must** include these required fields:
 
 **Scenario level:**
-- `scenario_id`, `title`, `description`, `use_case`, `core_function`, `industry`, `tasks`
+- `id`, `title`, `description`, `use_case`, `core_function`, `industry`, `tasks`
 - (Optional) `initial_state`, `policies`
 
 **Task level** (each item in `tasks`):

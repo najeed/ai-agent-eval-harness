@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Represent Client in Correspondence Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13719-represent-client-in-correspondence-audit"
   },
   "description": "A client is being audited by mail regarding their charitable contribution deductions.",
   "industry": "Tax",

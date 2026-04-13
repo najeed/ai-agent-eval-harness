@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Swap Course Sections",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11066-swap-course-sections"
   },
   "description": "A student wants to swap from one section of a course to another section of the same course that fits their schedule better.",
   "industry": "Education",

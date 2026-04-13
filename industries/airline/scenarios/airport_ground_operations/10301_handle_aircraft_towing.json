@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Aircraft Towing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10301-handle-aircraft-towing"
   },
   "description": "An aircraft needs to be towed from a maintenance hangar to a departure gate. A ground crew member must manage the operation.",
   "industry": "Airline",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Food Traceability Lookup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10201-food-traceability-lookup"
   },
   "description": "A food processor has a product recall and needs to trace a batch of spinach back to the field it was harvested from.",
   "industry": "Agriculture",

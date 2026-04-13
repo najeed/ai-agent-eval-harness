@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Threat Hunting with Command Line Auditing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10766-secops-threat-hunting-command-line"
   },
   "description": "A threat hunter is searching for suspicious command line arguments that might indicate malicious activity.",
   "industry": "Cybersecurity",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Split an Order for Shipping",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13431-split-an-order-for-shipping"
   },
   "description": "An online order contains two items, but one is in a different warehouse. The order needs to be split into two separate shipments.",
   "industry": "Retail",

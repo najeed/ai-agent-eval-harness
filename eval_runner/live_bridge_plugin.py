@@ -113,7 +113,7 @@ class RemoteBridgePlugin(BaseEvalPlugin):
     def before_evaluation(self, context, **kwargs):
         self._post_event(
             CoreEvents.RUN_START,
-            {"scenario": context.scenario_id, "metadata": context.metadata},
+            {"id": context.identifier, "metadata": context.metadata},
         )
 
     def on_agent_turn_start(self, context, **kwargs):

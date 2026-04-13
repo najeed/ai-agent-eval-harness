@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Design a Satellite Power System",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10030-design-satellite-power-system"
   },
   "description": "An engineer is designing the electrical power system for a new satellite, including solar panels and batteries.",
   "industry": "Aerospace",

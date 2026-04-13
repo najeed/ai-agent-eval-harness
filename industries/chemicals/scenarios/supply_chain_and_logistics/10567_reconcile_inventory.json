@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reconcile Physical vs. System Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10567-reconcile-inventory"
   },
   "description": "Following a full physical inventory count, a planner must reconcile discrepancies between the physical count and the system's records.",
   "industry": "Chemicals",

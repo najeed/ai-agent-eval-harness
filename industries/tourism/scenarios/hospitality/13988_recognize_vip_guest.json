@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Recognize a VIP Guest",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13988-recognize-vip-guest"
   },
   "description": "A high-tier loyalty member is checking in. The agent needs to acknowledge their status and provide an upgrade.",
   "industry": "Tourism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Downgrade from Enterprise Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11783-downgrade-with-data-export"
   },
   "description": "A customer on an 'Enterprise' plan is downgrading and needs to export data from an Enterprise-only feature before they lose access.",
   "industry": "Information Technology Product",

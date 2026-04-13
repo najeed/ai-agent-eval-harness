@@ -14,7 +14,8 @@ from eval_runner.session import SessionManager
 def scenario():
     return {
         "aes_version": 1.4,
-        "metadata": {"id": "test-id", "name": "Test Scenario"},
+        "id": "test-scenario-v1",
+        "metadata": {"id": "test-scenario-v1", "name": "Test Scenario"},
         "workflow": {
             "nodes": [
                 {"id": "task-1", "task_description": "First task"},
@@ -44,7 +45,9 @@ class TestSession:
     @pytest.mark.asyncio
     async def test_execute_tasks_empty_workflow(self):
         with patch("eval_runner.events.EventEmitter.emit"):
-            session = SessionManager("test_run", {"aes_version": 1.4, "workflow": {"nodes": []}})
+            session = SessionManager(
+                "test_run", {"aes_version": 1.4, "id": "empty-v1", "workflow": {"nodes": []}}
+            )
             with pytest.raises(ValueError) as cm:
                 await session.execute_tasks(1)
             assert "Unified Standard v1.4.0" in str(cm.value)
@@ -58,7 +61,7 @@ class TestSession:
                     "edges": [{"from": "A", "to": "B"}, {"from": "B", "to": "A"}],
                 }
             }
-            session = SessionManager("test_run", scenario_cycle)
+            session = SessionManager("test_run", {**scenario_cycle, "id": "cycle-v1"})
             with pytest.raises(ValueError) as cm:
                 await session.execute_tasks(1)
             assert "cyclic dependencies" in str(cm.value)

@@ -14,19 +14,26 @@ from eval_runner.verifier import TraceVerifier
 
 
 @pytest.fixture(autouse=True)
-def setup_trust(tmp_path):
+def setup_trust(tmp_path, monkeypatch):
     """Provisions a mock consensus identity for v3 cryptographic signing."""
-    original_trust = config.TRUST_ROOT
-    keys_dir = tmp_path / "keys"
+    # Setup test jail
+    root = tmp_path / "root"
+    root.mkdir()
+    runs_dir = root / "runs"
+    runs_dir.mkdir()
+    keys_dir = root / "trust"
+    keys_dir.mkdir()
 
     # Provision system_id keypair
     identity_dir = keys_dir / "system_id"
     identity_dir.mkdir(parents=True, exist_ok=True)
     TraceVerifier.generate_key_pair(output_dir=str(identity_dir))
 
-    config.TRUST_ROOT = keys_dir
+    # Apply industrial patches
+    monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", root)
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", runs_dir)
+    monkeypatch.setattr("eval_runner.config.TRUST_ROOT", keys_dir)
     yield
-    config.TRUST_ROOT = original_trust
 
 
 def test_compute_signature(tmp_path):
@@ -41,16 +48,16 @@ def test_compute_signature(tmp_path):
     assert sig1 == sig2
     assert len(sig1) == 64  # SHA-256 length
 
-
-def test_sign_trace_success(tmp_path):
-    """Verifies successful generation of a run_manifest.json file."""
-    # Place trace in a run-like directory
-    run_dir = tmp_path / "run_123"
-    run_dir.mkdir()
+    # Place trace in a run-like directory (AUTHORITATIVE VAULT)
+    run_id = "run_123"
+    run_dir = config.RUN_LOG_DIR / run_id
+    run_dir.mkdir(parents=True)
     trace_file = run_dir / "run.jsonl"
     trace_file.write_text('{"event": "start"}', encoding="utf-8")
 
-    manifest = TraceVerifier.sign_trace(str(trace_file), metadata={"user": "test_bot"})
+    manifest = TraceVerifier.sign_trace(
+        str(trace_file), metadata={"user": "test_bot"}, run_id=run_id
+    )
 
     # 1. Verify returned dictionary
     assert manifest["trace_file"] == "run.jsonl"
@@ -75,12 +82,13 @@ def test_sign_trace_not_found():
 
 def test_verify_trace_success(tmp_path):
     """Verifies that a valid trace and manifest pair return True."""
-    run_dir = tmp_path / "run_valid"
-    run_dir.mkdir()
+    run_id = "run_valid"
+    run_dir = config.RUN_LOG_DIR / run_id
+    run_dir.mkdir(parents=True)
     trace_file = run_dir / "run.jsonl"
     trace_file.write_text("content", encoding="utf-8")
 
-    TraceVerifier.sign_trace(str(trace_file))
+    TraceVerifier.sign_trace(str(trace_file), run_id=run_id)
     manifest_path = run_dir / "run_manifest.json"
 
     result = TraceVerifier.verify_trace(str(trace_file), str(manifest_path))
@@ -89,12 +97,13 @@ def test_verify_trace_success(tmp_path):
 
 def test_verify_trace_tampered(tmp_path):
     """Verifies that a tampered trace file fails validation."""
-    run_dir = tmp_path / "run_tamper"
-    run_dir.mkdir()
+    run_id = "run_tamper"
+    run_dir = config.RUN_LOG_DIR / run_id
+    run_dir.mkdir(parents=True)
     trace_file = run_dir / "run.jsonl"
     trace_file.write_text("original", encoding="utf-8")
 
-    TraceVerifier.sign_trace(str(trace_file))
+    TraceVerifier.sign_trace(str(trace_file), run_id=run_id)
     manifest_path = run_dir / "run_manifest.json"
 
     # Tamper with the trace

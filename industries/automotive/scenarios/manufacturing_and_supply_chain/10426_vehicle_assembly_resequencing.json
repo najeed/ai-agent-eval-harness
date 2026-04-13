@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Vehicle Assembly Resequencing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10426-vehicle-assembly-resequencing"
   },
   "description": "Due to a shortage of a specific component (e.g., panoramic sunroofs), several vehicles in the production queue must be resequenced to prioritize building cars that don't require the part.",
   "industry": "Automotive",

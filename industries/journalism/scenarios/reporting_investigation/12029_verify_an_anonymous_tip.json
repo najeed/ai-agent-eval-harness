@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify an Anonymous Tip",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12029-verify-an-anonymous-tip"
   },
   "description": "A reporter receives an anonymous tip about corruption at a government agency. They must try to verify the information before proceeding.",
   "industry": "Journalism",

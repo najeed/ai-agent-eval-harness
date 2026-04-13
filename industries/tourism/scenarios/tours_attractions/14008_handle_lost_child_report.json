@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Lost Child Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14008-handle-lost-child-report"
   },
   "description": "A frantic parent reports to a theme park employee that they have become separated from their child.",
   "industry": "Tourism",

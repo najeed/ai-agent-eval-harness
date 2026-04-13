@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write a Year-in-Review Article",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12096-write-a-year-in-review-article"
   },
   "description": "An editor needs to write a major feature article summarizing the most important news events of the past year.",
   "industry": "Journalism",

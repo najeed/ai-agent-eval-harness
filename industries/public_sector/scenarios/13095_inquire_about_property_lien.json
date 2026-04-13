@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About a Property Lien",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13095-inquire-about-property-lien"
   },
   "description": "A citizen is buying a property and wants to check if there are any outstanding government liens (e.g., for unpaid taxes or water bills).",
   "industry": "Public Sector",

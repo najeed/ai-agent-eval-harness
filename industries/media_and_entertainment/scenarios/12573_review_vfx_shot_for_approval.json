@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review VFX Shot for Approval",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12573-review-vfx-shot-for-approval"
   },
   "description": "A VFX artist has submitted a new version of a complex visual effects shot for the director's approval.",
   "industry": "Media and Entertainment",

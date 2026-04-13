@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "API Penetration Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10770-vuln-mgmt-pen-test-api"
   },
   "description": "A penetration tester is tasked with finding security flaws in a new REST API.",
   "industry": "Cybersecurity",

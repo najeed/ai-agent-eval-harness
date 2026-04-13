@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Incident - Can't Access Shared Drive",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11857-incident-shared-drive-access"
   },
   "description": "A user reports they can no longer access a specific shared folder on the network that they could access yesterday.",
   "industry": "Information Technology Service",

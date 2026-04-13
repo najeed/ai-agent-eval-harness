@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import shlex
 import subprocess
@@ -14,6 +15,8 @@ from eval_runner.plugins import manager
 from eval_runner.simulators import get_simulator_registry
 
 from .auth_manager import Permission, require_permission
+
+logger = logging.getLogger(__name__)
 
 core_bp = Blueprint("core", __name__, url_prefix="/api")
 trust_bp = Blueprint("trust", __name__)  # Top-level v1/ namespace
@@ -158,9 +161,15 @@ def cleanup_runs():
     try:
         count = 0
         if config.RUN_LOG_DIR.exists():
-            for f in config.RUN_LOG_DIR.glob("*.jsonl"):
-                f.unlink()
-                count += 1
+            for item in config.RUN_LOG_DIR.iterdir():
+                if item.is_dir():
+                    import shutil
+
+                    shutil.rmtree(item)
+                    count += 1
+                elif item.name == "run.jsonl":
+                    item.unlink()
+                    count += 1
         return jsonify(
             {"status": "success", "message": f"Pruned {count} historical traces.", "count": count}
         )
@@ -172,7 +181,7 @@ def cleanup_runs():
 def get_verification_certificate(run_id):
     """
     Public Trust Protocol endpoint.
-    Retrieves the authoritative Verification Certificate (VC) for a specific run.
+    Retrieves the Verification Certificate (VC) for a specific run.
     This enables external systems (Enterprise Deployment Gates) to verify the
     integrity and behavioral fingerprint of an evaluation without private access.
     """
@@ -184,7 +193,8 @@ def get_verification_certificate(run_id):
             with open(cert_path, encoding="utf-8") as f:
                 return jsonify(json.load(f))
         except Exception as e:
-            return jsonify({"error": f"Failed to retrieve certificate: {str(e)}"}), 500
+            logger.error(f"   [API] Dashboard Data Failure: {str(e)}")
+            return jsonify({"error": str(e)}), 500
 
     # 2. Look in Run ID Vault (Standard Standardized Platform)
     vault_manifest = config.RUN_LOG_DIR / run_id / "run_manifest.json"
@@ -195,18 +205,7 @@ def get_verification_certificate(run_id):
         except Exception as e:
             return jsonify({"error": f"Failed to retrieve vault manifest: {str(e)}"}), 500
 
-    # 3. Fallback to legacy sidecar patterns (Standard Reproducibility)
-    sidecar_manifest = config.RUN_LOG_DIR / f"run_{run_id}_manifest.json"
-    if not sidecar_manifest.exists():
-        sidecar_manifest = config.RUN_LOG_DIR / f"{run_id}_manifest.json"
-
-    if sidecar_manifest.exists():
-        try:
-            with open(sidecar_manifest, encoding="utf-8") as f:
-                return jsonify(json.load(f))
-        except Exception as e:
-            return jsonify({"error": f"Failed to retrieve sidecar manifest: {str(e)}"}), 500
-
+    # 3. Fallback (Industrial Standardization): No legacy sidecar patterns allowed in AES v1.5.0
     return jsonify(
         {
             "error": "Certificate not found.",
@@ -234,34 +233,20 @@ def verify_run_public(run_id):
     print(f"   [Gating] Checking Integrity for {run_id}...", flush=True)
 
     if not manifest_path.exists():
-        # Fallback for runs certified before normalization or via legacy reporting
-        sidecar = (config.RUN_LOG_DIR / f"{run_id}_manifest.json").resolve()
-        if sidecar.exists():
-            manifest_path = sidecar
-            print(f"   [Gating] Manifest found at sidecar: {manifest_path}", flush=True)
-        else:
-            print(
-                f"   [Gating] 404 FAIL: Manifest not found at {manifest_path} or {sidecar}",
-                flush=True,
-            )
-            return jsonify(
-                {
-                    "error": "Verification Failed: Trace or Certificate not found.",
-                    "message": f"Run {run_id} has not been standardized for production gating.",
-                }
-            ), 404
+        print(
+            f"   [Gating] 404 FAIL: Manifest not found at {manifest_path}",
+            flush=True,
+        )
+        return jsonify(
+            {
+                "error": "Verification Failed: Trace or Certificate not found.",
+                "message": f"Run {run_id} has not been standardized for production gating.",
+            }
+        ), 404
 
     if not trace_path.exists():
-        # Resilient fallback for flat traces that haven't been migrated yet
-        flat_trace = (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve()
-        if flat_trace.exists():
-            trace_path = flat_trace
-            print(f"   [Gating] Trace found at flat fallback: {trace_path}", flush=True)
-        else:
-            print(
-                f"   [Gating] 404 FAIL: Trace not found at {trace_path} or {flat_trace}", flush=True
-            )
-            return jsonify({"error": f"Evaluation trace for {run_id} missing."}), 404
+        print(f"   [Gating] 404 FAIL: Trace not found at {trace_path}", flush=True)
+        return jsonify({"error": f"Evaluation trace for {run_id} missing."}), 404
 
     # 2. Execute Verification logic (unprotected bridge)
     try:
@@ -693,10 +678,8 @@ def list_runs():
     # 3. Scan RUN_LOG_DIR for individual traces (Fix for missing scenario evaluations)
     # This ensures that evals triggered from the UI appear in the history.
     # 3. Scan RUN_LOG_DIR for individual traces (Recursive for industrial isolation)
-    # This handles both top-level <run-id>.jsonl and nested runs/<run-id>/run.jsonl
-    log_paths = list(config.RUN_LOG_DIR.glob("*.jsonl")) + list(
-        config.RUN_LOG_DIR.glob("*/run.jsonl")
-    )
+    # [AES v1.5.0] Strictly scanning for nested run vaults (*/run.jsonl)
+    log_paths = list(config.RUN_LOG_DIR.glob("*/run.jsonl"))
 
     for p in log_paths:
         # Skip the master global log to avoid duplicates (filtered in Step 1)
@@ -742,42 +725,74 @@ def get_run_status(run_id):
     """
     runs_dir = config.RUN_LOG_DIR
 
-    # 1. Authoritative Disk Scan (Nested and Flat support)
-    paths_to_check = [
-        runs_dir / f"{run_id}.jsonl",
-        runs_dir / run_id / "run.jsonl",
-        runs_dir / "demo" / f"{run_id}.jsonl",
-    ]
-
-    trace_file = next((p for p in paths_to_check if p.exists()), None)
-
-    if not trace_file:
+    # 1. Primary: Authoritative Disk Vault
+    vault_trace = runs_dir / run_id / "run.jsonl"
+    if vault_trace.exists():
         return jsonify(
             {
                 "run_id": run_id,
-                "status": "NOT_FOUND",
-                "message": "Trace not yet persisted or invalid ID.",
+                "status": "COMPLETED",
+                "source": "vault",
+                "path": str(vault_trace.relative_to(runs_dir)),
+                "size": os.path.getsize(vault_trace),
+                "mtime": os.path.getmtime(vault_trace),
             }
-        ), 404
+        )
 
+    # 2. Fallback: Industrial Master Log (Recoverable)
+    master_log = runs_dir / "run.jsonl"
+    if master_log.exists():
+        # [Staff Optimization] Perform a shallow string scan to confirm run_id presence
+        try:
+            with open(master_log, encoding="utf-8") as f:
+                # We only check the first 1MB or scan for the ID to keep the API responsive
+                found = False
+                for line in f:
+                    if f'"run_id": "{run_id}"' in line:
+                        found = True
+                        break
+
+                if found:
+                    return jsonify(
+                        {
+                            "run_id": run_id,
+                            "status": "COMPLETED",
+                            "source": "master_fallback",
+                            "message": (
+                                f"❌ [ERROR] Vault directory not found for {run_id}. "
+                                "Falling back to master log."
+                            ),
+                            "path": "run.jsonl",
+                            "size": os.path.getsize(master_log),
+                            "mtime": os.path.getmtime(master_log),
+                        }
+                    )
+        except Exception as e:
+            logger.error(f"   [API] Master Log Fallback Error: {str(e)}")
+
+    # 3. UNRECOVERABLE: Missing from both layers
     return jsonify(
         {
             "run_id": run_id,
-            "status": "COMPLETED",
-            "path": str(trace_file.relative_to(runs_dir)),
-            "size": os.path.getsize(trace_file),
-            "mtime": os.path.getmtime(trace_file),
+            "status": "NOT_FOUND",
+            "message": (
+                f"❌ [ERROR] Run ID '{run_id}' not found in vault or "
+                "master log. Please verify the Run ID."
+            ),
         }
-    )
+    ), 404
 
 
-@core_bp.route("/evaluate", methods=["POST"])
+@core_bp.route("/v1/evaluate", methods=["POST"])
 @require_permission(Permission.EVAL_TRIGGER)
 def evaluate_scenario():
-    """Trigger an evaluation in the background."""
+    """
+    Industrial Evaluation Service (v1).
+    Triggers an asynchronous evaluation for a specific scenario/path.
+    """
     # [INDUSTRIAL DIAGNOSTIC]: Log the incoming request body for forensic auditing
     data = request.json or {}
-    print(f"   [API] /api/evaluate - Request Body: {json.dumps(data)}", flush=True)
+    print(f"   [API] /api/v1/evaluate - Request Body: {json.dumps(data)}", flush=True)
 
     path_str = data.get("path")
     if not path_str:
@@ -839,8 +854,7 @@ def evaluate_scenario():
                 "status": "started",
                 "run_id": run_id,
                 "message": f"Evaluation started for {path.name}",
-                "scenario_id": scenario_data.get("scenario_id")
-                or scenario_data.get("metadata", {}).get("id"),
+                "id": scenario_data.get("id") or scenario_data.get("metadata", {}).get("id"),
             }
         )
     except Exception as e:
@@ -853,14 +867,14 @@ def save_scenario():
     """Saves or updates a scenario JSON file."""
     data = request.json or {}
     metadata_block = data.get("metadata", {})
-    scenario_id = data.get("scenario_id") or metadata_block.get("id")
-    if not scenario_id:
-        return jsonify({"error": "Missing scenario_id"}), 400
+    identifier = data.get("id") or metadata_block.get("id")
+    if not identifier:
+        return jsonify({"error": "Missing scenario identifier (id)"}), 400
 
     # Secure path resolution (prevent traversal)
-    safe_id = "".join(c for c in scenario_id if c.isalnum() or c in ("-", "_")).strip()
+    safe_id = "".join(c for c in identifier if c.isalnum() or c in ("-", "_")).strip()
     if not safe_id:
-        return jsonify({"error": "Invalid scenario_id"}), 400
+        return jsonify({"error": "Invalid identifier"}), 400
 
     industry = data.get("industry", "generic")
     # Secure Remediation (R2.2): Sanitize industry path to prevent traversal
@@ -995,8 +1009,7 @@ def ping():
     return jsonify({"status": "pong", "version": f"v{config.VERSION}-verified"})
 
 
-@core_bp.route("/v1/identity/<identity_id>/public_key", methods=["GET"])
-@require_permission(Permission.IDENTITY_READ)
+@trust_bp.route("/v1/identity/<identity_id>/public_key", methods=["GET"])
 def get_public_key(identity_id):
     """
     REST Identity Resolution Service.
@@ -1006,12 +1019,22 @@ def get_public_key(identity_id):
 
     try:
         service = IdentityService()
-        public_key = service.get_public_key(identity_id)
-        if not public_key:
+        public_key_obj = service.get_public_key(identity_id, auto_provision=False)
+        if not public_key_obj:
             return jsonify({"error": f"Identity '{identity_id}' not found"}), 404
 
-        return jsonify({"identity_id": identity_id, "public_key": public_key})
+        from cryptography.hazmat.primitives import serialization
+
+        public_key_pem = public_key_obj.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        ).decode("utf-8")
+
+        return jsonify({"identity_id": identity_id, "public_key": public_key_pem})
     except Exception as e:
+        import traceback
+
+        traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
 
@@ -1029,64 +1052,42 @@ def certify_run():
     if not run_id:
         return jsonify({"error": "run_id is required"}), 400
 
-    # Universal Trace Resolver: Finding the Source Telemetry
-    candidates = [
-        (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve(),  # Standard Nested
-        (config.RUN_LOG_DIR / f"{run_id}.jsonl").resolve(),  # Standard Flat
-        (config.RUN_LOG_DIR / "demo" / f"{run_id}.jsonl").resolve(),  # Demo Mode
-    ]
+    # 1. Authoritative Vault Resolution (Strict Affinity)
+    # We no longer look for candidates or flat files.
+    vault_dir = (config.RUN_LOG_DIR / run_id).resolve()
+    target_trace = (vault_dir / "run.jsonl").resolve()
 
-    source_trace = None
-    for cand in candidates:
-        if cand.exists():
-            source_trace = cand
-            break
-
-    if not source_trace:
+    if not target_trace.exists():
         print(
-            f"   [Certification] 404 FAIL: Source trace for {run_id} not found in candidates: "
-            f"{[str(c) for c in candidates]}",
+            f"   [Certification] 404 FAIL: Authoritative vault trace not found at {target_trace}",
             flush=True,
         )
         return jsonify(
-            {"error": f"Trace file for run_id '{run_id}' not found in audit registry."}
+            {
+                "error": "Certification Failed: Dedicated run vault not found.",
+                "run_id": run_id,
+                "status": "NOT_VAULTED",
+                "message": (
+                    "Evaluation must be performed with 'RUN_LOG_PER_RUN=true' "
+                    "for forensic certification."
+                ),
+            }
         ), 404
 
-    # [STRUCTURAL NORMALIZATION]: Migrate to standard runs/<run_id>/run.jsonl
-    target_dir = (config.RUN_LOG_DIR / run_id).resolve()
-    target_dir.mkdir(parents=True, exist_ok=True)
-    target_trace = (target_dir / "run.jsonl").resolve()
-
     try:
-        # Atomic Copy-and-Read (ACR): Resilience for Windows File Locks (WinError 32)
-        import shutil
-        import tempfile
+        # 2. Authoritative Signature Execution (Zero-Copy)
+        # Sign the trace directly in the vault to ensure forensics find their relative sidecars.
+        manifest = TraceVerifier.sign_trace(
+            str(target_trace),
+            identity_id=data.get("identity", "system_id"),
+            compliance_status=data.get("status", "pass"),
+            compliance_score=float(data.get("score", 1.0)),
+            policy_ref=data.get("policy_ref"),
+            ttl_days=int(data.get("ttl", config.GOVERNANCE_TTL_DAYS)),
+        )
 
-        # We always copy to the target location if it doesn't match the source
-        if source_trace.resolve() != target_trace.resolve():
-            shutil.copy2(source_trace, target_trace)
-            print(f"   [Normalization] Migrated {source_trace.name} -> {target_trace}", flush=True)
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".jsonl") as tmp:
-            tmp_path = Path(tmp.name)
-            shutil.copy2(target_trace, tmp_path)
-
-        try:
-            # [VC v3] Sign with provided compliance metadata
-            manifest = TraceVerifier.sign_trace(
-                str(tmp_path),
-                identity_id=data.get("identity", "system_id"),
-                compliance_status=data.get("status", "pass"),
-                compliance_score=float(data.get("score", 1.0)),
-                policy_ref=data.get("policy_ref"),
-                ttl_days=int(data.get("ttl", config.GOVERNANCE_TTL_DAYS)),
-            )
-        finally:
-            if tmp_path.exists():
-                tmp_path.unlink()
-
-        # Authoritative Manifest Save (Standard Location)
-        manifest_path = target_dir / "run_manifest.json"
+        # 3. Authoritative Manifest Save (Within the Vault)
+        manifest_path = vault_dir / "run_manifest.json"
         with open(manifest_path, "w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=2)
 
@@ -1102,6 +1103,7 @@ def certify_run():
             }
         )
     except Exception as e:
+        print(f"   [Certification] 500 ERROR: {str(e)}", flush=True)
         return jsonify({"error": str(e)}), 500
 
 
@@ -1118,14 +1120,18 @@ def get_debugger_state():
                 self.name = name
                 self.data = data
 
-        event_name = data.get("event")
-        event_data = data.get("data", {})
-        if event_name:
-            if event_name == CoreEvents.RUN_START:
-                DebuggerStateStore._is_active = True
-            elif event_name == CoreEvents.RUN_END:
-                DebuggerStateStore._is_active = False
-            DebuggerStateStore.handle_event(MockEvent(event_name, event_data))
+        try:
+            event_name = data.get("event")
+            event_data = data.get("data", {})
+            if event_name:
+                if event_name == CoreEvents.RUN_START:
+                    DebuggerStateStore._is_active = True
+                elif event_name == CoreEvents.RUN_END:
+                    DebuggerStateStore._is_active = False
+                DebuggerStateStore.handle_event(MockEvent(event_name, event_data))
+        except Exception as e:
+            logger.error(f"   [API] Debugger State Update Failure: {str(e)}")
+            return jsonify({"status": "error", "message": str(e)}), 500
         return jsonify({"status": "updated", "is_active": DebuggerStateStore._is_active})
 
     # Industrial Logic: Check for run_id to load historical or CLI-driven live traces

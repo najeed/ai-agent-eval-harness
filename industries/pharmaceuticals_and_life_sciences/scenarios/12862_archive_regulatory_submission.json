@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Archive a Regulatory Submission",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12862-archive-regulatory-submission"
   },
   "description": "After a submission has been approved by a health authority, the regulatory operations specialist must formally archive the complete submission package.",
   "industry": "Pharmaceuticals and Life Sciences",

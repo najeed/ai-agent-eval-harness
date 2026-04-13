@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Daily Cash Position",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00012-manage-daily-cash-position"
   },
   "description": "A treasury analyst needs to determine the company's daily cash position to decide if funds need to be moved from a money market account to the operating account.",
   "industry": "Accounting",

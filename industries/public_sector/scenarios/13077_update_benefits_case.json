@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Household Information for Benefits",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13077-update-benefits-case"
   },
   "description": "A benefits recipient needs to report the birth of a new child, which may affect their benefit amount.",
   "industry": "Public Sector",

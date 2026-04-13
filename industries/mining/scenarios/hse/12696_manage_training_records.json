@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Employee Training Records",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12696-manage-training-records"
   },
   "description": "An HSE administrator needs to ensure that all employees have completed their annual safety refresher training.",
   "industry": "Mining",

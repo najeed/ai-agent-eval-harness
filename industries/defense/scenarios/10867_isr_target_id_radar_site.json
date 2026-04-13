@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Air Defense Radar Site Identification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10867-isr-target-id-radar-site"
   },
   "description": "An analyst must use electronic intelligence (ELINT) to identify the specific type of an enemy air defense radar site.",
   "industry": "Defense",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create JHA for Roofing Work",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10612-create-jha-for-roofing"
   },
   "description": "A safety officer must create a Job Hazard Analysis (JHA) for the upcoming roofing installation.",
   "industry": "Construction",

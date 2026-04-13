@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Data Breach Response",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12186-handle-data-breach-response"
   },
   "description": "A company has experienced a data breach. In-house counsel must coordinate the legal response.",
   "industry": "Legal",

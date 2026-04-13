@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Well Annulus Pressure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12770-well-integrity-monitoring"
   },
   "description": "An integrity engineer monitors the pressure in the annulus of an offshore well for any signs of a leak or pressure buildup.",
   "industry": "Oil and Gas",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Offshore Spare Parts Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12765-manage-spare-parts-inventory"
   },
   "description": "A maintenance supervisor checks the inventory for a critical spare part (a pump seal) on an offshore platform and orders more if needed.",
   "industry": "Oil and Gas",

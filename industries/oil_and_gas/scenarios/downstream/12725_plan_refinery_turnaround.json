@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Refinery Unit Turnaround",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12725-plan-refinery-turnaround"
   },
   "description": "A maintenance planner develops a high-level plan for a major turnaround (shutdown for maintenance) of the Fluid Catalytic Cracker (FCC) unit.",
   "industry": "Oil and Gas",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop Flight Software for a Satellite",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10053-develop-flight-software"
   },
   "description": "A software engineer is developing the flight software that controls a satellite's attitude determination and control system (ADCS).",
   "industry": "Aerospace",

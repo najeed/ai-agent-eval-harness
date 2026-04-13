@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Carrier Late Arrival for Pickup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12243-handle-carrier-late-arrival"
   },
   "description": "A carrier scheduled for a pickup is running late. The shipping manager must assess the impact.",
   "industry": "Logistics and Warehousing",

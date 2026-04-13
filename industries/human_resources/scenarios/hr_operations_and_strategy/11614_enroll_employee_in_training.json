@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Enroll Employee in Training",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11614-enroll-employee-in-training"
   },
   "description": "A manager wants to enroll their employee in an upcoming 'Leadership Skills' training course.",
   "industry": "Human Resources",

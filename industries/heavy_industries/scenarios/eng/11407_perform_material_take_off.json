@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Material Take-Off (MTO)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11407-perform-material-take-off"
   },
   "description": "An engineer needs to perform a material take-off from a set of design drawings to create a bill of materials for procurement.",
   "industry": "Heavy Industries",

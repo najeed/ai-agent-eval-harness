@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Hazardous Materials Storage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12250-manage-hazardous-materials"
   },
   "description": "A shipment of hazardous materials (e.g., flammable liquids) arrives and must be stored in a designated, compliant area.",
   "industry": "Logistics and Warehousing",

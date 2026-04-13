@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Trace a Missing Railcar",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14073-trace-missing-railcar"
   },
   "description": "A customer is asking for the location of their railcar, but it is not showing up at its expected location. An agent must trace it.",
   "industry": "Transportation",

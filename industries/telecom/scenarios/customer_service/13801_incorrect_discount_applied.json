@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Billing Dispute - Incorrect Discount",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13801-incorrect-discount-applied"
   },
   "description": "A customer claims their promotional 'loyalty' discount was not applied to their latest bill.",
   "industry": "Telecom",

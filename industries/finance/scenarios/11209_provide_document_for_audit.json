@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Documentation for External Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11209-provide-document-for-audit"
   },
   "description": "An external auditor requests all invoices over $50,000 from the previous fiscal year.",
   "industry": "Finance",

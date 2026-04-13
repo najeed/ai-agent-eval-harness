@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Issue of Unforeseen Obstruction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10649-resolve-issue-of-unforeseen-obstruction"
   },
   "description": "During excavation, a large, undocumented utility line is discovered. The PM must manage this issue.",
   "industry": "Construction",

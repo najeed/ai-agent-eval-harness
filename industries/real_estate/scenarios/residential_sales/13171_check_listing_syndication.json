@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Listing Syndication Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13171-check-listing-syndication"
   },
   "description": "A seller calls, worried that their new listing is not showing up on Zillow. The agent needs to investigate.",
   "industry": "Real Estate",

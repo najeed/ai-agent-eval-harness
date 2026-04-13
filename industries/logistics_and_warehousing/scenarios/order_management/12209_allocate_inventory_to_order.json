@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Allocate Inventory to a High-Priority Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12209-allocate-inventory-to-order"
   },
   "description": "A high-priority sales order comes in, and an agent must manually allocate available inventory to it before it's released to the warehouse.",
   "industry": "Logistics and Warehousing",

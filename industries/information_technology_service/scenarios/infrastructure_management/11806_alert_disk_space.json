@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitoring - Low Disk Space Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11806-alert-disk-space"
   },
   "description": "An RMM alert indicates that a server's C: drive has less than 10% free space.",
   "industry": "Information Technology Service",

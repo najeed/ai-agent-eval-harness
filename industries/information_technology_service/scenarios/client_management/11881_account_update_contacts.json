@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Account Management - Update Client Contacts",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11881-account-update-contacts"
   },
   "description": "A client informs their account manager that their primary point of contact has left the company.",
   "industry": "Information Technology Service",

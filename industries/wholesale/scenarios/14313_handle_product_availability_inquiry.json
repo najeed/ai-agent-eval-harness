@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Retailer Product Availability Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14313-handle-product-availability-inquiry"
   },
   "description": "A retailer calls to ask about the current stock level and lead time for a specific product.",
   "industry": "Wholesale",

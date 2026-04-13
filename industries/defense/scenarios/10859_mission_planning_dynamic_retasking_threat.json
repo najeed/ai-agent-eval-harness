@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dynamic Re-tasking due to Pop-up Threat",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10859-mission-planning-dynamic-retasking-threat"
   },
   "description": "A flight of attack aircraft is en route to a planned target when a previously unknown mobile SAM system activates near their flight path.",
   "industry": "Defense",

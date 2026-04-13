@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Invoice Copy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11733-request-invoice-copy"
   },
   "description": "A customer's accounting department needs a PDF copy of an invoice from 6 months ago.",
   "industry": "Information Technology Product",

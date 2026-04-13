@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Short Shipment Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14329-handle-short-shipment-claim"
   },
   "description": "A retailer claims they were short-shipped on a recent order (i.e., they received fewer items than they were billed for).",
   "industry": "Wholesale",

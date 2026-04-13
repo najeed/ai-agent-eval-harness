@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Vehicle Breakdown",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14026-handle-vehicle-breakdown"
   },
   "description": "A driver reports that their truck has broken down on the highway. A fleet manager must arrange for a tow and repair.",
   "industry": "Transportation",

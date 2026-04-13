@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve a Shipping Error",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12383-resolve-shipping-error"
   },
   "description": "A customer received the wrong product. A customer service rep needs to resolve the issue.",
   "industry": "Manufacturing",

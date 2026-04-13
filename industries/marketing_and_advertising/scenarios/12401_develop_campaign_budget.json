@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop a Campaign Budget",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12401-develop-campaign-budget"
   },
   "description": "A planner needs to create a recommended budget allocation for an upcoming quarterly campaign.",
   "industry": "Marketing and Advertising",

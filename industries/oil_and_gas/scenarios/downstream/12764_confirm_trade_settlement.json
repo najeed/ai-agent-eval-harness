@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Confirm Trade Settlement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12764-confirm-trade-settlement"
   },
   "description": "A back-office analyst ensures that a physical cargo trade is settled correctly, meaning the payment is made and the title is transferred.",
   "industry": "Oil and Gas",

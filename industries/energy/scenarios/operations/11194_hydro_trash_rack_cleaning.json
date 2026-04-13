@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Hydro Dam Trash Rack Cleaning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11194-hydro-trash-rack-cleaning"
   },
   "description": "An operator at a hydroelectric dam detects a drop in efficiency and suspects that the trash racks (which filter debris) are clogged.",
   "industry": "Energy",

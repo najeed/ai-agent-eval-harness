@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Merge Duplicate User Accounts",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11781-merge-duplicate-accounts"
   },
   "description": "A user accidentally signed up twice with two different email addresses and wants to merge their accounts.",
   "industry": "Information Technology Product",

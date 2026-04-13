@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Ensure Water Rights Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10146-water-rights-compliance"
   },
   "description": "A farmer in a regulated water basin needs to track their water usage to ensure they do not exceed their annual allocation.",
   "industry": "Agriculture",

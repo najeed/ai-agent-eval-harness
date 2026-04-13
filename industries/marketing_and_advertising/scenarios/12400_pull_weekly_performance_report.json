@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pull Weekly Performance Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12400-pull-weekly-performance-report"
   },
   "description": "An analyst needs to compile the weekly performance report for a key client, pulling data from multiple ad platforms.",
   "industry": "Marketing and Advertising",

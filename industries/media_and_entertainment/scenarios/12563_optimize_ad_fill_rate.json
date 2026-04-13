@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Optimize Ad Fill Rate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12563-optimize-ad-fill-rate"
   },
   "description": "The ad operations team notices that the ad fill rate for a specific content category is low, meaning revenue is being lost.",
   "industry": "Media and Entertainment",

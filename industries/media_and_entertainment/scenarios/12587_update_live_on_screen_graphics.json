@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update On-Screen Graphics During Live Broadcast",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12587-update-live-on-screen-graphics"
   },
   "description": "During a live sports broadcast, the score is incorrect on the on-screen graphic. An agent must correct it immediately.",
   "industry": "Media and Entertainment",

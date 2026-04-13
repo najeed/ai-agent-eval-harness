@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Search for Off-Market Properties",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13160-search-for-off-market-properties"
   },
   "description": "In a competitive market, a buyer client asks their agent to find potential off-market properties (pocket listings).",
   "industry": "Real Estate",

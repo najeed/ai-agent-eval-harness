@@ -22,7 +22,7 @@ def mock_results():
 
 def test_save_trajectory(tmp_path, mock_results):
     """Test that trajectories are saved correctly to JSON."""
-    scenario = {"scenario_id": "s1", "title": "Test Scen"}
+    scenario = {"id": "s1", "title": "Test Scen"}
     reporter.save_trajectory(scenario, mock_results, base_dir=tmp_path)
 
     # Check if file exists
@@ -33,7 +33,7 @@ def test_save_trajectory(tmp_path, mock_results):
 
     with open(files[0]) as f:
         data = json.load(f)
-        assert data["metadata"]["scenario_id"] == "s1"
+        assert data["metadata"]["id"] == "s1"
         assert len(data["results"]) == 1
 
 
@@ -61,7 +61,7 @@ def test_generate_mermaid_violation():
 
 def test_generate_html_report(tmp_path, mock_results):
     """Test HTML report generation."""
-    scenario = {"scenario_id": "h1", "title": "HTML Test", "industry": "legal"}
+    scenario = {"id": "h1", "title": "HTML Test", "industry": "legal"}
 
     # Override report dir for testing
     old_dir = config.HTML_REPORTS_DIR
@@ -80,7 +80,7 @@ def test_generate_html_report(tmp_path, mock_results):
 
 def test_generate_report_console_output(capsys, mock_results):
     """Test the main generate_report function for console output."""
-    scenario = {"scenario_id": "c1", "title": "Console Test"}
+    scenario = {"id": "c1", "title": "Console Test"}
     reporter.generate_report(scenario, mock_results, export_trajectory=False, export_html=False)
 
     captured = capsys.readouterr()

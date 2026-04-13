@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Trial Master File (TMF)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12838-trial-master-file-management"
   },
   "description": "A clinical trial assistant must upload and index documents into the electronic Trial Master File (eTMF) for a study.",
   "industry": "Pharmaceuticals and Life Sciences",

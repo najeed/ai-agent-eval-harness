@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cross-Industry Negotiation: Manufacturing & Healthcare Collaboration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "cross-industry-070-cross-industry-negotiation-manufacturing-and-healthcare-collaboration"
   },
   "description": "An AI agent must bridge a complex data and policy gap between the Manufacturing and Healthcare sectors.",
   "industry": "Meta-Industry",

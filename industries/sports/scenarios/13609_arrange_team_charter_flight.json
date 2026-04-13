@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Arrange Team Charter Flight",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13609-arrange-team-charter-flight"
   },
   "description": "A team's travel manager needs to book a charter flight for an upcoming away game.",
   "industry": "Sports",

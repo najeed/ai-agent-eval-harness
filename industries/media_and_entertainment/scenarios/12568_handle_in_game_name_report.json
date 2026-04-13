@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle In-Game Name Violation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12568-handle-in-game-name-report"
   },
   "description": "A player's username is reported for being offensive and violating the code of conduct.",
   "industry": "Media and Entertainment",

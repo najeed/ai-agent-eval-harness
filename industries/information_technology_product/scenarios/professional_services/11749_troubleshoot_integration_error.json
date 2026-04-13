@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshoot Custom Integration Error",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11749-troubleshoot-integration-error"
   },
   "description": "A custom API integration built by the professional services team is failing with an authorization error.",
   "industry": "Information Technology Product",

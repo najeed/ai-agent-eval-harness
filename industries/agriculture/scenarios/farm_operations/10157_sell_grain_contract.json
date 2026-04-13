@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Execute a Grain Sales Contract",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10157-sell-grain-contract"
   },
   "description": "A farmer has decided to sell 5,000 bushels of corn to a local ethanol plant.",
   "industry": "Agriculture",

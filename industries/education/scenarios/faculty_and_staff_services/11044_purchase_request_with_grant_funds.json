@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Make Purchase with Grant Funds",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11044-purchase-request-with-grant-funds"
   },
   "description": "A PI wants to purchase a piece of lab equipment using their grant funds.",
   "industry": "Education",

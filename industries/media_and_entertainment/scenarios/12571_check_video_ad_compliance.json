@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Video Ad for Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12571-check-video-ad-compliance"
   },
   "description": "A new ad creative from an advertiser needs to be checked against technical and content policies before it can be used in campaigns.",
   "industry": "Media and Entertainment",

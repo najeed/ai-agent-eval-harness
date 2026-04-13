@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Agent's License Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13186-check-agent-license-status"
   },
   "description": "A brokerage manager needs to verify that all agents in the office have renewed their real estate licenses and completed their continuing education.",
   "industry": "Real Estate",

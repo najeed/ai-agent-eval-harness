@@ -8,7 +8,7 @@ from eval_runner.live_bridge_plugin import RemoteBridgePlugin
 
 class MockContext:
     def __init__(self):
-        self.scenario_id = "test_scen"
+        self.identifier = "test_scen"
         self.metadata = {"difficulty": 1}
         self.turn_number = 1
         self.agent_name = "test_agent"
@@ -58,7 +58,7 @@ def test_plugin_posts_events(plugin):
         mock_post.assert_called_once()
         args, kwargs = mock_post.call_args
         assert kwargs["json"]["event"] == CoreEvents.RUN_START
-        assert kwargs["json"]["data"]["scenario"] == "test_scen"
+        assert kwargs["json"]["data"]["id"] == "test_scen"
 
 
 def test_plugin_disables_on_failure(plugin):

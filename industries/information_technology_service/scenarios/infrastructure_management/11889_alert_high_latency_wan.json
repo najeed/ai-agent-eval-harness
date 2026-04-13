@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitoring - High Latency on WAN Link",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11889-alert-high-latency-wan"
   },
   "description": "An RMM alert indicates high latency on the primary WAN link for a client's office.",
   "industry": "Information Technology Service",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Employee Termination",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10725-iam-user-deprovisioning"
   },
   "description": "An IAM analyst must immediately deprovision all access for an employee who has been terminated.",
   "industry": "Cybersecurity",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Root Cause Analysis (Fishbone Diagram)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00193-root-cause-analysis-fishbone"
   },
   "description": "For a stated problem ('Decline in Product Quality'), an agent must create a Fishbone (Ishikawa) diagram to brainstorm potential causes.",
   "industry": "Consulting",

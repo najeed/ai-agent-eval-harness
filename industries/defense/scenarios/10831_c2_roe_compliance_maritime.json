@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Maritime Interdiction ROE Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10831-c2-roe-compliance-maritime"
   },
   "description": "A warship commander needs to determine if they are authorized to board a vessel suspected of violating sanctions based on the current ROE.",
   "industry": "Defense",

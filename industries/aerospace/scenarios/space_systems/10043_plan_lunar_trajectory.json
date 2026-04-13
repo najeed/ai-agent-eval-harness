@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan a Lunar Mission Trajectory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10043-plan-lunar-trajectory"
   },
   "description": "A mission designer needs to plot a fuel-efficient trajectory for a robotic lander traveling from Earth orbit to a specific landing site on the Moon.",
   "industry": "Aerospace",

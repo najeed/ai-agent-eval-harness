@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct an EMI Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10089-conduct-electromagnetic-interference-test"
   },
   "description": "Engineers must test an aircraft in an anechoic chamber to ensure its electronic systems do not interfere with each other and are not susceptible to external radio frequencies.",
   "industry": "Aerospace",

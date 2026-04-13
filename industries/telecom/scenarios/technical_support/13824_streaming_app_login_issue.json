@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshooting - Streaming App Login",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13824-streaming-app-login-issue"
   },
   "description": "A customer cannot log in to a partner streaming app (e.g., Netflix) that is included with their plan.",
   "industry": "Telecom",

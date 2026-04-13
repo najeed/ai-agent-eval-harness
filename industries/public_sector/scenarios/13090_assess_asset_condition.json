@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assess the Condition of a Public Asset",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13090-assess-asset-condition"
   },
   "description": "An engineer is performing a scheduled condition assessment of a city bridge.",
   "industry": "Public Sector",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deployment - Replace Aging Network Switch",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11848-deployment-replace-switch"
   },
   "description": "A project involves replacing an old, out-of-warranty network switch with a new one during a weekend maintenance window.",
   "industry": "Information Technology Service",

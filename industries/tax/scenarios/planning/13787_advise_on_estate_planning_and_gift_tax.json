@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advise on Estate Planning and Gift Tax",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13787-advise-on-estate-planning-and-gift-tax"
   },
   "description": "A wealthy individual wants to gift money to their children and grandchildren and needs to understand the gift tax rules.",
   "industry": "Tax",

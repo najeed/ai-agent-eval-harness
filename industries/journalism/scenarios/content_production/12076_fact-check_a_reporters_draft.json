@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Fact-Check a Reporter's Draft",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12076-fact-check-a-reporters-draft"
   },
   "description": "An editor or dedicated fact-checker must review a reporter's completed draft to verify every factual statement.",
   "industry": "Journalism",

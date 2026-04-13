@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About Lost Item at Attraction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13970-inquire-about-lost-item-at-attraction"
   },
   "description": "A visitor calls a theme park's guest services to report a lost camera.",
   "industry": "Tourism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Geotechnical Survey Data Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11120-geotechnical-survey-analysis"
   },
   "description": "A project engineer needs to analyze a geotechnical survey report to determine foundation requirements for wind turbines.",
   "industry": "Energy",

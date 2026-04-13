@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check if Vehicle is Affected by a Recall",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10419-check-vin-for-recall"
   },
   "description": "A customer heard about a recall on the news and wants to check if their specific vehicle is affected.",
   "industry": "Automotive",

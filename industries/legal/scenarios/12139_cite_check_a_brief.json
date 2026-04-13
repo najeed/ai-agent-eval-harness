@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cite-Check a Legal Brief",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12139-cite-check-a-brief"
   },
   "description": "A junior paralegal must cite-check a brief before it is filed, ensuring all case citations are in the correct format (e.g., Bluebook) and accurately state the cited proposition.",
   "industry": "Legal",

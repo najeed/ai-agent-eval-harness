@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Trade Settlement Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11113-trade-settlement-dispute"
   },
   "description": "The settlements team has found a discrepancy between their records and a counterparty's invoice for a block of energy traded last month.",
   "industry": "Energy",

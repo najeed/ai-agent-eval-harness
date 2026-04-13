@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Community Solar Billing Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14209-community-solar-billing-inquiry"
   },
   "description": "A customer enrolled in a community solar program is calling to understand the credits on their bill.",
   "industry": "Utilities",

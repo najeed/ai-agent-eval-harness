@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Solar Farm Generation Forecast",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11106-solar-generation-forecast"
   },
   "description": "An operator needs an accurate 48-hour power generation forecast for a 100 MW solar farm.",
   "industry": "Energy",

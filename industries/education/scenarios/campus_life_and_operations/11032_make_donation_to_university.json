@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Alumnus Makes a Donation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11032-make-donation-to-university"
   },
   "description": "An alumnus calls the development office to make a credit card donation to their former department.",
   "industry": "Education",

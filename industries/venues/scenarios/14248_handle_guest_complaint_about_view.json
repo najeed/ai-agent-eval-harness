@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Guest Complaint About Obstructed View",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14248-handle-guest-complaint-about-view"
   },
   "description": "A guest complains that their view of the stage is partially obstructed by a large speaker, which was not disclosed when they bought the ticket.",
   "industry": "Venues",

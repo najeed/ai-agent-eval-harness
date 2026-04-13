@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "LMS Assignment Submission Error",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11021-lms-assignment-submission-error"
   },
   "description": "A student is receiving an error message when trying to upload their assignment to the LMS.",
   "industry": "Education",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform SAE Reconciliation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12844-perform-sae-reconciliation"
   },
   "description": "A data manager and a safety specialist must reconcile Serious Adverse Events (SAEs) between the clinical database and the safety database to ensure consistency.",
   "industry": "Pharmaceuticals and Life Sciences",

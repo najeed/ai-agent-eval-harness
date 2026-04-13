@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Identify Slow-Moving Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12208-identify-slow-moving-inventory"
   },
   "description": "An inventory analyst needs to run a report to identify products that have not sold in the last 180 days.",
   "industry": "Logistics and Warehousing",

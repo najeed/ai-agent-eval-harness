@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Daily Operations Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12953-generate-daily-operations-report"
   },
   "description": "At the end of a shift, the operations supervisor needs to generate a report summarizing the day's activities.",
   "industry": "Ports",

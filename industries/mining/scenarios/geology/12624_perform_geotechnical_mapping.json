@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Geotechnical Face Mapping",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12624-perform-geotechnical-mapping"
   },
   "description": "A geotechnical engineer maps the structural features (e.g., joints, faults) on a newly exposed pit wall or underground tunnel face.",
   "industry": "Mining",

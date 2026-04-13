@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create an Electronic Informed Consent (eConsent) Form",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12874-create-econsent-form"
   },
   "description": "A clinical operations manager needs to convert a paper informed consent form into an interactive electronic version for a new trial.",
   "industry": "Pharmaceuticals and Life Sciences",

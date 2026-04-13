@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Airworthiness Directive (AD) Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10021-check-airworthiness-directive-compliance"
   },
   "description": "An auditor needs to verify that a specific aircraft is in compliance with a new FAA airworthiness directive.",
   "industry": "Aerospace",

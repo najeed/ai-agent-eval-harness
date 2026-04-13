@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Occupational Noise Survey",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12661-conduct-noise-survey"
   },
   "description": "An occupational hygienist conducts a noise survey in the processing plant to ensure workers are not exposed to harmful noise levels.",
   "industry": "Mining",

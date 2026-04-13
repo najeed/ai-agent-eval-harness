@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Employee Requests Time Off",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11057-request-time-off"
   },
   "description": "A staff member wants to request vacation time using the HR portal.",
   "industry": "Education",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Forecast Campaign Reach",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12420-forecast-campaign-reach"
   },
   "description": "A media planner needs to forecast the potential reach of a Facebook campaign with a given budget and target audience.",
   "industry": "Marketing and Advertising",

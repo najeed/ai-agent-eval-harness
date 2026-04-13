@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Broadcast Sponsorship Graphics",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13622-manage-broadcast-sponsorship-graphics"
   },
   "description": "During a broadcast, an agent needs to display a sponsored graphic (e.g., 'The Halftime Show, brought to you by...') at the correct time.",
   "industry": "Sports",

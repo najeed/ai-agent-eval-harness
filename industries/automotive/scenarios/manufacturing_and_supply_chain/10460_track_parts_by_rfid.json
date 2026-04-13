@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Engine Pallet via RFID",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10460-track-parts-by-rfid"
   },
   "description": "A logistics manager needs to find the exact location of a specific pallet of engines within the factory.",
   "industry": "Automotive",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Compare Current Schedule to Baseline",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10676-compare-schedule-to-baseline"
   },
   "description": "A PM wants to understand the project's schedule variance by comparing the current schedule to the original baseline schedule.",
   "industry": "Construction",

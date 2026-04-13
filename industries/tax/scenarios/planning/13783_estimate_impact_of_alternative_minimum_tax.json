@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Estimate Impact of Alternative Minimum Tax (AMT)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13783-estimate-impact-of-alternative-minimum-tax"
   },
   "description": "A high-income taxpayer with significant itemized deductions wants to know if they will be subject to the AMT.",
   "industry": "Tax",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to Backup Withholding Notice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13790-respond-to-backup-withholding-notice"
   },
   "description": "A business receives a notice from the IRS (CP2100) indicating that a contractor's name and TIN on a 1099-NEC do not match IRS records, and the business may need to start backup withholding.",
   "industry": "Tax",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Anti-Money Laundering (AML) Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10376-audit-anti-money-laundering-program"
   },
   "description": "For a financial institution, a compliance auditor tests the AML program.",
   "industry": "Audit",

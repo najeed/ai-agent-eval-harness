@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply for On-Campus Housing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11029-apply-for-on-campus-housing"
   },
   "description": "A newly admitted student wants to apply for on-campus housing for their first year.",
   "industry": "Education",

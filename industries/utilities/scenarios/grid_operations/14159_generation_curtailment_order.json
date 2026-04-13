@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue Generation Curtailment Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14159-generation-curtailment-order"
   },
   "description": "Due to low demand and high solar generation, a system operator needs to curtail a large solar farm to prevent over-generation.",
   "industry": "Utilities",

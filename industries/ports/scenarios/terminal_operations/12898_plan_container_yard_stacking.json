@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Container Yard Stacking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12898-plan-container-yard-stacking"
   },
   "description": "A vessel is due to discharge 500 containers. The yard planner must pre-plan the optimal stacking locations for them.",
   "industry": "Ports",

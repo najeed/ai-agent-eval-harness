@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Unblock Card After False Fraud Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11259-unblock-card-after-fraud-alert"
   },
   "description": "A customer's card was blocked due to a suspected fraudulent transaction which the customer confirms was legitimate.",
   "industry": "Finance",

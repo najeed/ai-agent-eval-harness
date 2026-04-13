@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Quantitative Risk Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10794-grc-risk-assessment-quantitative"
   },
   "description": "An analyst must perform a quantitative risk assessment for a potential data breach, calculating the potential financial loss.",
   "industry": "Cybersecurity",

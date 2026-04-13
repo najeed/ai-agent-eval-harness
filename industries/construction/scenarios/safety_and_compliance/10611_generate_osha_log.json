@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Monthly OSHA 300 Log",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10611-generate-osha-log"
   },
   "description": "A safety manager needs to generate the OSHA 300 log of work-related injuries and illnesses for the previous month.",
   "industry": "Construction",

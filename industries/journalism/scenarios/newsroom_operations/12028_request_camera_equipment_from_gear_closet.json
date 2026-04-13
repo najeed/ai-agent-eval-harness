@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Camera Equipment from Gear Closet",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12028-request-camera-equipment-from-gear-closet"
   },
   "description": "A video journalist needs to check out a specific camera, lens, and microphone for an upcoming shoot.",
   "industry": "Journalism",

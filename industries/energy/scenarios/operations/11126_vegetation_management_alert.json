@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Vegetation Management Alert near Transmission Line",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11126-vegetation-management-alert"
   },
   "description": "An agent analyzes satellite imagery and identifies fast-growing vegetation that could endanger a key transmission line corridor owned by the energy company.",
   "industry": "Energy",

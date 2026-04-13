@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Standard Cost Update for Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00039-inventory-costing-update"
   },
   "description": "At the beginning of the year, a cost accountant needs to update the standard costs for all manufactured products based on new raw material prices and labor rates.",
   "industry": "Accounting",

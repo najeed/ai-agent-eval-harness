@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor CCTV for Suspicious Activity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14255-monitor-cctv-for-suspicious-activity"
   },
   "description": "A security operator watching the CCTV monitors notices an individual leaving a backpack unattended in a high-traffic area.",
   "industry": "Venues",

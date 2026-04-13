@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Initiate a Dealer Transfer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10472-dealer-transfer-request"
   },
   "description": "A salesperson needs to initiate a transfer of a vehicle from another dealership to fulfill a customer's request.",
   "industry": "Automotive",

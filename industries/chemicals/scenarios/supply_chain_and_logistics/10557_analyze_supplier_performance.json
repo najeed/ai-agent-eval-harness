@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Supplier Performance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10557-analyze-supplier-performance"
   },
   "description": "A procurement manager needs to generate a quarterly performance scorecard for a key supplier, looking at on-time delivery and quality.",
   "industry": "Chemicals",

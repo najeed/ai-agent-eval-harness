@@ -47,7 +47,7 @@ def test_calculate_pass_at_k(plugin):
 
 def test_export_results_and_regression(plugin, tmp_path):
     """Verifies export and regression detection logic."""
-    summary = {"scenario_id": "test-scen", "metrics": {"pass_rate": 0.5}, "agent": "gpt-4"}
+    summary = {"id": "test-scen", "metrics": {"pass_rate": 0.5}, "agent": "gpt-4"}
 
     # 1. Export
     plugin._export_results(summary)
@@ -71,7 +71,7 @@ def test_export_results_and_regression(plugin, tmp_path):
 def test_after_evaluation_flow(plugin, tmp_path):
     """End-to-end flow of the plugin metrics calculation."""
     # Setup context
-    ctx = EvaluationContext(scenario_id="scen-1", scenario_data={}, metadata={})
+    ctx = EvaluationContext(identifier="scen-1", scenario_data={}, metadata={})
     ctx.plugin_data["agent_name"] = "gpt-tester"
 
     # Results structure: [[task_res_1, task_res_2]] (1 attempt)
@@ -90,6 +90,6 @@ def test_after_evaluation_flow(plugin, tmp_path):
     res_file = tmp_path / "results/publication_results.jsonl"
     with open(res_file) as f:
         data = json.loads(f.read().strip())
-        assert data["scenario_id"] == "scen-1"
+        assert data["id"] == "scen-1"
         assert data["metrics"]["pass_rate"] == 1.0
         assert data["metrics"]["avg_latency"] == 1.2

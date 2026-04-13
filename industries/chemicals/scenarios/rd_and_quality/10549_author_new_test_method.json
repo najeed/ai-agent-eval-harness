@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Author a New Analytical Test Method",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10549-author-new-test-method"
   },
   "description": "R&D has developed a new way to test for an impurity. A lab manager must formally document and approve this method in the LIMS.",
   "industry": "Chemicals",

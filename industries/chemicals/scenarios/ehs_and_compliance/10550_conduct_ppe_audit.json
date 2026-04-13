@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct PPE Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10550-conduct-ppe-audit"
   },
   "description": "An EHS specialist is conducting a planned audit of a production area to ensure all employees are using the correct Personal Protective Equipment (PPE).",
   "industry": "Chemicals",

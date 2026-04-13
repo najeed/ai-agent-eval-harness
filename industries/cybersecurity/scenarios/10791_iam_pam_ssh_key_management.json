@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "SSH Key Management",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10791-iam-pam-ssh-key-management"
   },
   "description": "An analyst must onboard a developer's SSH key into a PAM system to provide audited, temporary access to a production server.",
   "industry": "Cybersecurity",

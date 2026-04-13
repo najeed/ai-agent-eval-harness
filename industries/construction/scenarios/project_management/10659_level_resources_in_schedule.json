@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Level Resources to Smooth Workload",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10659-level-resources-in-schedule"
   },
   "description": "A PM uses resource leveling to resolve over-allocations by delaying non-critical tasks to smooth out the workload for the carpentry crew.",
   "industry": "Construction",

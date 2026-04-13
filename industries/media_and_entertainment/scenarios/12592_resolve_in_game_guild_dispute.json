@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve In-Game Guild Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12592-resolve-in-game-guild-dispute"
   },
   "description": "The leader of a guild (a player group) reports that a disruptive member is stealing from the shared guild bank.",
   "industry": "Media and Entertainment",

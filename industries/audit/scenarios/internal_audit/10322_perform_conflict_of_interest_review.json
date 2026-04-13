@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Conflict of Interest Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10322-perform-conflict-of-interest-review"
   },
   "description": "An auditor reviews vendor data to identify potential conflicts of interest, such as employees also being vendors.",
   "industry": "Audit",

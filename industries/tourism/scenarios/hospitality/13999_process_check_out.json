@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Standard Guest Check-out",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13999-process-check-out"
   },
   "description": "A guest is at the front desk and wishes to check out of their room.",
   "industry": "Tourism",

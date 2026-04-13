@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an EDI 850 Purchase Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12229-process-edi-850-order"
   },
   "description": "An EDI 850 (Purchase Order) document is received from a major retail partner and must be automatically processed.",
   "industry": "Logistics and Warehousing",

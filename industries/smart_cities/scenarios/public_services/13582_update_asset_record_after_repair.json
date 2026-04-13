@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Asset Record After Repair",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13582-update-asset-record-after-repair"
   },
   "description": "A maintenance crew has just repaired a broken water pump. An operator must update the asset's records.",
   "industry": "Smart Cities",

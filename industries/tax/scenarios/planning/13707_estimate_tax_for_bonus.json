@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Estimate Tax for a Bonus",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13707-estimate-tax-for-bonus"
   },
   "description": "An employee is receiving a large bonus and wants to know how much they should have withheld for taxes to avoid a surprise bill.",
   "industry": "Tax",

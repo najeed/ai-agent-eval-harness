@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Design an Avionics System Architecture",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10042-design-avionics-system"
   },
   "description": "A systems engineer is designing the architecture for a new integrated avionics suite, including flight displays, flight management systems, and communication radios.",
   "industry": "Aerospace",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Container Demurrage Charges",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12987-track-demurrage-charges"
   },
   "description": "An import container has been sitting in the yard beyond its free time allowance. The system must track and bill the storage charges (demurrage).",
   "industry": "Ports",

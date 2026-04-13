@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "EV Battery Health Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10498-ev-battery-health-check"
   },
   "description": "An EV owner is concerned about battery degradation and wants to know its current state of health.",
   "industry": "Automotive",

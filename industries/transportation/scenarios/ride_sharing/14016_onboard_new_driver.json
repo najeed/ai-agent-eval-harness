@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboard a New Driver",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14016-onboard-new-driver"
   },
   "description": "A prospective driver has submitted an application. An agent must process it and activate the driver's account.",
   "industry": "Transportation",

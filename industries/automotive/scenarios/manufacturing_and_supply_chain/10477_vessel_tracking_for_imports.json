@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track an Overseas Vessel with Parts",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10477-vessel-tracking-for-imports"
   },
   "description": "A logistics manager needs to track an ocean freighter carrying a large shipment of transmissions from a supplier in Germany.",
   "industry": "Automotive",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Rush Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14339-handle-rush-order"
   },
   "description": "A customer places a last-minute rush order and needs it to ship today.",
   "industry": "Wholesale",

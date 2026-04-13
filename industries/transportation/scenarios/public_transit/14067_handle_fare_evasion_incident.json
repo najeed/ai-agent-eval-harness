@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Fare Evasion Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14067-handle-fare-evasion-incident"
   },
   "description": "A fare inspector finds a passenger on a train without a valid ticket. The inspector must issue a citation.",
   "industry": "Transportation",

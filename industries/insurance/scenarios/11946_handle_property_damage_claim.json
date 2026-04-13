@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Property Damage Claim from a Third Party",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11946-handle-property-damage-claim"
   },
   "description": "A person claims your insured driver backed into their car in a parking lot and is filing a claim against your insured's policy.",
   "industry": "Insurance",

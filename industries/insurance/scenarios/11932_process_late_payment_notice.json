@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Late Payment Notice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11932-process-late-payment-notice"
   },
   "description": "A customer's premium payment is overdue, and the system needs to send a late payment/cancellation notice.",
   "industry": "Insurance",

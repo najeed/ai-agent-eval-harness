@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a Rental Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13268-respond-to-rental-inquiry"
   },
   "description": "A prospective tenant has inquired about a vacant unit via a rental website. The agent must respond and encourage them to apply.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Home Internet - Setup New Router",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13826-setup-new-router"
   },
   "description": "A customer bought a new router and needs help setting it up with their existing modem.",
   "industry": "Telecom",

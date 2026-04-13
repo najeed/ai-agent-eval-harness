@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Streaming Subscriber Billing Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12498-subscriber-billing-dispute"
   },
   "description": "A subscriber claims they were incorrectly billed after downgrading their streaming plan.",
   "industry": "Media and Entertainment",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Vehicle Customization Request (Vinyl Wrap)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10489-vehicle-customization-request"
   },
   "description": "A customer wants to purchase a new car but wants a custom vinyl wrap applied before delivery.",
   "industry": "Automotive",

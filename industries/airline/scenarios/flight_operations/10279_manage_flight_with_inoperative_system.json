@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Dispatch Flight with an MEL Item",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10279-manage-flight-with-inoperative-system"
   },
   "description": "A flight is departing with an inoperative system under the MEL. The dispatcher must ensure all operational restrictions are followed.",
   "industry": "Airline",

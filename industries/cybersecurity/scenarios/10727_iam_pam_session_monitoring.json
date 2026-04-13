@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Privileged Session Monitoring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10727-iam-pam-session-monitoring"
   },
   "description": "A security analyst must review a recorded session of a contractor who used a privileged account to access a critical server.",
   "industry": "Cybersecurity",

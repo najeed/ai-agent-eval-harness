@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Multi-Resource Appointment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11315-schedule-multi-resource-appointment"
   },
   "description": "A patient needs an appointment that requires both a specific provider and a special piece of equipment (e.g., an ultrasound machine) to be available at the same time.",
   "industry": "Healthcare",

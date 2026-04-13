@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Variable Rate Seeding Prescription for Soybeans",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10105-variable-rate-seeding-soybeans"
   },
   "description": "A farmer wants to create a variable rate seeding prescription for a soybean field based on historical yield data and soil type zones.",
   "industry": "Agriculture",

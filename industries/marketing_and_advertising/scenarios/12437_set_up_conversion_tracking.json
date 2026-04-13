@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up Conversion Tracking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12437-set-up-conversion-tracking"
   },
   "description": "For a new website, a marketer needs to set up conversion tracking to measure form submissions.",
   "industry": "Marketing and Advertising",

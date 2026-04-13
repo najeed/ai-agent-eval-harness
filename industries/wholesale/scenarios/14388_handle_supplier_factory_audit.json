@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Supplier Factory Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14388-handle-supplier-factory-audit"
   },
   "description": "As part of a corporate responsibility program, a company needs to conduct an audit of a new supplier's factory.",
   "industry": "Wholesale",

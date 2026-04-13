@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Security for a VIP Visit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13585-manage-security-for-a-vip-visit"
   },
   "description": "A foreign dignitary is visiting. An operator must monitor their motorcade's route and ensure its security.",
   "industry": "Smart Cities",

@@ -8,7 +8,7 @@ The Finance sector is the foundational "Anchor" for the AgentV engine, providing
 ## 📊 Status: **HARDENED**
 
 - **Architecture**: SEC EDGAR & FRED Multi-Source Layer.
-- **Verification**: 100% Parity with authoritative sources.
+- **Verification**: 100% Parity with sources.
 
 ## 📡 Data Sources
 
@@ -26,7 +26,7 @@ Finance-specific records are normalized to the `StandardSchema` with these key m
 
 - `entity_name`: Company (e.g., "Apple Inc.") or Country.
 - `metric`: `total_assets`, `net_income`, `gdp_growth`, or `credit_risk_score`.
-- `cik`: (SEC Only) Central Index Key for authoritative mapping.
+- `cik`: (SEC Only) Central Index Key for mapping.
 - `value`: Precise numerical reading.
 
 ---

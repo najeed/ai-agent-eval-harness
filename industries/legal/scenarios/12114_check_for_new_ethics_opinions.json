@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check for New Ethics Opinions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12114-check-for-new-ethics-opinions"
   },
   "description": "A law firm's ethics counsel needs to check for any new ethics opinions issued by the state bar association in the last month.",
   "industry": "Legal",

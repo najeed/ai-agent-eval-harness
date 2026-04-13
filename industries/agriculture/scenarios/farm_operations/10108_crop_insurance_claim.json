@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File a Crop Insurance Claim for Hail Damage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10108-crop-insurance-claim"
   },
   "description": "A farmer needs to file a crop insurance claim after a severe hailstorm damaged their corn crop.",
   "industry": "Agriculture",

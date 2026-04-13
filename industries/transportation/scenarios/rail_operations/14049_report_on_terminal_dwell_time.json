@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report on Terminal Dwell Time",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14049-report-on-terminal-dwell-time"
   },
   "description": "A manager wants to analyze the average time railcars spend in a specific yard (dwell time) to identify inefficiencies.",
   "industry": "Transportation",

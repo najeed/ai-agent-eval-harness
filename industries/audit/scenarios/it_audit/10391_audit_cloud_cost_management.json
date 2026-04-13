@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Cloud Cost Management (FinOps)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10391-audit-cloud-cost-management"
   },
   "description": "An IT auditor reviews the company's management of its cloud computing costs.",
   "industry": "Audit",

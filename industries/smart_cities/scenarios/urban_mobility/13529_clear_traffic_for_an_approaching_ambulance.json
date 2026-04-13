@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Clear Traffic for an Approaching Ambulance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13529-clear-traffic-for-an-approaching-ambulance"
   },
   "description": "An ambulance is transporting a critical patient and is stuck in traffic. An operator must create a 'green wave' by adjusting traffic lights.",
   "industry": "Smart Cities",

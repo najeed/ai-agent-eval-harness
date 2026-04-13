@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Bounced Rent Check (NSF)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13181-handle-nsf-check"
   },
   "description": "A tenant's rent check has been returned for Non-Sufficient Funds (NSF). The PM must take corrective action.",
   "industry": "Real Estate",

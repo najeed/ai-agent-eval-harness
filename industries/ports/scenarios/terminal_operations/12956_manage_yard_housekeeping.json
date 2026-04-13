@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Yard Housekeeping",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12956-manage-yard-housekeeping"
   },
   "description": "To improve efficiency, a planner needs to consolidate containers from several half-empty yard blocks into one.",
   "industry": "Ports",

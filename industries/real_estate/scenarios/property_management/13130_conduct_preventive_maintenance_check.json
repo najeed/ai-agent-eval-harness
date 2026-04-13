@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Semi-Annual Preventive Maintenance Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13130-conduct-preventive-maintenance-check"
   },
   "description": "The PM needs to schedule and document a semi-annual preventive maintenance inspection for a property.",
   "industry": "Real Estate",

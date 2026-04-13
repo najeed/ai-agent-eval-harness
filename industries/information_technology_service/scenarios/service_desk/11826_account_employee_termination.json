@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Account - Employee Termination",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11826-account-employee-termination"
   },
   "description": "A client submits an urgent request to offboard a terminated employee, disabling all access immediately.",
   "industry": "Information Technology Service",

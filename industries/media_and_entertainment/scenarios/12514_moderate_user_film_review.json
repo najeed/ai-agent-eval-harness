@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Moderate User-Submitted Film Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12514-moderate-user-film-review"
   },
   "description": "A user submits a film review that has been automatically flagged for containing hate speech.",
   "industry": "Media and Entertainment",

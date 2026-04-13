@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Redeployment Customs Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10898-logistics-redeployment-customs"
   },
   "description": "A logistics officer must ensure all equipment and personnel baggage being redeployed complies with customs regulations of the home country.",
   "industry": "Defense",

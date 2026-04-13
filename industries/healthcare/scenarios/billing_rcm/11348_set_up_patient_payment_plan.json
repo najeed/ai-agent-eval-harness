@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up a Patient Payment Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11348-set-up-patient-payment-plan"
   },
   "description": "A patient calls with a large outstanding balance and is unable to pay it all at once. They want to set up a payment plan.",
   "industry": "Healthcare",

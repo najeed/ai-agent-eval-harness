@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Correlate Well Logs",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12717-well-log-correlation"
   },
   "description": "A geologist correlates gamma ray and resistivity logs from a new well with logs from nearby offset wells to understand the stratigraphy.",
   "industry": "Oil and Gas",

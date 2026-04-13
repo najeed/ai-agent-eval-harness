@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Final Assembly Quality Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10037-perform-final-assembly-quality-check"
   },
   "description": "Before an aircraft rolls out of the factory, a quality inspector must perform a final walk-around inspection to check for any defects.",
   "industry": "Aerospace",

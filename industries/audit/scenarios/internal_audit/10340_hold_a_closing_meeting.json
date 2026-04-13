@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Hold an Audit Closing Meeting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10340-hold-a-closing-meeting"
   },
   "description": "The audit team holds a closing meeting with business unit management to discuss the audit findings before the final report is issued.",
   "industry": "Audit",

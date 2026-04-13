@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Order and Generate Pick List",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14314-process-order-and-generate-pick-list"
   },
   "description": "A sales order has been confirmed and needs to be processed and sent to the warehouse for fulfillment.",
   "industry": "Wholesale",

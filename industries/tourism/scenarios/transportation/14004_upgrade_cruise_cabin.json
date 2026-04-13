@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Upgrade a Cruise Cabin",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14004-upgrade-cruise-cabin"
   },
   "description": "A passenger with an existing cruise booking wants to upgrade from an interior cabin to a balcony cabin.",
   "industry": "Tourism",

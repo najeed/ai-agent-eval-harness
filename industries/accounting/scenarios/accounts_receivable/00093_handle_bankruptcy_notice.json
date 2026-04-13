@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Customer Bankruptcy Notice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00093-handle-bankruptcy-notice"
   },
   "description": "The company receives a notice that a customer with a large outstanding balance has filed for bankruptcy.",
   "industry": "Accounting",

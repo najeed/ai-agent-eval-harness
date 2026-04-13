@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve a Satellite Anomaly",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10013-resolve-satellite-anomaly"
   },
   "description": "A satellite's telemetry shows it has unexpectedly entered safe mode. An operator must diagnose the cause and attempt to restore normal operations.",
   "industry": "Aerospace",

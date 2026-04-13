@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create New Asset in Maintenance System",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11429-create-asset-in-system"
   },
   "description": "A new pump has been installed. It needs to be created as a new asset in the maintenance management system.",
   "industry": "Heavy Industries",

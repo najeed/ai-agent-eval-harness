@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Account - Mobile Device Setup (MDM)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11876-account-mobile-device-setup-mdm"
   },
   "description": "A new executive needs their new company-issued iPhone set up and enrolled in Mobile Device Management (MDM).",
   "industry": "Information Technology Service",

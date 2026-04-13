@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Counterparty Credit Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11129-counterparty-credit-check"
   },
   "description": "Before executing a long-term PPA, a risk analyst must perform a credit check on the potential corporate off-taker.",
   "industry": "Energy",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Policy Renewal Notice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11977-policy-renewal-notice"
   },
   "description": "An auto policy is coming up for renewal, and the system needs to generate and send the renewal offer.",
   "industry": "Insurance",

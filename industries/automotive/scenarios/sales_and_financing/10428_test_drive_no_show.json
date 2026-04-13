@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Follow Up on Test Drive No-Show",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10428-test-drive-no-show"
   },
   "description": "A customer who scheduled a test drive did not show up. A salesperson needs to follow up.",
   "industry": "Automotive",

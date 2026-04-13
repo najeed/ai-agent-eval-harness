@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Work a Restocking Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13472-work-a-restocking-report"
   },
   "description": "A system-generated report shows items on the sales floor that have fallen below their presentation minimum. An associate needs to restock them.",
   "industry": "Retail",

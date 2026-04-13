@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Log a Lost Item",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14230-log-lost-item"
   },
   "description": "A guest calls the day after a concert to report that they lost their wallet at the venue.",
   "industry": "Venues",

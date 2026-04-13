@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Fan Loyalty Challenge",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13686-create-a-fan-loyalty-challenge"
   },
   "description": "A marketing manager wants to create a challenge in the mobile app where fans earn extra loyalty points for attending three consecutive home games.",
   "industry": "Sports",

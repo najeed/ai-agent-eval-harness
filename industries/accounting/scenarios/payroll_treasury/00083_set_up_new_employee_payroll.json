@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up a New Employee in the Payroll System",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00083-set-up-new-employee-payroll"
   },
   "description": "A new employee has been hired. The payroll specialist needs to add them to the payroll system before the next pay run.",
   "industry": "Accounting",

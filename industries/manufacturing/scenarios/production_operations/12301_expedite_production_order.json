@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Expedite a Production Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12301-expedite-production-order"
   },
   "description": "A production manager needs to expedite a specific work order to meet a new customer deadline.",
   "industry": "Manufacturing",

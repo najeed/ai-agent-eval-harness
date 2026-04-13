@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Data Backup and Recovery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10357-audit-data-backup-and-recovery"
   },
   "description": "An IT auditor tests the company's data backup and recovery process.",
   "industry": "Audit",

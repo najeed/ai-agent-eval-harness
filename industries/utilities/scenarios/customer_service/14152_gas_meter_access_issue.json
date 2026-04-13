@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Gas Meter Access Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14152-gas-meter-access-issue"
   },
   "description": "A meter reader was unable to access a customer's gas meter due to a locked gate. The system needs to notify the customer and schedule a new appointment.",
   "industry": "Utilities",

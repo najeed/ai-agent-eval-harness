@@ -40,7 +40,7 @@ def test_record_playground_parity():
 @patch("eval_runner.engine.run_evaluation")
 def test_handle_run_env_propagation(mock_eval, mock_load, tmp_path):
     """Verifies run_scenario correctly sets environment variables like evaluate does."""
-    mock_load.return_value = {"scenario_id": "test"}
+    mock_load.return_value = {"id": "test"}
     mock_eval.return_value = []
 
     args = MagicMock()

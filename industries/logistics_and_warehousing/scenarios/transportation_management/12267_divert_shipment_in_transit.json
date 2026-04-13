@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Divert a Shipment In-Transit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12267-divert-shipment-in-transit"
   },
   "description": "A customer needs to change the final destination of a shipment that is already on its way.",
   "industry": "Logistics and Warehousing",

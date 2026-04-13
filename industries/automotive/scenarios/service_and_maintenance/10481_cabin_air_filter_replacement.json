@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Recommend Cabin Air Filter Replacement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10481-cabin-air-filter-replacement"
   },
   "description": "During a routine service, a technician notes the cabin air filter is dirty and recommends replacement.",
   "industry": "Automotive",

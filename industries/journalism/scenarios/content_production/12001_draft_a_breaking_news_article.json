@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft a Breaking News Article",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12001-draft-a-breaking-news-article"
   },
   "description": "A major, unexpected event has occurred. A reporter must quickly write a short, accurate article for immediate publication online.",
   "industry": "Journalism",

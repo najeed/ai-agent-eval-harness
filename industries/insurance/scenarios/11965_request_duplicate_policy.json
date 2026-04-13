@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Duplicate Policy Document",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11965-request-duplicate-policy"
   },
   "description": "A policyholder has misplaced their physical life insurance policy and wants a new copy.",
   "industry": "Insurance",

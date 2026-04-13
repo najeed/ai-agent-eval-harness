@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Record Patient Fall in Therapy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11377-record-patient-fall-in-therapy"
   },
   "description": "A patient falls during a physical therapy session. The therapist must document the event.",
   "industry": "Healthcare",

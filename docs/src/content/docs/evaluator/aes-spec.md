@@ -11,23 +11,23 @@ An AES scenario is a JSON document that defines the environment, the tasks, and 
 
 ```json
 {
-  "scenario_id": "finance_fraud_01",
-  "industry": "Finance",
+  "aes_version": 1.4,
   "metadata": {
-    "difficulty": "High",
-    "required_engine": "v1.4.1"
+    "id": "finance-fraud-v1",
+    "name": "Finance Fraud Detection",
+    "compliance_level": "Standard"
   },
-  "tools": ["industrial_db", "bank_api"],
-  "tasks": [
-    {
-      "id": "t1",
-      "task": "Analyze account #1234 for recent fraudulent activity.",
-      "expected_outcome": "Identify unauthorized charge from 2026-04-01.",
-      "criteria": [
-        {"type": "accuracy", "threshold": 0.95}
-      ]
-    }
-  ]
+  "industry": "Finance",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "t1",
+        "task_description": "Analyze account #1234 for recent fraudulent activity.",
+        "success_criteria": [{"metric": "accuracy", "threshold": 0.95}]
+      }
+    ],
+    "edges": []
+  }
 }
 ```
 
@@ -40,7 +40,7 @@ The `spec-to-eval` command transforms Markdown PRDs into executable AES JSON. It
 ### 1. Deterministic Structural Parser
 A high-speed parser that recognizes standard enterprise Markdown patterns:
 
-- **H1 Title**: Sets the `scenario_id`.
+- **H1 Title**: Sets the `id`.
 - **Metadata Block**: `**Industry:** Finance`.
 - **Tools Section**: `## Tools` (Global tools for all tasks).
 - **Tasks Section**: `## Tasks` or `## Test Cases`.

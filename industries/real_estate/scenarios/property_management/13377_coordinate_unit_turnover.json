@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate Apartment Unit Turnover",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13377-coordinate-unit-turnover"
   },
   "description": "After a tenant moves out, a property manager must coordinate the 'turnover' process to get the unit ready for the next tenant.",
   "industry": "Real Estate",

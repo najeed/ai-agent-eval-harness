@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Citizen Report Trends",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13587-analyze-citizen-report-trends"
   },
   "description": "A city manager wants to know what the most common citizen complaints have been over the last year.",
   "industry": "Smart Cities",

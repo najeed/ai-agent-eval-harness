@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Outside Counsel Bills",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12193-review-outside-counsel-bills"
   },
   "description": "An in-house counsel needs to review invoices from an outside law firm for compliance with the company's billing guidelines.",
   "industry": "Legal",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Aircraft Systems Integration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10052-perform-systems-integration"
   },
   "description": "An integration engineer must test the interaction between the hydraulic system and the flight control system on a new aircraft.",
   "industry": "Aerospace",

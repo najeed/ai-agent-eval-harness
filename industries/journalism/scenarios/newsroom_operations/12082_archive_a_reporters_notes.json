@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Archive a Reporter's Notes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12082-archive-a-reporters-notes"
   },
   "description": "After a major investigation is published, the reporter's notes and source documents must be securely archived for legal and historical purposes.",
   "industry": "Journalism",

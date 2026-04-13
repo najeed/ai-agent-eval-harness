@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Accessorial Charge Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14074-handle-accessorial-charge-dispute"
   },
   "description": "A customer is disputing a detention charge on an invoice, claiming the driver was not detained.",
   "industry": "Transportation",

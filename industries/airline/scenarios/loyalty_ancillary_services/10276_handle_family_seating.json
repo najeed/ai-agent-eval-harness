@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Family Seating",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10276-handle-family-seating"
   },
   "description": "A family with young children is booking a flight and wants to ensure they can sit together.",
   "industry": "Airline",

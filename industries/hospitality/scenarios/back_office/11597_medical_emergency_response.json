@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a Guest Medical Emergency",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11597-medical-emergency-response"
   },
   "description": "A guest calls the front desk reporting a medical emergency (e.g., chest pains).",
   "industry": "Hospitality",

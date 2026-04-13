@@ -71,7 +71,7 @@ def test_linter_zero_tasks(tmp_path):
     p = tmp_path / "zero.json"
     data = {
         "aes_version": 1.4,
-        "scenario_id": "test_zero",
+        "id": "test_zero",
         "industry": "i",
         "description": "d",
         "complexity_level": "low",

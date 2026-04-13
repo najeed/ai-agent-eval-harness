@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboard New Customer Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10531-onboard-new-customer-account"
   },
   "description": "A new customer needs to be set up in the system, including their legal entity, billing/shipping addresses, and credit limit.",
   "industry": "Chemicals",

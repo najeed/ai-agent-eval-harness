@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct Competitor Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12397-conduct-competitor-analysis"
   },
   "description": "A strategist needs to analyze the social media presence of three key competitors to inform an upcoming campaign strategy.",
   "industry": "Marketing and Advertising",

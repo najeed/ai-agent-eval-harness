@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create an Ethical Wall",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12147-create-ethical-wall"
   },
   "description": "A firm takes on a new matter that is adverse to a former client. To avoid a conflict, the firm needs to create an 'ethical wall' to screen off the attorneys who worked on the former matter.",
   "industry": "Legal",

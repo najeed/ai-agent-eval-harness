@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Internal Network Penetration Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10706-vuln-mgmt-pen-test-network"
   },
   "description": "A penetration tester, having gained initial access to a workstation, must attempt to escalate privileges to Domain Admin.",
   "industry": "Cybersecurity",

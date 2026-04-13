@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Intermodal Gate Congestion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14045-manage-intermodal-gate-congestion"
   },
   "description": "The system detects long wait times for trucks at an intermodal terminal's entry gate. A manager must take action.",
   "industry": "Transportation",

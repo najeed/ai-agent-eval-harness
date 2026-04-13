@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Substation Cybersecurity Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14178-substation-cybersecurity-check"
   },
   "description": "A cybersecurity analyst is reviewing logs from a substation's intelligent electronic devices (IEDs) for signs of unauthorized access.",
   "industry": "Utilities",

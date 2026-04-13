@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshoot Fuel Terminal Automation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12776-troubleshoot-fuel-terminal-automation"
   },
   "description": "A truck driver at a fuel loading terminal reports that the automated system is not recognizing their access card. A support technician must troubleshoot remotely.",
   "industry": "Oil and Gas",

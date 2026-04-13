@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Solar Panel Supply Chain Traceability Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11132-solar-panel-supply-chain-check"
   },
   "description": "A compliance manager must verify that a shipment of solar panels does not use materials from regions with forced labor concerns, as per company policy.",
   "industry": "Energy",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Ticket Transfer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14308-process-ticket-transfer"
   },
   "description": "A ticket holder wants to transfer two of their four tickets to a friend.",
   "industry": "Venues",

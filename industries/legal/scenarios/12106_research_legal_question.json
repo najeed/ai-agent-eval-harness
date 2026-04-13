@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Research a Specific Legal Question",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12106-research-legal-question"
   },
   "description": "An associate needs to research case law to answer a specific question: 'What constitutes 'reasonable accommodation' for a religious practice under Title VII in the 9th Circuit?'",
   "industry": "Legal",

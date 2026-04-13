@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Company Info for Due Diligence",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00177-find-company-info-for-due-diligence"
   },
   "description": "For a due diligence project, an agent must compile a background report on a target company.",
   "industry": "Consulting",

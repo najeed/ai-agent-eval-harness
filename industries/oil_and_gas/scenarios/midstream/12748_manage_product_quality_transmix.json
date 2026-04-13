@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Product Interface (Transmix)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12748-manage-product-quality-transmix"
   },
   "description": "When two different products (e.g., gasoline and diesel) are sent back-to-back in a pipeline, a mixture called 'transmix' is created at the interface. An operator must manage this.",
   "industry": "Oil and Gas",

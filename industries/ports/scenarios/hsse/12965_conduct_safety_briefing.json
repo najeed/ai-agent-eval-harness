@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Conduct a Pre-Shift Safety Briefing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12965-conduct-safety-briefing"
   },
   "description": "A shift supervisor must conduct a daily safety briefing (toolbox talk) with their stevedoring gang before work begins.",
   "industry": "Ports",

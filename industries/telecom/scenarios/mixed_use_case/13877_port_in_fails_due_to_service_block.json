@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Port-in Fails Due to Fraud Block",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13877-port-in-fails-due-to-service-block"
   },
   "description": "A new customer's port-in request is failing. The agent discovers it's because the customer's old account has a fraud prevention block.",
   "industry": "Telecom",

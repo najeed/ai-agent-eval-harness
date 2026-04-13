@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Imported Drift: run.jsonl",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "drift-0fb797af"
   },
   "description": "Automatically imported from production trace: run.jsonl",
   "industry": "telecom",

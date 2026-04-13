@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Test Application Input Validation Controls",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10308-test-application-input-validation"
   },
   "description": "An IT auditor tests the input validation controls of a custom web application.",
   "industry": "Audit",

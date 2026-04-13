@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve a Field Query",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11476-resolve-field-query"
   },
   "description": "A construction crew has encountered an unforeseen underground obstruction and needs guidance from engineering.",
   "industry": "Heavy Industries",

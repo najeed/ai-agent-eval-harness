@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Equipment Transport Logistics",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10165-equipment-transport-logistics"
   },
   "description": "A farmer needs to move a large combine harvester between two farms and must check the route for any restrictions.",
   "industry": "Agriculture",

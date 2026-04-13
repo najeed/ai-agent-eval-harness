@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Concierge Request - Local Directions",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11560-provide-local-directions"
   },
   "description": "A guest asks for directions to a local tourist attraction.",
   "industry": "Hospitality",

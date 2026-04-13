@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Claim Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11347-check-claim-status"
   },
   "description": "A biller wants to check the status of a high-dollar claim that was submitted two weeks ago.",
   "industry": "Healthcare",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assign a Trouble Ticket at the Gate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12967-assign-trouble-ticket-at-gate"
   },
   "description": "A gate kiosk's printer stops working. The clerk needs to report the issue.",
   "industry": "Ports",

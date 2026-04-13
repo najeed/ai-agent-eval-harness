@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Compound an IV Medication",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11376-compound-an-iv-medication"
   },
   "description": "A pharmacy technician in a clean room needs to compound an intravenous (IV) medication.",
   "industry": "Healthcare",

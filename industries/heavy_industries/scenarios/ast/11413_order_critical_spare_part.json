@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Order a Critical Spare Part",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11413-order-critical-spare-part"
   },
   "description": "A critical, long-lead-time spare part (e.g., a large motor) has been used from inventory. A planner must order a replacement to maintain readiness.",
   "industry": "Heavy Industries",

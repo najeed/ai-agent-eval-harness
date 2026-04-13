@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Open Pit Slope Stability",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12615-geotechnical-slope-monitoring"
   },
   "description": "A geotechnical engineer analyzes data from a slope monitoring radar to detect any movement in the pit walls that could indicate a potential failure.",
   "industry": "Mining",

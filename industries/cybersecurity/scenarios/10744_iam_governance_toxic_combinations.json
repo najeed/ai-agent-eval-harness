@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Separation of Duties Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10744-iam-governance-toxic-combinations"
   },
   "description": "An analyst must create a Separation of Duties (SoD) policy in the IGA tool to prevent a single user from having two conflicting permissions (e.g., creating a vendor and approving a payment).",
   "industry": "Cybersecurity",

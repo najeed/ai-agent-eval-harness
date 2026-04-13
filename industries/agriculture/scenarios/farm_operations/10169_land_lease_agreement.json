@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate a Farm Land Lease Agreement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10169-land-lease-agreement"
   },
   "description": "A landowner and a farmer need to generate a simple cash rent lease agreement for a parcel of land.",
   "industry": "Agriculture",

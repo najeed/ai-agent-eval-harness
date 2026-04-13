@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Headway Adherence",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14043-manage-headway-adherence"
   },
   "description": "On a high-frequency bus route, two buses get too close together (bus bunching). A dispatcher must intervene to even out the spacing.",
   "industry": "Transportation",

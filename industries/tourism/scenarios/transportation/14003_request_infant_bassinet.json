@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request an Infant Bassinet on a Flight",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14003-request-infant-bassinet"
   },
   "description": "A passenger traveling with an infant on a long-haul flight wants to request a bassinet.",
   "industry": "Tourism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Intake for Social Services",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13004-intake-for-social-services"
   },
   "description": "A family is seeking assistance and a social worker is conducting an initial intake interview.",
   "industry": "Public Sector",

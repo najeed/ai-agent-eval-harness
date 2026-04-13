@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage the Boarding Process",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10207-manage-boarding-process"
   },
   "description": "A gate agent needs to manage the boarding process for a full flight.",
   "industry": "Airline",

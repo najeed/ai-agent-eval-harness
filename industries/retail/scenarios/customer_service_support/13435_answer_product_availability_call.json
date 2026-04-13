@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Answer Product Availability Call",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13435-answer-product-availability-call"
   },
   "description": "A customer calls the store to ask if a specific item is in stock.",
   "industry": "Retail",

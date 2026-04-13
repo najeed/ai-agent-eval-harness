@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Wastewater Lift Station Monitoring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14195-wastewater-lift-station-monitoring"
   },
   "description": "A SCADA system is monitoring a wastewater lift station for potential failures.",
   "industry": "Utilities",

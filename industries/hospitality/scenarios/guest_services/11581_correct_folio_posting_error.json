@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Correct a Folio Posting Error",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11581-correct-folio-posting-error"
   },
   "description": "A front desk agent accidentally posts a restaurant charge to the wrong room.",
   "industry": "Hospitality",

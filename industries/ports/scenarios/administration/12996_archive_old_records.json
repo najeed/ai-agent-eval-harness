@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Archive Old Operations Records",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12996-archive-old-records"
   },
   "description": "As per data retention policy, all operational records older than 7 years must be archived.",
   "industry": "Ports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Weekly Email Newsletter",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12406-create-email-newsletter"
   },
   "description": "An email marketer needs to assemble and write the content for the weekly newsletter.",
   "industry": "Marketing and Advertising",

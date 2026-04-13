@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Change Order for Added Scope",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10614-create-change-order"
   },
   "description": "The client has requested to add a patio, which was not in the original scope. A project manager must create a change order.",
   "industry": "Construction",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Re-run Property Valuation at Renewal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11987-re-run-property-valuation"
   },
   "description": "As part of a homeowner's policy renewal, the underwriter needs to run an updated replacement cost estimate for the home.",
   "industry": "Insurance",

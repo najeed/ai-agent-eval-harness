@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Consolidate Multiple Orders into One Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12328-consolidate-multiple-orders-into-one-shipment"
   },
   "description": "A logistics planner has multiple orders going to the same customer and wants to consolidate them into a single, larger shipment to save on freight costs.",
   "industry": "Manufacturing",

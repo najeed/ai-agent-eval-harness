@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Courses for Final Year",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11054-planning-courses-for-graduation"
   },
   "description": "A junior needs help from their academic advisor to plan their courses for their senior year to ensure they meet all graduation requirements.",
   "industry": "Education",

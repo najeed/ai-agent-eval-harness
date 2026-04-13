@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Electronic Batch Record for Deviations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12799-batch-record-review"
   },
   "description": "An agent must review a completed electronic batch record (eBR) for a batch of tablets, checking for any recorded deviations or out-of-specification results.",
   "industry": "Pharmaceuticals and Life Sciences",

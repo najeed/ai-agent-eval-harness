@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Places a Future Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14390-place-future-order"
   },
   "description": "A customer places an order but requests that it not be shipped until a specific date in the future.",
   "industry": "Wholesale",

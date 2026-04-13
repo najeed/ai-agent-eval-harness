@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Client Billing Guidelines",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12129-review-billing-guidelines"
   },
   "description": "Before starting work on a new matter for a large corporate client, a paralegal must review the client's specific billing guidelines to ensure compliance.",
   "industry": "Legal",

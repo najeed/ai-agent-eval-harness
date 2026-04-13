@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up Automated Investing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11262-set-up-automated-investing"
   },
   "description": "A client wants to set up an automatic monthly investment from their bank account into their portfolio.",
   "industry": "Finance",

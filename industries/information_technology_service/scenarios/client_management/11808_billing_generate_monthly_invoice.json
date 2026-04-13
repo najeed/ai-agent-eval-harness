@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Billing - Generate Monthly Recurring Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11808-billing-generate-monthly-invoice"
   },
   "description": "The finance department needs to generate and send the standard monthly recurring service invoices to all clients.",
   "industry": "Information Technology Service",

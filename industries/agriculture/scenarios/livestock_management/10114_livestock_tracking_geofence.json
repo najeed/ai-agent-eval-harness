@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Livestock Geofence Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10114-livestock-tracking-geofence"
   },
   "description": "A GPS ear tag on a beef steer sends an alert that it has breached a virtual geofence, indicating it has escaped its pasture.",
   "industry": "Agriculture",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare for a Regulatory Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12827-prepare-for-regulatory-inspection"
   },
   "description": "A quality manager is notified of an upcoming FDA inspection and must prepare the site.",
   "industry": "Pharmaceuticals and Life Sciences",

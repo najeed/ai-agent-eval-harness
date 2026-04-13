@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Brand Logo Across Platforms",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12463-update-brand-logo-across-platforms"
   },
   "description": "A company has a new logo. A brand manager needs to ensure it is updated across all social media profiles.",
   "industry": "Marketing and Advertising",

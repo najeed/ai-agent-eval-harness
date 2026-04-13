@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Scout a College Player for the Draft",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13669-scout-college-player"
   },
   "description": "A pro team is evaluating a top college player ahead of the upcoming draft.",
   "industry": "Sports",

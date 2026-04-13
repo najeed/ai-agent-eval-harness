@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Incident - VPN Disconnects Frequently",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11841-incident-vpn-disconnects"
   },
   "description": "A remote user reports their VPN connection drops every 15-20 minutes.",
   "industry": "Information Technology Service",

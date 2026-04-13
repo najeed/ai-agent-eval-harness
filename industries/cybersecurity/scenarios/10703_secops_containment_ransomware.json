@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Ransomware Containment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10703-secops-containment-ransomware"
   },
   "description": "An incident responder must contain a ransomware outbreak that is actively spreading across the network.",
   "industry": "Cybersecurity",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Information on Voting Locations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13592-provide-information-on-voting-locations"
   },
   "description": "On election day, a citizen calls the city's information line to find their assigned polling station.",
   "industry": "Smart Cities",

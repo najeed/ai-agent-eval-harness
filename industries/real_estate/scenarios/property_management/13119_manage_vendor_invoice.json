@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Vendor Invoice for Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13119-manage-vendor-invoice"
   },
   "description": "A plumbing vendor has submitted an invoice for a completed repair. The property manager must process it for payment.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Aircraft Weight and Balance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10057-manage-aircraft-weight-balance"
   },
   "description": "An engineer must track the weight of every component added to an aircraft during assembly to ensure the final weight and center of gravity are within limits.",
   "industry": "Aerospace",

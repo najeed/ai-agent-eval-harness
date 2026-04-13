@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Brand Guidelines Document",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12475-create-brand-guidelines-document"
   },
   "description": "A brand manager needs to create a comprehensive document outlining the brand's visual identity.",
   "industry": "Marketing and Advertising",

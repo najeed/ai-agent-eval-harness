@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Non-PO Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00005-process-non-po-invoice"
   },
   "description": "An invoice for a utility bill (e.g., electricity) has been received. These invoices do not have purchase orders.",
   "industry": "Accounting",

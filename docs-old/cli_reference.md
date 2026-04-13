@@ -24,8 +24,8 @@ agentv evaluate --run-id <id><dataset_path> [--attempts K] [--limit N] [--verbos
 | `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
 | `MAX_ENGINE_ATTEMPTS` | `50` | Global engine retry limit |
 | `RUN_LOG_DIR` | `runs` | Directory for execution traces |
-| `RUN_LOG_PER_RUN` | `true` | Save individual trace files per scenario |
-| `RUN_LOG_MASTER` | `true` | Consolidated trace log |
+| `RUN_LOG_PER_RUN` | `true` | Create nested vault directories (Industrial Standard). Set `false` for debugging. |
+| `RUN_LOG_MASTER` | `true` | Consolidated trace log (Master Fallback) |
 | `JUDGE_PROVIDER` | `ollama` | LLM Judge provider (`openai`, `anthropic`, `gemini`, `ollama`, `grok`) |
 | `JUDGE_MODEL` | `llama3` | Specific model for the judge (Industrial Default) |
 | `LUNA_JUDGE_TEMPERATURE`| `0.0` | Temperature for judge generation |
@@ -219,8 +219,9 @@ agentv explain --run-id <id>
 ```
 **Forensic Features:**
 - **Tiered Confidence Scoring**: Distinguishes between explicit policy violations (100%), induced system/tool errors (85%), and heuristic fallbacks (50%).
+- **Identity-Aware Diagnostic**: Anchors failure to the authoritative PBAC Identity Node (`agent_id`, `system_id`) using the **Robust Step-Back Scan**.
 - **Actionable Recommendations**: Provides targeted remediation advice (e.g., prompt refinement, tool sandbox optimization) based on the identified failure pattern.
-- **Pinpoint Diagnostics**: Identifies the exact turn (index) in the trajectory where the failure logic diverged.
+- **Root-Cause Anchoring**: Pinpoints the exact turn index in the trajectory where logic diverged, even if the manifestation happened turns later.
 
 ### `calibrate`
 Measure alignment between the LLM judge and human ground truth in a flight recorder log.

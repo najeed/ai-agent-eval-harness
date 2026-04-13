@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Managing Personnel Readiness Under Stop-Loss",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10893-logistics-personnel-readiness-deployment-stop-loss"
   },
   "description": "A unit is under 'Stop-Loss' (personnel cannot leave the military) for a deployment. A personnel officer must track the status of soldiers whose contracts would have otherwise expired.",
   "industry": "Defense",

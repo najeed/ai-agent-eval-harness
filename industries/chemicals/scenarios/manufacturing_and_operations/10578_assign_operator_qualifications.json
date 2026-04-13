@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assign Operator Qualifications",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10578-assign-operator-qualifications"
   },
   "description": "A production supervisor needs to certify that an operator is now qualified to run a specific complex process after completing their training.",
   "industry": "Chemicals",

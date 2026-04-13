@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply a Renewal Credit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11972-apply-renewal-credit"
   },
   "description": "A long-time customer with no claims is eligible for a loyalty credit on their policy renewal.",
   "industry": "Insurance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Smartboard Not Calibrating",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11074-smartboard-not-calibrating"
   },
   "description": "A professor reports that the smartboard in their classroom is not calibrated correctly, and the touch points are inaccurate.",
   "industry": "Education",

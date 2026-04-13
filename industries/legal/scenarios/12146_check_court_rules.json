@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Local Court Rules",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12146-check-court-rules"
   },
   "description": "Before filing a motion, a paralegal must check the local court rules and the specific judge's rules for any special formatting or filing requirements.",
   "industry": "Legal",

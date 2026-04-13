@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Clinical Site Monitoring Visit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12848-track-site-monitoring-visit"
   },
   "description": "A Clinical Research Associate (CRA) must plan, conduct, and report on a monitoring visit to a clinical trial site.",
   "industry": "Pharmaceuticals and Life Sciences",

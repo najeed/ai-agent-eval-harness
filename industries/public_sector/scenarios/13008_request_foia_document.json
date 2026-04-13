@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Document via FOIA",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13008-request-foia-document"
   },
   "description": "A journalist is filing a Freedom of Information Act (FOIA) request for emails from the mayor's office.",
   "industry": "Public Sector",

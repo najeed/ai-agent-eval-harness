@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Renewable Portfolio Standard (RPS) Compliance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11181-renewable-portfolio-standard-compliance"
   },
   "description": "A compliance manager for a load-serving entity needs to file an annual report demonstrating compliance with the state's RPS.",
   "industry": "Energy",

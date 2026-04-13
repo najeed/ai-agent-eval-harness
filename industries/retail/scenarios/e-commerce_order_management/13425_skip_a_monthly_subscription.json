@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Skip a Monthly Subscription",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13425-skip-a-monthly-subscription"
   },
   "description": "A customer wants to skip their next monthly subscription delivery but not cancel the subscription entirely.",
   "industry": "Retail",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan a Mars Rover Traverse",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10086-plan-rover-traverse"
   },
   "description": "A rover planner on Earth needs to plan the next day's drive for a Mars rover to a new scientific target.",
   "industry": "Aerospace",

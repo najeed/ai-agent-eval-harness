@@ -125,7 +125,7 @@ def test_run_lint_cli_directory(tmp_path, capsys):
     p.write_text(
         json.dumps(
             {
-                "scenario_id": "test",
+                "id": "test",
                 "aes_version": 1.4,
                 "description": "test",
                 "industry": "finance",

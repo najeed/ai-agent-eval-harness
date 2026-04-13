@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Rollback Failed Deployment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11744-rollback-failed-deployment"
   },
   "description": "Shortly after a new deployment, error rates spike, indicating a critical bug in the new version.",
   "industry": "Information Technology Product",

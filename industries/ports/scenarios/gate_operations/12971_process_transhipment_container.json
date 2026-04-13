@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Transhipment Container",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12971-process-transhipment-container"
   },
   "description": "A container is discharged from one vessel and will be loaded onto another vessel at the same terminal without leaving the port.",
   "industry": "Ports",

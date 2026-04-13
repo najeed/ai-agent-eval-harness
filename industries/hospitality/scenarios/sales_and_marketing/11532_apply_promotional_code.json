@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply a Promotional Code to a Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11532-apply-promotional-code"
   },
   "description": "A guest is booking online and wants to apply a promotional discount code.",
   "industry": "Hospitality",

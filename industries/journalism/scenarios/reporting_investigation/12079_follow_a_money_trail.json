@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Follow a Money Trail",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12079-follow-a-money-trail"
   },
   "description": "A reporter is investigating a politician and wants to follow a money trail from a government contract to the politician's personal finances.",
   "industry": "Journalism",

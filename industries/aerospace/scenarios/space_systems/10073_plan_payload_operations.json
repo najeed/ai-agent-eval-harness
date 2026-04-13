@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Payload Operations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10073-plan-payload-operations"
   },
   "description": "A scientist needs to plan the weekly operations for a science instrument on an orbiting satellite.",
   "industry": "Aerospace",

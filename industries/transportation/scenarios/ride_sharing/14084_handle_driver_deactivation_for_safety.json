@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Driver Deactivation for Safety Violation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14084-handle-driver-deactivation-for-safety"
   },
   "description": "A driver's background check re-run reveals a new, serious criminal conviction. Their account must be immediately deactivated.",
   "industry": "Transportation",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Reader Journey on the Website",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12077-analyze-reader-journey-on-the-website"
   },
   "description": "An analyst wants to understand the common paths readers take on the website. For example, what article do they often read after reading a story about the mayor?",
   "industry": "Journalism",

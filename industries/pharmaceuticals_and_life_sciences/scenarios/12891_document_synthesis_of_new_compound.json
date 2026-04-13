@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document Synthesis of a New Compound",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12891-document-synthesis-of-new-compound"
   },
   "description": "A medicinal chemist has synthesized a new compound and needs to document the process and register the molecule.",
   "industry": "Pharmaceuticals and Life Sciences",

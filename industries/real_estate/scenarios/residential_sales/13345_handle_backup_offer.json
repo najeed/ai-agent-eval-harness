@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Backup Offer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13345-handle-backup-offer"
   },
   "description": "A property is already under contract, but another buyer wants to submit a backup offer in case the first deal falls through.",
   "industry": "Real Estate",

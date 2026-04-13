@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Incident Timeline Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10784-secops-forensics-timeline-analysis"
   },
   "description": "An investigator must create a master timeline of an entire security breach by combining artifacts from disk, memory, and network forensics.",
   "industry": "Cybersecurity",

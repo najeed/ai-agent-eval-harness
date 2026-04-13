@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Unauthorized Person in a Restricted Area",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12952-handle-unauthorized-person"
   },
   "description": "A CCTV operator spots a person without proper PPE walking in a restricted terminal area. They must respond.",
   "industry": "Ports",

@@ -107,7 +107,7 @@ class TestScenarioLoading:
     def test_load_valid_scenario(self, tmp_path):
         """Test loading a valid scenario file."""
         # Arrange
-        scenario_data = {"scenario_id": "test", "title": "Test"}
+        scenario_data = {"id": "test", "title": "Test"}
         scenario_file = tmp_path / "test_scenario.json"
         scenario_file.write_text(json.dumps(scenario_data))
         
@@ -115,7 +115,7 @@ class TestScenarioLoading:
         result = loader.load_scenario(scenario_file)
         
         # Assert
-        assert result["scenario_id"] == "test"
+        assert result["id"] == "test"
         assert result["title"] == "Test"
     
     def test_load_nonexistent_scenario(self):
@@ -378,7 +378,7 @@ class TestScenarioValidation:
     def valid_scenario(self):
         """Provide a valid scenario for testing."""
         return {
-            "scenario_id": "test_001",
+            "id": "test_001",
             "title": "Test Scenario",
             "industry": "test",
             "description": "A test scenario",
@@ -431,7 +431,7 @@ class TestPerformance:
         """Test evaluation engine performance."""
         # Arrange
         scenario = {
-            "scenario_id": "perf_test",
+            "id": "perf_test",
             "tasks": [{"task_id": "task_1", "description": "test"}]
         }
         
@@ -447,7 +447,7 @@ class TestPerformance:
     def test_scenario_loading_performance(self, benchmark, tmp_path):
         """Test scenario loading performance."""
         # Arrange
-        scenario_data = {"scenario_id": "test", "title": "Test"}
+        scenario_data = {"id": "test", "title": "Test"}
         scenario_file = tmp_path / "perf_test.json"
         scenario_file.write_text(json.dumps(scenario_data))
         
@@ -471,12 +471,12 @@ def sample_scenarios():
     """Provide a collection of sample scenarios for testing."""
     return [
         {
-            "scenario_id": "scenario_1",
+            "id": "scenario_1",
             "title": "Scenario 1",
             "tasks": [{"task_id": "task_1", "description": "Task 1"}]
         },
         {
-            "scenario_id": "scenario_2",
+            "id": "scenario_2",
             "title": "Scenario 2",
             "tasks": [{"task_id": "task_2", "description": "Task 2"}]
         }
@@ -494,11 +494,11 @@ def mock_agent_responses():
 ### Test Data Factories
 
 ```python
-def create_test_scenario(scenario_id="test_001", num_tasks=1):
+def create_test_scenario(id="test_001", num_tasks=1):
     """Create a test scenario with specified parameters."""
     return {
-        "scenario_id": scenario_id,
-        "title": f"Test Scenario {scenario_id}",
+        "id": id,
+        "title": f"Test Scenario {id}",
         "tasks": [
             {
                 "task_id": f"task_{i}",

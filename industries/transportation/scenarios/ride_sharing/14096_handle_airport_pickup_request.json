@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Airport Pickup Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14096-handle-airport-pickup-request"
   },
   "description": "A rider at an airport requests a ride. The system must guide them to the designated ride-share pickup area and manage the driver queue.",
   "industry": "Transportation",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advise a Client on Renting vs. Buying",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13382-advise-on-rent-vs-buy"
   },
   "description": "A potential client is unsure if they should continue renting or buy their first home. The agent must provide a balanced analysis.",
   "industry": "Real Estate",

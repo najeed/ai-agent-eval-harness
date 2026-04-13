@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reconcile a GR/IR Clearing Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00086-reconcile-clearing-account"
   },
   "description": "An accountant needs to reconcile the Goods Receipt / Invoice Receipt (GR/IR) clearing account, which should theoretically have a zero balance.",
   "industry": "Accounting",

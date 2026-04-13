@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Partial Payment on an Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14386-handle-partial-payment"
   },
   "description": "A customer makes a partial payment on an invoice. An agent must apply it and follow up on the remaining balance.",
   "industry": "Wholesale",

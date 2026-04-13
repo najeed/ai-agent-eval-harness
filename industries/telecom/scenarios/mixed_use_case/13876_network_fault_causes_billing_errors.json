@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Network Fault Causes Mass Billing Errors",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13876-network-fault-causes-billing-errors"
   },
   "description": "A network fault caused incorrect data usage metering for a batch of customers. An agent must identify the affected customers and correct their bills.",
   "industry": "Telecom",

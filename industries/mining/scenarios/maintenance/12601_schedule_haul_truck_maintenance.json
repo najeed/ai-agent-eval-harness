@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Haul Truck Preventive Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12601-schedule-haul-truck-maintenance"
   },
   "description": "A maintenance planner schedules a 500-hour preventive maintenance service for a haul truck.",
   "industry": "Mining",

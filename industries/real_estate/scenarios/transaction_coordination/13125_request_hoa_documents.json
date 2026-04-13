@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request HOA Documents",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13125-request-hoa-documents"
   },
   "description": "A property under contract is in a Homeowners Association (HOA). The TC needs to order the HOA resale package.",
   "industry": "Real Estate",

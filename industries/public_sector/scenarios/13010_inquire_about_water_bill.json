@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About a High Water Bill",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13010-inquire-about-water-bill"
   },
   "description": "A resident calls because their quarterly water bill is much higher than usual.",
   "industry": "Public Sector",

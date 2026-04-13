@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Home Internet Troubleshooting - No Connection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13818-home-internet-no-connection"
   },
   "description": "A customer reports their home internet service is completely down.",
   "industry": "Telecom",

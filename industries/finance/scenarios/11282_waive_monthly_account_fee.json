@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Waive Monthly Account Fee",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11282-waive-monthly-account-fee"
   },
   "description": "A long-time customer requests to have their monthly maintenance fee waived after their balance temporarily dropped below the minimum.",
   "industry": "Finance",

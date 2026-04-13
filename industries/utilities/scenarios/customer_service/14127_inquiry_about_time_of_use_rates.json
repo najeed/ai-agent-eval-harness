@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquiry About Time-of-Use (TOU) Rates",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14127-inquiry-about-time-of-use-rates"
   },
   "description": "A customer wants to understand how Time-of-Use (TOU) electricity rates work and if they would be a good fit.",
   "industry": "Utilities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pick a Sales Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12198-pick-sales-order"
   },
   "description": "A warehouse operator is assigned a sales order and must pick the correct items and quantities from their storage locations.",
   "industry": "Logistics and Warehousing",

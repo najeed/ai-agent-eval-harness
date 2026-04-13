@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate a Packing List",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12253-generate-packing-list"
   },
   "description": "Before an order is packed, the system must generate a packing list to be included inside the box.",
   "industry": "Logistics and Warehousing",

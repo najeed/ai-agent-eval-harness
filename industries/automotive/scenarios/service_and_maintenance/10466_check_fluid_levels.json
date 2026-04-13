@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Customer Inquires About Checking Fluid Levels",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10466-check-fluid-levels"
   },
   "description": "A customer wants to know how to check their vehicle's basic fluid levels, like engine oil and washer fluid.",
   "industry": "Automotive",

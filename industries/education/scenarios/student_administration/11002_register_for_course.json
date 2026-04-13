@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Student Registers for a Course",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11002-register-for-course"
   },
   "description": "A current student wants to register for an open course for the upcoming semester.",
   "industry": "Education",

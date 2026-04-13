@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Course of Action Analysis for Cyber Attack",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10824-mission-planning-coa-cyber"
   },
   "description": "A cyber mission planner must evaluate two COAs to neutralize an adversary's air defense network: a kinetic strike vs. a non-kinetic cyberattack.",
   "industry": "Defense",

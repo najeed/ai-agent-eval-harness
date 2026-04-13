@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write Off Bad Debt",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00038-write-off-bad-debt"
   },
   "description": "After exhausting all collection efforts, the company has decided to write off an old, unpaid invoice for a customer who has gone out of business.",
   "industry": "Accounting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Damaged Item from Online Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13436-resolve-damaged-item-from-online-order"
   },
   "description": "A customer calls to report that an item they received from an online order arrived broken.",
   "industry": "Retail",

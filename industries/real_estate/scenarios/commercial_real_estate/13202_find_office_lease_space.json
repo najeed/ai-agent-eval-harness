@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find Office Lease Space for Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13202-find-office-lease-space"
   },
   "description": "A tech startup needs to find a 5,000 sqft office space for lease. The agent must search for suitable properties.",
   "industry": "Real Estate",

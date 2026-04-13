@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboard a New Seller Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13220-onboard-new-seller-client"
   },
   "description": "An agent has secured a new listing. They need to onboard the client, including signing the listing agreement.",
   "industry": "Real Estate",

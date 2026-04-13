@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Post-Event Traffic Flow",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14305-manage-post-event-traffic"
   },
   "description": "As a sold-out event ends, the operations center must manage the flow of vehicle and pedestrian traffic leaving the venue.",
   "industry": "Venues",

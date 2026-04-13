@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Propose an Organizational Restructuring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00184-organizational-restructuring-plan"
   },
   "description": "Based on an analysis showing redundant roles, an agent must propose a new, leaner organizational structure.",
   "industry": "Consulting",

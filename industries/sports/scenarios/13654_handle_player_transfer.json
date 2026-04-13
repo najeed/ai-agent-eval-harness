@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an International Player Transfer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13654-handle-player-transfer"
   },
   "description": "A soccer team is signing a player from a team in another country. An agent must handle the international transfer process.",
   "industry": "Sports",

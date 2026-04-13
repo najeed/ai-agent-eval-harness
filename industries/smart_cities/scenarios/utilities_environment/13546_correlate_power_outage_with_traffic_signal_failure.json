@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Correlate Power Outage with Traffic Signal Failure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13546-correlate-power-outage-with-traffic-signal-failure"
   },
   "description": "A series of traffic signals go dark. An operator must determine if this is related to a power grid failure.",
   "industry": "Smart Cities",

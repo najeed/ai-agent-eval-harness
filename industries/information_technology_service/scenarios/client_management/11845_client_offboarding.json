@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Account Management - Client Offboarding",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11845-client-offboarding"
   },
   "description": "A client has given notice to terminate their managed services agreement. The account manager must oversee the offboarding process.",
   "industry": "Information Technology Service",

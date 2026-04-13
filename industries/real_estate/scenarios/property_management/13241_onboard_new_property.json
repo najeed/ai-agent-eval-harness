@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboard a New Managed Property",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13241-onboard-new-property"
   },
   "description": "A property owner has signed a management agreement. The agent must set up the new property in the system.",
   "industry": "Real Estate",

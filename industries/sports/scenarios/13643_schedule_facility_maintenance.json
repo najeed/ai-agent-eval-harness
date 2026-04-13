@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Routine Facility Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13643-schedule-facility-maintenance"
   },
   "description": "A stadium manager needs to schedule the annual inspection and maintenance for the stadium's HVAC system.",
   "industry": "Sports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Helicopter Flight for Crew Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12744-plan-offshore-logistics-flight"
   },
   "description": "A logistics coordinator plans a helicopter flight to transport personnel to and from an offshore platform.",
   "industry": "Oil and Gas",

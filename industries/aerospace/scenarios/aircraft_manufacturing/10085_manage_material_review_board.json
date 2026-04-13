@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Material Review Board (MRB) Action",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10085-manage-material-review-board"
   },
   "description": "A part has been manufactured with a minor deviation from the blueprint. An MRB (a team of engineers) must decide if the part is usable 'as-is', needs repair, or must be scrapped.",
   "industry": "Aerospace",

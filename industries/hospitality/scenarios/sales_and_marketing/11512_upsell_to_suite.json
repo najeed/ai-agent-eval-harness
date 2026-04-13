@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Upsell to a Suite",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11512-upsell-to-suite"
   },
   "description": "A guest with a standard room reservation is checking in. The agent sees that suites are available and attempts to upsell the guest.",
   "industry": "Hospitality",

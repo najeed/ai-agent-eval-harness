@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Notify Guest Their Table is Ready",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11585-table-ready-notification"
   },
   "description": "A table becomes available for a party on the restaurant's waitlist.",
   "industry": "Hospitality",

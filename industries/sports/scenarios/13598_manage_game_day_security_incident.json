@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Game Day Security Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13598-manage-game-day-security-incident"
   },
   "description": "A fan is ejected from a stadium for disorderly conduct. An agent must log the incident and coordinate the security response.",
   "industry": "Sports",

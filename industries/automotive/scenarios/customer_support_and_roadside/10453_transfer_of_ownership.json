@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Transfer of Ownership",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10453-transfer-of-ownership"
   },
   "description": "A customer sold their vehicle to a private party and wants to transfer the remaining connected services and warranty to the new owner.",
   "industry": "Automotive",

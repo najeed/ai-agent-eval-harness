@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Confirm Reefer Power Connection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12947-confirm-reefer-power-connection"
   },
   "description": "A reefer container has been stacked in the yard. A technician must confirm it has been plugged into a power source.",
   "industry": "Ports",

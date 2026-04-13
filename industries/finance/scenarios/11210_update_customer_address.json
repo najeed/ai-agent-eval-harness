@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Customer Address",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11210-update-customer-address"
   },
   "description": "A retail banking customer has moved and needs to update their mailing address.",
   "industry": "Finance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Battery Storage Dispatch Optimization",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11110-battery-dispatch-optimization"
   },
   "description": "An operator needs to create an optimal charge/discharge schedule for a 50 MW / 200 MWh battery system for the next 24 hours to maximize revenue from energy arbitrage.",
   "industry": "Energy",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Alumni Directory Access",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11080-request-alumni-directory-access"
   },
   "description": "An alumnus wants to access the online alumni directory to find a former classmate.",
   "industry": "Education",

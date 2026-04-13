@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Attribute Conversions to Marketing Channels",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12423-attribute-conversions-to-channels"
   },
   "description": "An analyst needs to run a report to understand which marketing channels are driving the most conversions.",
   "industry": "Marketing and Advertising",

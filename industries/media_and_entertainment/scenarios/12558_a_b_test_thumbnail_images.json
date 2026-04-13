@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "A/B Test Thumbnail Images for a VOD Title",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12558-a-b-test-thumbnail-images"
   },
   "description": "A streaming service wants to determine which thumbnail image for a new movie generates a higher click-through rate.",
   "industry": "Media and Entertainment",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Professional Photography for a New Listing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13188-schedule-photography-for-listing"
   },
   "description": "A new listing needs professional photos taken before it goes live. The agent's assistant must schedule the shoot.",
   "industry": "Real Estate",

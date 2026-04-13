@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide a Shipping Quote",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12233-provide-shipping-quote"
   },
   "description": "A sales agent is on the phone with a potential customer and needs to provide a real-time shipping quote for an order.",
   "industry": "Logistics and Warehousing",

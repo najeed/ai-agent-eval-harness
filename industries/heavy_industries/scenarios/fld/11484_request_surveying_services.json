@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Surveying Services",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11484-request-surveying-services"
   },
   "description": "A crew is ready to lay out the foundations for a new structure and needs a survey team to stake out the building corners.",
   "industry": "Heavy Industries",

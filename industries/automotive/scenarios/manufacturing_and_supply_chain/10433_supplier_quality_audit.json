@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Supplier Quality Audit Failure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10433-supplier-quality-audit"
   },
   "description": "A batch of incoming steering wheels from a supplier has failed a quality audit due to stitching defects.",
   "industry": "Automotive",

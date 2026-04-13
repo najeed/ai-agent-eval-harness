@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Entry Gate Congestion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14247-manage-entry-gate-congestion"
   },
   "description": "Just before an event starts, security cameras show a large crowd and long lines forming at the main entrance.",
   "industry": "Venues",

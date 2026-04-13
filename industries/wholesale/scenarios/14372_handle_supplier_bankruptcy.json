@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Supplier Bankruptcy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14372-handle-supplier-bankruptcy"
   },
   "description": "A key supplier suddenly declares bankruptcy, creating a major supply chain risk.",
   "industry": "Wholesale",

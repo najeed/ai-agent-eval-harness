@@ -1,5 +1,5 @@
 # Trust Protocol Standard v1.4.1 (Forensic Baseline)
-The Trust Protocol is designed to provide **immutable proof of run integrity** for the AgentV Harness. It employs a "Detached Signature" architecture that separates the bulky execution data (Trace) from the authoritative metadata (Verification Certificate v3).
+The Trust Protocol is designed to provide **immutable proof of run integrity** for the AgentV Harness. It employs a "Detached Signature" architecture that separates the bulky execution data (Trace) from the metadata (Verification Certificate v3).
 
 ```mermaid
 graph TD
@@ -26,7 +26,7 @@ graph TD
 ## 1. The Multi-Layer Forensic Defense
 1.  **Trace Layer (Integrity)**: A SHA-256 hash of the `.jsonl` trace file ensures core execution has not been altered.
 2.  **Evidence Layer (Provenance)**: The **Forensic Evidence Ledger** contains SHA-256 hashes of all sidecar artifacts (reports, plots), preventing report manipulation.
-3.  **Manifest Layer (Authority)**: A signed JSON object (The VC v3) that binds the trace and evidence hashes to an authoritative identity via the **Identity Registry**.
+3.  **Manifest Layer (Authority)**: A signed JSON object (The VC v3) that binds the trace and evidence hashes to an identity via the **Identity Registry**.
 
 ### The Forensic Relevance Engine (Artifact Filtering)
 To prevent "Forensic Bloat" while maintaining industrial accountability, the harness employs an **Authoritative Relevance Engine** for artifact collection. This engine enforces a Three-Tier Filtering Model:
@@ -61,7 +61,7 @@ To prevent "Forensic Bloat" while maintaining industrial accountability, the har
 ## 3. The Verification Workflow
 
 1.  **Generation**: Upon run completion, the harness generates hashes for the trace and all sidecar artifacts.
-2.  **Issuance**: The `IdentityService` resolves the authoritative `system_id` private key and signs the VC v3 manifest.
+2.  **Issuance**: The `IdentityService` resolves the `system_id` private key and signs the VC v3 manifest.
 3.  **Redundant Storage**:
     *   **Sidecar**: Stored as `run_manifest.json` within the run directory for local reproducibility.
     *   **Authoritative Store**: Stored in `reports/certificates/` for the Trust API.
@@ -140,7 +140,7 @@ The Custom Extensions Gatekeeper (the consumer) must implement the following log
 The Evaluation Harness provides a first-class CLI suite to manage the Trust Protocol workflow:
 
 -   **`certify --run-id <id> [--identity system_id] [--status pass]`**: 
-    Performs a SHA-256 hash of the trace and wraps it in a signed Verification Certificate (VC) v3.0.0. The certificate is autonomously saved to the run vault and authoritative store.
+    Performs a SHA-256 hash of the trace and wraps it in a signed Verification Certificate (VC) v3.0.0. The certificate is autonomously saved to the run vault and store.
 -   **`verify --run-id <id>`**: 
     Locally verifies the integrity of a trace file against its manifest (Sidecar) using autonomous artifact resolution.
 -   **`gate --run-id <id> [--verify-ledger]`**: 

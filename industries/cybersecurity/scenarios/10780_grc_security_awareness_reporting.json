@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Security Awareness Metrics Reporting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10780-grc-security-awareness-reporting"
   },
   "description": "A manager must create a dashboard to report on the effectiveness of the security awareness program to leadership.",
   "industry": "Cybersecurity",

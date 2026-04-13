@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshoot Bluetooth Pairing Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10412-bluetooth-pairing-issue"
   },
   "description": "A customer is unable to pair their new smartphone with the car's infotainment system.",
   "industry": "Automotive",

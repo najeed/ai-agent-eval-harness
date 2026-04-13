@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reconcile AR Sub-Ledger to General Ledger",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00062-reconcile-ar-subledger"
   },
   "description": "As part of the month-end close, an accountant must verify that the AR aging report total matches the AR account in the general ledger.",
   "industry": "Accounting",

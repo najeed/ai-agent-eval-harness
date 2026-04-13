@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Soil Electrical Conductivity (EC) Map",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10153-electrical-conductivity-analysis"
   },
   "description": "A farmer has an EC map of their field and wants to use it to understand variations in soil texture.",
   "industry": "Agriculture",

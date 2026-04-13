@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Fraudulent Ticket Claim",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14235-handle-fraudulent-ticket-claim"
   },
   "description": "A guest presents a ticket that has already been scanned, claiming their ticket must be the valid one.",
   "industry": "Venues",

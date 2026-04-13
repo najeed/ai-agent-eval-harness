@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Automated Service Restoration Switching",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14131-service-restoration-switching"
   },
   "description": "Following a fault, the FLISR system must automatically create a switching plan to isolate the fault and restore power to as many customers as possible.",
   "industry": "Utilities",

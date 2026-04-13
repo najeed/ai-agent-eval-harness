@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book an Accessible Hotel Room",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13973-book-accessible-room"
   },
   "description": "A guest who uses a wheelchair needs to book a room with a roll-in shower.",
   "industry": "Tourism",

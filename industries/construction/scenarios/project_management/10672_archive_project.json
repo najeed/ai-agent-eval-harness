@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Archive a Completed Project",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10672-archive-project"
   },
   "description": "A project has been completed and all payments settled. The PM must formally archive the project.",
   "industry": "Construction",

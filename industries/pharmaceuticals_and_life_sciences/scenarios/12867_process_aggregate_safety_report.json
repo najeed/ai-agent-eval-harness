@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an Aggregate Safety Report (PBRER/DSUR)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12867-process-aggregate-safety-report"
   },
   "description": "A safety physician is authoring a Development Safety Update Report (DSUR) for an investigational product.",
   "industry": "Pharmaceuticals and Life Sciences",

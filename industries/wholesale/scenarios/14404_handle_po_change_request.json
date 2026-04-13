@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Purchase Order Change Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14404-handle-po-change-request"
   },
   "description": "A procurement manager needs to change the quantity of an item on a purchase order that has already been sent to a supplier.",
   "industry": "Wholesale",

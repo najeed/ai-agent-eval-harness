@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Faculty Payroll Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11009-faculty-payroll-inquiry"
   },
   "description": "A new faculty member has a question about a deduction on their first paycheck.",
   "industry": "Education",

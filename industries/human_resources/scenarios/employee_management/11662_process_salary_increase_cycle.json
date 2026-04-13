@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Annual Salary Increase Cycle",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11662-process-salary-increase-cycle"
   },
   "description": "An HR compensation analyst needs to process the annual merit-based salary increases for the company.",
   "industry": "Human Resources",

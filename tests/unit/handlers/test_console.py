@@ -119,7 +119,7 @@ def test_evaluate_endpoint(client):
     # Use the sample agent demo scenario which is guaranteed to exist
     with patch("pathlib.Path.exists", return_value=True):
         response = client.post(
-            "/api/evaluate",
+            "/api/v1/evaluate",
             json={"path": "sample_agent/loan_agent_demo/loan_approval_scenario.json"},
         )
         assert response.status_code == 200
@@ -127,7 +127,7 @@ def test_evaluate_endpoint(client):
         assert data["status"] == "started"
 
     # Test error case
-    response = client.post("/api/evaluate", json={})
+    response = client.post("/api/v1/evaluate", json={})
     assert response.status_code == 400
 
 
@@ -188,19 +188,19 @@ def test_evaluate_error_cases(client):
         patch("eval_runner.console.routes.ScenarioCatalog.get_instance") as mock_get_inst,
     ):
         mock_get_inst.return_value.get_absolute_path.return_value = None
-        response = client.post("/api/evaluate", json={"path": "non_existent.json"})
+        response = client.post("/api/v1/evaluate", json={"path": "non_existent.json"})
         assert response.status_code == 404
 
     # Internal error (e.g., loader fails)
     with patch("eval_runner.loader.load_scenario", side_effect=Exception("Load error")):
-        response = client.post("/api/evaluate", json={"path": "tests/mock_loop.jsonl"})
+        response = client.post("/api/v1/evaluate", json={"path": "tests/mock_loop.jsonl"})
         assert response.status_code == 500
 
 
 def test_save_scenario_success(client, tmp_path):
     """Test successful scenario saving."""
     payload = {
-        "scenario_id": "new-scen",
+        "id": "new-scen",
         "title": "New",
         "industry": "test-ind",
         "description": "desc",
@@ -225,7 +225,7 @@ def test_save_scenario_errors(client):
     # Missing ID
     assert client.post("/api/scenarios", json={}).status_code == 400
     # Invalid ID
-    assert client.post("/api/scenarios", json={"scenario_id": "???"}).status_code == 400
+    assert client.post("/api/scenarios", json={"id": "???"}).status_code == 400
 
 
 def test_debugger_state_post(client):

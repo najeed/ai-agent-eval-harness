@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Defensive Information Operations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10895-cyber-information-ops-network-defense"
   },
   "description": "An IO officer must protect a friendly unit's social media presence from being hijacked or spoofed by an adversary.",
   "industry": "Defense",

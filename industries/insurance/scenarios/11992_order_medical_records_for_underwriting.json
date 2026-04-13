@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Order Medical Records for Underwriting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11992-order-medical-records-for-underwriting"
   },
   "description": "An underwriter needs to order an Attending Physician's Statement (APS) to get more details on a condition disclosed in a life insurance application.",
   "industry": "Insurance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Contract for Termination Clause",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12134-analyze-contract-for-termination-clause"
   },
   "description": "A client wants to terminate a contract, and an attorney needs to analyze the agreement to understand their rights and any penalties.",
   "industry": "Legal",

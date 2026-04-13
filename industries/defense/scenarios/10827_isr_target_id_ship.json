@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Naval Vessel Identification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10827-isr-target-id-ship"
   },
   "description": "An analyst must use a combination of radar data and Electronic Support Measures (ESM) to identify a warship operating without a transponder.",
   "industry": "Defense",

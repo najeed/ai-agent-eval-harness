@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reassign Staff Due to No-Show",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14249-reassign-staff-no-show"
   },
   "description": "A scheduled ticket taker has not shown up for their shift, and the gates are about to open.",
   "industry": "Venues",

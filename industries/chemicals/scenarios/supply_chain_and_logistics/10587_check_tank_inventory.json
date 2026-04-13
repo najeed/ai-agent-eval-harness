@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Bulk Tank Inventory Level",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10587-check-tank-inventory"
   },
   "description": "A planner needs to check the current inventory level of a bulk storage tank to see if a new delivery can be scheduled.",
   "industry": "Chemicals",

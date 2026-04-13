@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Disputed Invoice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00053-handle-disputed-invoice"
   },
   "description": "A customer calls to dispute an invoice, claiming they were billed for services they did not receive.",
   "industry": "Accounting",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Submit a Bid for a Government Contract",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13015-submit-bid-for-contract"
   },
   "description": "A registered vendor is submitting a bid for a public works contract.",
   "industry": "Public Sector",

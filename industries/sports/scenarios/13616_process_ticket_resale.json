@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Fan Ticket Resale",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13616-process-ticket-resale"
   },
   "description": "A season ticket holder cannot attend a game and wants to sell their tickets on the team's official resale marketplace.",
   "industry": "Sports",

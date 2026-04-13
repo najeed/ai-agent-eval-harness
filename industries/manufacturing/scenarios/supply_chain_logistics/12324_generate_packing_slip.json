@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate a Packing Slip",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12324-generate-packing-slip"
   },
   "description": "A shipping clerk has picked all items for a customer order and needs to generate the packing slip.",
   "industry": "Manufacturing",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Post-Harvest Residue Management",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10200-post-harvest-residue-management"
   },
   "description": "After corn harvest, a farmer needs to decide how to manage the crop residue (stalks).",
   "industry": "Agriculture",

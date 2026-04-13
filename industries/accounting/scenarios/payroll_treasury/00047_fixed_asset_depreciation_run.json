@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Run Monthly Fixed Asset Depreciation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00047-fixed-asset-depreciation-run"
   },
   "description": "For the month-end close, the accountant needs to run the process that calculates and posts depreciation for all fixed assets.",
   "industry": "Accounting",

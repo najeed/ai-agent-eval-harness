@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Faulty Streetlight to Utility",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13563-report-faulty-streetlight-to-utility"
   },
   "description": "A city-owned smart streetlight is malfunctioning, but the issue is with the power supply, not the light itself. The operator must report this to the electric utility.",
   "industry": "Smart Cities",

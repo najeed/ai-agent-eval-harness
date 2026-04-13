@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send an Abandoned Cart Email",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13479-send-abandoned-cart-email"
   },
   "description": "A customer adds items to their online cart but leaves the website without checking out.",
   "industry": "Retail",

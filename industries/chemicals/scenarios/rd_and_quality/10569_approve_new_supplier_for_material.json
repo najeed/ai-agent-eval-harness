@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Approve New Supplier for Raw Material",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10569-approve-new-supplier-for-material"
   },
   "description": "Procurement wants to use a new supplier for a raw material. QA must review the trial lot data and approve the supplier.",
   "industry": "Chemicals",

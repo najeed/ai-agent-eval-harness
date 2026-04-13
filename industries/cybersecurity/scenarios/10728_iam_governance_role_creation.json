@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Access Role Creation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10728-iam-governance-role-creation"
   },
   "description": "A new project requires a new access role to be created that combines permissions from multiple applications. An IAM analyst must design and create the role.",
   "industry": "Cybersecurity",

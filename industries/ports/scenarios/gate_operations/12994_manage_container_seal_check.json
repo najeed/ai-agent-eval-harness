@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Container Seal Check at Gate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12994-manage-container-seal-check"
   },
   "description": "For a high-value cargo container, the shipper has requested a seal check upon entry to the port.",
   "industry": "Ports",

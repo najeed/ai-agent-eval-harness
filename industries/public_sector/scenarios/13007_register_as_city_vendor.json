@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Register as a City Vendor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13007-register-as-city-vendor"
   },
   "description": "A small business wants to register with the city so they can bid on government contracts.",
   "industry": "Public Sector",

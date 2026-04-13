@@ -1,6 +1,6 @@
 # AgentV Guide
 
-> This document is the single authoritative reference for using, extending, and developing the AgentV framework.
+> This document is the single reference for using, extending, and developing the AgentV framework.
 > It is organized into three levels: **Quick Start**, **User Manual**, and **Developer Guide**.
 
 ---

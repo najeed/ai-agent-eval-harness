@@ -49,7 +49,7 @@ HTML_TEMPLATE = """
     </style>
 </head>
 <body>
-    <h1>Grounding Coverage Heatmap: {scenario_id}</h1>
+    <h1>Grounding Coverage Heatmap: {identifier}</h1>
     
     <div class="card">
         <h2>Policy Enforcement Coverage</h2>
@@ -94,7 +94,7 @@ def generate_coverage_report(context: EvaluationContext, output_path: Path):
         tool_html += f'<div class="item {cls}">{t}<span class="count">{count} hits</span></div>'
 
     html = HTML_TEMPLATE.format(
-        scenario_id=context.scenario_id,
+        identifier=context.identifier,
         policy_items=policy_html if policy_html else "No policies defined",
         tool_items=tool_html if tool_html else "No tools defined",
     )

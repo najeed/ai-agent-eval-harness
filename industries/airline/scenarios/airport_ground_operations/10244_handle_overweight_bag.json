@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Overweight Bag",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10244-handle-overweight-bag"
   },
   "description": "A passenger's checked bag is over the standard weight limit. The agent must handle the situation.",
   "industry": "Airline",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Automated Capacitor Bank Switching",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14147-capacitor-bank-switching"
   },
   "description": "The DMS automatically switches capacitor banks on a feeder to manage reactive power and improve voltage.",
   "industry": "Utilities",

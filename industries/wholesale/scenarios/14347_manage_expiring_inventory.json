@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Expiring Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14347-manage-expiring-inventory"
   },
   "description": "A food wholesaler needs to manage inventory with expiration dates to ensure products are sold before they expire.",
   "industry": "Wholesale",

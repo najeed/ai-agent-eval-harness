@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Source Code Repository Scan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10737-vuln-mgmt-scanning-code-repo"
   },
   "description": "An analyst must configure a Static Application Security Testing (SAST) tool to automatically scan a source code repository for vulnerabilities on every new commit.",
   "industry": "Cybersecurity",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Story Against the Day's News Budget",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12040-check-story-against-the-days-news-budget"
   },
   "description": "An editor reviews the list of stories planned for the day (the 'news budget') to ensure there is a good mix of topics and no overlap.",
   "industry": "Journalism",

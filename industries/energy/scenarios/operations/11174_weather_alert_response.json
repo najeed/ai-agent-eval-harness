@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Severe Weather Alert Response",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11174-weather-alert-response"
   },
   "description": "A severe thunderstorm with high winds and potential for hail is forecast to hit a solar farm. The O&M manager must take preemptive action.",
   "industry": "Energy",

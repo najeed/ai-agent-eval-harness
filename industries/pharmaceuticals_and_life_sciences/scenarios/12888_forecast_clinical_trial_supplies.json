@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Forecast Clinical Trial Supply Needs",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12888-forecast-clinical-trial-supplies"
   },
   "description": "A supply chain manager needs to forecast the total amount of investigational product needed for the entire duration of a global clinical trial.",
   "industry": "Pharmaceuticals and Life Sciences",

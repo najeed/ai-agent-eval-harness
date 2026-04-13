@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update CRM After Client Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13180-update-crm-after-client-event"
   },
   "description": "An agent hosted a client appreciation party. They need to log attendance and notes in the CRM.",
   "industry": "Real Estate",

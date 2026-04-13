@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Threat Hunting for DNS Tunneling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10702-secops-threat-hunting-dns"
   },
   "description": "A threat hunter hypothesizes that an attacker is exfiltrating data via DNS tunneling. They must query DNS logs to find evidence.",
   "industry": "Cybersecurity",

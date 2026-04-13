@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create 3D Model of a Site",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11459-create-3d-model-of-site"
   },
   "description": "A surveyor has captured point cloud data of an existing facility. A designer needs to convert this into a 3D CAD model.",
   "industry": "Heavy Industries",

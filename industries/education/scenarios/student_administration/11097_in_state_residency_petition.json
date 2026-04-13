@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Petition for In-State Residency",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11097-in-state-residency-petition"
   },
   "description": "A student who was previously classified as out-of-state believes they now qualify for in-state tuition.",
   "industry": "Education",

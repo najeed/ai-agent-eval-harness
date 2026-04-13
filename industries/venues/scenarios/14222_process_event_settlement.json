@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Final Event Settlement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14222-process-event-settlement"
   },
   "description": "An event manager needs to process the final invoice and settlement for a completed trade show.",
   "industry": "Venues",

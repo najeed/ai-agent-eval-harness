@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Case Calendar with New Date",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12164-update-case-calendar"
   },
   "description": "A deposition has been rescheduled. A paralegal needs to update the case calendar.",
   "industry": "Legal",

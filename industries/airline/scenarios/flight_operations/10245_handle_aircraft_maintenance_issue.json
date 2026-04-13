@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Last-Minute Maintenance Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10245-handle-aircraft-maintenance-issue"
   },
   "description": "Just before pushback, a pilot reports a minor maintenance issue. The OCC controller must coordinate a resolution.",
   "industry": "Airline",

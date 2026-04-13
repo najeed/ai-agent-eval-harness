@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Stacking Plan for an Office Building",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13358-create-a-stacking-plan"
   },
   "description": "A leasing agent needs to create a visual stacking plan for an office building to show current tenants and available spaces.",
   "industry": "Real Estate",

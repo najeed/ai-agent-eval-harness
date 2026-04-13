@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Onboard Announcement System Failure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14099-handle-onboard-announcement-system-failure"
   },
   "description": "A bus driver reports that their automated next-stop announcement system has failed.",
   "industry": "Transportation",

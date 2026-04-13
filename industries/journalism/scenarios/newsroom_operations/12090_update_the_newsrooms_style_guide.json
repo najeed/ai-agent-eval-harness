@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update the Newsroom's Style Guide",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12090-update-the-newsrooms-style-guide"
   },
   "description": "A new term has entered the public lexicon. A senior editor must decide on the correct spelling and usage and add it to the internal style guide.",
   "industry": "Journalism",

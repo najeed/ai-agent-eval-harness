@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Impact of Market Rule Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11169-market-rule-change-analysis"
   },
   "description": "The ISO has proposed a new market rule for how energy storage participates in the capacity market. An analyst needs to assess its financial impact on their battery portfolio.",
   "industry": "Energy",

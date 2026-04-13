@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit a Supplier's Facility",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10075-audit-a-supplier"
   },
   "description": "A quality manager needs to audit a new supplier's manufacturing facility to ensure it meets quality standards before they can be approved.",
   "industry": "Aerospace",

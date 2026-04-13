@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Use a Future Travel Credit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10277-use-future-travel-credit"
   },
   "description": "A customer who previously cancelled a flight has a travel credit and wants to use it to book a new flight.",
   "industry": "Airline",

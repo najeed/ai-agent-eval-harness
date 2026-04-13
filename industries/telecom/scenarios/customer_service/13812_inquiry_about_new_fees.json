@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquiry About New Government Fee",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13812-inquiry-about-new-fees"
   },
   "description": "A customer is calling to ask about a new 'Regulatory Recovery Fee' that appeared on their bill.",
   "industry": "Telecom",

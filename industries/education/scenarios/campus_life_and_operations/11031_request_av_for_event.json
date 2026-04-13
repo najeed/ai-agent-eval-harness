@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request A/V Support for a Campus Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11031-request-av-for-event"
   },
   "description": "A faculty member is hosting a guest lecture and needs a microphone and projector set up in the auditorium.",
   "industry": "Education",

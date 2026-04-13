@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Workplace Conflict",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11624-resolve-workplace-conflict"
   },
   "description": "Two team members are having a dispute that is affecting team morale. Their manager asks HR to mediate.",
   "industry": "Human Resources",

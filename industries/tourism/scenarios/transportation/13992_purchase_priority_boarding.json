@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Purchase Priority Boarding",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13992-purchase-priority-boarding"
   },
   "description": "A passenger wants to add priority boarding to their existing flight reservation.",
   "industry": "Tourism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deny a Claim for a Non-Covered Peril",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11986-deny-claim-not-covered"
   },
   "description": "A homeowner files a claim for damage caused by a flood, but their policy does not include flood coverage.",
   "industry": "Insurance",

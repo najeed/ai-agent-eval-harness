@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process 'Return to Sender' Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10981-process-return-to-sender-shipment"
   },
   "description": "A package is returned to the warehouse by the carrier because of an invalid address. The agent needs to process this return.",
   "industry": "Ecommerce",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Compare Performance Year-over-Year",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12470-compare-performance-year-over-year"
   },
   "description": "An analyst needs to compare website traffic for the last quarter to the same quarter in the previous year.",
   "industry": "Marketing and Advertising",

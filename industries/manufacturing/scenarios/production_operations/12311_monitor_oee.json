@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Overall Equipment Effectiveness (OEE)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12311-monitor-oee"
   },
   "description": "A plant manager wants to review the OEE score for the main assembly line for the previous day.",
   "industry": "Manufacturing",

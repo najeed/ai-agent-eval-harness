@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Cabin Pressurization Issue",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10291-handle-cabin-pressurization-issue"
   },
   "description": "In-flight, a warning light indicates an issue with the cabin pressurization system. The flight crew must take immediate action.",
   "industry": "Airline",

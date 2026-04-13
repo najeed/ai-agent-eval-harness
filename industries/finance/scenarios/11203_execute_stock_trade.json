@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Execute a Stock Trade",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11203-execute-stock-trade"
   },
   "description": "A wealth management client wants to buy 100 shares of a specific tech company (e.g., AAPL).",
   "industry": "Finance",

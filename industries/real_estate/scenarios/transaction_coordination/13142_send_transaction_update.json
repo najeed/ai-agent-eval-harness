@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Weekly Transaction Status Update",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13142-send-transaction-update"
   },
   "description": "The TC needs to send a weekly status update to the client and agent on a pending transaction.",
   "industry": "Real Estate",

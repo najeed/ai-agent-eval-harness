@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Arrange Vessel Bunkering",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12908-arrange-vessel-bunkering"
   },
   "description": "A shipping agent requests to arrange for fuel (bunkering) for their vessel while it is at berth.",
   "industry": "Ports",

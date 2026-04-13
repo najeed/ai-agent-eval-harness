@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Digital Twin for Emergency Vehicle Access",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13528-analyze-digital-twin-for-emergency-vehicle-access"
   },
   "description": "A fire chief wants to know if a new ladder truck can access a narrow street and deploy its ladder to reach a specific building.",
   "industry": "Smart Cities",

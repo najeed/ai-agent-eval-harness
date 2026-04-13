@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deployment - New Backup Solution",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11874-deployment-new-backup-solution"
   },
   "description": "A project involves replacing a client's old, unreliable backup system with a new, modern BCDR (Business Continuity and Disaster Recovery) solution.",
   "industry": "Information Technology Service",

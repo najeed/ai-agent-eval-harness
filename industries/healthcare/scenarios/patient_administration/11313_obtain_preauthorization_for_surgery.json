@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Obtain Preauthorization for Surgery",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11313-obtain-preauthorization-for-surgery"
   },
   "description": "A surgery scheduler needs to obtain preauthorization from a patient's insurance company for a scheduled procedure.",
   "industry": "Healthcare",

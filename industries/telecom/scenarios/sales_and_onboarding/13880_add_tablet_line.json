@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cross-sell - Add a Tablet Line",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13880-add-tablet-line"
   },
   "description": "A customer with a mobile phone plan wants to add a new line for their tablet.",
   "industry": "Telecom",

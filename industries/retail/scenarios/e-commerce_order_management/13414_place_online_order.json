@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Place an Online Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13414-place-online-order"
   },
   "description": "A customer browses a retail website and places an order for several items.",
   "industry": "Retail",

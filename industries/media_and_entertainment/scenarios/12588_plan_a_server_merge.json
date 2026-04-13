@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan a Game Server Merge",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12588-plan-a-server-merge"
   },
   "description": "Two game servers with low player populations need to be merged to improve the matchmaking experience.",
   "industry": "Media and Entertainment",

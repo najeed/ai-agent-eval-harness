@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Warehouse Equipment Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14395-manage-warehouse-equipment-maintenance"
   },
   "description": "A forklift in the warehouse is due for its scheduled preventive maintenance.",
   "industry": "Wholesale",

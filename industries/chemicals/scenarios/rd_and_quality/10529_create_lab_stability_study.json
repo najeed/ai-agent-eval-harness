@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Lab Stability Study",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10529-create-lab-stability-study"
   },
   "description": "A new product requires a 12-month stability study to determine its shelf life. A QA specialist needs to set up the study protocol in the LIMS.",
   "industry": "Chemicals",

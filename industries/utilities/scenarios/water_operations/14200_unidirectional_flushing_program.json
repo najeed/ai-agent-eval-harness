@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Unidirectional Flushing Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14200-unidirectional-flushing-program"
   },
   "description": "A water quality engineer is planning a unidirectional flushing program to clean water mains and improve water quality in a specific neighborhood.",
   "industry": "Utilities",

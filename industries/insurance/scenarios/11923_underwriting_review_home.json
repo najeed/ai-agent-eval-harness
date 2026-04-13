@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Underwriting Review for Home Insurance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11923-underwriting-review-home"
   },
   "description": "An underwriter is reviewing a new application for homeowner's insurance and sees a potential risk.",
   "industry": "Insurance",

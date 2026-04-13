@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Dunning Notices for Overdue Accounts",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00019-process-dunning-notices"
   },
   "description": "The collections specialist needs to run the weekly dunning process to send reminders for overdue invoices.",
   "industry": "Accounting",

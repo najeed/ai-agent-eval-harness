@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Impact of Nuclear Plant Outage on Market Prices",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11137-power-plant-outage-impact"
   },
   "description": "A major nuclear power plant has an unplanned outage. A trader needs to quickly assess the likely impact on wholesale power prices for the next 24 hours.",
   "industry": "Energy",

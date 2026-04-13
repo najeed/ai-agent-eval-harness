@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Metallurgical Bottle Roll Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12651-perform-bottle-roll-test"
   },
   "description": "A lab technician performs a bottle roll test on a new ore sample to determine its leach characteristics and potential gold recovery.",
   "industry": "Mining",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Exit Interview Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11692-analyze-exit-interview-data"
   },
   "description": "An HR analyst needs to analyze the exit interview data from the last quarter to identify trends in why employees are leaving.",
   "industry": "Human Resources",

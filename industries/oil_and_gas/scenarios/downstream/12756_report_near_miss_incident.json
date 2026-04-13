@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Near Miss Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12756-report-near-miss-incident"
   },
   "description": "A field operator reports a 'near miss' incident where a dropped tool nearly hit another worker, to ensure it is investigated and learned from.",
   "industry": "Oil and Gas",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Exploration Drilling Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12603-plan-exploration-drilling"
   },
   "description": "An exploration geologist plans a diamond drilling program to test a new geophysical anomaly for potential mineralization.",
   "industry": "Mining",

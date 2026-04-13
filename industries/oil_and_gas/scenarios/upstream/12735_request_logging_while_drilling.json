@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request LWD Services",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12735-request-logging-while-drilling"
   },
   "description": "A geologist decides to run a Logging-While-Drilling (LWD) tool to get real-time formation data in the next section of a well.",
   "industry": "Oil and Gas",

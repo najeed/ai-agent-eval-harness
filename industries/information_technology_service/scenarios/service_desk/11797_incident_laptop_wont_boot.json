@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Incident - Laptop Won't Boot",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11797-incident-laptop-wont-boot"
   },
   "description": "An end-user reports that their company-issued laptop is not starting up and is showing a 'No Bootable Device' error.",
   "industry": "Information Technology Service",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Evacuation Route During Wildfire",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13520-generate-evacuation-route-during-wildfire"
   },
   "description": "A wildfire is approaching a residential area. An operator must generate and broadcast a safe evacuation route.",
   "industry": "Smart Cities",

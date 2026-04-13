@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cloud - Cost Optimization Analysis",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11878-cloud-cost-optimization"
   },
   "description": "An engineer reviews a client's cloud environment to find opportunities for cost savings.",
   "industry": "Information Technology Service",

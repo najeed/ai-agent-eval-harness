@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Threat Hunting for Malicious Scheduled Tasks",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10782-secops-threat-hunting-scheduled-tasks"
   },
   "description": "A threat hunter is looking for malware persistence established via scheduled tasks.",
   "industry": "Cybersecurity",

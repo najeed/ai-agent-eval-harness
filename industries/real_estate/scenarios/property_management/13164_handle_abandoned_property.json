@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Tenant's Abandoned Personal Property",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13164-handle-abandoned-property"
   },
   "description": "After a move-out, a tenant has left behind personal belongings. The PM must handle them according to state law.",
   "industry": "Real Estate",

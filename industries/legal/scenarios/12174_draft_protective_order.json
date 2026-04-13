@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft a Stipulated Protective Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12174-draft-protective-order"
   },
   "description": "In a case involving confidential information, the parties agree to a stipulated protective order to govern the handling of sensitive documents. An associate needs to draft it.",
   "industry": "Legal",

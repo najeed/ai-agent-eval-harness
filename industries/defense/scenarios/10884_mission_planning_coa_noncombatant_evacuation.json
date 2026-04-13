@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Course of Action Analysis for Noncombatant Evacuation (NEO)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10884-mission-planning-coa-noncombatant-evacuation"
   },
   "description": "A planner must compare COAs for evacuating citizens from a country with a deteriorating security situation: using military aircraft vs. chartering civilian aircraft.",
   "industry": "Defense",

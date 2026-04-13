@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Course of Action Analysis for Bridge Seizure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10804-mission-planning-coa-analysis"
   },
   "description": "A mission planner must develop and compare two courses of action (COA) for seizing a critical bridge: an air assault and a ground assault.",
   "industry": "Defense",

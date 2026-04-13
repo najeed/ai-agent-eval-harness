@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Order New Checks",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11234-order-new-checks"
   },
   "description": "A customer has run out of checks and needs to order a new box.",
   "industry": "Finance",

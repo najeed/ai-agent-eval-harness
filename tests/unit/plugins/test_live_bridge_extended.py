@@ -61,7 +61,7 @@ def test_bridge_lifecycle_events(mock_config):
     plugin.active = True
 
     mock_context = MagicMock()
-    mock_context.scenario_id = "scen_1"
+    mock_context.identifier = "scen_1"
     mock_context.metadata = {"industry": "test"}
     mock_context.turn_number = 1
 

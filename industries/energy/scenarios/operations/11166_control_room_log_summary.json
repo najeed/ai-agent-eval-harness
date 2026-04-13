@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Summarize Control Room Log for Shift Handover",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11166-control-room-log-summary"
   },
   "description": "A control room operator is ending their 12-hour shift and needs the agent to summarize all key events from the logbook for the incoming operator.",
   "industry": "Energy",

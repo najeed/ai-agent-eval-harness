@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Status of a Bridge De-icing System",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13543-check-status-of-a-bridge-de-icing-system"
   },
   "description": "With freezing temperatures forecasted, an operator must ensure the heating elements on a critical bridge are operational.",
   "industry": "Smart Cities",

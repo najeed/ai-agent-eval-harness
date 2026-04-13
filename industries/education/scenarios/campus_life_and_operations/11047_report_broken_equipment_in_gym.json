@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Broken Equipment in Campus Gym",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11047-report-broken-equipment-in-gym"
   },
   "description": "A student reports that a treadmill in the campus recreation center is broken.",
   "industry": "Education",

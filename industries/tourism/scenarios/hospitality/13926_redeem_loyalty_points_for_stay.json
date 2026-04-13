@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Redeem Loyalty Points for Stay",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13926-redeem-loyalty-points-for-stay"
   },
   "description": "A loyalty program member wants to book a room using their points.",
   "industry": "Tourism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Retire an Old Asset",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11433-retire-old-asset"
   },
   "description": "A piece of machinery has reached the end of its life and needs to be formally retired and removed from the asset register.",
   "industry": "Heavy Industries",

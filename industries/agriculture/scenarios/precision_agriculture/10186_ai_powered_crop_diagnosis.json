@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "AI-Powered Crop Diagnosis from Photo",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10186-ai-powered-crop-diagnosis"
   },
   "description": "A farmer takes a photo of a diseased leaf with their phone and asks the agent 'What's wrong with my plant?'.",
   "industry": "Agriculture",

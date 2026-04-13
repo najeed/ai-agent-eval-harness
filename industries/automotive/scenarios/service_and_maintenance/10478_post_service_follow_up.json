@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Post-Service Follow-Up Call",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10478-post-service-follow-up"
   },
   "description": "A few days after a service visit, an agent calls the customer to ensure everything is working correctly and they are satisfied with the service.",
   "industry": "Automotive",

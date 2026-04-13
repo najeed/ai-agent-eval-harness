@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reschedule Production due to Material Shortage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12309-reschedule-due-to-material-shortage"
   },
   "description": "A planner discovers a critical raw material will be delayed and needs to reschedule all affected work orders.",
   "industry": "Manufacturing",

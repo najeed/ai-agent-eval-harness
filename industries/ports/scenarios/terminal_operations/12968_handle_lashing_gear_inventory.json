@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Lashing Gear Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12968-handle-lashing-gear-inventory"
   },
   "description": "A stevedoring supervisor needs to ensure there is enough lashing equipment (e.g., twistlocks, lashing bars) for the next vessel.",
   "industry": "Ports",

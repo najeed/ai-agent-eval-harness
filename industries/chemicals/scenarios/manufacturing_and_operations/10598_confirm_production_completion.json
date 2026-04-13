@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Confirm Production Completion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10598-confirm-production-completion"
   },
   "description": "A production run has finished. The supervisor must confirm the quantity produced and close the production order.",
   "industry": "Chemicals",

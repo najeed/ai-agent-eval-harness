@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Hours of Service (HOS) Violation Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14030-handle-hos-violation-alert"
   },
   "description": "A driver is approaching their maximum allowed driving time. A dispatcher must instruct them to stop.",
   "industry": "Transportation",

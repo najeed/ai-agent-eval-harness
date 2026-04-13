@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Confirm Rebar Placement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11488-confirm-rebar-placement"
   },
   "description": "Before a concrete pour, an inspector must verify that the reinforcing steel (rebar) has been placed correctly according to the drawings.",
   "industry": "Heavy Industries",

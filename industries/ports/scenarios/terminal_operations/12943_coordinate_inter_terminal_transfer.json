@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate an Inter-Terminal Transfer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12943-coordinate-inter-terminal-transfer"
   },
   "description": "A container was discharged at Terminal A but needs to be loaded onto a vessel at Terminal B. A transfer must be arranged.",
   "industry": "Ports",

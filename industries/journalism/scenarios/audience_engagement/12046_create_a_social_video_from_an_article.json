@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Social Video from an Article",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12046-create-a-social-video-from-an-article"
   },
   "description": "A social media editor needs to create a short, subtitled video for Facebook based on a recently published article.",
   "industry": "Journalism",

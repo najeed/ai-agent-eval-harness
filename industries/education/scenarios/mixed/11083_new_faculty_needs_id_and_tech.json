@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Faculty Onboarding and Tech Setup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11083-new-faculty-needs-id-and-tech"
   },
   "description": "A new faculty member, as part of their onboarding, needs to get their ID card and have their office computer set up.",
   "industry": "Education",

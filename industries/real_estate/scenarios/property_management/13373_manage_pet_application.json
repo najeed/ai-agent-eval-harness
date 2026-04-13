@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Pet Application",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13373-manage-pet-application"
   },
   "description": "A new tenant in a pet-friendly building wants to get a dog and must go through the pet application process.",
   "industry": "Real Estate",

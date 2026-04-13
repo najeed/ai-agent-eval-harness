@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Lab Sample Lifecycle",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12806-lab-sample-tracking"
   },
   "description": "A lab technician needs to log a new batch of patient samples, track them through an assay, and record their storage location.",
   "industry": "Pharmaceuticals and Life Sciences",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Bill for Therapy Minutes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11369-bill-for-therapy-minutes"
   },
   "description": "A speech therapist needs to bill for a 45-minute session, which requires using three different 15-minute billing codes.",
   "industry": "Healthcare",

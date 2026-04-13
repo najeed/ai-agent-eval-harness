@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Mid-Season Corn Yield Forecast",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10132-yield-forecasting-corn"
   },
   "description": "An agronomist wants a yield forecast for a corn field based on current crop health imagery and weather data.",
   "industry": "Agriculture",

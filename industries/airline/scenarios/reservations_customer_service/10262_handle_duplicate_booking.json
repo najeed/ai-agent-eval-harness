@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Duplicate Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10262-handle-duplicate-booking"
   },
   "description": "The system has flagged that a passenger appears to have two identical bookings. An agent must investigate and resolve the issue.",
   "industry": "Airline",

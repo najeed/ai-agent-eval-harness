@@ -1,187 +1,199 @@
 import os
+import shutil
 import tempfile
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
-# This ensures a 100% stable, zero-touch environment on any OS (inc. Windows)
-# by creating a real temporary jail before ANY eval_runner modules are imported.
-_TEST_JAIL = Path(tempfile.gettempdir()) / "aes_test_jail_v123_final"
-_ROOT = _TEST_JAIL / "root"
-_RUNS = _ROOT / "runs"
-_DOCS = _ROOT / "docs-old"
-_DEMO = _ROOT / "sample_agent" / "loan_agent_demo"
+import pytest
+from flask import Flask
 
-os.makedirs(_DOCS, exist_ok=True)
-os.makedirs(_RUNS, exist_ok=True)
-os.makedirs(_DEMO, exist_ok=True)
-
-# Export to environment for eval_runner.config to pick up on import
-os.environ["PROJECT_ROOT"] = str(_ROOT)
-os.environ["RUN_LOG_DIR"] = "runs"  # Relative to PROJECT_ROOT
-os.environ["DASHBOARD_API_KEY"] = "test-key-123"
-os.environ["SERVICE_API_KEY"] = "test-key-123"
-
-import unittest  # noqa: E402
-from unittest.mock import MagicMock, patch  # noqa: E402
-
-from flask import Flask  # noqa: E402
-
-# Force-override config at runtime to handle cases where config.py was imported
-# before the environment variables were set.
-import eval_runner.config  # noqa: E402
-
-eval_runner.config.PROJECT_ROOT = _ROOT
-eval_runner.config.RUN_LOG_DIR = _ROOT / "runs"
-eval_runner.config.TRAJECTORIES_DIR = _ROOT / "reports" / "trajectories"
-
-# SUT - Imports will now pick up the bootstrapped environment
-from eval_runner.console.routes import DebuggerStateStore, core_bp  # noqa: E402
+# SUT
+import eval_runner.config
+from eval_runner.console.routes import DebuggerStateStore, core_bp
 
 
-class TestRoutes(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        # Redundant but authoritative reinforcement
-        os.makedirs(_ROOT / "industries" / "healthcare" / "scenarios", exist_ok=True)
-        eval_runner.config.PROJECT_ROOT = _ROOT
-        eval_runner.config.RUN_LOG_DIR = _ROOT / "runs"
-        eval_runner.config.TRAJECTORIES_DIR = _ROOT / "reports" / "trajectories"
-        os.makedirs(eval_runner.config.RUN_LOG_DIR, exist_ok=True)
-        os.makedirs(eval_runner.config.TRAJECTORIES_DIR, exist_ok=True)
+@pytest.fixture(scope="module")
+def console_jail():
+    """
+    Creates a dedicated, isolated jail for console route testing.
+    This fixture avoids global os.environ pollution.
+    """
+    tmp_root = Path(tempfile.gettempdir()) / "aes_console_test_jail"
+    root = tmp_root / "root"
+    runs = root / "runs"
+    docs = root / "docs-old"
+    demo = root / "sample_agent" / "loan_agent_demo"
 
-    def setUp(self):
-        # Create a fresh Flask container for each test to ensure perfect isolation
-        self.app = Flask(__name__)
-        self.app.register_blueprint(core_bp)
-        self.client = self.app.test_client()
-        self.headers = {"X-AES-API-KEY": "test-key-123"}
+    # Cleanup any previous leaks
+    if tmp_root.exists():
+        shutil.rmtree(tmp_root)
 
-        # Absolute authoritative patching for backend config during unit tests
-        eval_runner.config.DASHBOARD_API_KEY = "test-key-123"
-        eval_runner.config.SERVICE_API_KEY = "test-key-123"
-        patcher_root = patch("eval_runner.config.PROJECT_ROOT", _ROOT)
-        patcher_root.start()
-        self.addCleanup(patcher_root.stop)
+    os.makedirs(docs, exist_ok=True)
+    os.makedirs(runs, exist_ok=True)
+    os.makedirs(demo, exist_ok=True)
+    os.makedirs(root / "industries" / "healthcare" / "scenarios", exist_ok=True)
+    os.makedirs(root / "reports" / "trajectories", exist_ok=True)
 
-        # Bypass auth decorators globally for unit tests
-        patcher_auth = patch(
-            "eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f
-        )
-        patcher_auth.start()
-        self.addCleanup(patcher_auth.stop)
+    yield {
+        "root": root,
+        "runs": runs,
+        "docs": docs,
+        "demo": demo,
+    }
 
-        DebuggerStateStore.reset()
-        from eval_runner.catalog import ScenarioCatalog
-
-        ScenarioCatalog.clear_instance()
-
-    def test_get_loan_demo_context(self):
-        (_DEMO / "loan_prd.md").write_text("prd content", encoding="utf-8")
-        (_DEMO / "loan_approval.aes.yaml").write_text("aes content", encoding="utf-8")
-        (_DEMO / "loan_approval_scenario.json").write_text('{"scenario": "data"}', encoding="utf-8")
-
-        response = self.client.get("/api/demo/loan/context", headers=self.headers)
-        self.assertEqual(response.status_code, 200, response.data)
-        data = response.get_json()
-        self.assertEqual(data["prd"], "prd content")
-        self.assertIn("updated_at", data)
-
-    @patch("subprocess.run")
-    def test_execute_demo_command_whitelist(self, mock_run):
-        mock_run.return_value = MagicMock(returncode=0, stdout="ok", stderr="")
-        res = self.client.post(
-            "/api/demo/execute", json={"command": "cat loan_prd.md"}, headers=self.headers
-        )
-        self.assertEqual(res.status_code, 200, res.data)
-
-    @patch("eval_runner.console.routes.ScenarioCatalog")
-    def test_list_scenarios(self, mock_catalog_cls):
-        mock_cat = mock_catalog_cls.return_value
-        mock_catalog_cls.get_instance.return_value = mock_cat
-        mock_cat.search.return_value = [{"id": "s1"}]
-        res = self.client.get("/api/scenarios?q=test", headers=self.headers)
-        self.assertEqual(res.status_code, 200)
-
-    def test_list_runs(self):
-        log_file = _RUNS / "test_run.jsonl"
-        log_file.write_text(
-            '{"event": "run_start", "run_id": "run_123", "scenario": "Test", "timestamp": "1970-01-01T00:00:00"}\n',  # noqa: E501, T00
-            encoding="utf-8",
-        )
-        res = self.client.get("/api/runs", headers=self.headers)
-        data = res.get_json()
-        self.assertTrue(len(data["runs"]) > 0)
-        log_file.unlink()
-
-    @patch("eval_runner.loader.load_scenario")
-    @patch("eval_runner.engine.run_evaluation")
-    @patch("threading.Thread")
-    def test_evaluate_scenario(self, mock_thread, mock_run_eval, mock_load):
-        mock_load.return_value = {"scenario_id": "scen_1"}
-        scen_file = _ROOT / "scenarios" / "test.json"
-        scen_file.parent.mkdir(parents=True, exist_ok=True)
-        scen_file.write_text("{}", encoding="utf-8")
-        res = self.client.post(
-            "/api/evaluate", json={"path": "scenarios/test.json"}, headers=self.headers
-        )
-        self.assertEqual(res.status_code, 200)
-
-    def test_save_scenario(self):
-        payload = {
-            "scenario_id": "new-scen",
-            "industry": "healthcare",
-            "title": "New",
-            "tasks": [{"task_id": "t1", "description": "desc", "expected_outcome": "win"}],
-        }
-        res = self.client.post("/api/scenarios", json=payload, headers=self.headers)
-        self.assertEqual(res.status_code, 200)
-        # Aligned with routes.py industrial structure: industries/{industry}/scenarios/
-        expected = _ROOT / "industries" / "healthcare" / "scenarios" / "new-scen.json"
-        self.assertTrue(expected.exists())
-
-    def test_debugger_state_lifecycle(self):
-        # Post a valid event to hydrate the store
-        res = self.client.post(
-            "/api/debugger/state",
-            json={"event": "world_state_change", "data": {"state": {"hp": 100}}},
-            headers=self.headers,
-        )
-        self.assertEqual(res.status_code, 200)
-
-        res = self.client.get("/api/debugger/state", headers=self.headers)
-        data = res.get_json()
-        self.assertIsNotNone(data.get("data"))
-        self.assertIn("summary", data["data"])
-        # If summary is still building or empty, it might be None or {}
-        summary = data["data"]["summary"]
-        if summary and "state" in summary:
-            self.assertEqual(summary["state"].get("hp"), 100)
-
-    def test_get_debugger_state_historical(self):
-        log_file = _RUNS / "run_456.jsonl"
-        log_file.write_text(
-            '{"event": "world_state_change", "state": {"val": 1}}\n', encoding="utf-8"
-        )
-        res = self.client.get("/api/debugger/state?run_id=run_456", headers=self.headers)
-        self.assertEqual(res.status_code, 200)
-        log_file.unlink()
-
-    def test_docs_api(self):
-        doc_file = _DOCS / "g1.md"
-        doc_file.write_text("# Doc", encoding="utf-8")
-        mock_file = MagicMock()
-        mock_file.stem = "g1"
-        mock_file.relative_to.return_value = "g1.md"
-        with patch("pathlib.Path.rglob", return_value=[mock_file]):
-            res = self.client.get("/api/docs", headers=self.headers)
-            self.assertEqual(len(res.get_json()["docs"]), 1)
-        res = self.client.get("/api/docs/g1.md", headers=self.headers)
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.get_json()["content"], "# Doc")
-
-    def test_read_doc_unauthorized(self):
-        res = self.client.get("/api/docs/../../../etc/passwd", headers=self.headers)
-        self.assertEqual(res.status_code, 403)
+    # Teardown
+    if tmp_root.exists():
+        shutil.rmtree(tmp_root)
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.fixture
+def client(console_jail, monkeypatch):
+    """Provides a Flask test client with localized config patching."""
+    app = Flask(__name__)
+    app.register_blueprint(core_bp)
+
+    # Isolated monkeypatching of the config module attributes
+    monkeypatch.setattr(eval_runner.config, "PROJECT_ROOT", console_jail["root"])
+    monkeypatch.setattr(eval_runner.config, "RUN_LOG_DIR", console_jail["runs"])
+    monkeypatch.setattr(
+        eval_runner.config, "TRAJECTORIES_DIR", console_jail["root"] / "reports" / "trajectories"
+    )
+    monkeypatch.setattr(eval_runner.config, "DASHBOARD_API_KEY", "test-key-123")
+    monkeypatch.setattr(eval_runner.config, "SERVICE_API_KEY", "test-key-123")
+
+    # Bypass auth decorators globally for unit tests
+    with patch("eval_runner.console.auth_manager.require_permission", lambda _: lambda f: f):
+        yield app.test_client()
+
+
+@pytest.fixture(autouse=True)
+def clean_state():
+    """Ensures stateful stores are reset between tests."""
+    DebuggerStateStore.reset()
+    from eval_runner.catalog import ScenarioCatalog
+
+    ScenarioCatalog.clear_instance()
+    yield
+
+
+def test_get_loan_demo_context(client, console_jail):
+    demo = console_jail["demo"]
+    (demo / "loan_prd.md").write_text("prd content", encoding="utf-8")
+    (demo / "loan_approval.aes.yaml").write_text("aes content", encoding="utf-8")
+    (demo / "loan_approval_scenario.json").write_text('{"scenario": "data"}', encoding="utf-8")
+
+    response = client.get("/api/demo/loan/context", headers={"X-AES-API-KEY": "test-key-123"})
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["prd"] == "prd content"
+    assert "updated_at" in data
+
+
+@patch("subprocess.run")
+def test_execute_demo_command_whitelist(mock_run, client):
+    mock_run.return_value = MagicMock(returncode=0, stdout="ok", stderr="")
+    res = client.post(
+        "/api/demo/execute",
+        json={"command": "cat loan_prd.md"},
+        headers={"X-AES-API-KEY": "test-key-123"},
+    )
+    assert res.status_code == 200
+
+
+@patch("eval_runner.console.routes.ScenarioCatalog")
+def test_list_scenarios(mock_catalog_cls, client):
+    mock_cat = mock_catalog_cls.return_value
+    mock_catalog_cls.get_instance.return_value = mock_cat
+    mock_cat.search.return_value = [{"id": "s1"}]
+    res = client.get("/api/scenarios?q=test", headers={"X-AES-API-KEY": "test-key-123"})
+    assert res.status_code == 200
+
+
+def test_list_runs(client, console_jail):
+    runs_dir = console_jail["runs"]
+    log_file = runs_dir / "test_run.jsonl"
+    log_file.write_text(
+        '{"event": "run_start", "run_id": "run_123", "scenario": "Test", '
+        '"timestamp": "1970-01-01T00:00:00"}\n',
+        encoding="utf-8",
+    )
+    res = client.get("/api/runs", headers={"X-AES-API-KEY": "test-key-123"})
+    data = res.get_json()
+    assert len(data["runs"]) > 0
+    log_file.unlink()
+
+
+@patch("eval_runner.loader.load_scenario")
+@patch("eval_runner.engine.run_evaluation")
+@patch("threading.Thread")
+def test_evaluate_scenario(mock_thread, mock_run_eval, mock_load, client, console_jail):
+    mock_load.return_value = {"id": "scen_1"}
+    root = console_jail["root"]
+    scen_file = root / "scenarios" / "test.json"
+    scen_file.parent.mkdir(parents=True, exist_ok=True)
+    scen_file.write_text("{}", encoding="utf-8")
+    res = client.post(
+        "/api/v1/evaluate",
+        json={"path": "scenarios/test.json"},
+        headers={"X-AES-API-KEY": "test-key-123"},
+    )
+    assert res.status_code == 200
+
+
+def test_save_scenario(client, console_jail):
+    root = console_jail["root"]
+    payload = {
+        "id": "new-scen",
+        "industry": "healthcare",
+        "title": "New",
+        "tasks": [{"task_id": "t1", "description": "desc", "expected_outcome": "win"}],
+    }
+    res = client.post("/api/scenarios", json=payload, headers={"X-AES-API-KEY": "test-key-123"})
+    assert res.status_code == 200
+    expected = root / "industries" / "healthcare" / "scenarios" / "new-scen.json"
+    assert expected.exists()
+
+
+def test_debugger_state_lifecycle(client):
+    res = client.post(
+        "/api/debugger/state",
+        json={"event": "world_state_change", "data": {"state": {"hp": 100}}},
+        headers={"X-AES-API-KEY": "test-key-123"},
+    )
+    assert res.status_code == 200
+
+    res = client.get("/api/debugger/state", headers={"X-AES-API-KEY": "test-key-123"})
+    data = res.get_json()
+    assert data.get("data") is not None
+    assert "summary" in data["data"]
+
+
+def test_get_debugger_state_historical(client, console_jail):
+    runs_dir = console_jail["runs"]
+    log_file = runs_dir / "run_456.jsonl"
+    log_file.write_text('{"event": "world_state_change", "state": {"val": 1}}\n', encoding="utf-8")
+    res = client.get(
+        "/api/debugger/state?run_id=run_456", headers={"X-AES-API-KEY": "test-key-123"}
+    )
+    assert res.status_code == 200
+    log_file.unlink()
+
+
+def test_docs_api(client, console_jail):
+    docs_dir = console_jail["docs"]
+    doc_file = docs_dir / "g1.md"
+    doc_file.write_text("# Doc", encoding="utf-8")
+    mock_file = MagicMock()
+    mock_file.stem = "g1"
+    mock_file.relative_to.return_value = "g1.md"
+    with patch("pathlib.Path.rglob", return_value=[mock_file]):
+        res = client.get("/api/docs", headers={"X-AES-API-KEY": "test-key-123"})
+        assert len(res.get_json()["docs"]) == 1
+    res = client.get("/api/docs/g1.md", headers={"X-AES-API-KEY": "test-key-123"})
+    assert res.status_code == 200
+    assert res.get_json()["content"] == "# Doc"
+
+
+def test_read_doc_unauthorized(client):
+    res = client.get("/api/docs/../../../etc/passwd", headers={"X-AES-API-KEY": "test-key-123"})
+    assert res.status_code == 403

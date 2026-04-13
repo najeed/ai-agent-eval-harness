@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage VIP Suite Catering Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13608-manage-vip-suite-catering"
   },
   "description": "A corporate partner who has a VIP suite for a game wants to pre-order catering.",
   "industry": "Sports",

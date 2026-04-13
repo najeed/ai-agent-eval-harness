@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Partial Power Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14259-handle-power-outage"
   },
   "description": "A power outage affects one section of the venue during an event, causing lights and concession stands to lose power.",
   "industry": "Venues",

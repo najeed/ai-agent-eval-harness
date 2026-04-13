@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Player's In-Game Purchase Failed",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12504-manage-in-game-purchase-failure"
   },
   "description": "A player was charged for an in-game item but never received it.",
   "industry": "Media and Entertainment",

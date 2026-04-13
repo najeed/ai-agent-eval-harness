@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Auditing - Internal Security Scan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11856-audit-security-scan"
   },
   "description": "As part of a security audit project, an analyst needs to run an authenticated scan on internal servers to find vulnerabilities and missing patches.",
   "industry": "Information Technology Service",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Site Visitor Access",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10622-manage-site-visitor-access"
   },
   "description": "A client representative is visiting the site. The site superintendent must log their entry and ensure they have the required PPE.",
   "industry": "Construction",

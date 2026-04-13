@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Return for Wrong Item Ordered",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14399-handle-return-for-wrong-item-ordered"
   },
   "description": "A retailer admits they ordered the wrong item and wants to return it.",
   "industry": "Wholesale",

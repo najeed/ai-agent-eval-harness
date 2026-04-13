@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Fire Alarm Activation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11517-fire-alarm-procedure"
   },
   "description": "A fire alarm is activated in the hotel. The security or front office staff must execute the emergency response procedure.",
   "industry": "Hospitality",

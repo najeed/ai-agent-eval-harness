@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Conveyor Vibration Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12623-analyze-vibration-data"
   },
   "description": "A reliability engineer analyzes vibration data from a critical conveyor belt's gearbox to detect early signs of a bearing fault.",
   "industry": "Mining",

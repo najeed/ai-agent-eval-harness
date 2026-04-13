@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add a Cosigner to a Loan Application",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10461-cosigner-on-loan"
   },
   "description": "A customer with a low credit score was denied a loan but wants to reapply with a cosigner.",
   "industry": "Automotive",

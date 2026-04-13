@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Silica Dust Exposure Monitoring",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10696-silica-dust-monitoring"
   },
   "description": "During rock drilling operations, a safety officer must ensure compliance with OSHA's silica dust regulations.",
   "industry": "Construction",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Returned Payment (NSF)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11940-handle-billing-nsf"
   },
   "description": "A customer's automatic EFT payment was returned for Non-Sufficient Funds (NSF).",
   "industry": "Insurance",

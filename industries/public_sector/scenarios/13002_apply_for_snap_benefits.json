@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply for SNAP Benefits",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13002-apply-for-snap-benefits"
   },
   "description": "A low-income individual wants to apply for the Supplemental Nutrition Assistance Program (SNAP).",
   "industry": "Public Sector",

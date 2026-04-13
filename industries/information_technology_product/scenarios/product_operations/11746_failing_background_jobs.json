@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Failing Background Jobs",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11746-failing-background-jobs"
   },
   "description": "An alert indicates that a queue of background jobs (e.g., sending emails, processing uploads) has a high failure rate.",
   "industry": "Information Technology Product",

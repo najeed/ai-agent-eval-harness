@@ -51,7 +51,7 @@ def test_html_report_content(tmp_path, monkeypatch):
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
     monkeypatch.setattr(config, "HTML_REPORTS_DIR", tmp_path / "reports" / "html")
 
-    scenario = {"scenario_id": "test_id", "title": "Test Title", "industry": "test_ind"}
+    scenario = {"id": "test_id", "title": "Test Title", "industry": "test_ind"}
     results = [
         {
             "task_id": "task_1",

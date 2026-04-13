@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Room Charge at the Restaurant",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11586-process-room-charge-at-restaurant"
   },
   "description": "A hotel guest dining at the on-site restaurant wants to charge their meal to their room.",
   "industry": "Hospitality",

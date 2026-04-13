@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pre-Season Irrigation System Check",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10160-irrigation-system-check"
   },
   "description": "Before the growing season starts, a farmer wants to run a diagnostic on their drip irrigation system to check for leaks or blockages.",
   "industry": "Agriculture",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Property Key Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13253-manage-property-keys"
   },
   "description": "A vendor needs a key to a property for a repair. The agent must check out a key and log it.",
   "industry": "Real Estate",

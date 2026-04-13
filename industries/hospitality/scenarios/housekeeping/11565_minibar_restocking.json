@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Minibar Restocking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11565-minibar-restocking"
   },
   "description": "A minibar attendant needs to restock the minibars on a floor.",
   "industry": "Hospitality",

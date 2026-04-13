@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel Connected Service Subscription",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10434-cancel-connected-service-subscription"
   },
   "description": "A customer wants to cancel their paid subscription for the real-time traffic feature.",
   "industry": "Automotive",

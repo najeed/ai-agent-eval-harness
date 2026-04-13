@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find a Person's Contact Information",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12075-find-a-persons-contact-information"
   },
   "description": "A reporter needs to find a phone number or email for a private citizen they want to interview.",
   "industry": "Journalism",

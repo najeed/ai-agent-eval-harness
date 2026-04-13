@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Non-Conformance Report (NCR)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12338-create-non-conformance-report"
   },
   "description": "A part has failed a quality inspection. A quality engineer needs to create a Non-Conformance Report (NCR).",
   "industry": "Manufacturing",

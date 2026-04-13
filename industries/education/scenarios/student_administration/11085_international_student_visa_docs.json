@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "International Student Visa Document Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11085-international-student-visa-docs"
   },
   "description": "A newly admitted international student needs the university to issue an I-20 form, which is required to apply for a student visa.",
   "industry": "Education",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Newsletter Edition",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12021-create-a-newsletter-edition"
   },
   "description": "A newsletter editor needs to curate the top stories of the week and write a daily newsletter to be sent to subscribers.",
   "industry": "Journalism",

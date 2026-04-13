@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Change Statement Delivery to Paperless",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11258-change-statement-delivery"
   },
   "description": "A customer wants to stop receiving paper statements in the mail and switch to e-statements.",
   "industry": "Finance",

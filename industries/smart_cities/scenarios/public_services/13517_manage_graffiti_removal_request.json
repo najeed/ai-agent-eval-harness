@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Graffiti Removal Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13517-manage-graffiti-removal-request"
   },
   "description": "A citizen reports graffiti on a public building. An operator dispatches a cleaning crew.",
   "industry": "Smart Cities",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Count Livestock with a Drone",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10144-drone-livestock-counting"
   },
   "description": "A rancher has used a drone to take aerial photos of a large pasture and needs the agent to count the number of cattle.",
   "industry": "Agriculture",

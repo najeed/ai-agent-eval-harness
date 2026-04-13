@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Visas for an International Game",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13684-handle-visa-for-international-game"
   },
   "description": "A team is scheduled to play a game in another country. The travel manager must ensure all players and staff have the necessary visas.",
   "industry": "Sports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel a Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10243-cancel-booking"
   },
   "description": "A customer needs to cancel their non-refundable flight booking.",
   "industry": "Airline",

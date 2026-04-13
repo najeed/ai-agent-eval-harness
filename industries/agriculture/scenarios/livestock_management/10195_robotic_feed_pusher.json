@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule a Robotic Feed Pusher",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10195-robotic-feed-pusher"
   },
   "description": "A dairy farmer wants to schedule their robotic feed pusher to run more frequently during the day to encourage cow feed intake.",
   "industry": "Agriculture",

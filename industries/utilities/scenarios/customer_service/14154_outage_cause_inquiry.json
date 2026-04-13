@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquiry About Outage Cause",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14154-outage-cause-inquiry"
   },
   "description": "After a power outage has been restored, a customer calls to ask what caused it.",
   "industry": "Utilities",

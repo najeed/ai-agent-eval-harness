@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "VFX Render Farm Job Failure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12501-vfx-render-farm-job-failure"
   },
   "description": "A high-priority VFX shot for a feature film fails to render on the automated render farm.",
   "industry": "Media and Entertainment",

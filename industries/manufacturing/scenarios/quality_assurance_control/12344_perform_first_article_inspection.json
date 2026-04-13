@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform a First Article Inspection (FAI)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12344-perform-first-article-inspection"
   },
   "description": "A new product is being run for the first time. A quality inspector must perform a First Article Inspection (FAI) to validate the production process.",
   "industry": "Manufacturing",

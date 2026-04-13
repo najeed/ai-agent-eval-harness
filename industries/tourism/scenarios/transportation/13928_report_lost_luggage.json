@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Lost Luggage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13928-report-lost-luggage"
   },
   "description": "A passenger has arrived at their destination, but their checked bag did not. They need to file a lost luggage report.",
   "industry": "Tourism",

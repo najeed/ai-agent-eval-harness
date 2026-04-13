@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Group Ticket Sale",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14221-manage-group-ticket-sale"
   },
   "description": "A school group wants to purchase 50 tickets for a matinee theater performance.",
   "industry": "Venues",

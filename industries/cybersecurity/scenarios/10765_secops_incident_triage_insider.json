@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Insider Threat Alert Triage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10765-secops-incident-triage-insider"
   },
   "description": "A SOC analyst receives an alert from a User and Entity Behavior Analytics (UEBA) tool that a user has downloaded an unusually large amount of data.",
   "industry": "Cybersecurity",

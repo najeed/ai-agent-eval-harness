@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process Group Sales Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14251-process-group-sales-payment"
   },
   "description": "A corporate group that had tickets on hold is now ready to pay for their block of 100 tickets.",
   "industry": "Venues",

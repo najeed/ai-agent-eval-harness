@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Adjust Bids in Google Ads",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12415-adjust-bids-in-google-ads"
   },
   "description": "An SEM manager needs to increase bids for high-performing keywords and decrease them for low-performing ones.",
   "industry": "Marketing and Advertising",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Safety Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11448-report-safety-incident"
   },
   "description": "A worker has suffered a minor injury on site. The site supervisor must log an incident report.",
   "industry": "Heavy Industries",

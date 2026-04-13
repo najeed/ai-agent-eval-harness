@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check SOW Against Budget",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00191-check-sow-against-budget"
   },
   "description": "An agent must verify that the work described in a Statement of Work (SOW) can be completed within the allocated project budget.",
   "industry": "Consulting",

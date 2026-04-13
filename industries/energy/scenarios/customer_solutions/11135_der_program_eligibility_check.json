@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Customer Eligibility for DER Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11135-der-program-eligibility-check"
   },
   "description": "A customer is interested in a new battery program. The agent must check if they are eligible based on their location and existing utility service.",
   "industry": "Energy",

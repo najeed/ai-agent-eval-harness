@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Repair Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14062-handle-repair-order"
   },
   "description": "A mechanic needs to perform a repair on a truck, documenting parts used and labor hours.",
   "industry": "Transportation",

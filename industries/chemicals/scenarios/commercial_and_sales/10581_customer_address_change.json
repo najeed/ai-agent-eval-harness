@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Customer Primary Address",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10581-customer-address-change"
   },
   "description": "A customer has moved their headquarters and needs to update their primary billing address.",
   "industry": "Chemicals",

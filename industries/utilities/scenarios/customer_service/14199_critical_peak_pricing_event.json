@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Notify Customers of Critical Peak Pricing Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14199-critical-peak-pricing-event"
   },
   "description": "Due to extreme heat and high demand, the utility is calling a Critical Peak Pricing (CPP) event for the next day, where electricity prices will be much higher for a few hours.",
   "industry": "Utilities",

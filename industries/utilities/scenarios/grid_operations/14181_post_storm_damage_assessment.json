@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Post-Storm Damage Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14181-post-storm-damage-assessment"
   },
   "description": "After a major storm, the utility needs to assess the extent of the damage to the electric grid.",
   "industry": "Utilities",

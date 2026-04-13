@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Refinery Alarm Rationalization",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12771-manage-refinery-alarm-rationalization"
   },
   "description": "A control systems engineer analyzes the performance of the plant's alarm system to identify 'bad actors' (frequently occurring or nuisance alarms) and rationalize them.",
   "industry": "Oil and Gas",

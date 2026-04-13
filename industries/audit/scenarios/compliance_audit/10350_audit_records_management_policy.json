@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Audit Records Management Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10350-audit-records-management-policy"
   },
   "description": "An auditor reviews compliance with the company's records management policy, focusing on the storage of physical records.",
   "industry": "Audit",

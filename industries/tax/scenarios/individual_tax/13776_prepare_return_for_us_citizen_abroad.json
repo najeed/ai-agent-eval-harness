@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Return for U.S. Citizen Abroad",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13776-prepare-return-for-us-citizen-abroad"
   },
   "description": "A U.S. citizen living and working in Germany needs to file their U.S. tax return.",
   "industry": "Tax",

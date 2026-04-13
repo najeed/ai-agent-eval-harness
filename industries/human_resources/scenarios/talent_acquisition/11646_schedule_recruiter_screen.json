@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule a Recruiter Phone Screen",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11646-schedule-recruiter-screen"
   },
   "description": "A recruiter wants to schedule a 30-minute phone screen with a promising candidate.",
   "industry": "Human Resources",

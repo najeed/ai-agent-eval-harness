@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Moderate a Comments Section",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12006-moderate-a-comments-section"
   },
   "description": "A community manager must moderate the comments section on a controversial article, removing hate speech while allowing for civil debate.",
   "industry": "Journalism",

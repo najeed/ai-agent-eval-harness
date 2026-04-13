@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Appraisal Shortfall",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13153-handle-appraisal-shortfall"
   },
   "description": "The property appraisal comes in below the contract price. The TC must notify the agents and manage the next steps.",
   "industry": "Real Estate",

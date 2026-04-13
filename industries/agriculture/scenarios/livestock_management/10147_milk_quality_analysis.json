@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Bulk Tank Milk Quality",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10147-milk-quality-analysis"
   },
   "description": "A dairy co-op has flagged a farmer's milk shipment for a high somatic cell count (SCC), indicating a potential herd health issue.",
   "industry": "Agriculture",

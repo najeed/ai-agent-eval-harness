@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Flag Order for Fraud Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10941-flag-order-for-fraud-review"
   },
   "description": "An order is placed with a high-risk score (e.g., shipping address doesn't match billing, large order amount, new customer). The system must flag it for manual review.",
   "industry": "Ecommerce",

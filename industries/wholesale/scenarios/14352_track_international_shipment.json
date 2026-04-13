@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track an International Shipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14352-track-international-shipment"
   },
   "description": "A manager needs to track the status of a critical international shipment from a supplier in Asia.",
   "industry": "Wholesale",

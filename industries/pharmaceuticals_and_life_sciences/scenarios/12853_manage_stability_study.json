@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Product Stability Study",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12853-manage-stability-study"
   },
   "description": "A QC specialist must manage a stability study for a drug product, pulling samples at specified time points and submitting them for testing.",
   "industry": "Pharmaceuticals and Life Sciences",

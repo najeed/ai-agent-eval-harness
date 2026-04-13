@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update a Customer Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12380-update-customer-account"
   },
   "description": "A customer has a new shipping address and it needs to be updated in their account.",
   "industry": "Manufacturing",

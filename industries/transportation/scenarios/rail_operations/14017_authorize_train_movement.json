@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Authorize Train Movement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14017-authorize-train-movement"
   },
   "description": "A train is ready to depart a siding and enter the main line. A network dispatcher must authorize the movement.",
   "industry": "Transportation",

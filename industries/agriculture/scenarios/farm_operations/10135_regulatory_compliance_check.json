@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Compliance with Water Quality Regulations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10135-regulatory-compliance-check"
   },
   "description": "A farmer needs to ensure their nutrient management plan complies with local water quality regulations to prevent runoff.",
   "industry": "Agriculture",

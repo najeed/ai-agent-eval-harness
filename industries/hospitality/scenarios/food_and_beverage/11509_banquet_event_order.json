@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Finalize a Banquet Event Order (BEO)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11509-banquet-event-order"
   },
   "description": "An event manager is finalizing the BEO for a wedding reception, including menu choices, timeline, and AV requirements.",
   "industry": "Hospitality",

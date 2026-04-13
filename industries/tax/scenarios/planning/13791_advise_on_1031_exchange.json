@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Advise on a 1031 Exchange",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13791-advise-on-1031-exchange"
   },
   "description": "A real estate investor is selling an investment property and wants to defer capital gains tax by acquiring a like-kind property in a 1031 exchange.",
   "industry": "Tax",

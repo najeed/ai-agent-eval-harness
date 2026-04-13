@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage QC Sample Workflow",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10519-manage-qc-sample-workflow"
   },
   "description": "A sample from a production batch arrives in the QC lab for testing. A lab technician must log it in and add it to the testing queue.",
   "industry": "Chemicals",

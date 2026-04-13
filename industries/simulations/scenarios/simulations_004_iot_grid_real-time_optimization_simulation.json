@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "IoT Grid Real-time Optimization Simulation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "simulations-004-iot-grid-real-time-optimization-simulation"
   },
   "description": "Agent must manage a high-fidelity IoT Grid simulation with streaming telemetry.",
   "industry": "Meta-Industry",

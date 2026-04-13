@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare a Statement of Retained Earnings",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00082-prepare-retained-earnings-roll-forward"
   },
   "description": "An accountant needs to prepare the statement of retained earnings for the annual report.",
   "industry": "Accounting",

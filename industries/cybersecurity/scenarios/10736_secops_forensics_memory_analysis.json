@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Memory Forensics for Fileless Malware",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10736-secops-forensics-memory-analysis"
   },
   "description": "An investigator suspects a host is compromised with fileless malware living only in memory. They must perform a memory analysis.",
   "industry": "Cybersecurity",

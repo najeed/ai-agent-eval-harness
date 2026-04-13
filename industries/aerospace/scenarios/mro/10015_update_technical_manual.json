@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update an Aircraft Maintenance Manual (AMM)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10015-update-technical-manual"
   },
   "description": "A manufacturer has issued a revision to a maintenance procedure. A technical writer must update the company's AMM.",
   "industry": "Aerospace",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Rental Application Fee",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13337-process-rental-application-fee"
   },
   "description": "A property manager needs to collect and process an application fee from a prospective tenant.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Consolidate Financial Statements",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11233-consolidate-financial-statements"
   },
   "description": "An accountant needs to consolidate the financial statements of a parent company and its three subsidiaries.",
   "industry": "Finance",

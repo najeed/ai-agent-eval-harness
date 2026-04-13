@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze a Commercial Investment Property",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13206-analyze-investment-property"
   },
   "description": "An investor client is considering buying a multi-tenant retail property and needs a financial analysis.",
   "industry": "Real Estate",

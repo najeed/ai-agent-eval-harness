@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report a Suspicious Person on Campus",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11030-report-suspicious-person"
   },
   "description": "A student calls campus safety to report a suspicious individual near the library.",
   "industry": "Education",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Adaptive Traffic Signal Control for Congestion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13494-adaptive-traffic-signal-control-for-congestion"
   },
   "description": "An operator needs to respond to a sudden traffic jam on a major arterial road by adjusting traffic signal timing.",
   "industry": "Smart Cities",

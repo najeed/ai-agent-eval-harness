@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review a Customer's Credit Limit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00015-credit-limit-review"
   },
   "description": "A customer has requested an increase in their credit limit. The credit manager needs to review their account to make a decision.",
   "industry": "Accounting",

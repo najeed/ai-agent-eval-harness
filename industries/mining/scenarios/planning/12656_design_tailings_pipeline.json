@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Design Tailings Delivery Pipeline",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12656-design-tailings-pipeline"
   },
   "description": "An engineer designs the pipeline system to transport tailings from the processing plant to the tailings storage facility (TSF).",
   "industry": "Mining",

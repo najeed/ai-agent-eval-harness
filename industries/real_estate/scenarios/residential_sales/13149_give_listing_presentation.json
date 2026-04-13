@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assemble a Listing Presentation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13149-give-listing-presentation"
   },
   "description": "An agent is meeting a potential seller and needs to prepare a listing presentation to win their business.",
   "industry": "Real Estate",

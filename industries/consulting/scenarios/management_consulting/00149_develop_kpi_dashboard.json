@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Design a KPI Dashboard",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00149-develop-kpi-dashboard"
   },
   "description": "An agent must design the layout and content for a new executive KPI dashboard.",
   "industry": "Consulting",

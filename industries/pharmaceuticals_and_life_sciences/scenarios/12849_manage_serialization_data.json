@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Drug Serialization Data",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12849-manage-serialization-data"
   },
   "description": "A supply chain analyst must ensure that serialization data for a batch of product is correctly commissioned and sent to downstream partners.",
   "industry": "Pharmaceuticals and Life Sciences",

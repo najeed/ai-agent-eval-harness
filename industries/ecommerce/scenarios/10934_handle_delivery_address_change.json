@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Post-Shipment Delivery Address Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10934-handle-delivery-address-change"
   },
   "description": "A customer needs to change the delivery address for an order that has already been shipped.",
   "industry": "Ecommerce",

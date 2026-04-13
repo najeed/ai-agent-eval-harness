@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Auditing - Dark Web Credential Scan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11824-audit-dark-web-scan"
   },
   "description": "A security analyst runs a dark web scan for a client to see if any of their corporate email addresses and passwords have been exposed in third-party breaches.",
   "industry": "Information Technology Service",

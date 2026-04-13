@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document Experiment in Electronic Lab Notebook",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12826-document-experiment-in-eln"
   },
   "description": "A bench scientist needs to document a completed experiment, including protocol, results, and analysis, in an ELN.",
   "industry": "Pharmaceuticals and Life Sciences",

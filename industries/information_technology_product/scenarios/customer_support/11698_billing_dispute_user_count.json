@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Billing Dispute - User Count",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11698-billing-dispute-user-count"
   },
   "description": "A customer disputes their monthly bill, claiming they were charged for more user licenses than they have active.",
   "industry": "Information Technology Product",

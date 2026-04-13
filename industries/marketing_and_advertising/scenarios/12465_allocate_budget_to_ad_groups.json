@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Allocate Budget to Ad Groups",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12465-allocate-budget-to-ad-groups"
   },
   "description": "A manager needs to allocate a campaign's total budget across its different ad groups based on their strategic priority.",
   "industry": "Marketing and Advertising",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Promote a Story on Social Media",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12005-promote-a-story-on-social-media"
   },
   "description": "A social media editor needs to promote a newly published investigative report across Twitter, Facebook, and Instagram.",
   "industry": "Journalism",

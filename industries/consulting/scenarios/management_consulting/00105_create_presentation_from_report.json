@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Presentation from Final Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00105-create-presentation-from-report"
   },
   "description": "An agent must create a 10-slide executive presentation based on a detailed final report document.",
   "industry": "Consulting",

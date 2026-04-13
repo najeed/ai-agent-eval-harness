@@ -4,7 +4,7 @@ AgentV 1.5.0 introduces **Hardware-Aware Forensics**, allowing you to monitor th
 
 ## 1. The Resource Collector
 
-The `SessionManager` now samples hardware metrics at every turn using `psutil`. These snapshots are bundled into the [Forensic Ledger](../spec/forensic_ledger_schema.md) for post-run analysis.
+The `SessionManager` now samples hardware metrics at every turn using `psutil`. These snapshots are bundled into the [Forensic Ledger](../../docs/src/content/docs/spec/forensic-ledger-schema.md) for post-run analysis.
 
 ### Captured Metrics
 - **CPU (%)**: Process-level CPU utilization.

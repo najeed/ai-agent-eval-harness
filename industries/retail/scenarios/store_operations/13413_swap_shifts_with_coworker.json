@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Swap Shifts with a Coworker",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13413-swap-shifts-with-coworker"
   },
   "description": "An associate needs to swap their upcoming shift with a coworker.",
   "industry": "Retail",

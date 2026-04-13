@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Redact a Document for Production",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12127-redact-document-for-production"
   },
   "description": "During discovery, an attorney needs to redact privileged information from a document before producing it to the other side.",
   "industry": "Legal",

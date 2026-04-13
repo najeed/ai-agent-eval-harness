@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reschedule a Postponed Game",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13595-reschedule-postponed-game"
   },
   "description": "A football match is postponed due to severe weather. A league administrator must find a new date for the game that works for both teams and the broadcaster.",
   "industry": "Sports",

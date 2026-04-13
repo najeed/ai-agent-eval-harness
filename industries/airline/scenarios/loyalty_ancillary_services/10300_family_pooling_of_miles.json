@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Pool Miles with Family Members",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10300-family-pooling-of-miles"
   },
   "description": "A frequent flyer program allows family members to pool their miles. A member wants to link their spouse's account to create a family pool.",
   "industry": "Airline",

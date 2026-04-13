@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Incident - Can't Print",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11817-incident-cant-print"
   },
   "description": "A user reports they are unable to print to the main office printer, getting an 'access denied' error.",
   "industry": "Information Technology Service",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Inspection Contingency",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13110-manage-inspection-contingency"
   },
   "description": "The buyer has completed their inspection and submitted a repair request. The TC must manage this process.",
   "industry": "Real Estate",

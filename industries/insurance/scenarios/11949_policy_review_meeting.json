@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule an Annual Policy Review Meeting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11949-policy-review-meeting"
   },
   "description": "An agent needs to schedule an annual review with a life insurance client to discuss their policy and any changing needs.",
   "industry": "Insurance",

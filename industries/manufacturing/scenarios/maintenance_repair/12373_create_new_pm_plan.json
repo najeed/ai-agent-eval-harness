@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a New PM Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12373-create-new-pm-plan"
   },
   "description": "A new piece of equipment has been installed and a reliability engineer needs to create its preventive maintenance plan from scratch.",
   "industry": "Manufacturing",

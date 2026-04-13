@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Restock a Concession Stand",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14214-restock-concession-stand"
   },
   "description": "A concession stand manager reports they are running low on hot dog buns during a sold-out event.",
   "industry": "Venues",

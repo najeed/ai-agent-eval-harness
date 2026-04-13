@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Trip Payment Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14020-handle-payment-dispute"
   },
   "description": "A rider claims they were charged for a trip they didn't take. A support agent must investigate.",
   "industry": "Transportation",

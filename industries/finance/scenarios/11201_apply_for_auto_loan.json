@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Apply for an Auto Loan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11201-apply-for-auto-loan"
   },
   "description": "A customer wants to apply for a pre-approval for a $30,000 auto loan.",
   "industry": "Finance",

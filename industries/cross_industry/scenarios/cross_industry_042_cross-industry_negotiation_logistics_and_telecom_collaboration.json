@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cross-Industry Negotiation: Logistics & Telecom Collaboration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "cross-industry-042-cross-industry-negotiation-logistics-and-telecom-collaboration"
   },
   "description": "An AI agent must bridge a complex data and policy gap between the Logistics and Telecom sectors.",
   "industry": "Meta-Industry",

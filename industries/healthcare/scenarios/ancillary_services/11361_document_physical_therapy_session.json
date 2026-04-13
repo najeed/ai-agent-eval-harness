@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Document a Physical Therapy Session",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11361-document-physical-therapy-session"
   },
   "description": "A physical therapist has completed a session with a patient and needs to document the activities and the patient's progress.",
   "industry": "Healthcare",

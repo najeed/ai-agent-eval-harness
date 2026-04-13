@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Fan Loyalty Program Rewards",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13601-manage-loyalty-program-rewards"
   },
   "description": "A fan wants to redeem their loyalty points for a signed jersey.",
   "industry": "Sports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Digital Transformation Roadmap",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00174-digital-transformation-roadmap"
   },
   "description": "An agent must create a high-level digital transformation roadmap for a traditional manufacturing client.",
   "industry": "Consulting",

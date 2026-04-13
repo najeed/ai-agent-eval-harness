@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Buyer's Request for Repairs",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13230-request-for-repairs"
   },
   "description": "After an inspection, a buyer has submitted a request for the seller to perform several repairs. The agent must present this to the seller.",
   "industry": "Real Estate",

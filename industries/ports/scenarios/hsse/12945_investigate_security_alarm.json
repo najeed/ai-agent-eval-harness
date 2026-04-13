@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Investigate a Security Alarm",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12945-investigate-security-alarm"
   },
   "description": "A fence perimeter intrusion alarm is triggered at night. The security control room operator must investigate.",
   "industry": "Ports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a REMS Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12877-risk-evaluation-mitigation-strategy"
   },
   "description": "A product has a Risk Evaluation and Mitigation Strategy (REMS) program. An agent must verify that a physician is certified before a prescription can be dispensed.",
   "industry": "Pharmaceuticals and Life Sciences",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Replenish a Pick Face",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12242-replenish-pick-face"
   },
   "description": "A forward picking location for a popular item is running low. The system must generate a task to replenish it from bulk storage.",
   "industry": "Logistics and Warehousing",

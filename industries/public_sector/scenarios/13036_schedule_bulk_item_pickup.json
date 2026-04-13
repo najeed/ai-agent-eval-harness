@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule a Bulk Item Pickup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13036-schedule-bulk-item-pickup"
   },
   "description": "A resident needs to schedule a special pickup for a large item, like an old mattress.",
   "industry": "Public Sector",

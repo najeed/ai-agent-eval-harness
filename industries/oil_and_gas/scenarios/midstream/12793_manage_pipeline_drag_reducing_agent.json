@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Pipeline Drag-Reducing Agent (DRA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12793-manage-pipeline-drag-reducing-agent"
   },
   "description": "To increase the throughput of a pipeline without adding new pumps, an operator injects a chemical called a Drag-Reducing Agent (DRA).",
   "industry": "Oil and Gas",

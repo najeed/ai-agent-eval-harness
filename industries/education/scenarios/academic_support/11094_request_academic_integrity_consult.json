@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request Academic Integrity Consultation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11094-request-academic-integrity-consult"
   },
   "description": "A faculty member suspects a student of plagiarism and wants to consult with the academic integrity office about how to proceed.",
   "industry": "Education",

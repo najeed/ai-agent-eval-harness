@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Required Minimum Distribution (RMD)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11967-process-required-minimum-distribution"
   },
   "description": "An IRA holder held within an annuity has reached the age where they must begin taking RMDs.",
   "industry": "Insurance",

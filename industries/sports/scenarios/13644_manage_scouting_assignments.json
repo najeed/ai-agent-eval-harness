@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Scouting Assignments",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13644-manage-scouting-assignments"
   },
   "description": "The head of scouting needs to assign scouts to watch specific amateur tournaments.",
   "industry": "Sports",

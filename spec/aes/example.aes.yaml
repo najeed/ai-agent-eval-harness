@@ -1,6 +1,7 @@
 aes_version: 1.4
 metadata:
   name: "Base Interaction Benchmark"
+  id: "base-interaction-v1"
   compliance_level: "Standard"
   capabilities:
     - "default_http_agent"
@@ -13,7 +14,8 @@ workflow:
     - id: "start"
       task_description: "Say hello to the evaluator and confirm connection."
       success_criteria:
-        - output_matches: "(?i)hello|connected"
+        - metric: "output_matches"
+          threshold: 1.0
 
   edges: []
 

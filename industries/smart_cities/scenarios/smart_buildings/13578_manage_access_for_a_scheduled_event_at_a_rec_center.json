@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Access for a Scheduled Event at a Rec Center",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13578-manage-access-for-a-scheduled-event-at-a-rec-center"
   },
   "description": "A community group has booked a room at a recreation center. An operator must ensure the doors are unlocked for them at the scheduled time.",
   "industry": "Smart Cities",

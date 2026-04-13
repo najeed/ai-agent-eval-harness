@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Hazardous Materials Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14363-manage-hazardous-materials"
   },
   "description": "A wholesaler deals in chemical products that are classified as hazardous materials. An agent must ensure they are stored and handled correctly.",
   "industry": "Wholesale",

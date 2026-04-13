@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Wave Planning for Picking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12258-wave-planning-for-picking"
   },
   "description": "A shift manager needs to create a picking wave to release a batch of orders to the floor for fulfillment.",
   "industry": "Logistics and Warehousing",

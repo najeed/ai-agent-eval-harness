@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Pre-Implementation Controls for a New System",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10341-review-pre-implementation-controls"
   },
   "description": "An IT auditor reviews a new software system before it goes live to ensure adequate controls are built in.",
   "industry": "Audit",

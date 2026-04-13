@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Game Server Hardware Failure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12564-handle-server-hardware-failure"
   },
   "description": "A physical game server reports a critical hardware failure (e.g., a failed hard drive) and goes offline.",
   "industry": "Media and Entertainment",

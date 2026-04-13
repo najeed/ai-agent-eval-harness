@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform an Internal Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13088-perform-internal-audit"
   },
   "description": "An internal auditor is starting an audit of a department's use of government-issued credit cards (P-cards).",
   "industry": "Public Sector",

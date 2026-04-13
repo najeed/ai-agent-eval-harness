@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue DMCA Takedown for Pirated Content",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12551-remove-pirated-content-from-youtube"
   },
   "description": "A movie studio discovers a full-length copy of their new film has been illegally uploaded to YouTube. An agent must issue a DMCA takedown notice.",
   "industry": "Media and Entertainment",

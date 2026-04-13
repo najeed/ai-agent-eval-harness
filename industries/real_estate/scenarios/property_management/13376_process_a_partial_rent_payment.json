@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Partial Rent Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13376-process-a-partial-rent-payment"
   },
   "description": "A tenant makes a partial rent payment. The property manager must handle the payment and the remaining balance according to company policy and state law.",
   "industry": "Real Estate",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Scoping - Cloud Migration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11891-project-scope-cloud-migration"
   },
   "description": "A client wants to migrate their on-premise servers to a public cloud like AWS or Azure and needs a quote.",
   "industry": "Information Technology Service",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Inquire About Photography Policy",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14006-inquire-about-photography-policy"
   },
   "description": "A visitor wants to know if flash photography is allowed inside an art museum.",
   "industry": "Tourism",

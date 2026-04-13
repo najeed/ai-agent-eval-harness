@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Delinquent Rent Collections",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13357-manage-delinquent-rent-collections"
   },
   "description": "A property manager must follow a collections process for a tenant who is 30 days late on rent.",
   "industry": "Real Estate",

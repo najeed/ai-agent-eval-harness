@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Bulk User Provisioning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10789-iam-user-provisioning-bulk"
   },
   "description": "An IAM analyst must provision accounts for a class of 50 new summer interns.",
   "industry": "Cybersecurity",

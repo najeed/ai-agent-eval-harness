@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update a Customer's Credit Limit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14330-update-customer-credit-limit"
   },
   "description": "A long-standing customer with a good payment history requests an increase to their credit limit to support their growing business.",
   "industry": "Wholesale",

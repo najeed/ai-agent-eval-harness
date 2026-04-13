@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Simulate a Refinery Process Unit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12741-model-refinery-process-unit"
   },
   "description": "A process engineer uses a simulation model to predict how a change in feed quality will impact the product output of a hydrocracker unit.",
   "industry": "Oil and Gas",

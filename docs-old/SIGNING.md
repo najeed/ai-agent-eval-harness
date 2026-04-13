@@ -9,7 +9,7 @@ The **Trust Protocol** establishes a non-repudiable forensic audit trail for AI 
 - **Identity Registry**: Centralized service (`IdentityService`) managing Ed25519 keys for evaluators and auditors.
 - **Verification Certificate (VC) v3**: A signed forensic manifest (`run_manifest.json`) containing hashes for the trace AND sidecar artifacts.
 - **Forensic Evidence Ledger**: Part of the VC v3 that lists SHA-256 hashes of all generated artifacts to prevent side-channel tampering.
-- **Identity Normalization**: Automatic renaming of temporary traces (e.g., `tmp_*.jsonl`) to the authoritative `run.jsonl` during certification.
+- **Identity Normalization**: Automatic renaming of temporary traces (e.g., `tmp_*.jsonl`) to the `run.jsonl` during certification.
 - **NIST AI-100-1 Scoring**: A multi-dimensional `VerificationResult` schema incorporating a Weighted Severity Model (WSM).
 - **Hard Gate**: A CI/CD step (`gate` command) that fails if signatures, evidence hashes, or agent results are compromised.
 

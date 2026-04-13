@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Exhibits for a Motion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12142-prepare-exhibits-for-motion"
   },
   "description": "A paralegal needs to prepare and organize the exhibits that will be filed in support of a motion.",
   "industry": "Legal",

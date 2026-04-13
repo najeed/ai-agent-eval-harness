@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Deep Space Network (DSN) Time",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10066-manage-deep-space-network"
   },
   "description": "A mission planner needs to request and schedule time on the DSN to communicate with an interplanetary probe.",
   "industry": "Aerospace",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshooting - Landline No Dial Tone",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13891-landline-no-dial-tone"
   },
   "description": "An elderly customer reports their landline phone has no dial tone.",
   "industry": "Telecom",

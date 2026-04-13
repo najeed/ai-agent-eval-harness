@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Correct a Payroll Error",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11620-correct-payroll-error"
   },
   "description": "An employee reports that their last paycheck was for the wrong amount.",
   "industry": "Human Resources",

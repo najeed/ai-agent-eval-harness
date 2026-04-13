@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage a Design Interface Point",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11487-manage-interface-point"
   },
   "description": "One engineering discipline (electrical) needs to provide information (power requirements) to another discipline (mechanical) for them to complete their design.",
   "industry": "Heavy Industries",

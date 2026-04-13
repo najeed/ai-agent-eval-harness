@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up a Usability Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12492-set-up-a-usability-test"
   },
   "description": "A UX researcher wants to run a remote usability test for a new website feature.",
   "industry": "Marketing and Advertising",

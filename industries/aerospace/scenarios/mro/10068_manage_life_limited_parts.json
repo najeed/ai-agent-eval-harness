@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Life-Limited Parts (LLPs)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10068-manage-life-limited-parts"
   },
   "description": "A records administrator must track the flight cycles of an LLP (like a turbine disk) and ensure it is replaced before it expires.",
   "industry": "Aerospace",

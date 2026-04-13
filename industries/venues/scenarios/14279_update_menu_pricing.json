@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Concession Menu Pricing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14279-update-menu-pricing"
   },
   "description": "Management has decided to increase the price of beer by $0.50, effective at the next event.",
   "industry": "Venues",

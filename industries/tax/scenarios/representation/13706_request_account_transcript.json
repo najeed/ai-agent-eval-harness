@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request IRS Account Transcript",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13706-request-account-transcript"
   },
   "description": "To investigate a client's tax issue, a tax professional needs to see the client's official IRS account transcript for a specific tax year.",
   "industry": "Tax",

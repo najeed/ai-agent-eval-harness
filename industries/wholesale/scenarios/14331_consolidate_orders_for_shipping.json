@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Consolidate Multiple Orders for Shipping",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14331-consolidate-orders-for-shipping"
   },
   "description": "A single customer has placed multiple small orders that are all scheduled to ship on the same day. An agent needs to consolidate them into one shipment to save costs.",
   "industry": "Wholesale",

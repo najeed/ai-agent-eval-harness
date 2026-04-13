@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Award End-of-Season Rewards",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12552-award-end-of-season-rewards-to-players"
   },
   "description": "At the end of a competitive game season, an agent must distribute rewards to players based on their final rank.",
   "industry": "Media and Entertainment",

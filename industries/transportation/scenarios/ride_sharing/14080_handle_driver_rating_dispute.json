@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Driver's Rating Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14080-handle-driver-rating-dispute"
   },
   "description": "A driver claims a low rating they received from a rider was unfair. They want it removed.",
   "industry": "Transportation",

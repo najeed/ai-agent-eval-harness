@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Troubleshoot Refinery Process Alarm",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12749-troubleshoot-process-alarm"
   },
   "description": "A control room operator receives a high-temperature alarm from a heat exchanger in the crude distillation unit and must quickly diagnose the cause.",
   "industry": "Oil and Gas",

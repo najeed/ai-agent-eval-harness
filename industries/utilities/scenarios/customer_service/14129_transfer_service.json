@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Transfer Utility Service",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14129-transfer-service"
   },
   "description": "A customer is moving from one address to another within the same service territory and wants to transfer their service.",
   "industry": "Utilities",

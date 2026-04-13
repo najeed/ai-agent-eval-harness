@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Release Document for Fabrication",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11471-release-document-for-fabrication"
   },
   "description": "A detailed drawing for a steel structure is complete and needs to be sent to a fabrication shop.",
   "industry": "Heavy Industries",

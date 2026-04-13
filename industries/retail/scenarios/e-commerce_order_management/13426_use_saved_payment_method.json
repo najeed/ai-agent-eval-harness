@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Use a Saved Payment Method",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13426-use-saved-payment-method"
   },
   "description": "A returning customer is checking out and wants to use their credit card that is already saved to their account.",
   "industry": "Retail",

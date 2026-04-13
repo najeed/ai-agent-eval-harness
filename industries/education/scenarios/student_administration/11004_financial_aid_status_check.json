@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Financial Aid Award Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11004-financial-aid-status-check"
   },
   "description": "A student is calling to see if their financial aid package for the next academic year has been determined.",
   "industry": "Education",

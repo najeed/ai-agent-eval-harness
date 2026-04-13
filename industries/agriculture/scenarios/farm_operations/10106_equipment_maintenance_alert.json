@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Combine Harvester Maintenance Alert",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10106-equipment-maintenance-alert"
   },
   "description": "A telematics system on a combine harvester reports that it is due for its 200-hour service.",
   "industry": "Agriculture",

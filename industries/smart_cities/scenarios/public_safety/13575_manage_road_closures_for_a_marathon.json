@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Road Closures for a Marathon",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13575-manage-road-closures-for-a-marathon"
   },
   "description": "An operator must implement and manage all road closures for the annual city marathon.",
   "industry": "Smart Cities",

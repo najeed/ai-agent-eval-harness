@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Enroll Customer in Loyalty Program",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13474-enroll-customer-in-loyalty-program"
   },
   "description": "At checkout, a store associate asks a customer if they would like to join the free loyalty program.",
   "industry": "Retail",

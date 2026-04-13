@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Coordinate a Community Outreach Meeting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13371-coordinate-community-outreach-meeting"
   },
   "description": "Before seeking approval for a controversial development project, the developer holds a community meeting to present the project and gather feedback.",
   "industry": "Real Estate",

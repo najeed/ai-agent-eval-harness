@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Breaking News During a Broadcast",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13687-handle-breaking-news-in-broadcast"
   },
   "description": "During a pre-game show, major breaking news happens (e.g., a star player is unexpectedly traded). The producer must immediately incorporate it into the show.",
   "industry": "Sports",

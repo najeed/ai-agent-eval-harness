@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a Reader's Story Correction Request",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12022-respond-to-a-readers-story-correction-request"
   },
   "description": "A reader has emailed to point out a factual error in a published article. An editor must investigate and, if necessary, issue a correction.",
   "industry": "Journalism",

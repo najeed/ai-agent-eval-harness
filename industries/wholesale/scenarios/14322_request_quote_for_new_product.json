@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Retailer Requests a Quote for a New Product",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14322-request-quote-for-new-product"
   },
   "description": "A potential new customer requests a price quote for a large quantity of a specific product.",
   "industry": "Wholesale",

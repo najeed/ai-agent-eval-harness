@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Utility Bill Received via EDI",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00076-process-utility-bill-via-edi"
   },
   "description": "A large utility provider sends its monthly invoices via an EDI 810 transaction. The system needs to process this electronic invoice.",
   "industry": "Accounting",

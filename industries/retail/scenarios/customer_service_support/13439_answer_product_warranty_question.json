@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Answer a Product Warranty Question",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13439-answer-product-warranty-question"
   },
   "description": "A customer calls customer service to ask about the warranty on a product they purchased six months ago.",
   "industry": "Retail",

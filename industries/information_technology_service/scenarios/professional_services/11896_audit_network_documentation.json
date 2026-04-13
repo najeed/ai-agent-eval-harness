@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Auditing - Review Network Documentation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11896-audit-network-documentation"
   },
   "description": "As part of a network audit project, an engineer reviews the client's existing documentation for accuracy and completeness.",
   "industry": "Information Technology Service",

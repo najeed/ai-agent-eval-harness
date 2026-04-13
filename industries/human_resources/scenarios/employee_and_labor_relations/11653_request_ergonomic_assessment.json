@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request an Ergonomic Assessment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11653-request-ergonomic-assessment"
   },
   "description": "An employee is experiencing back pain and requests an ergonomic assessment of their workstation.",
   "industry": "Human Resources",

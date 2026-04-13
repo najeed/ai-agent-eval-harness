@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Spare Part Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12359-check-spare-part-inventory"
   },
   "description": "A technician needs a specific hydraulic pump to repair a machine and must check if it's in the maintenance storeroom.",
   "industry": "Manufacturing",

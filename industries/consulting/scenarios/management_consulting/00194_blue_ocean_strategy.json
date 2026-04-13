@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Blue Ocean Strategy Formulation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00194-blue-ocean-strategy"
   },
   "description": "An agent must analyze a competitive market and suggest a 'Blue Ocean' strategy to create uncontested market space.",
   "industry": "Consulting",

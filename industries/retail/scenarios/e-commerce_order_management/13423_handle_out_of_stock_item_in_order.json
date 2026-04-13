@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Out-of-Stock Item in an Order",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13423-handle-out-of-stock-item-in-order"
   },
   "description": "During picking, a warehouse associate discovers that the last unit of an item in an order is damaged and cannot be shipped.",
   "industry": "Retail",

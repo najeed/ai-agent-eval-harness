@@ -41,6 +41,7 @@ def test_trace_verification_cycle(tmp_path, monkeypatch):
     # Configure TRUST_ROOT and PROJECT_ROOT for testing
     monkeypatch.setattr(config, "TRUST_ROOT", tmp_path / "keys")
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(config, "RUN_LOG_DIR", tmp_path / "runs")
     monkeypatch.setattr(config, "REPORTS_DIR", tmp_path / "reports")
 
     # 3. Sign Trace

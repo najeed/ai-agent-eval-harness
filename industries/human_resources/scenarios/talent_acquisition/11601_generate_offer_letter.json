@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate an Offer Letter",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11601-generate-offer-letter"
   },
   "description": "A recruiter needs to generate an official offer letter for a successful candidate.",
   "industry": "Human Resources",

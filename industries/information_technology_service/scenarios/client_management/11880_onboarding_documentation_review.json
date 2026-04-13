@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Client Onboarding - Final Documentation Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11880-onboarding-documentation-review"
   },
   "description": "Before handing a new client over to the service desk, the onboarding team conducts a final review of all documentation.",
   "industry": "Information Technology Service",

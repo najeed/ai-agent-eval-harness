@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Monthly Supply Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10577-create-supply-plan"
   },
   "description": "A supply planner needs to create the supply plan for a product family for the next month, balancing demand forecasts with production capacity.",
   "industry": "Chemicals",

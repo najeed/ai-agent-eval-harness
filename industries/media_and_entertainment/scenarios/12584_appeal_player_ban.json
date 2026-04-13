@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Player Appeals a Ban",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12584-appeal-player-ban"
   },
   "description": "A player who was banned for toxic behavior submits an appeal, claiming they have reformed.",
   "industry": "Media and Entertainment",

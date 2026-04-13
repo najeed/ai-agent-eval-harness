@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "EV Charging Billing Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11107-ev-charging-billing-dispute"
   },
   "description": "A customer claims they were overcharged for a public EV charging session.",
   "industry": "Energy",

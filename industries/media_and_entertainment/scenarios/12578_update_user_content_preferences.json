@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update User Content Preferences",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12578-update-user-content-preferences"
   },
   "description": "A user wants to update their content preferences to get better recommendations.",
   "industry": "Media and Entertainment",

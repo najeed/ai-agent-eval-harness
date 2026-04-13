@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Administer a Commercial Lease",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13224-administer-commercial-lease"
   },
   "description": "A new tenant has signed a lease for a retail space. The property manager must set them up in the system.",
   "industry": "Real Estate",

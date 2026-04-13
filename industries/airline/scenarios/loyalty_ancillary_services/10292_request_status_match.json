@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Status Match",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10292-request-status-match"
   },
   "description": "A frequent flyer who has elite status with a competing airline wants to request a status match with this airline.",
   "industry": "Airline",

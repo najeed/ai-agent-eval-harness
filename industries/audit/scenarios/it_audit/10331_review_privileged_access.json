@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Privileged Access to Servers",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10331-review-privileged-access"
   },
   "description": "An IT auditor reviews who has administrator-level access to critical production servers.",
   "industry": "Audit",

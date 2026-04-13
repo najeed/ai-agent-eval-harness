@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Inspection Contingency",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13299-manage-inspection-contingency"
   },
   "description": "After a home inspection reveals issues, the buyer's agent must negotiate repairs or credits with the seller's agent.",
   "industry": "Real Estate",

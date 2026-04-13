@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Close Out an Ethics Review",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12196-close-out-ethics-review"
   },
   "description": "After a conflicts check revealed a potential issue, the firm's ethics committee reviewed it and cleared the firm to take the case. An administrator needs to document this.",
   "industry": "Legal",

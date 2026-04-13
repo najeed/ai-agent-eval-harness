@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Client Onboarding - Deploy RMM Agents",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11811-client-onboarding-agent-deployment"
   },
   "description": "As part of a new client onboarding, a technician needs to deploy the RMM agent software to all of the client's computers.",
   "industry": "Information Technology Service",

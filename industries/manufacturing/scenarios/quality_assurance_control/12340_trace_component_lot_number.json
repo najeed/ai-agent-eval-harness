@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Trace a Component Lot Number",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12340-trace-component-lot-number"
   },
   "description": "A customer has reported an issue with a finished product. A quality engineer needs to trace the lot number of a specific component used in that product.",
   "industry": "Manufacturing",

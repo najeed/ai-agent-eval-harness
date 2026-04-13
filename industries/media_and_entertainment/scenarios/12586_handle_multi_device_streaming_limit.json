@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Hits Multi-Device Streaming Limit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12586-handle-multi-device-streaming-limit"
   },
   "description": "A user tries to start a stream but receives an error because too many devices are already streaming on their account.",
   "industry": "Media and Entertainment",

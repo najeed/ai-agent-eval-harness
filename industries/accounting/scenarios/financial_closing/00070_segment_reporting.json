@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Segment Reporting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00070-segment-reporting"
   },
   "description": "For external financial reporting, a public company needs to prepare segment information, breaking down its revenue and profit by business segment.",
   "industry": "Accounting",

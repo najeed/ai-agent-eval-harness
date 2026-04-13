@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate Comparative Market Analysis (CMA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13197-generate-cma"
   },
   "description": "A seller client requests a CMA to determine a listing price for their home. The agent must find comparable properties and generate a report.",
   "industry": "Real Estate",

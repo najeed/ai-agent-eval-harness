@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Notify Residents of Road Closure for a Parade",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13527-notify-residents-of-road-closure-for-a-parade"
   },
   "description": "The city has approved a parade. An operator must notify residents and businesses along the route of upcoming road closures.",
   "industry": "Smart Cities",

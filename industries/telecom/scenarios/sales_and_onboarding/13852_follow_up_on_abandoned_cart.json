@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Onboarding - Follow up on Abandoned Cart",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13852-follow-up-on-abandoned-cart"
   },
   "description": "An agent is tasked with calling a potential customer who started an online order but did not complete it.",
   "industry": "Telecom",

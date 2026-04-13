@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Student's Legal Name",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11019-update-student-name"
   },
   "description": "A student has legally changed their name and needs to update their official university records.",
   "industry": "Education",

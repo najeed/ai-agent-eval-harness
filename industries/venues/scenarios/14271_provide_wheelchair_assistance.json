@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Wheelchair Assistance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14271-provide-wheelchair-assistance"
   },
   "description": "An elderly guest arriving at the main entrance requests wheelchair assistance to get to their seat.",
   "industry": "Venues",

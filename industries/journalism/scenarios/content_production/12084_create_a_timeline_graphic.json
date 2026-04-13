@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a 'Timeline' Graphic",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12084-create-a-timeline-graphic"
   },
   "description": "For a story that unfolds over a long period, a visuals editor needs to create a timeline graphic to help readers understand the sequence of events.",
   "industry": "Journalism",

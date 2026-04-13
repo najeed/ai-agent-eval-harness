@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Hydraulic Fracturing Job",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12737-fracture-job-monitoring"
   },
   "description": "A completions engineer at a remote center monitors a hydraulic fracturing (fracking) job in real-time to ensure it is executed as designed.",
   "industry": "Oil and Gas",

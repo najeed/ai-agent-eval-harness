@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Plan Coverage for a Major Scheduled Event",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12027-plan-coverage-for-a-major-scheduled-event"
   },
   "description": "Editors are planning coverage for the upcoming Olympics. They need to coordinate assignments for multiple reporters and photographers.",
   "industry": "Journalism",

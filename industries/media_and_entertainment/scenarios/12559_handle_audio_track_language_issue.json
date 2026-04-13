@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Incorrect Audio Language Track",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12559-handle-audio-track-language-issue"
   },
   "description": "A user reports that a movie labeled as having a Spanish audio track is only playing in English.",
   "industry": "Media and Entertainment",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule an Interview Panel",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11600-schedule-interview-panel"
   },
   "description": "A recruiting coordinator needs to schedule a final round interview panel for a 'Data Analyst' candidate.",
   "industry": "Human Resources",

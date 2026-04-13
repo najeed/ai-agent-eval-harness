@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Well Cementing Job",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12760-manage-cementing-job"
   },
   "description": "A completions engineer supervises the cementing of a casing string to ensure it provides zonal isolation.",
   "industry": "Oil and Gas",

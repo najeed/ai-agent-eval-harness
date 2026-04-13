@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Concrete Slump Test",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11404-perform-concrete-slump-test"
   },
   "description": "A concrete truck has arrived on site. A field inspector must perform a slump test to ensure the concrete meets the project's workability specifications before it can be poured.",
   "industry": "Heavy Industries",

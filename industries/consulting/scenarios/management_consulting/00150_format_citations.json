@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Format Report Citations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00150-format-citations"
   },
   "description": "An agent must take a list of sources and format them into a consistent citation style (e.g., APA).",
   "industry": "Consulting",

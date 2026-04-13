@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform Test Method Validation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10554-perform-test-method-validation"
   },
   "description": "A newly authored analytical test method must be validated to prove it is accurate, precise, and robust before it can be used for QC testing.",
   "industry": "Chemicals",

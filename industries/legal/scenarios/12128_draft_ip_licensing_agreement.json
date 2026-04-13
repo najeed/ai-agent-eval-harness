@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Draft an IP Licensing Agreement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12128-draft-ip-licensing-agreement"
   },
   "description": "A corporate attorney needs to draft an agreement to license the company's patented technology to a third party.",
   "industry": "Legal",

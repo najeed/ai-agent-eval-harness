@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Contractor Submittal Status",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11474-track-submittal-status"
   },
   "description": "A project manager wants to know the status of a critical submittal that was sent to engineering for review.",
   "industry": "Heavy Industries",

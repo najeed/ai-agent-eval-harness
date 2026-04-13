@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assembly Line Stoppage due to Robot Fault",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10414-assembly-line-stoppage"
   },
   "description": "A welding robot on the main assembly line has faulted, causing a line stoppage. A production manager must resolve the issue.",
   "industry": "Automotive",

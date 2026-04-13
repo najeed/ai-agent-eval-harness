@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Minor Safety Incident",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12602-report-safety-incident"
   },
   "description": "A miner reports a minor incident (a slip, trip, or fall with no injury) using a mobile app to ensure it is logged and investigated.",
   "industry": "Mining",

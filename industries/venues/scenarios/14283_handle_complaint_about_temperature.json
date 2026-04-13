@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Guest Complaint About Temperature",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14283-handle-complaint-about-temperature"
   },
   "description": "A guest in a luxury suite complains that it is too cold.",
   "industry": "Venues",

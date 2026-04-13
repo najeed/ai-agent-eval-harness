@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Sell a Preferred Seat",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10246-sell-preferred-seat"
   },
   "description": "A customer is booking a flight and wants to select a preferred seat (e.g., exit row) that has an extra fee.",
   "industry": "Airline",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Service Animal Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14295-handle-service-animal-inquiry"
   },
   "description": "A guest calls to ask about the policy for bringing their service animal to an event.",
   "industry": "Venues",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Generate a New Lease Agreement",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13226-generate-lease-agreement"
   },
   "description": "A new tenant has been approved for a rental. The agent must generate the lease agreement for them to sign.",
   "industry": "Real Estate",

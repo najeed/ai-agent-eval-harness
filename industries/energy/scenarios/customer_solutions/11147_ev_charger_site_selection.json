@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Public EV Charger Site Selection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11147-ev-charger-site-selection"
   },
   "description": "A business development manager needs to identify the best locations to install new public DC fast chargers.",
   "industry": "Energy",

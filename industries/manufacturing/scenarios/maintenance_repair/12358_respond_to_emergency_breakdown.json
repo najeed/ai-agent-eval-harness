@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to an Emergency Breakdown",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12358-respond-to-emergency-breakdown"
   },
   "description": "A conveyor belt has suddenly stopped. A maintenance technician needs to respond to the corrective maintenance call.",
   "industry": "Manufacturing",

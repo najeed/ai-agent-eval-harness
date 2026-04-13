@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Source of Wealth for Large Deposit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11241-verify-source-of-wealth"
   },
   "description": "A client makes a large, unusual deposit, triggering a requirement to verify the source of the wealth.",
   "industry": "Finance",

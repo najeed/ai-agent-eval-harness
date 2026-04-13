@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Initiate a Corrective Action (CAPA)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12342-initiate-corrective-action-capa"
   },
   "description": "An internal audit has found a recurring process failure. A quality manager needs to initiate a formal Corrective and Preventive Action (CAPA) request.",
   "industry": "Manufacturing",

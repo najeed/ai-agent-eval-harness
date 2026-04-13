@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request an In-Force Annuity Illustration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11944-request-inforce-illustration"
   },
   "description": "An annuity holder wants to see a projection of their contract's future value.",
   "industry": "Insurance",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Combine Duplicate Loyalty Accounts",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11571-combine-loyalty-accounts"
   },
   "description": "A guest realizes they have two loyalty accounts under different email addresses and wants to merge them.",
   "industry": "Hospitality",

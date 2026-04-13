@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide Manual Product Recommendation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10924-provide-product-recommendation"
   },
   "description": "A customer asks a support agent for a recommendation for a running shoe for a specific type of terrain.",
   "industry": "Ecommerce",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Write Alternative Headlines for A/B Testing",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12020-write-alternative-headlines-for-ab-testing"
   },
   "description": "An editor wants to test which headline drives more traffic to an article and needs to write several different options.",
   "industry": "Journalism",

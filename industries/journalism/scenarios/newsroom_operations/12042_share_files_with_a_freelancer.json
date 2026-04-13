@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Share Files with a Freelancer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12042-share-files-with-a-freelancer"
   },
   "description": "An editor needs to securely share background documents and interview transcripts with a freelance reporter who is not on the internal network.",
   "industry": "Journalism",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Procure Bulk Material (Concrete)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11442-procure-bulk-material"
   },
   "description": "A project needs to procure 10,000 cubic meters of concrete for its foundation work. A procurement manager must issue a purchase order.",
   "industry": "Heavy Industries",

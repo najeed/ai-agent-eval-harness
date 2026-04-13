@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Navigational Channel Depth",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12973-check-channel-depth"
   },
   "description": "A deep-draft vessel is scheduled to arrive. The pilot needs to confirm the current depth of the navigational channel, considering the tide.",
   "industry": "Ports",

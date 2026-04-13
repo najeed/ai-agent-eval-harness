@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Report Missed Trash Collection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13011-report-missed-trash-collection"
   },
   "description": "A resident reports that their trash was not picked up on the scheduled collection day.",
   "industry": "Public Sector",

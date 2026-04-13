@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Log Analysis for Account Compromise",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10752-secops-forensics-log-analysis"
   },
   "description": "An investigator must analyze logs from multiple systems (AD, VPN, O365) to create a timeline of an account compromise.",
   "industry": "Cybersecurity",

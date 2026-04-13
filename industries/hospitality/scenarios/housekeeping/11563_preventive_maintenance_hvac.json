@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule Preventive Maintenance",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11563-preventive-maintenance-hvac"
   },
   "description": "An engineer needs to perform scheduled preventive maintenance (e.g., cleaning the filter) on a room's HVAC unit.",
   "industry": "Hospitality",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Build a Funnel Visualization",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12442-build-funnel-visualization"
   },
   "description": "An analyst needs to create a funnel visualization to see the drop-off rates between key steps on the website (e.g., from homepage to product page to cart to purchase).",
   "industry": "Marketing and Advertising",

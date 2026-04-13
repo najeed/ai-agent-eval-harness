@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform In Silico Toxicity Prediction",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12861-perform-in-silico-toxicity-prediction"
   },
   "description": "A computational chemist needs to predict the potential toxicity of a new drug candidate using a computer model before conducting animal studies.",
   "industry": "Pharmaceuticals and Life Sciences",

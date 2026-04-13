@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Live Stream a Game to a Mobile App",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13607-stream-game-to-mobile-app"
   },
   "description": "A team wants to live stream their game directly to their official mobile app.",
   "industry": "Sports",

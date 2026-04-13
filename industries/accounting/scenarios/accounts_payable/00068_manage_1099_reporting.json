@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Year-End 1099 Reporting",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00068-manage-1099-reporting"
   },
   "description": "At year-end, the AP team needs to identify all vendors who require a Form 1099-NEC for services and prepare the forms for filing.",
   "industry": "Accounting",

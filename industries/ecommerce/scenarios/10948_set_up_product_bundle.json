@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Set Up a Product Bundle",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10948-set-up-product-bundle"
   },
   "description": "A merchandiser wants to create a 'Starter Kit' bundle that includes three separate products sold together at a discounted price.",
   "industry": "Ecommerce",

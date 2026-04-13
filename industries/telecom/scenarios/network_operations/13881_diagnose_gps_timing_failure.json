@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Diagnose GPS Timing Failure on Cell Site",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13881-diagnose-gps-timing-failure"
   },
   "description": "A cell site reports a 'Loss of Sync' alarm, indicating a problem with its GPS timing source.",
   "industry": "Telecom",

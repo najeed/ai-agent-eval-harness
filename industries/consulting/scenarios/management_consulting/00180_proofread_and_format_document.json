@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Proofread and Format a Document",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00180-proofread-and-format-document"
   },
   "description": "An agent must proofread a draft report for spelling and grammar errors and format it according to the company's style guide.",
   "industry": "Consulting",

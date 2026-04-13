@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Negotiate a Contract Clause",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12122-negotiate-contract-clause"
   },
   "description": "During a contract negotiation, an in-house counsel needs to redline a clause and propose alternative language.",
   "industry": "Legal",

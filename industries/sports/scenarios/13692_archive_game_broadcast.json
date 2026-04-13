@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Archive a Game Broadcast",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13692-archive-game-broadcast"
   },
   "description": "After a game broadcast is complete, the full recording must be archived for future use.",
   "industry": "Sports",

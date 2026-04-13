@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage an Engineering Change Request (ECR)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10032-manage-engineering-change-request"
   },
   "description": "A design engineer has submitted an ECR to change the material of a bracket to a lighter alloy. This must be reviewed and approved.",
   "industry": "Aerospace",

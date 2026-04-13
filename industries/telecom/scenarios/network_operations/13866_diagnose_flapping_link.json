@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Diagnose 'Flapping' Network Link",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13866-diagnose-flapping-link"
   },
   "description": "A network link between two switches is repeatedly going up and down. The agent must stabilize it.",
   "industry": "Telecom",

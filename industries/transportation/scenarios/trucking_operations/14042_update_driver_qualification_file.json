@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update a Driver Qualification File",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14042-update-driver-qualification-file"
   },
   "description": "A driver's medical certificate is about to expire. A compliance manager must get the new certificate and update their file.",
   "industry": "Transportation",

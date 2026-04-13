@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Claim Residential Clean Energy Credit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13773-claim-residential-energy-credit"
   },
   "description": "A homeowner installed solar panels on their roof and wants to claim the federal tax credit.",
   "industry": "Tax",

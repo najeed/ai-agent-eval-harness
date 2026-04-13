@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Post Job to Career Site and Job Boards",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11616-post-job-to-career-site"
   },
   "description": "A new job requisition has been approved and needs to be posted externally.",
   "industry": "Human Resources",

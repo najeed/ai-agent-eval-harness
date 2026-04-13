@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Broken Soda Machine",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14256-handle-broken-soda-machine"
   },
   "description": "A concession stand reports that their soda fountain is not working.",
   "industry": "Venues",

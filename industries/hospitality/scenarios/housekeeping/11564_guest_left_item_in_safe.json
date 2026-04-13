@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Guest Left Item in Room Safe",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11564-guest-left-item-in-safe"
   },
   "description": "A housekeeper finds that a checked-out guest has left the room safe locked.",
   "industry": "Hospitality",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Review Policy for Rating Errors",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11995-review-policy-for-rating-errors"
   },
   "description": "A customer believes their premium is too high and is asking for a review of their policy for any potential rating errors.",
   "industry": "Insurance",

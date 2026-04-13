@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Private Railcar Storage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14093-manage-private-railcar-storage"
   },
   "description": "A customer wants to store their private railcars in the railroad's yard. An agent must process the request and bill for storage.",
   "industry": "Transportation",

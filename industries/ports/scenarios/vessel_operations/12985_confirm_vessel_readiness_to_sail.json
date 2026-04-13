@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Confirm Vessel's Readiness to Sail",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12985-confirm-vessel-readiness-to-sail"
   },
   "description": "Before scheduling departure services, the operator must confirm the vessel has completed all cargo work and received customs clearance.",
   "industry": "Ports",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Release Product from Quality Hold",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12348-release-product-from-quality-hold"
   },
   "description": "A batch of products was held for inspection and has now been cleared. A quality technician needs to release it for shipment.",
   "industry": "Manufacturing",

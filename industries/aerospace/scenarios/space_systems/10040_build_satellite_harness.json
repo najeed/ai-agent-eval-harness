@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Build a Satellite Wiring Harness",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10040-build-satellite-harness"
   },
   "description": "A technician needs to build a complex wiring harness that connects the satellite's main computer to its various subsystems.",
   "industry": "Aerospace",

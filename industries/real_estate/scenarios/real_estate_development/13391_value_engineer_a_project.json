@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Value Engineer a Project",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13391-value-engineer-a-project"
   },
   "description": "After bidding, construction costs for a new project come in over budget. The developer must work with the architect and contractor to 'value engineer' the project to reduce costs.",
   "industry": "Real Estate",

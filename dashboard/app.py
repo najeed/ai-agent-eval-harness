@@ -95,7 +95,7 @@ with col2:
 with col3:
     st.metric("Avg Parsimony", f"{avg_parsimony:.2f}")
 with col4:
-    st.metric("Scenario ID", metadata.get("scenario_id", "N/A"))
+    st.metric("ID", metadata.get("id", "N/A"))
 
 # Task Details
 st.divider()

@@ -16,7 +16,7 @@ The harness ships with a production-grade corpus of **5,000+ scenarios** across 
 
 Each evaluation is defined by a `.json` file in an industry's `scenarios` directory. The file has the following top-level keys:
 
--   `scenario_id`: A unique identifier for the scenario (e.g., `telecom-cs-001`).
+-   `id`: A unique identifier for the scenario (e.g., `telecom-cs-001`).
 -   `title`: A human-readable title.
 -   `description`: A brief explanation of the overall goal of the scenario.
 -   `use_case`: The specific business function being tested (e.g., `Customer Service`).

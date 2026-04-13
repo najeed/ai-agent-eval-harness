@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "GDPR Data Deletion Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10731-grc-compliance-audit-gdpr"
   },
   "description": "A GRC analyst must audit the process for handling 'right to be forgotten' requests to ensure compliance with GDPR.",
   "industry": "Cybersecurity",

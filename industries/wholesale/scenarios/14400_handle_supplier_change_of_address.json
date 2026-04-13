@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Supplier Change of Address",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14400-handle-supplier-change-of-address"
   },
   "description": "A supplier informs the company that they have moved to a new address.",
   "industry": "Wholesale",

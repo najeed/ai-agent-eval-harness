@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle an Aircraft on Ground (AOG) Situation",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10008-handle-aog-situation"
   },
   "description": "An aircraft is grounded at a remote airport due to a critical component failure. An MRO logistics agent must urgently ship a replacement part.",
   "industry": "Aerospace",

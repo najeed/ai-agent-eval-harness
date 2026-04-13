@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Biofuel Blending Mandate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12759-manage-biofuel-blending-mandate"
   },
   "description": "A compliance manager must ensure the company is meeting its government-mandated obligation to blend a certain percentage of ethanol into its gasoline pool.",
   "industry": "Oil and Gas",

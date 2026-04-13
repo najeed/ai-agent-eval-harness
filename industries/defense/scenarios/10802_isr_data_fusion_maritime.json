@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Maritime Smuggling Vessel Identification",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10802-isr-data-fusion-maritime"
   },
   "description": "An analyst must fuse satellite imagery (IMINT) with signals intelligence (SIGINT) to identify a vessel suspected of smuggling.",
   "industry": "Defense",

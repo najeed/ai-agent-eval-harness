@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Project Scoping - Firewall Upgrade",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11831-project-scope-firewall-upgrade"
   },
   "description": "A client with an aging firewall wants a quote to replace it with a new, next-generation model.",
   "industry": "Information Technology Service",

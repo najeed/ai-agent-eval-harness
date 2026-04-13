@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Merge Duplicate Customer Accounts",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10931-merge-duplicate-customer-accounts"
   },
   "description": "A system audit reveals a customer has two accounts under slightly different email addresses. An agent needs to merge them.",
   "industry": "Ecommerce",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Rental Pricing Based on Market",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13246-update-rental-pricing"
   },
   "description": "A property manager needs to determine the new asking rent for a unit that will soon be vacant.",
   "industry": "Real Estate",

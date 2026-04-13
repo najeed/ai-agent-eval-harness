@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve Debit Card Dispute (Provisional Credit)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11295-resolve-debit-card-dispute"
   },
   "description": "A customer disputes a transaction. After an initial investigation, the bank issues a provisional credit while the full investigation continues.",
   "industry": "Finance",

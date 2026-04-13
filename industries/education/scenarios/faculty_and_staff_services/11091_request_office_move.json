@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request an Office Move",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11091-request-office-move"
   },
   "description": "A faculty member is changing offices and needs to request assistance from facilities to move their belongings.",
   "industry": "Education",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Proactively Ask for Customer Feedback",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10935-ask-for-customer-feedback"
   },
   "description": "A few days after an order is delivered, an automated system should ask the customer for feedback on their experience.",
   "industry": "Ecommerce",

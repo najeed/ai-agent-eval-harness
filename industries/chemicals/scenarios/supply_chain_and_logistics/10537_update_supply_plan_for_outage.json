@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Update Supply Plan for Production Outage",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10537-update-supply-plan-for-outage"
   },
   "description": "A major equipment failure will take a production unit offline for 2 weeks. The supply planner must adjust the supply plan to mitigate customer impact.",
   "industry": "Chemicals",

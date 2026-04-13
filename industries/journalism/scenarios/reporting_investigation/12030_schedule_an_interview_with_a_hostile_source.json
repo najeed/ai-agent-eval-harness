@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Schedule an Interview with a Hostile Source",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12030-schedule-an-interview-with-a-hostile-source"
   },
   "description": "A reporter needs to interview a public figure who is known to be hostile to the press.",
   "industry": "Journalism",

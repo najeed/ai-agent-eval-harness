@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Develop Life-of-Mine Schedule",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12604-life-of-mine-schedule"
   },
   "description": "A long-term planning engineer develops a high-level life-of-mine (LOM) schedule to determine the sequence of mining and the overall project lifespan.",
   "industry": "Mining",

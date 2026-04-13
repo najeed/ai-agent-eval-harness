@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Logistics Convoy Resource Planning",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10874-mission-planning-resource-allocation-logistics"
   },
   "description": "A planner must select the right number and type of vehicles for a supply convoy, including gun trucks for security.",
   "industry": "Defense",

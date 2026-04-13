@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process a Direct Store Delivery (DSD)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13464-process-direct-store-delivery"
   },
   "description": "A vendor (e.g., a soda bottler) arrives to deliver products directly to the store, bypassing the warehouse.",
   "industry": "Retail",

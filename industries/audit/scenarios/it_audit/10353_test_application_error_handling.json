@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Test Application Error Handling",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10353-test-application-error-handling"
   },
   "description": "An IT auditor tests how an application handles errors to ensure data integrity.",
   "industry": "Audit",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Purchase Agreement Intake",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13100-new-purchase-agreement-intake"
   },
   "description": "An agent submits a fully executed purchase agreement. The transaction coordinator must review it and create a new transaction file.",
   "industry": "Real Estate",

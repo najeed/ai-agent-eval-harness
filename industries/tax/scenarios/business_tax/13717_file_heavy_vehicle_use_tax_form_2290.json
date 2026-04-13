@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File Heavy Vehicle Use Tax (Form 2290)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13717-file-heavy-vehicle-use-tax-form-2290"
   },
   "description": "A trucking company needs to file Form 2290 and pay the annual Heavy Vehicle Use Tax for its fleet.",
   "industry": "Tax",

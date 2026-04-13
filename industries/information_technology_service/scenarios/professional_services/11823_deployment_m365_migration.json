@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deployment - Execute M365 Migration",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11823-deployment-m365-migration"
   },
   "description": "A technician is performing the cutover migration from a client's on-premise Exchange server to Microsoft 365 over a weekend.",
   "industry": "Information Technology Service",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Billing Dispute - 3rd Party Charge",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13882-dispute-third-party-charge"
   },
   "description": "A customer has a charge on their bill from a 3rd party service (e.g., a mobile game subscription) they claim they did not authorize.",
   "industry": "Telecom",

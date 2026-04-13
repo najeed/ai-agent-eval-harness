@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calculate a Statute of Limitations",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12120-calculate-statute-of-limitations"
   },
   "description": "For a new personal injury case, a paralegal must calculate the statute of limitations to determine the deadline for filing a lawsuit.",
   "industry": "Legal",

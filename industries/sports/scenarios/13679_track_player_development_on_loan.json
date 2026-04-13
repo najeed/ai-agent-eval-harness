@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Player Development on Loan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13679-track-player-development-on-loan"
   },
   "description": "A young player has been sent on loan to another team to get more playing time. A manager needs to track their progress.",
   "industry": "Sports",

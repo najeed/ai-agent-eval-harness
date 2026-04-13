@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Monitor Overland Conveyor",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12665-manage-conveyor-belt"
   },
   "description": "A control room operator monitors a long overland conveyor that transports ore from the mine to the processing plant.",
   "industry": "Mining",

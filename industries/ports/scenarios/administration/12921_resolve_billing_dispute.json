@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Resolve a Customer Billing Dispute",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12921-resolve-billing-dispute"
   },
   "description": "A trucking company disputes a charge on their invoice, claiming they were billed for storage fees on a container that was on hold by customs.",
   "industry": "Ports",

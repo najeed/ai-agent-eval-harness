@@ -63,11 +63,12 @@ async def analyze_repo(repo_url: str) -> list:
 
     scenarios = []
     for i, pattern in enumerate(found_patterns):
-        scenario_id = f"auto_{pattern['type']}_{i}"
+        identifier = f"auto_{pattern['type']}_{i}"
         scenario = {
             "aes_version": 1.4,
+            "id": identifier,
             "metadata": {
-                "id": scenario_id,
+                "id": identifier,
                 "name": f"Auto-generated for {pattern['match']}",
                 "source_file": pattern["file"],
                 "pattern": pattern["match"],
@@ -85,7 +86,7 @@ async def analyze_repo(repo_url: str) -> list:
             },
         }
 
-        with open(output_dir / f"{scenario_id}.json", "w") as f:
+        with open(output_dir / f"{identifier}.json", "w") as f:
             json.dump(scenario, f, indent=2)
         scenarios.append(scenario)
 

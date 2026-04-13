@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Add a New General Ledger Account",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00058-maintain-chart-of-accounts"
   },
   "description": "The controller has requested a new expense account be added to the chart of accounts to track software subscription costs more accurately.",
   "industry": "Accounting",

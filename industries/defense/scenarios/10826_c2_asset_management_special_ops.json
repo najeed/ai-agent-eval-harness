@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Special Operations Asset Management",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10826-c2-asset-management-special-ops"
   },
   "description": "A C2 operator must coordinate air, ground, and intelligence assets to support a special operations team conducting a raid.",
   "industry": "Defense",

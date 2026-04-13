@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create Personalized Content Carousel",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12566-create-personalized-content-carousel"
   },
   "description": "A streaming service wants to create a new personalized carousel on the homepage titled 'Top Picks For You'.",
   "industry": "Media and Entertainment",

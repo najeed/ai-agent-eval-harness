@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Approve a Contractor Submittal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11450-approve-contractor-submittal"
   },
   "description": "A contractor has submitted a document for approval (e.g., a safety plan or a technical procedure). A project engineer must review and approve it.",
   "industry": "Heavy Industries",

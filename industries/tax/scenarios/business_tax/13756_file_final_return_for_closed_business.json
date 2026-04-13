@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "File Final Return for a Closed Business",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13756-file-final-return-for-closed-business"
   },
   "description": "A sole proprietor closed their business mid-year and needs to file a final Schedule C.",
   "industry": "Tax",

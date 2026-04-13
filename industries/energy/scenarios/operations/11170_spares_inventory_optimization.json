@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Critical Spares Inventory Optimization",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11170-spares-inventory-optimization"
   },
   "description": "An asset manager wants to optimize the inventory of critical spare parts (e.g., inverters, transformers) across their portfolio to minimize costs while ensuring availability.",
   "industry": "Energy",

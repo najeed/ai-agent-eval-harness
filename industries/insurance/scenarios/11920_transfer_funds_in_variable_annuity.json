@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Transfer Funds in a Variable Annuity",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11920-transfer-funds-in-variable-annuity"
   },
   "description": "A variable annuity holder wants to move money from a bond subaccount to an equity subaccount.",
   "industry": "Insurance",

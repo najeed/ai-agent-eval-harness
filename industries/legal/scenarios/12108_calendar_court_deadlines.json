@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Calendar Court-Ordered Deadlines",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12108-calendar-court-deadlines"
   },
   "description": "A paralegal receives a scheduling order from a court and must calendar all deadlines.",
   "industry": "Legal",

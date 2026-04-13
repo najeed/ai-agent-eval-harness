@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Pilot Fatigue Report",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10238-handle-pilot-fatigue-report"
   },
   "description": "A pilot reports they are too fatigued to safely operate their next scheduled flight. A crew scheduler must handle the situation.",
   "industry": "Airline",

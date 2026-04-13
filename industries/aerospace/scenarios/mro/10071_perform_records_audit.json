@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Perform an Aircraft Records Audit",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10071-perform-records-audit"
   },
   "description": "An airline is leasing a used aircraft. An auditor must perform a complete records audit to ensure the aircraft is airworthy and compliant before the airline accepts it.",
   "industry": "Aerospace",

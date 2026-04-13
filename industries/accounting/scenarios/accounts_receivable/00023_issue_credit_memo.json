@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Issue a Credit Memo",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00023-issue-credit-memo"
   },
   "description": "A customer returned damaged goods. After customer service approves the return, accounting needs to issue a credit memo to the customer.",
   "industry": "Accounting",

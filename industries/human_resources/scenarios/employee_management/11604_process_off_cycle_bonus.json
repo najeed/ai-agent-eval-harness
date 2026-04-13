@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Process an Off-Cycle Bonus Payment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11604-process-off-cycle-bonus"
   },
   "description": "A manager has approved a spot bonus for an employee that needs to be paid outside of the regular payroll cycle.",
   "industry": "Human Resources",

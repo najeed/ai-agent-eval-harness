@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Export Data for a Client",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12446-export-data-for-client"
   },
   "description": "A client has requested a raw data export of their campaign performance from the last month.",
   "industry": "Marketing and Advertising",

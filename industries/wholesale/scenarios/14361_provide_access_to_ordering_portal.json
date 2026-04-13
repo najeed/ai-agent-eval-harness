@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Provide a Retailer with Access to the Online Ordering Portal",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14361-provide-access-to-ordering-portal"
   },
   "description": "A retailer's employee needs an account set up so they can place orders through the self-service online portal.",
   "industry": "Wholesale",

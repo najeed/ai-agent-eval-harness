@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Customer Acquisition - Mobile Plan",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13900-new-customer-mobile-plan"
   },
   "description": "A potential new customer wants to sign up for a mobile plan.",
   "industry": "Telecom",

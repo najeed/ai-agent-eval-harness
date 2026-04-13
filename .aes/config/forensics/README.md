@@ -1,5 +1,5 @@
 # Forensic Configuration
-This directory contains the authoritative forensic policies for the AgentEval harness.
+This directory contains the forensic policies for the AgentV harness.
 
 ## Contents
 - `policy.json`: The active forensic policy (Tier 1-3 definitions).

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle Request for Bulk Waste Pickup",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13542-handle-request-for-bulk-waste-pickup"
   },
   "description": "A citizen requests a special pickup for large items (e.g., furniture, appliances) via the city's service portal.",
   "industry": "Smart Cities",

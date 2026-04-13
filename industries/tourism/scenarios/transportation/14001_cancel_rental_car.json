@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cancel a Rental Car Booking",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14001-cancel-rental-car"
   },
   "description": "A customer needs to cancel their upcoming car rental reservation.",
   "industry": "Tourism",

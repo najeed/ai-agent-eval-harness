@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Request a Building Inspection",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13001-request-building-inspection"
   },
   "description": "A construction contractor needs to schedule a framing inspection for a new home build.",
   "industry": "Public Sector",

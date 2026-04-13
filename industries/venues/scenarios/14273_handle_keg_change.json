@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Handle a Keg Change",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14273-handle-keg-change"
   },
   "description": "A bartender reports that the keg for a specific beer has run out.",
   "industry": "Venues",

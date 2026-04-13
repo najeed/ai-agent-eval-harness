@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Verify Subcontractor's Insurance Certificate",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10637-check-insurance-certificate"
   },
   "description": "Before a new plumbing subcontractor can start work, the contract manager must verify they have submitted a valid certificate of insurance (COI).",
   "industry": "Construction",

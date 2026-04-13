@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Reroute Public Bus Due to Road Closure",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13499-reroute-public-bus-due-to-road-closure"
   },
   "description": "An unplanned road closure requires an operator to reroute an in-service public bus and notify passengers.",
   "industry": "Smart Cities",

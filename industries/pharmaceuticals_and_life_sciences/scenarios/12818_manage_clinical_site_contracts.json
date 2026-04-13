@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Clinical Trial Site Contract",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12818-manage-clinical-site-contracts"
   },
   "description": "A clinical operations manager needs to create a clinical trial agreement (CTA) for a new site and track its approval status.",
   "industry": "Pharmaceuticals and Life Sciences",

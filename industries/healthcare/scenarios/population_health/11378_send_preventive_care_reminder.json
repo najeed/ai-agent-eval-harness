@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send Preventive Care Reminder",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11378-send-preventive-care-reminder"
   },
   "description": "A medical assistant uses a population health tool to send reminders to all female patients over 50 who are due for a mammogram.",
   "industry": "Healthcare",

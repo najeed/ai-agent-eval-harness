@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Check Elevator Status after Power Surge",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13568-check-elevator-status-after-power-surge"
   },
   "description": "After a power surge, an operator must check the status of all elevators in city-owned buildings to ensure none are stuck.",
   "industry": "Smart Cities",

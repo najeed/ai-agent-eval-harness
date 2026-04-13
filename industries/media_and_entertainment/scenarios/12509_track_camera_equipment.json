@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Track Missing Camera Equipment",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12509-track-camera-equipment"
   },
   "description": "A high-value camera lens is reported missing from a production set. An agent must track its last known location.",
   "industry": "Media and Entertainment",

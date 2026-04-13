@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare a Backup Offer",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13183-prepare-a-backup-offer"
   },
   "description": "A buyer wants to make an offer on a property that is already under contract. The agent needs to prepare it as a backup offer.",
   "industry": "Real Estate",

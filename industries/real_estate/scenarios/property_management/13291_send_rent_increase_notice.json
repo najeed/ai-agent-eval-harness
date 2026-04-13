@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Send a Rent Increase Notice",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13291-send-rent-increase-notice"
   },
   "description": "A property owner has decided to increase rent for a month-to-month tenant. The manager must send a legally compliant notice.",
   "industry": "Real Estate",

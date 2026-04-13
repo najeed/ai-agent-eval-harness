@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Respond to a Request for Proposals (RFP)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13340-respond-to-request-for-proposals"
   },
   "description": "A city issues an RFP for the development of a city-owned parcel of land. A development company decides to respond.",
   "industry": "Real Estate",

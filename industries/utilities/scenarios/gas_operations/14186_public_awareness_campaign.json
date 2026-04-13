@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Launch 'Call Before You Dig' Campaign",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14186-public-awareness-campaign"
   },
   "description": "The public affairs department is launching a public awareness campaign to remind people to call 811 before any digging projects.",
   "industry": "Utilities",

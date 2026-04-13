@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Find an Expert for Interview",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "00137-find-expert-for-interview"
   },
   "description": "An agent must find three potential industry experts on a niche topic ('cold chain logistics for pharmaceuticals') to be interviewed for a project.",
   "industry": "Consulting",

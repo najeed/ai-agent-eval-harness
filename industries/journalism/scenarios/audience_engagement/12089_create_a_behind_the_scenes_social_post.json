@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a 'Behind the Scenes' Social Post",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12089-create-a-behind-the-scenes-social-post"
   },
   "description": "To build a connection with the audience, a reporter posts a 'behind the scenes' photo or video from their reporting process.",
   "industry": "Journalism",

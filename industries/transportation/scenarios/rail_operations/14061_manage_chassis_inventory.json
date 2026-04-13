@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Manage Chassis Inventory",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "14061-manage-chassis-inventory"
   },
   "description": "An intermodal terminal manager needs to ensure there are enough available chassis (the trailer frames that hold containers) for upcoming train arrivals.",
   "industry": "Transportation",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Allocate Field Production Volumes",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12738-allocate-production-volumes"
   },
   "description": "A production accountant allocates the total oil, gas, and water production measured at a central facility back to the individual wells that feed into it.",
   "industry": "Oil and Gas",

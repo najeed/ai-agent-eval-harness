@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Diagnose High Latency in Core Network",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13909-diagnose-high-latency"
   },
   "description": "Multiple alerts indicate high latency between two core network routers. The agent must find the cause.",
   "industry": "Telecom",
