@@ -3,7 +3,9 @@
     "id": "test_scenario_1",
     "title": "Mock Success Scenario",
     "industry": "finance",
-    "timestamp": "2026-04-05T12:00:00Z"
+    "timestamp": "2026-04-05T12:00:00Z",
+    "name": "test_scenario_1",
+    "compliance_level": "Standard"
   },
   "results": [
     {

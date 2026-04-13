@@ -3,7 +3,8 @@
   "metadata": {
     "name": "State Refinement: The Recursion Paradox",
     "description": "A workflow designed with a conditional retry loop for higher precision.",
-    "id": "dag_loop_001"
+    "id": "dag_loop_001",
+    "compliance_level": "Standard"
   },
   "industry": "general",
   "workflow": {
@@ -49,5 +50,3 @@
     }
   }
 }
-
-

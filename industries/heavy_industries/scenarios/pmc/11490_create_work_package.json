@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Work Package",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11490_create_work_package"
   },
   "description": "A construction manager is breaking down a large part of the project into a smaller, manageable work package to be issued to a field supervisor.",
   "industry": "Heavy Industries",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Analyze Bulk vs. Packaged Logistics Cost",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10562_bulk_vs_packaged_logistics"
   },
   "description": "A planner needs to decide whether it's more cost-effective to ship a large order as a full bulk tanker or as packaged drums.",
   "industry": "Chemicals",

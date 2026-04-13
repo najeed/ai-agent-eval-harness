@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Upsell a Spa Package",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11590_spa_package_upsell"
   },
   "description": "A guest booking a room for a weekend getaway is offered a special rate on a spa package.",
   "industry": "Hospitality",

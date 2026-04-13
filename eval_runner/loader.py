@@ -175,10 +175,12 @@ def _normalize_identity(scenario_data: dict, file_path: Path) -> dict:
     """
     metadata = scenario_data.get("metadata", {})
 
-    # 1. Authoritative Resolution Cascade (Guardrails v3.4 Section 1.6)
-    # Priority: metadata.id -> scenario_data.id -> legacy scenario_id -> filename stem
-    legacy_id = scenario_data.pop("scenario_id", None)
-    identifier = metadata.get("id") or scenario_data.get("id") or legacy_id or file_path.stem
+    # 1. Authoritative Resolution (AES v1.4.0 Compliance)
+    # The schema check ensures metadata.id exists.
+    identifier = metadata.get("id")
+    if not identifier:
+        # Fallback for internal robustness, though schema validation should prevent this
+        identifier = scenario_data.get("id") or file_path.stem
 
     # 2. Top-level Engine ID (Required for evaluation context and reporting)
     scenario_data["id"] = identifier
@@ -188,9 +190,7 @@ def _normalize_identity(scenario_data: dict, file_path: Path) -> dict:
         metadata["id"] = identifier
     scenario_data["metadata"] = metadata
 
-    # 4. Clean up legacy traces to prevent audit pollution
-    if "scenario_id" in scenario_data:
-        del scenario_data["scenario_id"]
+    # 4. Pure Architecture: No legacy fallbacks or debt.
 
     return scenario_data
 

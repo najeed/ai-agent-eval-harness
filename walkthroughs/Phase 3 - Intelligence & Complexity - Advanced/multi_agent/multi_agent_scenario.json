@@ -3,7 +3,8 @@
   "metadata": {
     "name": "Collaborative Intelligence: The Silent Swarm",
     "description": "A high-stakes interaction involving a Researcher, a Writer, and an Auditor.",
-    "id": "multi_agent_001"
+    "id": "multi_agent_001",
+    "compliance_level": "Standard"
   },
   "industry": "intelligence",
   "workflow": {
@@ -57,5 +58,3 @@
     }
   }
 }
-
-

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Prepare Commercial Sale Marketing Package",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13234_prepare_marketing_package"
   },
   "description": "An agent is listing a commercial building for sale and needs to create a comprehensive marketing package (offering memorandum).",
   "industry": "Real Estate",

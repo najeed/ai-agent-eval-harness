@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book a Dinner Cruise Package",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13933_book_dinner_cruise_package"
   },
   "description": "A customer wants to book a dinner cruise package on the Seine River in Paris.",
   "industry": "Tourism",

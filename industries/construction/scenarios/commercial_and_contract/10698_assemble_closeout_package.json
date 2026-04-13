@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Assemble Project Closeout Package",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10698_assemble_closeout_package"
   },
   "description": "At the end of a project, a project engineer must assemble the final closeout package for the client, including all warranties and O&M manuals.",
   "industry": "Construction",

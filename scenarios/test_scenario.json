@@ -6,6 +6,7 @@
     "compliance_level": "Standard",
     "capabilities": [],
     "standards_registry": [],
-    "id": "test_log_dir"
+    "id": "test_log_dir",
+    "name": "Test Log Dir Creation"
   }
 }

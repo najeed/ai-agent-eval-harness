@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Diagnose Misconfigured VLAN",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13870_diagnose_misconfigured_vlan"
   },
   "description": "A new device on the network cannot get an IP address. The agent suspects it was placed in the wrong VLAN.",
   "industry": "Telecom",

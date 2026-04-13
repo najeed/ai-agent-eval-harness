@@ -3,7 +3,8 @@
   "metadata": {
     "name": "Mixed-Fleet Industrial Evaluation",
     "description": "A high-concurrency suite spanning HTTP and Local protocols.",
-    "id": "batch_fleet_001"
+    "id": "batch_fleet_001",
+    "compliance_level": "Standard"
   },
   "concurrency": 5,
   "attempts": 3,
@@ -22,5 +23,3 @@
     }
   ]
 }
-
-

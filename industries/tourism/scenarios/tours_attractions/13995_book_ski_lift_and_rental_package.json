@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Book a Ski Lift and Rental Package",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13995_book_ski_lift_and_rental_package"
   },
   "description": "A skier wants to book a 2-day lift ticket and a full ski rental package (skis, boots, poles).",
   "industry": "Tourism",

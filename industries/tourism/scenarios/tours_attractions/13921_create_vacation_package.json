@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Vacation Package",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "13921_create_vacation_package"
   },
   "description": "A customer wants to book a 3-night vacation package to Orlando, including flights, hotel, and theme park tickets.",
   "industry": "Tourism",

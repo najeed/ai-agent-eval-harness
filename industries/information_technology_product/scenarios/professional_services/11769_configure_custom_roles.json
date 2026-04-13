@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Configure Custom User Roles",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11769_configure_custom_roles"
   },
   "description": "A customer needs several custom user roles configured to match their specific organizational structure and security policies.",
   "industry": "Information Technology Product",

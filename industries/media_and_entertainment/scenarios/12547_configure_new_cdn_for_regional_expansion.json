@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Configure New CDN for Regional Expansion",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12547_configure_new_cdn_for_regional_expansion"
   },
   "description": "A streaming service is expanding to a new region (e.g., Southeast Asia) and needs to configure a new CDN provider for that region.",
   "industry": "Media and Entertainment",

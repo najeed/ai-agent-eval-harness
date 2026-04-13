@@ -12,6 +12,7 @@
     "compliance_level": "Standard",
     "capabilities": [],
     "standards_registry": [],
-    "id": "test_eval_v1"
+    "id": "test_eval_v1",
+    "name": "Test Eval V1"
   }
 }

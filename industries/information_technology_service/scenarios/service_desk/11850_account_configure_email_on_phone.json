@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "User Account - Configure Email on Mobile Phone",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11850_account_configure_email_on_phone"
   },
   "description": "A user needs help setting up their company email account on their personal mobile phone.",
   "industry": "Information Technology Service",

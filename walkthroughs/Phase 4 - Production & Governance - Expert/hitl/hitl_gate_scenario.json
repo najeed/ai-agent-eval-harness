@@ -4,7 +4,8 @@
     "name": "Industrial Hot Patch",
     "id": "scenario_hitl_001",
     "industry": "finance",
-    "risk_level": "CRITICAL"
+    "risk_level": "CRITICAL",
+    "compliance_level": "Standard"
   },
   "workflow": {
     "nodes": [
@@ -23,8 +24,14 @@
       }
     ],
     "edges": [
-      ["scan_exploit", "propose_patch"],
-      ["propose_patch", "execute_patch"]
+      [
+        "scan_exploit",
+        "propose_patch"
+      ],
+      [
+        "propose_patch",
+        "execute_patch"
+      ]
     ]
   }
 }

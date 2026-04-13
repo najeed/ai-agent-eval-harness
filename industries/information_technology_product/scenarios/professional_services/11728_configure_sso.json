@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Configure Single Sign-On (SSO)",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11728_configure_sso"
   },
   "description": "An enterprise customer requires the product to be configured with their Identity Provider (e.g., Okta) for Single Sign-On.",
   "industry": "Information Technology Product",

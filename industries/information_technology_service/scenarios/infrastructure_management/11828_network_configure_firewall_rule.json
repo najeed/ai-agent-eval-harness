@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Server & Network - Configure New Firewall Rule",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11828_network_configure_firewall_rule"
   },
   "description": "A client needs to allow a new third-party vendor to access a specific server on a specific port.",
   "industry": "Information Technology Service",

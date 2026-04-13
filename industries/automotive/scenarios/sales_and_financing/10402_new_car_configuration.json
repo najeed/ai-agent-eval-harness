@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "New Car Configuration Inquiry",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "10402_new_car_configuration"
   },
   "description": "A potential customer wants to configure a new SUV and get a price quote.",
   "industry": "Automotive",

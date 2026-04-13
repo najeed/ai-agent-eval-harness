@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Create a Video Package from an Interview",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "12003_create_a_video_package_from_an_interview"
   },
   "description": "A video journalist has a 30-minute interview and needs to edit it down to a 2-minute video package for the web, adding B-roll and graphics.",
   "industry": "Journalism",

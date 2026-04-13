@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Deployment - Configure New Firewall",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11883_deployment_configure_firewall"
   },
   "description": "As part of a firewall replacement project, a technician needs to configure the new firewall.",
   "industry": "Information Technology Service",

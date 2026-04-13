@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Backup - Configure New Backup Job",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11860_backup_configure_new_job"
   },
   "description": "A new server has been deployed, and it needs to be added to the nightly backup schedule.",
   "industry": "Information Technology Service",

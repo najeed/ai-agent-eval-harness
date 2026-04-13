@@ -15,9 +15,7 @@ def test_load_valid_scenario(tmp_path):
     """Test loading a valid scenario file with proper v1.2 JSON structure."""
     scenario_content = {
         "aes_version": 1.4,
-        "id": "test_scenario",
         "title": "Test Scenario",
-        "industry": "test",
         "description": "A test scenario.",
         "use_case": "Testing",
         "core_function": "Unit Test",
@@ -118,7 +116,6 @@ def test_load_dataset_single_json(tmp_path):
     scenario_file = tmp_path / "test.json"
     scenario_data = {
         "aes_version": 1.4,
-        "id": "test-123",
         "title": "Test",
         "description": "Test description",
         "industry": "test",
@@ -137,7 +134,6 @@ def test_load_dataset_directory(tmp_path):
         json.dumps(
             {
                 "aes_version": 1.4,
-                "id": "s1",
                 "title": "S1",
                 "industry": "i1",
                 "description": "d1",
@@ -150,7 +146,6 @@ def test_load_dataset_directory(tmp_path):
         json.dumps(
             {
                 "aes_version": 1.4,
-                "id": "s2",
                 "title": "S2",
                 "industry": "i2",
                 "description": "d2",

@@ -2,7 +2,8 @@
   "aes_version": 1.4,
   "metadata": {
     "name": "Cloud - Configure S3 Bucket",
-    "compliance_level": "Standard"
+    "compliance_level": "Standard",
+    "id": "11844_cloud_configure_storage_bucket"
   },
   "description": "A client needs a new, secure Amazon S3 bucket to store application backups.",
   "industry": "Information Technology Service",
