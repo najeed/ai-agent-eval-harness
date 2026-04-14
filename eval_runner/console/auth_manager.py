@@ -1,3 +1,4 @@
+import os
 from abc import ABC, abstractmethod
 
 
@@ -87,7 +88,10 @@ class StaticKeyProvider(AuthManager):
         """Strict PBAC implementation: Verifies granular permissions node without RBAC fallback."""
         user_perms = user.get("permissions", [])
         # Authoritative PBAC check
-        return permission_node in user_perms
+        result = permission_node in user_perms
+        if not result and os.getenv("DEBUG", "false").lower() == "true":
+            print(f"   [Auth] [DENIED] Node '{permission_node}' not in user perms: {user_perms}")
+        return result
 
 
 def get_auth_provider() -> AuthManager:
@@ -135,6 +139,9 @@ def require_permission(permission_node: str):
             )
 
             if api_key:
+                # [Hardening] Trim whitespace to prevent 401s from invisible formatting
+                # in .env/headers
+                api_key = api_key.strip()
                 user = provider.authenticate(api_key)
                 if user:
                     if provider.has_permission(user, permission_node):
@@ -145,12 +152,16 @@ def require_permission(permission_node: str):
 
             if not api_key and not user:
                 print(
-                    f"   [Auth] 401 Unauthorized - No session and no X-AES-API-KEY header (Path: {request.path})",  # noqa: E501
+                    f"   [Auth] 401 Unauthorized - No session and no key "
+                    f"(Node: {permission_node}, Path: {request.path})",
                     flush=True,
                 )
             elif api_key and not user:
+                # Safe Diagnostic: log the length and a hint of the key (first 4 chars)
+                key_hint = f"{api_key[:4]}...{api_key[-4:]}" if len(api_key) > 8 else "***"
                 print(
-                    f"   [Auth] 401 Unauthorized - Invalid API Key provided (Path: {request.path})",
+                    f"   [Auth] 401 Unauthorized - Invalid key: {key_hint} "
+                    f"(Len: {len(api_key)}) for {request.path}",
                     flush=True,
                 )
 

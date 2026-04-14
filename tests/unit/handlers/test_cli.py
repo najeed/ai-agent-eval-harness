@@ -5,7 +5,7 @@ Unit tests for the Onboarding CLI (eval_runner.cli).
 Updated for subparser architecture and robustness.
 """
 
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -55,66 +55,96 @@ def test_detect_framework_custom(tmp_path):
 
 def test_install_command():
     """Verify install command handler. (Migrated from test_visionary_cli.py)"""
-    with patch("eval_runner.handlers.environment.handle_install") as mock_install:
+    with patch(
+        "eval_runner.handlers.environment.handle_install", new_callable=AsyncMock, return_value=0
+    ) as mock_install:
         with patch("sys.argv", ["agentv", "install", "telecom-pack"]):
-            with patch("eval_runner.cli.safe_run_async") as mock_safe:
-                cli.main()
+            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
+                with pytest.raises(SystemExit) as e:
+                    cli.main()
+                assert e.value.code == 0
                 mock_install.assert_called_once()
                 mock_safe.assert_called_once()
 
 
 def test_analyze_command():
     """Verify analyze command handler. (Migrated from test_visionary_cli.py)"""
-    with patch("eval_runner.handlers.environment.handle_analyze") as mock_analyze:
+    with patch(
+        "eval_runner.handlers.environment.handle_analyze", new_callable=AsyncMock, return_value=0
+    ) as mock_analyze:
         with patch("sys.argv", ["agentv", "analyze", "https://github.com/test"]):
-            with patch("eval_runner.cli.safe_run_async") as mock_safe:
-                cli.main()
+            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
+                with pytest.raises(SystemExit) as e:
+                    cli.main()
+                assert e.value.code == 0
                 mock_analyze.assert_called_once()
                 mock_safe.assert_called_once()
 
 
 def test_ci_generate_command():
     """Verify CI generate command handler. (Migrated from test_visionary_cli.py)"""
-    with patch("eval_runner.handlers.environment.handle_ci_generate") as mock_ci:
+    with patch(
+        "eval_runner.handlers.environment.handle_ci_generate",
+        new_callable=AsyncMock,
+        return_value=0,
+    ) as mock_ci:
         with patch("sys.argv", ["agentv", "ci", "generate"]):
-            with patch("eval_runner.cli.safe_run_async") as mock_safe:
-                cli.main()
+            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
+                with pytest.raises(SystemExit) as e:
+                    cli.main()
+                assert e.value.code == 0
                 mock_ci.assert_called_once()
                 mock_safe.assert_called_once()
 
 
 def test_explain_command():
     """Verify explain command handler uses --run-id."""
-    with patch("eval_runner.handlers.analysis.handle_explain") as mock_explain:
+    with patch(
+        "eval_runner.handlers.analysis.handle_explain", new_callable=AsyncMock, return_value=0
+    ) as mock_explain:
         with patch("sys.argv", ["agentv", "explain", "--run-id", "test-run"]):
-            cli.main()
+            with pytest.raises(SystemExit) as e:
+                cli.main()
+            assert e.value.code == 0
             mock_explain.assert_called_once()
 
 
 def test_evaluate_command():
     """Verify evaluate command handler uses --path."""
-    with patch("eval_runner.handlers.evaluation.handle_evaluate") as mock_eval:
+    with patch(
+        "eval_runner.handlers.evaluation.handle_evaluate", new_callable=AsyncMock, return_value=0
+    ) as mock_eval:
         with patch("sys.argv", ["agentv", "evaluate", "--path", "scenarios/finance/"]):
-            with patch("eval_runner.cli.safe_run_async") as mock_safe:
-                cli.main()
+            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
+                with pytest.raises(SystemExit) as e:
+                    cli.main()
+                assert e.value.code == 0
                 mock_eval.assert_called_once()
                 mock_safe.assert_called_once()
 
 
 def test_report_command():
     """Verify report command handler uses --run-id."""
-    with patch("eval_runner.handlers.analysis.handle_report") as mock_report:
+    with patch(
+        "eval_runner.handlers.analysis.handle_report", new_callable=AsyncMock, return_value=0
+    ) as mock_report:
         with patch("sys.argv", ["agentv", "report", "--run-id", "test-run"]):
-            cli.main()
+            with pytest.raises(SystemExit) as e:
+                cli.main()
+            assert e.value.code == 0
             mock_report.assert_called_once()
 
 
 def test_lint_command():
     """Verify lint command handler uses --path."""
-    with patch("eval_runner.handlers.scenarios.handle_lint") as mock_lint:
+    with patch(
+        "eval_runner.handlers.scenarios.handle_lint", new_callable=AsyncMock, return_value=0
+    ) as mock_lint:
         with patch("sys.argv", ["agentv", "lint", "--path", "scenarios/"]):
-            with patch("eval_runner.cli.safe_run_async") as mock_safe:
-                cli.main()
+            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
+                with pytest.raises(SystemExit) as e:
+                    cli.main()
+                assert e.value.code == 0
                 mock_lint.assert_called_once()
                 mock_safe.assert_called_once()
 
@@ -126,46 +156,66 @@ async def test_handle_init_success(tmp_path, monkeypatch):
     with (
         patch("sys.argv", ["agentv", "init"]),
         patch("builtins.input", side_effect=["y", "http://localhost:5001/execute_task"]),
-        patch("eval_runner.cli.safe_run_async") as mock_safe,
+        patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe,
     ):
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
         mock_safe.assert_called_once()
 
 
 def test_calibrate_command():
     """Verify calibrate command handler uses --run-id."""
-    with patch("eval_runner.handlers.analysis.handle_calibrate") as mock_cal:
+    with patch(
+        "eval_runner.handlers.analysis.handle_calibrate", new_callable=AsyncMock, return_value=0
+    ) as mock_cal:
         with patch("sys.argv", ["agentv", "calibrate", "--run-id", "test-run"]):
-            cli.main()
+            with pytest.raises(SystemExit) as e:
+                cli.main()
+            assert e.value.code == 0
             mock_cal.assert_called_once()
 
 
 def test_aes_validate_command():
     """Verify aes validate command handler uses --path."""
-    with patch("eval_runner.handlers.scenarios.handle_aes_validate") as mock_aes:
+    with patch(
+        "eval_runner.handlers.scenarios.handle_aes_validate", new_callable=AsyncMock, return_value=0
+    ) as mock_aes:
         with patch("sys.argv", ["agentv", "aes", "validate", "--path", "spec.aes.yaml"]):
-            with patch("eval_runner.cli.safe_run_async") as mock_safe:
-                cli.main()
+            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
+                with pytest.raises(SystemExit) as e:
+                    cli.main()
+                assert e.value.code == 0
                 mock_aes.assert_called_once()
                 mock_safe.assert_called_once()
 
 
 def test_run_command():
     """Verify run command handler uses --scenario."""
-    with patch("eval_runner.handlers.evaluation.handle_run") as mock_run:
+    with patch(
+        "eval_runner.handlers.evaluation.handle_run", new_callable=AsyncMock, return_value=0
+    ) as mock_run:
         with patch("sys.argv", ["agentv", "run", "--scenario", "scenarios/test.json"]):
-            with patch("eval_runner.cli.safe_run_async") as mock_safe:
-                cli.main()
+            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
+                with pytest.raises(SystemExit) as e:
+                    cli.main()
+                assert e.value.code == 0
                 mock_run.assert_called_once()
                 mock_safe.assert_called_once()
 
 
 def test_failures_search_command():
     """Verify failures search command handler. (Migrated from test_visionary_cli.py)"""
-    with patch("eval_runner.handlers.environment.handle_failures_search") as mock_failures:
+    with patch(
+        "eval_runner.handlers.environment.handle_failures_search",
+        new_callable=AsyncMock,
+        return_value=0,
+    ) as mock_failures:
         with patch("sys.argv", ["agentv", "failures", "search", "pii"]):
-            with patch("eval_runner.cli.safe_run_async") as mock_safe:
-                cli.main()
+            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
+                with pytest.raises(SystemExit) as e:
+                    cli.main()
+                assert e.value.code == 0
                 mock_failures.assert_called_once()
                 mock_safe.assert_called_once()
 

@@ -34,15 +34,13 @@ def test_strict_jail_enforcement():
 
 @pytest.mark.asyncio
 async def test_handle_run_exit_code_on_error():
-    """Verify BUG-01: handle_run must exit with code 1 on exception."""
+    """Verify BUG-01: handle_run must return code 1 on exception."""
     from eval_runner.handlers import evaluation
 
     args = MagicMock()
     args.scenario = "non_existent.json"
 
-    # Correct patching of module-local sys/traceback
-    with patch("eval_runner.handlers.evaluation.sys.exit") as mock_exit:
-        with patch("eval_runner.handlers.evaluation.traceback.print_exc") as mock_trace:
-            await evaluation.handle_run(args)
-            mock_exit.assert_called_once_with(1)
-            mock_trace.assert_called_once()
+    with patch("eval_runner.handlers.evaluation.traceback.print_exc") as mock_trace:
+        result = await evaluation.handle_run(args)
+        assert result == 1
+        mock_trace.assert_called_once()

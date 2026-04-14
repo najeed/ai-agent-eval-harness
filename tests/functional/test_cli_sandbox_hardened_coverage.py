@@ -14,13 +14,14 @@ def test_cli_evaluate_bridge():
     with (
         patch("sys.argv", ["agentv", "evaluate", "--path", "test.json"]),
         patch(
-            "eval_runner.handlers.evaluation.handle_evaluate", new_callable=AsyncMock
+            "eval_runner.handlers.evaluation.handle_evaluate",
+            new_callable=AsyncMock,
+            return_value=0,
         ) as mock_eval,
     ):
-        try:
+        with pytest.raises(SystemExit) as e:
             cli.main()
-        except SystemExit:
-            pass
+        assert e.value.code == 0
         assert mock_eval.called
 
 
@@ -28,9 +29,13 @@ def test_cli_lint_bridge():
     # Covers line 312: handle_lint(args)
     with (
         patch("sys.argv", ["agentv", "lint", "--path", "test.json"]),
-        patch("eval_runner.handlers.scenarios.handle_lint") as mock_lint,
+        patch(
+            "eval_runner.handlers.scenarios.handle_lint", new_callable=AsyncMock, return_value=0
+        ) as mock_lint,
     ):
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
         assert mock_lint.called
 
 
@@ -38,9 +43,13 @@ def test_cli_init_bridge():
     # Covers line 314: handle_init(args)
     with (
         patch("sys.argv", ["agentv", "init", "--dir", "tmp_init"]),
-        patch("eval_runner.handlers.environment.handle_init") as mock_init,
+        patch(
+            "eval_runner.handlers.environment.handle_init", new_callable=AsyncMock, return_value=0
+        ) as mock_init,
     ):
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
         assert mock_init.called
 
 
@@ -51,9 +60,11 @@ def test_cli_list_metrics_bridge(capsys):
         patch("sys.argv", ["agentv", "list-metrics"]),
         patch("eval_runner.metrics.MetricRegistry._metrics", {"test_metric": 1}),
     ):
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
     captured = capsys.readouterr().out
-    assert "Registered Metrics" in captured
+    assert "Registered Evaluation Metrics" in captured
     assert "test_metric" in captured
 
 
@@ -61,9 +72,15 @@ def test_cli_install_bridge():
     # Covers line 380: handle_install(args)
     with (
         patch("sys.argv", ["agentv", "install", "telecom-pack"]),
-        patch("eval_runner.handlers.environment.handle_install") as mock_inst,
+        patch(
+            "eval_runner.handlers.environment.handle_install",
+            new_callable=AsyncMock,
+            return_value=0,
+        ) as mock_inst,
     ):
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
         assert mock_inst.called
 
 
@@ -71,9 +88,13 @@ def test_cli_calibrate_bridge():
     # Covers line 392: handle_calibrate(args)
     with (
         patch("sys.argv", ["agentv", "calibrate", "--run-id", "test-run"]),
-        patch("eval_runner.handlers.analysis.handle_calibrate") as mock_cal,
+        patch(
+            "eval_runner.handlers.analysis.handle_calibrate", new_callable=AsyncMock, return_value=0
+        ) as mock_cal,
     ):
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
         assert mock_cal.called
 
 

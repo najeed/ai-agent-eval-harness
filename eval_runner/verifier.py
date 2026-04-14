@@ -306,11 +306,13 @@ class TraceVerifier:
         return engine.compute_filtered_ledger(directory, exclude_files=exclude_files, run_id=run_id)
 
     @classmethod
-    def get_certificate(cls, trace_path: str, identity_id: str = "system_id") -> dict[str, Any]:
+    def get_certificate(
+        cls, trace_path: str, run_id: str, identity_id: str = "system_id"
+    ) -> dict[str, Any]:
         """
         Signs a trace and returns the certificate DICT directly (API Helper).
         """
-        return cls.sign_trace(trace_path, identity_id=identity_id)
+        return cls.sign_trace(trace_path, run_id=run_id, identity_id=identity_id)
 
     @classmethod
     async def verify_trace_async(
@@ -338,6 +340,11 @@ class TraceVerifier:
             return False
 
         if not tp.exists() or not mp.exists():
+            logger.error(
+                f"❌ [Verifier] Artifact missing for {mp.stem}: "
+                f"{'Trace' if not tp.exists() else ''} "
+                f"{'Manifest' if not mp.exists() else ''}"
+            )
             return False
 
         try:

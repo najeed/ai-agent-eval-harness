@@ -6,11 +6,21 @@ Core execution logic for evaluation commands.
 
 import json
 import os
-import sys
 import traceback
 from pathlib import Path
 
-from .. import config, engine, loader, trace_utils, utils
+from .. import (
+    config,
+    engine,
+    loader,
+    playground,
+    plugins,
+    quickstart,
+    trace_recorder,
+    trace_utils,
+    utils,
+    verifier,
+)
 
 
 def _ensure_path_safe(path: str | Path, description: str = "Path"):
@@ -22,6 +32,36 @@ def _ensure_path_safe(path: str | Path, description: str = "Path"):
         print(f"❌ Security Error: {description} is outside the project jail: {path}")
         return False
     return True
+
+
+def _resolve_replay_trace(run_id: str) -> Path | None:
+    """
+    Tiered resolution for industrial run traces.
+    1. Primary: Vault directory (Mandatory for AES v1.5.0)
+    2. Fallback: Master Log consolidation
+    """
+    if not run_id:
+        return None
+
+    # Resolve paths
+    vault_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()
+    master_path = (config.RUN_LOG_DIR / "run.jsonl").resolve()
+
+    # Integrity and Security Check
+    if not _ensure_path_safe(vault_path, "Vault Trace"):
+        return None
+    if not _ensure_path_safe(master_path, "Master Log"):
+        return None
+
+    if vault_path.exists():
+        return vault_path
+
+    if master_path.exists():
+        # Quick existence check in master log without loading all events
+        # We assume if it exists, the resolution is valid; the handler will filter.
+        return master_path
+
+    return None
 
 
 def prepare_agent_env(args) -> dict:
@@ -102,11 +142,11 @@ async def handle_evaluate(args):
     except Exception:
         print("❌ Error loading dataset:")
         traceback.print_exc()
-        sys.exit(1)
-        return
+        return 1
 
-    if args.limit:
-        scenarios = scenarios[: args.limit]
+    if not scenarios:
+        print(f"❌ Error: No scenarios found at path: {args.path}")
+        return 1
 
     print(f"[CLI] Running {len(scenarios)} scenarios...")
 
@@ -124,24 +164,22 @@ async def handle_evaluate(args):
                     args_dict = vars(args)
                 except TypeError:
                     args_dict = {}
-                from .. import plugins
 
                 await engine.run_evaluation(
                     scenario,
                     run_id=getattr(args, "run_id", None),
                     metadata={
                         "args": args_dict,
-                        "forensic_plugins": plugins.manager.provenance_map,
+                        "plugin_provenance": plugins.manager.provenance_map,
                         **agent_metadata,
                     },
                 )
 
-        sys.exit(0)
+        return 0
     except Exception:
         print("❌ Error during evaluation execution:")
         traceback.print_exc()
-        sys.exit(1)
-        return
+        return 1
 
 
 async def handle_run(args):
@@ -185,7 +223,6 @@ async def handle_run(args):
             attempts = getattr(args, "attempts", 1)
             if not isinstance(attempts, int):
                 attempts = 1
-            from .. import plugins
 
             await engine.run_evaluation(
                 scenario,
@@ -193,38 +230,41 @@ async def handle_run(args):
                 attempts=attempts,
                 metadata={
                     "args": args_dict,
-                    "forensic_plugins": plugins.manager.provenance_map,
+                    "plugin_provenance": plugins.manager.provenance_map,
                     **agent_metadata,
                 },
             )
             scenario_name = scenario.get("title", scenario.get("id", "Unknown Scenario"))
             print(f"\n   [CLI] Evaluation complete for {scenario_name}")
 
-        sys.exit(0)
+        return 0
 
     except Exception:
         print("❌ Error during evaluation:")
         traceback.print_exc()
-        sys.exit(1)
-        return
+        return 1
 
 
 async def handle_record(args):
     """Handler for 'record' command."""
-    from .. import trace_recorder
-
-    prepare_agent_env(args)
-    await trace_recorder.record_interaction(args.agent)
-    sys.exit(0)
+    try:
+        prepare_agent_env(args)
+        await trace_recorder.record_interaction(args.agent)
+        return 0
+    except Exception as e:
+        print(f"❌ [ERROR] Recording FAILED: {e}")
+        return 1
 
 
 async def handle_playground(args):
     """Handler for 'playground' command."""
-    from .. import playground
-
-    prepare_agent_env(args)
-    await playground.run_playground(args.agent)
-    sys.exit(0)
+    try:
+        prepare_agent_env(args)
+        await playground.run_playground(args.agent)
+        return 0
+    except Exception as e:
+        print(f"❌ [ERROR] Playground FAILED: {e}")
+        return 1
 
 
 async def handle_replay(args):
@@ -233,57 +273,31 @@ async def handle_replay(args):
     Reconstructs the interaction history from a run trace.
     """
 
-    # --- [SSOT] Mandatory Run ID Resolution ---
     run_id = args.run_id
     if not run_id:
         print("❌ Error: Run ID is mandatory for replay.")
-        sys.exit(1)
-        return
+        return 1
 
     # --- [TIERED RESOLUTION] ---
-    # 1. Primary: Industrial Vault (Mandatory for AES v1.5.0)
-    vault_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()
-    # 2. Fallback: Master Log (Industrial Consolidation)
-    master_path = (config.RUN_LOG_DIR / "run.jsonl").resolve()
-
-    # [INDUSTRIAL HARDENING] Check security cage BEFORE existence
-    if not _ensure_path_safe(vault_path, "Vault Trace"):
-        sys.exit(1)
-        return
-    if not _ensure_path_safe(master_path, "Master Log"):
-        sys.exit(1)
-        return
-
-    events = []
-    if vault_path.exists():
-        path = vault_path
-        events = trace_utils.load_events(path)
-    elif master_path.exists():
-        # [RECOVERABLE FALLBACK] Vault missing but master log available
-        all_events = trace_utils.load_events(master_path)
-        events = [e for e in all_events if e.get("run_id") == run_id]
-
-        if events:
-            print(
-                "❌ [ERROR] Vault directory not found for Run ID "
-                f"'{run_id}'. Falling back to master log..."
-            )
-        else:
-            # [UNRECOVERABLE] Missing from both
-            print(
-                f"❌ [ERROR] Run ID '{run_id}' not found in vault or "
-                "master log. Please verify the Run ID."
-            )
-            sys.exit(1)
-            return
-    else:
-        # [CRITICAL] No logs found at all
+    path = _resolve_replay_trace(run_id)
+    if not path:
         print(
             f"❌ [ERROR] Replay trace not found for Run ID '{run_id}'. "
-            "Vault and Master Log are missing."
+            "Vault and Master Log are missing or security check failed."
         )
-        sys.exit(1)
-        return
+        return 1
+
+    events = trace_utils.load_events(path)
+    if path.name == "run.jsonl" and path.parent == config.RUN_LOG_DIR:
+        # Filtering based on Master Log resolution
+        events = [e for e in events if e.get("run_id") == run_id]
+        if not events:
+            print(f"❌ [ERROR] Run ID '{run_id}' not found in master log fallback.")
+            return 1
+        print(
+            f"❌ [ERROR] Vault directory not found for Run ID '{run_id}'. "
+            "Falling back to master log."
+        )
 
     print(f"\n[Replay] Reconstructing from Run ID: {run_id}")
 
@@ -301,7 +315,7 @@ async def handle_replay(args):
         elif ev_type == "run_end":
             print(f"--- Run Finished: {event.get('status')} ---")
 
-    sys.exit(0)
+    return 0
 
 
 async def handle_verify(args):
@@ -310,15 +324,12 @@ async def handle_verify(args):
     Standard Pillar 1 of the industrial Trust Protocol.
     """
 
-    from eval_runner.verifier import TraceVerifier
-
     # --- [SSOT] Mandatory Run ID Resolution ---
     run_id = args.run_id  # Verified mandatory by CLI parser
 
     if not run_id:
         print("      [CRITICAL] FAILED: Run ID is mandatory for verification.")
-        sys.exit(1)
-        return
+        return 1
 
     run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
     trace_path = run_log_dir / "run.jsonl"
@@ -326,30 +337,29 @@ async def handle_verify(args):
 
     # [INDUSTRIAL HARDENING] Check security cage BEFORE existence to catch traversals early
     if not _ensure_path_safe(trace_path, "Trace file"):
-        sys.exit(1)
-        return
+        return 1
 
     print(f"      [Identity] Resolving trace for {run_id} -> {trace_path}")
     print(f"      [Identity] Resolving manifest for {run_id} -> {manifest_path}")
 
     if not trace_path.exists():
         print(f"      [CRITICAL] FAILED: Trace file for {run_id} missing after vault lookup.")
-        sys.exit(1)
+        return 1
 
     if not manifest_path.exists():
         print(f"      [CRITICAL] FAILED: Manifest for {run_id} missing (Certification required).")
-        sys.exit(1)
+        return 1
 
     # Canonical Verification Call (Pillar 1)
     # TraceVerifier.verify_trace is the industrial standard method.
-    is_valid = await TraceVerifier.verify_trace_async(str(trace_path), str(manifest_path))
+    is_valid = await verifier.TraceVerifier.verify_trace_async(str(trace_path), str(manifest_path))
 
     if is_valid:
         print("      [OK] VERIFIED: Trace integrity matches manifest.")
-        sys.exit(0)
+        return 0
     else:
         print("      [CRITICAL] FAILED: Trace integrity compromised!")
-        sys.exit(1)
+        return 1
 
 
 async def handle_gate(args):
@@ -357,21 +367,18 @@ async def handle_gate(args):
     CI/CD Hard Gate: Verifies a certificate and optionally matches a commit hash.
     Exits with 1 on verification failure.
     """
-    from .. import verifier
 
     # [Autonomous Discovery] Standard mandatory Run ID
     run_id = args.run_id
     if not run_id:
         print("[GATE] FAILURE: Run ID is mandatory for gating.")
-        sys.exit(1)
-        return
+        return 1
 
     # [INDUSTRIAL HARDENING] Immediate Resolution and Safety Check
     # We resolve the vault path and check safety before existence to prevent leak-via-existence
     vault_path = (config.REPORTS_DIR / "certificates" / f"{run_id}_vc.json").resolve()
     if not _ensure_path_safe(vault_path, "Verification Certificate"):
-        sys.exit(1)
-        return
+        return 1
     # 2. Check Standard Sidecar (Primary for v1-v5 Narrative)
     sidecar_path = (config.RUN_LOG_DIR / run_id / "run_manifest.json").resolve()
 
@@ -381,15 +388,14 @@ async def handle_gate(args):
         vc_path = sidecar_path
     else:
         print(f"[GATE] FAILURE: Manifest not found for Run ID '{run_id}' in Sidecar or Vault.")
-        sys.exit(1)
-        return
+        return 1
 
     if not _ensure_path_safe(vc_path, "Verification Certificate"):
-        sys.exit(1)
+        return 1
 
     if not vc_path.exists():
         print(f"[GATE] FAILURE: Verification Certificate not found: {vc_path}")
-        sys.exit(1)
+        return 1
 
     try:
         with open(vc_path, encoding="utf-8") as f:
@@ -403,13 +409,7 @@ async def handle_gate(args):
 
         if not trace_path.exists():
             print(f"[GATE] FAILURE: Associated trace file missing: {trace_name} at {trace_path}")
-            sys.exit(1)
-            return
-
-        if not trace_path.exists():
-            print(f"[GATE] FAILURE: Associated trace file missing: {trace_name} at {trace_path}")
-            sys.exit(1)
-            return
+            return 1
 
         # Canonical Verification Call (Pillars 1 & 2)
         # We now pass verify_ledger=True to ensure sidecar artifact integrity
@@ -422,28 +422,25 @@ async def handle_gate(args):
                 "[GATE] FAILURE: Industrial Trust Verification failed "
                 "(Integrity, Ledger, or Signature)."
             )
-            sys.exit(1)
-            return
+            return 1
 
         # 3. Commit Hash Check (Audit Alignment)
         if args.hash:
             actual_hash = manifest.get("metadata", {}).get("git_hash")
             if actual_hash != args.hash:
                 print(f"[GATE] FAILURE: Commit mismatch! Expected {args.hash}, found {actual_hash}")
-                sys.exit(1)
+                return 1
 
         print(f"[GATE] SUCCESS: Verification Certificate '{vc_path.name}' is valid and signed.")
-        sys.exit(0)
+        return 0
 
     except Exception as e:
         print(f"[GATE] ERROR: Unexpected failure during gating: {e}")
-        sys.exit(1)
+        return 1
 
 
 async def handle_quickstart(args):
     """Handler for 'quickstart' command."""
-    from .. import quickstart
-
     await quickstart.run_quickstart()
 
 
@@ -452,38 +449,25 @@ async def handle_certify(args):
     Handler for 'certify' command.
     Generates a Verification Certificate (VC) and sidecar manifest for a trace.
     """
-    from .. import verifier
 
     # [Autonomous Discovery] Mandatory Run ID
     run_id = args.run_id
     if not run_id:
         print("❌ Error: Run ID is mandatory for certification.")
-        sys.exit(1)
-        return
+        return 1
 
     # Resolve from mandatory industrial run log directory
     trace_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()
 
     # [INDUSTRIAL HARDENING] Check security cage BEFORE existence
     if not _ensure_path_safe(trace_path, "Trace file"):
-        sys.exit(1)
-        return
+        return 1
 
     if not trace_path.exists():
         print(f"Error: Trace file not found for Run ID {run_id}")
-        sys.exit(1)
-        return
-
-    if not _ensure_path_safe(trace_path, "Trace file"):
-        sys.exit(1)
-        return
+        return 1
 
     try:
-        if not trace_path.exists():
-            print(f"❌ Error: Trace file not found at {trace_path}")
-            sys.exit(1)
-            return
-
         # [VC v3] Argument mapping with industrial defaults
         identity_id = args.identity if hasattr(args, "identity") and args.identity else "system_id"
         status = args.status if hasattr(args, "status") and args.status else "pass"
@@ -524,10 +508,9 @@ async def handle_certify(args):
 
         print(f"    - Manifest: {manifest_path}")
 
-        sys.exit(0)
+        return 0
 
     except Exception:
         print("❌ Error during certification:")
         traceback.print_exc()
-        sys.exit(1)
-        return
+        return 1

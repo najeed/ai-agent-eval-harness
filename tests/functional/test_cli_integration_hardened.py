@@ -1,12 +1,4 @@
-"""
-test_cli_integration_hardened.py
-
-End-to-End CLI integration tests that use the REAL parser.
-This replaces the fragile 'Mock Namespace' pattern and prevents
-argument-stripping regressions.
-"""
-
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -29,9 +21,15 @@ def test_evaluate_protocol_propagation():
 
     with (
         patch("sys.argv", test_args),
-        patch("eval_runner.handlers.evaluation.handle_evaluate") as mock_handler,
+        patch(
+            "eval_runner.handlers.evaluation.handle_evaluate",
+            new_callable=AsyncMock,
+            return_value=0,
+        ) as mock_handler,
     ):
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
 
         # Verify the handler received an object with the expected attributes
         args_passed = mock_handler.call_args[0][0]
@@ -54,9 +52,13 @@ def test_run_protocol_propagation():
 
     with (
         patch("sys.argv", test_args),
-        patch("eval_runner.handlers.evaluation.handle_run") as mock_handler,
+        patch(
+            "eval_runner.handlers.evaluation.handle_run", new_callable=AsyncMock, return_value=0
+        ) as mock_handler,
     ):
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
 
         args_passed = mock_handler.call_args[0][0]
         assert args_passed.protocol == "local"
@@ -76,9 +78,13 @@ def test_record_protocol_propagation():
 
     with (
         patch("sys.argv", test_args),
-        patch("eval_runner.handlers.evaluation.handle_record") as mock_handler,
+        patch(
+            "eval_runner.handlers.evaluation.handle_record", new_callable=AsyncMock, return_value=0
+        ) as mock_handler,
     ):
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
 
         args_passed = mock_handler.call_args[0][0]
         assert args_passed.protocol == "local"
@@ -98,9 +104,15 @@ def test_playground_protocol_propagation():
 
     with (
         patch("sys.argv", test_args),
-        patch("eval_runner.handlers.evaluation.handle_playground") as mock_handler,
+        patch(
+            "eval_runner.handlers.evaluation.handle_playground",
+            new_callable=AsyncMock,
+            return_value=0,
+        ) as mock_handler,
     ):
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
 
         args_passed = mock_handler.call_args[0][0]
         assert args_passed.protocol == "local"

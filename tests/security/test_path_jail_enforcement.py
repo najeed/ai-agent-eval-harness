@@ -44,9 +44,8 @@ async def test_handle_certify_jail_enforcement(physical_jail, capsys, monkeypatc
 
     # Attempt traversal via Run ID
     args = Namespace(run_id="../../secrets", path=None, metadata=None, private_key=None)
-    with pytest.raises(SystemExit) as e:
-        await handle_certify(args)
-    assert e.value.code == 1
+    result = await handle_certify(args)
+    assert result == 1
     captured = capsys.readouterr()
     assert "Security Error" in captured.out
 
@@ -60,16 +59,15 @@ async def test_handle_verify_jail_enforcement(physical_jail, capsys, monkeypatch
 
     # Attempt traversal via Run ID
     args = Namespace(run_id="../../secrets", path=None, manifest=None)
-    with pytest.raises(SystemExit) as e:
-        await handle_verify(args)
-    assert e.value.code == 1
+    result = await handle_verify(args)
+    assert result == 1
     captured = capsys.readouterr()
     assert "Security Error" in captured.out
 
 
 @pytest.mark.asyncio
 async def test_handle_gate_jail_enforcement(physical_jail, monkeypatch):
-    """Verify handle_gate exits with failure if VC is outside jail."""
+    """Verify handle_gate returns failure if VC is outside jail."""
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", physical_jail["root"])
     monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", physical_jail["runs_dir"])
     monkeypatch.setattr("eval_runner.config.REPORTS_DIR", physical_jail["root"] / "reports")
@@ -77,9 +75,8 @@ async def test_handle_gate_jail_enforcement(physical_jail, monkeypatch):
 
     # In handle_gate, run_id is used for vault path resolution
     args = Namespace(run_id="../../traversal", vc=None, hash=None, public_key=None)
-    with pytest.raises(SystemExit) as e:
-        await evaluation.handle_gate(args)
-    assert e.value.code == 1
+    result = await evaluation.handle_gate(args)
+    assert result == 1
 
 
 @pytest.mark.asyncio
@@ -90,8 +87,7 @@ async def test_handle_replay_jail_enforcement(physical_jail, capsys, monkeypatch
     monkeypatch.setenv("AEH_STRICT_JAIL", "1")
 
     args = Namespace(run_id="../../secrets", path=None, agent=None)
-    with pytest.raises(SystemExit) as e:
-        await evaluation.handle_replay(args)
-    assert e.value.code == 1
+    result = await evaluation.handle_replay(args)
+    assert result == 1
     captured = capsys.readouterr()
     assert "Security Error" in captured.out

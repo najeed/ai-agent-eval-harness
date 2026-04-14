@@ -54,9 +54,8 @@ async def test_handle_gate_missing_vc(gate_env, capsys):
     """Test gate fails if manifest/VC is missing."""
     # Passing a run-id that doesn't have a manifest
     args = Namespace(run_id="missing_manifest", vc=None, hash=None, public_key=None)
-    with pytest.raises(SystemExit) as e:
-        await evaluation.handle_gate(args)
-    assert e.value.code == 1
+    result = await evaluation.handle_gate(args)
+    assert result == 1
     captured = capsys.readouterr()
     assert "[GATE] FAILURE: Manifest not found" in captured.out
 
@@ -66,9 +65,8 @@ async def test_handle_gate_success(gate_env, capsys):
     """Test gate succeeds with valid manifest and trace."""
     args = Namespace(run_id=gate_env["run_id"], vc=None, hash=None, public_key=None)
 
-    with pytest.raises(SystemExit) as e:
-        await evaluation.handle_gate(args)
-    assert e.value.code == 0
+    result = await evaluation.handle_gate(args)
+    assert result == 0
 
     captured = capsys.readouterr()
     assert "[GATE] SUCCESS" in captured.out
@@ -79,9 +77,8 @@ async def test_handle_gate_hash_mismatch(gate_env, capsys):
     """Test gate fails if commit hash mismatch."""
     args = Namespace(run_id=gate_env["run_id"], vc=None, hash="wrong_hash", public_key=None)
 
-    with pytest.raises(SystemExit) as e:
-        await evaluation.handle_gate(args)
-    assert e.value.code == 1
+    result = await evaluation.handle_gate(args)
+    assert result == 1
     captured = capsys.readouterr()
     assert "[GATE] FAILURE: Commit mismatch" in captured.out
 
@@ -110,9 +107,8 @@ async def test_handle_gate_asymmetric_success(gate_env, capsys, monkeypatch):
     pub_key_path = trust_root / identity_id / "public_key.pem"
     args = Namespace(run_id=gate_env["run_id"], vc=None, hash=None, public_key=str(pub_key_path))
 
-    with pytest.raises(SystemExit) as e:
-        await evaluation.handle_gate(args)
-    assert e.value.code == 0
+    result = await evaluation.handle_gate(args)
+    assert result == 0
 
     captured = capsys.readouterr()
     assert "[GATE] SUCCESS" in captured.out

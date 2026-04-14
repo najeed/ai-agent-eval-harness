@@ -56,7 +56,10 @@ def test_router_sync_handlers(args, mock_target):
         with patch(mock_target) as mock_handler:
             # For async commands, we need to mock safe_run_async from cli context
             with patch("eval_runner.cli.safe_run_async") as mock_safe:
-                cli.main()
+                mock_safe.return_value = 0
+                with pytest.raises(SystemExit) as e:
+                    cli.main()
+                assert e.value.code == 0
                 # If it's async, it triggers safe_run_async(mock_target())
                 # If sync (now all are async), it triggers mock_safe()
                 if mock_safe.called:
@@ -73,7 +76,9 @@ def test_router_console():
         patch("sys.argv", ["agentv", "console"]),
         patch("eval_runner.console.app.run_server") as mock_server,
     ):
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
         mock_server.assert_called_once()
 
 
@@ -83,7 +88,10 @@ def test_router_quickstart():
         patch("eval_runner.quickstart.run_quickstart"),
         patch("eval_runner.cli.safe_run_async") as mock_safe,
     ):
-        cli.main()
+        mock_safe.return_value = 0
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
         mock_safe.assert_called_once()
 
 
@@ -92,7 +100,10 @@ def test_router_scenario_generate():
         patch("sys.argv", ["agentv", "scenario", "generate"]),
         patch("eval_runner.scaffold.generate_interactive") as mock_gen,
     ):
-        cli.main()
+        mock_gen.return_value = 0
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
         mock_gen.assert_called_once()
 
 
@@ -102,7 +113,10 @@ def test_router_record():
         patch("eval_runner.trace_recorder.record_interaction"),
         patch("eval_runner.cli.safe_run_async") as mock_safe,
     ):
-        cli.main()
+        mock_safe.return_value = 0
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
         mock_safe.assert_called_once()
 
 
@@ -112,7 +126,10 @@ def test_router_playground():
         patch("eval_runner.playground.run_playground"),
         patch("eval_runner.cli.safe_run_async") as mock_safe,
     ):
-        cli.main()
+        mock_safe.return_value = 0
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
         mock_safe.assert_called_once()
 
 

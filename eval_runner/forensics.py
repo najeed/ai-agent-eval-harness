@@ -94,10 +94,10 @@ class ForensicRelevanceEngine:
 
         # Apply Storage Safety (Size Cap) for Tier 3 only
         try:
-            if path.stat().st_size > self.max_size:
+            current_size = path.stat().st_size
+            if current_size > self.max_size:
                 logger.debug(
-                    f"[Forensics] Excluding oversized artifact "
-                    f"({path.stat().st_size}b): {path.name}"
+                    f"[Forensics] Excluding oversized artifact ({current_size}b): {path.name}"
                 )
                 return False
         except (FileNotFoundError, PermissionError):
@@ -157,9 +157,20 @@ class ForensicCollector:
 
     def register_artifact(self, path: Path, alias: str):
         """Registers a file path to be collected at the end of the session."""
-        if path.exists():
-            self._artifacts.append({"path": path, "alias": alias})
-            logger.debug(f"[Forensics] Registered artifact: {alias} -> {path}")
+        if not path.exists():
+            return
+
+        # Industrial Rule: Respect the Relevance Engine (Size Caps & Patterns)
+        engine = ForensicRelevanceEngine()
+        if not engine.is_relevant(path):
+            logger.warning(
+                f"   [Forensics] Artifact '{alias}' rejected by relevance policy "
+                f"({path.stat().st_size} bytes)."
+            )
+            return
+
+        self._artifacts.append({"path": path, "alias": alias})
+        logger.debug(f"[Forensics] Registered artifact: {alias} -> {path}")
 
     def archive_plugin(self, path: Path) -> str:
         """
@@ -206,6 +217,9 @@ class ForensicCollector:
         Physically gathers all registered artifacts and snapshots into the forensics directory.
         Returns a ledger (SHA-256 map) for inclusion in the VC v3 manifest.
         """
+        if not self._artifacts and not self._state_snapshots:
+            return {}
+
         self.target_dir.mkdir(parents=True, exist_ok=True)
         ledger = {}
 

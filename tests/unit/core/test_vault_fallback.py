@@ -93,5 +93,4 @@ def test_replay_invalid_run_id(tmp_path, monkeypatch, capsys):
         assert e.value.code == 1
 
         out, _ = capsys.readouterr()
-        assert f"Run ID '{run_id}' not found in vault or master log" in out
-        assert "Please verify the Run ID" in out
+        assert f"Run ID '{run_id}' not found in master log fallback" in out

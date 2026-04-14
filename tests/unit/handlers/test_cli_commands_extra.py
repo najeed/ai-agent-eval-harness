@@ -56,9 +56,8 @@ async def test_handle_replay_exceptions(tmp_path, monkeypatch):
     # File not found
     args = parse_args(["replay", "--run-id", "ghost"])
     with patch("eval_runner.config.RUN_LOG_DIR", tmp_path):
-        with pytest.raises(SystemExit) as e:
-            await handle_replay(args)
-    assert e.value.code == 1
+        result = await handle_replay(args)
+    assert result == 1
 
     # Read error
     run_dir = tmp_path / "read_err"
@@ -89,9 +88,8 @@ async def test_handle_run_extensions(tmp_path, monkeypatch):
 
     # File not found
     args = parse_args(["run", "--scenario", "ghost.json"])
-    with pytest.raises(SystemExit) as e:
-        await handle_run(args)
-    assert e.value.code == 1
+    result = await handle_run(args)
+    assert result == 1
 
     # URL Benchmark
     args = parse_args(["run", "--scenario", "hf://test"])
@@ -100,9 +98,8 @@ async def test_handle_run_extensions(tmp_path, monkeypatch):
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_eval,
     ):
         mock_eval.return_value = []
-        with pytest.raises(SystemExit) as e:
-            await handle_run(args)
-        assert e.value.code == 0
+        result = await handle_run(args)
+        assert result == 0
 
 
 # --- run_evaluate attempts and config ---
@@ -149,9 +146,8 @@ async def test_run_evaluate_complex_branches(tmp_path, monkeypatch):
                 "conversation_history": [{"role": "agent", "content": "done"}],
             }
         ]
-        with pytest.raises(SystemExit) as e:
-            await run_evaluate(args)
-        assert e.value.code == 0
+        result = await run_evaluate(args)
+        assert result == 0
 
 
 # --- aes validation missing ---

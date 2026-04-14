@@ -1,0 +1,21 @@
+{
+  "aes_version": 1.4,
+  "id": "auto_agent_init_0",
+  "metadata": {
+    "id": "auto_agent_init_0",
+    "name": "Auto-generated for AgentExecutor(...)",
+    "source_file": "main.py",
+    "pattern": "AgentExecutor(...)"
+  },
+  "description": "Verification of agent_init discovered in main.py",
+  "industry": "auto",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "t1",
+        "task_description": "Interact with AgentExecutor(...) and verify its output."
+      }
+    ],
+    "edges": []
+  }
+}

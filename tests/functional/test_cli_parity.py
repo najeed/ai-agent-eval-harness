@@ -53,11 +53,9 @@ def test_handle_run_env_propagation(mock_eval, mock_load, tmp_path):
     import asyncio
     import os
 
-    import pytest
-
-    with pytest.raises(SystemExit) as e:
-        asyncio.run(eval_runner.handlers.evaluation.handle_run(args))
-    assert e.value.code == 0
+    # The handler returns 0 instead of calling sys.exit(0)
+    result = asyncio.run(eval_runner.handlers.evaluation.handle_run(args))
+    assert result == 0
 
     assert os.environ.get("RUN_LOG_DIR") == str(tmp_path / "custom_runs")
     assert os.environ.get("RUN_LOG_PER_RUN") == "true"

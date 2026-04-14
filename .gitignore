@@ -103,6 +103,7 @@ docs-old/build/
 tmp/
 .tmp/
 /scratch/
+/scratch_tmp/
 
 # --- Dependencies ---
 node_modules/

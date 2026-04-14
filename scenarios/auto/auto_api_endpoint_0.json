@@ -1,0 +1,21 @@
+{
+  "aes_version": 1.4,
+  "id": "auto_api_endpoint_0",
+  "metadata": {
+    "id": "auto_api_endpoint_0",
+    "name": "Auto-generated for /api/v1/billing",
+    "source_file": "app/billing.py",
+    "pattern": "/api/v1/billing"
+  },
+  "description": "Verification of api_endpoint discovered in app/billing.py",
+  "industry": "auto",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "t1",
+        "task_description": "Interact with /api/v1/billing and verify its output."
+      }
+    ],
+    "edges": []
+  }
+}

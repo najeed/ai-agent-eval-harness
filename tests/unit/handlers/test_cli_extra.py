@@ -64,9 +64,8 @@ async def test_handle_replay_success(tmp_path, monkeypatch):
             {"event": "evaluation", "metric": "acc", "value": 1.0},
             {"event": "run_end", "status": "success"},
         ]
-        with pytest.raises(SystemExit) as e:
-            await eval_runner.handlers.evaluation.handle_replay(args)
-        assert e.value.code == 0
+        result = await eval_runner.handlers.evaluation.handle_replay(args)
+        assert result == 0
 
 
 # --- run_scenario ---
@@ -84,9 +83,8 @@ async def test_handle_run_success(tmp_path, monkeypatch):
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock) as mock_engine,
     ):
         mock_engine.return_value = []
-        with pytest.raises(SystemExit) as e:
-            await eval_runner.handlers.evaluation.handle_run(args)
-        assert e.value.code == 0
+        result = await eval_runner.handlers.evaluation.handle_run(args)
+        assert result == 0
         mock_engine.assert_called_once()
 
 
@@ -115,9 +113,8 @@ async def test_run_evaluate_success(tmp_path, monkeypatch):
             }
         ]
 
-        with pytest.raises(SystemExit) as e:
-            await eval_runner.handlers.evaluation.handle_evaluate(args)
-        assert e.value.code == 0
+        result = await eval_runner.handlers.evaluation.handle_evaluate(args)
+        assert result == 0
 
 
 # --- handle_auto_translate ---
@@ -159,7 +156,7 @@ async def test_handle_calibrate_success(tmp_path, monkeypatch):
         "eval_runner.handlers.analysis.trace_utils.load_events",
         return_value=[{"event": "evaluation", "metric": "m1", "value": 0.5}],
     ):
-        eval_runner.handlers.analysis.handle_calibrate(args)
+        await eval_runner.handlers.analysis.handle_calibrate(args)
 
 
 @pytest.mark.asyncio
@@ -179,4 +176,4 @@ async def test_handle_calibrate_plot(tmp_path, monkeypatch):
         ),
         patch.dict("sys.modules", {"matplotlib": MagicMock(), "matplotlib.pyplot": mock_plt}),
     ):
-        eval_runner.handlers.analysis.handle_calibrate(args)
+        await eval_runner.handlers.analysis.handle_calibrate(args)

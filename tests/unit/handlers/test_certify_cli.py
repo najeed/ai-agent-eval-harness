@@ -48,9 +48,8 @@ async def test_handle_certify_with_fingerprint(certify_env, capsys):
         fingerprint=fingerprint,
     )
 
-    with pytest.raises(SystemExit) as e:
-        await evaluation.handle_certify(args)
-    assert e.value.code == 0
+    result = await evaluation.handle_certify(args)
+    assert result == 0
 
     # Verify Physical Manifest Content
     import json
@@ -67,9 +66,8 @@ async def test_handle_certify_missing_trace(certify_env, capsys):
     """Test certify fails if trace file is missing."""
     # Passing a run-id that doesn't exist
     args = Namespace(run_id="non_existent", path=None, metadata=None, private_key=None)
-    with pytest.raises(SystemExit) as e:
-        await evaluation.handle_certify(args)
-    assert e.value.code == 1
+    result = await evaluation.handle_certify(args)
+    assert result == 1
     captured = capsys.readouterr()
     assert "Error: Trace file not found" in captured.out
 
@@ -80,9 +78,8 @@ async def test_handle_certify_success(certify_env, capsys):
     # Use the established run-id
     args = Namespace(run_id=certify_env["run_id"], path=None, metadata=None, private_key=None)
 
-    with pytest.raises(SystemExit) as e:
-        await evaluation.handle_certify(args)
-    assert e.value.code == 0
+    result = await evaluation.handle_certify(args)
+    assert result == 0
 
     captured = capsys.readouterr()
     assert "Success: Verification Certificate generated" in captured.out

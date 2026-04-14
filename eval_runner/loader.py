@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import csv
 import json
-import sys
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -99,13 +98,16 @@ def get_universal_registry():
                 if json_path.name.endswith(".schema.json"):
                     base_uri = normalize_uri(json_path.parent) + "/"
                     registry = registry.with_resource(base_uri, resource)
-
             except Exception as e:
                 # Critical Boot-Time Failure: Spec integrity is mandatory
+                import sys
+
                 sys.stderr.write(
                     f"   [Loader] CRITICAL: Failed to index resource {json_path}: {e}\n"
                 )
-                raise
+                raise RuntimeError(
+                    f"❌ [Loader] Specification Registry Corruption: {json_path} - {e}"
+                ) from e
 
     _REGISTRY_CACHE = registry
     return _REGISTRY_CACHE

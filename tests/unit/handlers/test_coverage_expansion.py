@@ -69,9 +69,8 @@ async def test_handle_verify_direct(tmp_path):
     with patch(
         "eval_runner.artifact_plugin.ArtifactPlugin.verify_integrity", return_value=(True, [])
     ):
-        with pytest.raises(SystemExit) as e:
-            await handle_verify(args)
-        assert e.value.code == 1
+        res = await handle_verify(args)
+        assert res == 1
 
 
 # --- Console Gaps ---

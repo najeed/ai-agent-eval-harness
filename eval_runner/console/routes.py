@@ -18,6 +18,9 @@ from .auth_manager import Permission, require_permission
 
 logger = logging.getLogger(__name__)
 
+# [INDUSTRIAL HARDENING]: Track active runs in memory to provide high-fidelity status
+ACTIVE_RUNS = set()
+
 core_bp = Blueprint("core", __name__, url_prefix="/api")
 trust_bp = Blueprint("trust", __name__)  # Top-level v1/ namespace
 
@@ -268,6 +271,7 @@ def verify_run_public(run_id):
                 "verified": is_valid,
                 "timestamp": datetime.now().astimezone().isoformat(),
                 "method": method,
+                "manifest": manifest,
             }
         )
     except Exception as e:
@@ -728,14 +732,50 @@ def get_run_status(run_id):
     # 1. Primary: Authoritative Disk Vault
     vault_trace = runs_dir / run_id / "run.jsonl"
     if vault_trace.exists():
+        # [AES v1.5.0] Forensic Completion Check
+        # A run is only COMPLETED if the 'run_end' event has been flushed to disk.
+        is_finished = False
+        try:
+            with open(vault_trace, "rb") as f:
+                # Optimized tail check: look at the last 2KB for the "run_end" tag
+                size = os.path.getsize(vault_trace)
+                if size > 0:
+                    f.seek(max(0, size - 2048))
+                    chunk = f.read().decode("utf-8", errors="ignore")
+                    if '"event": "run_end"' in chunk:
+                        is_finished = True
+        except Exception as e:
+            logger.warning(f"   [API] Trace integrity check failed for {run_id}: {e}")
+
+        if is_finished:
+            return jsonify(
+                {
+                    "run_id": run_id,
+                    "status": "COMPLETED",
+                    "source": "vault",
+                    "path": str(vault_trace.relative_to(runs_dir)),
+                    "size": os.path.getsize(vault_trace),
+                    "mtime": os.path.getmtime(vault_trace),
+                }
+            )
+
+        # If file exists but run_end is missing, it's either active or stalled
         return jsonify(
             {
                 "run_id": run_id,
-                "status": "COMPLETED",
-                "source": "vault",
-                "path": str(vault_trace.relative_to(runs_dir)),
+                "status": "RUNNING",
+                "message": "Evaluation in progress (Writing telemetry...)",
                 "size": os.path.getsize(vault_trace),
-                "mtime": os.path.getmtime(vault_trace),
+            }
+        )
+
+    # 2. Check memory-resident active status (covers the window before file creation)
+    if run_id in ACTIVE_RUNS:
+        return jsonify(
+            {
+                "run_id": run_id,
+                "status": "RUNNING",
+                "message": "Evaluation initializing (Thread active...)",
             }
         )
 
@@ -832,13 +872,25 @@ def evaluate_scenario():
         # We need a new event loop for the background thread
         os.environ["RUN_LOG_PER_RUN"] = "true"
         os.environ["RUN_LOG_DIR"] = str(config.RUN_LOG_DIR)
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
 
-        # Determine max_turns (defaulting to config if not specified in POST)
-        max_turns = data.get("max_turns", config.EVAL_MAX_TURNS)
-        loop.run_until_complete(run_evaluation(scenario_data, run_id=run_id, max_turns=max_turns))
-        loop.close()
+        # Register as active for high-fidelity polling
+        ACTIVE_RUNS.add(run_id)
+
+        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+            # Determine max_turns (defaulting to config if not specified in POST)
+            max_turns = data.get("max_turns", config.EVAL_MAX_TURNS)
+            loop.run_until_complete(
+                run_evaluation(scenario_data, run_id=run_id, max_turns=max_turns)
+            )
+            loop.close()
+        except Exception as e:
+            logger.error(f"   [API] Background evaluation failed: {e}")
+        finally:
+            # Terminate active status
+            ACTIVE_RUNS.discard(run_id)
 
     from eval_runner.utils import generate_id
 
@@ -1079,6 +1131,7 @@ def certify_run():
         # Sign the trace directly in the vault to ensure forensics find their relative sidecars.
         manifest = TraceVerifier.sign_trace(
             str(target_trace),
+            run_id=run_id,
             identity_id=data.get("identity", "system_id"),
             compliance_status=data.get("status", "pass"),
             compliance_score=float(data.get("score", 1.0)),

@@ -46,8 +46,8 @@ class SessionManager:
         # Authoritatively inject run_id for downstream forensic affinity (e.g., ToolSandbox)
         self.scenario["run_id"] = run_id
 
-        # [AES v1.5.0] Authoritative Metadata Propagation
-        self.metadata = metadata or {}
+        # [AES v1.5.0] Authoritative Metadata Propagation (Ensured mutable)
+        self.metadata = dict(metadata or {})
         # Centralized identifier (resolved and normalized in Loader)
         self.identifier = scenario["id"]
 
@@ -72,14 +72,32 @@ class SessionManager:
         # Initialize plugins for this session
         self.plugin_manager.load_plugins()
 
-        # 2. Forensic Archiving: Preserve ad-hoc plugin source code for non-repudiation
-        forensic_plugins = self.metadata.get("forensic_plugins", [])
-        for fp in forensic_plugins:
-            try:
-                if "path" in fp:
-                    self.forensics.archive_plugin(Path(fp["path"]))
-            except Exception as e:
-                logger.warning(f"   [Session] Failed to archive plugin {fp.get('path')}: {e}")
+        # [Industrial Synchronization] Import ad-hoc plugins from global manager (CLI injection)
+        from . import plugins as global_plugins
+
+        for class_name, prov in global_plugins.manager.provenance_map.items():
+            if prov.get("origin") == "EXTERNAL":
+                try:
+                    self.plugin_manager.load(prov["path"])
+                except Exception as e:
+                    logger.warning(
+                        f"   [Session] Failed to re-load ad-hoc plugin {class_name}: {e}"
+                    )
+
+        # 2. Forensic Archiving: Preserve logic for non-repudiation
+        # Industrial Rule: Only archive 'EXTERNAL' (ad-hoc) plugins to protect proprietary IP.
+        # INTERNAL, MEMBER, and PROJECT plugins are tracked via cryptographic provenance (hashes).
+        for class_name, prov in self.plugin_manager.provenance_map.items():
+            if prov.get("origin") == "EXTERNAL":
+                try:
+                    self.forensics.archive_plugin(Path(prov["path"]))
+                except Exception as e:
+                    logger.warning(
+                        f"   [Session] Failed to archive ad-hoc plugin {class_name}: {e}"
+                    )
+
+        # 3. Provenance Injection: Ensure all plugins are recorded in the session metadata
+        self.metadata["plugin_provenance"] = self.plugin_manager.provenance_map
 
         # Auto-subscribe plugins to the session bus (Bridge to legacy Hooks)
         def _bridge_event_internal(event: Event):
@@ -429,17 +447,38 @@ class SessionManager:
         tool_name = agent_response["tool_name"]
         tool_params = agent_response.get("tool_params", {})
 
-        # Interception Hook
-        # Note: In a real implementation, we'd check if any plugin returns False
-        allowed = self.plugin_manager.trigger_interceptor(
+        # [Industrial Interception] Trigger mutative hook for redirection and shimming
+        intercept_result = self.plugin_manager.trigger_interceptor(
             "on_tool_request", turn_ctx, tool_name, tool_params
         )
-        if not allowed:
+
+        # 1. Handle Blocking
+        if intercept_result is False:
             self.event_bus.emit(
                 CoreEvents.ERROR,
                 {"message": f"Tool call {tool_name} blocked by plugin."},
             )
             return
+
+        # 2. Apply Mutations (Redirection / Param Modification)
+        if isinstance(intercept_result, dict):
+            if "tool_name" in intercept_result:
+                old_name = tool_name
+                tool_name = intercept_result["tool_name"]
+                logger.info(f"      [Session] Tool Redirection: {old_name} -> {tool_name}")
+            if "arguments" in intercept_result:
+                tool_params = intercept_result["arguments"]
+                logger.info("      [Session] Tool Arguments Mutated.")
+
+            # Short-circuit logic (Immediate result return)
+            if "short_circuit_result" in intercept_result:
+                result = intercept_result["short_circuit_result"]
+                logger.info("      [Session] Tool Call Short-Circuited by Plugin.")
+                # Record result and continue
+                self._record_tool_result(
+                    turn, tool_name, tool_params, result, history, actions, turn_ctx
+                )
+                return
 
         self.event_bus.emit(
             CoreEvents.TOOL_CALL,
@@ -452,7 +491,7 @@ class SessionManager:
             {"action_type": "tool_execution", "tool": tool_name},
             span_context=turn_ctx.span_context,
         )
-        # Memory Optimization: Offload full state to sidecar fingerprints
+
         state_before = sandbox.state.copy()
         result = await sandbox.execute(tool_name, tool_params)
         state_after = sandbox.state.copy()
@@ -475,19 +514,7 @@ class SessionManager:
             span_context=turn_ctx.span_context,
         )
 
-        self.event_bus.emit(
-            CoreEvents.TOOL_RESULT,
-            {"step": turn, "tool": tool_name, "result": result},
-            span_context=turn_ctx.span_context,
-        )
-
-        history.append(
-            {
-                "role": "environment",
-                "content": self._sanitize_for_history(result),
-            }
-        )
-        self.plugin_manager.trigger("on_tool_result", turn_ctx, tool_name, result)
+        self._record_tool_result(turn, tool_name, tool_params, result, history, actions, turn_ctx)
 
     async def _handle_multiple_tools(
         self, turn, agent_response, sandbox, history, actions, turn_ctx
@@ -495,26 +522,56 @@ class SessionManager:
         tool_names = agent_response["tool_names"]
         actions["used_tools"].extend(tool_names)
 
-        for tn in tool_names:
-            self.event_bus.emit(CoreEvents.TOOL_CALL, {"step": turn, "tool": tn, "arguments": {}})
-
         all_tool_results = []
         state_before = sandbox.state.copy()
+
         for tn in tool_names:
-            # Note: Single interception for multiple tools could be complex; here we check each
-            allowed = self.plugin_manager.trigger_interceptor("on_tool_request", turn_ctx, tn, {})
-            if allowed:
-                res = await sandbox.execute(tn, {})
-                all_tool_results.append(res)
-                self.event_bus.emit(
-                    CoreEvents.TOOL_RESULT,
-                    {"step": turn, "tool": tn, "result": res},
-                )
-            else:
+            # [Industrial Interception] Per-tool mutation support
+            intercept_result = self.plugin_manager.trigger_interceptor(
+                "on_tool_request", turn_ctx, tn, {}
+            )
+
+            # 1. Handle Blocking
+            if intercept_result is False:
                 all_tool_results.append(
                     {"status": "blocked", "message": f"Tool {tn} blocked by plugin."}
                 )
+                self.event_bus.emit(
+                    CoreEvents.ERROR, {"message": f"Tool call {tn} blocked by plugin."}
+                )
+                continue
+
+            active_tn = tn
+            active_params = {}
+
+            # 2. Apply Mutations
+            if isinstance(intercept_result, dict):
+                if "tool_name" in intercept_result:
+                    active_tn = intercept_result["tool_name"]
+                if "arguments" in intercept_result:
+                    active_params = intercept_result["arguments"]
+
+                if "short_circuit_result" in intercept_result:
+                    res = intercept_result["short_circuit_result"]
+                    all_tool_results.append(res)
+                    self.event_bus.emit(
+                        CoreEvents.TOOL_RESULT, {"step": turn, "tool": active_tn, "result": res}
+                    )
+                    continue
+
+            self.event_bus.emit(
+                CoreEvents.TOOL_CALL, {"step": turn, "tool": active_tn, "arguments": active_params}
+            )
+
+            res = await sandbox.execute(active_tn, active_params)
+            all_tool_results.append(res)
+            self.event_bus.emit(
+                CoreEvents.TOOL_RESULT,
+                {"step": turn, "tool": active_tn, "result": res},
+            )
+
         state_after = sandbox.state.copy()
+        # ... rest of the logic ...
 
         # O(N) Forensics: Offload state to disk snapshots
         self.forensics.snapshot_state(state_before, turn)
@@ -571,6 +628,22 @@ class SessionManager:
             self.event_bus.emit(CoreEvents.HITL_RESUME, {"task_id": task_id, "response": response})
             print(f"      [HITL] Non-interactive environment: {response}")
             return response
+
+    def _record_tool_result(self, turn, tool_name, tool_params, result, history, actions, turn_ctx):
+        """Unified helper to record tool results across single and short-circuited paths."""
+        self.event_bus.emit(
+            CoreEvents.TOOL_RESULT,
+            {"step": turn, "tool": tool_name, "result": result},
+            span_context=turn_ctx.span_context,
+        )
+
+        history.append(
+            {
+                "role": "environment",
+                "content": self._sanitize_for_history(result),
+            }
+        )
+        self.plugin_manager.trigger("on_tool_result", turn_ctx, tool_name, result)
 
     def _get_last_env_message(self, history):
         if not history:

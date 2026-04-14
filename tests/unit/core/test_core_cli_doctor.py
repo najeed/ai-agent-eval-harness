@@ -109,7 +109,9 @@ async def test_cli_cleanup_interactive_yes(tmp_path, monkeypatch):
         patch("eval_runner.plugins.manager.load_plugins"),
         patch("builtins.open", mock_open(read_data='{"plugins": []}')),
     ):
-        cli.main()
+        with pytest.raises(SystemExit) as e:
+            cli.main()
+        assert e.value.code == 0
         # Coverage verified by reaching the end of the method
 
 

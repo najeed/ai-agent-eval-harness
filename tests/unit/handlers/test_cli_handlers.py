@@ -123,8 +123,8 @@ async def test_handle_export(mock_args, capsys):
 
 @pytest.mark.asyncio
 async def test_handle_taxonomy(mock_args, capsys):
-    """Test 'taxonomy' command handler."""
-    analysis.handle_taxonomy(mock_args)
+    """Test 'taxonomy' command handler. Forensic alignment: Verify header string."""
+    await analysis.handle_taxonomy(mock_args)
     captured = capsys.readouterr()
     assert "AGENT-EVAL FAILURE TAXONOMY" in captured.out
 
@@ -139,9 +139,8 @@ async def test_handle_verify_missing(capsys, physical_env, monkeypatch):
 
     # Passing a run-id that doesn't exist in the physical runs/ directory
     args = Namespace(run_id="missing_run", path=None, manifest=None)
-    with pytest.raises(SystemExit) as e:
-        await evaluation.handle_verify(args)
-    assert e.value.code == 1
+    result = await evaluation.handle_verify(args)
+    assert result == 1
     captured = capsys.readouterr()
     assert (
         "[CRITICAL] FAILED: Trace file for missing_run missing after vault lookup."

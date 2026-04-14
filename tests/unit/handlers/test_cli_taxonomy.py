@@ -18,7 +18,7 @@ def mock_args():
 async def test_handle_taxonomy(capsys):
     """Verifies 'taxonomy' command outputs current AES categories."""
     args = MagicMock()
-    analysis.handle_taxonomy(args)
+    await analysis.handle_taxonomy(args)
     out, _ = capsys.readouterr()
     assert "AGENT-EVAL FAILURE TAXONOMY" in out
 
@@ -58,7 +58,7 @@ async def test_handle_inspect_failure(capsys):
     args.scenario_path = "non_existent.json"
     await scenarios.handle_inspect(args)
     out, _ = capsys.readouterr()
-    assert "[ERROR] Scenario file not found" in out
+    assert "Scenario file not found" in out
 
 
 @pytest.mark.asyncio

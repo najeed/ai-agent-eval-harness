@@ -50,8 +50,8 @@ async def test_handle_spec_to_eval_exceptions(tmp_path, monkeypatch):
     ):
         from eval_runner.handlers.scenarios import handle_spec_to_eval
 
-        with pytest.raises(Exception, match="Conversion failed"):
-            await handle_spec_to_eval(args)
+        res = await handle_spec_to_eval(args)
+        assert res == 1
 
 
 # --- handle_mutate ---

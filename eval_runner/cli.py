@@ -568,23 +568,23 @@ def main():
             from .handlers import evaluation as h
 
             if args.command == "evaluate":
-                safe_run_async(h.handle_evaluate(args))
+                sys.exit(safe_run_async(h.handle_evaluate(args)) or 0)
             elif args.command == "run":
-                safe_run_async(h.handle_run(args))
+                sys.exit(safe_run_async(h.handle_run(args)) or 0)
             elif args.command == "record":
-                safe_run_async(h.handle_record(args))
+                sys.exit(safe_run_async(h.handle_record(args)) or 0)
             elif args.command == "playground":
-                safe_run_async(h.handle_playground(args))
+                sys.exit(safe_run_async(h.handle_playground(args)) or 0)
             elif args.command == "replay":
-                safe_run_async(h.handle_replay(args))
+                sys.exit(safe_run_async(h.handle_replay(args)) or 0)
             elif args.command == "verify":
-                safe_run_async(h.handle_verify(args))
+                sys.exit(safe_run_async(h.handle_verify(args)) or 0)
             elif args.command == "certify":
-                safe_run_async(h.handle_certify(args))
+                sys.exit(safe_run_async(h.handle_certify(args)) or 0)
             elif args.command == "gate":
-                safe_run_async(h.handle_gate(args))
+                sys.exit(safe_run_async(h.handle_gate(args)) or 0)
             elif args.command == "quickstart":
-                safe_run_async(h.handle_quickstart(args))
+                sys.exit(safe_run_async(h.handle_quickstart(args)) or 0)
 
         elif args.command in [
             "aes",
@@ -601,30 +601,32 @@ def main():
             from .handlers import scenarios as h
 
             if args.command == "aes":
-                safe_run_async(
-                    h.handle_aes_validate(args)
-                ) if args.aes_command == "validate" else None
+                sys.exit(
+                    safe_run_async(h.handle_aes_validate(args))
+                    if args.aes_command == "validate"
+                    else 0
+                )
             elif args.command == "inspect":
-                safe_run_async(h.handle_inspect(args))
+                sys.exit(safe_run_async(h.handle_inspect(args)) or 0)
             elif args.command == "lint":
-                safe_run_async(h.handle_lint(args))
+                sys.exit(safe_run_async(h.handle_lint(args)) or 0)
             elif args.command == "list":
-                safe_run_async(h.handle_list(args))
+                sys.exit(safe_run_async(h.handle_list(args)) or 0)
             elif args.command == "catalog-search":
-                safe_run_async(h.handle_catalog_search(args))
+                sys.exit(safe_run_async(h.handle_catalog_search(args)) or 0)
             elif args.command == "catalog-refresh":
-                safe_run_async(h.handle_catalog_refresh(args))
+                sys.exit(safe_run_async(h.handle_catalog_refresh(args)) or 0)
             elif args.command == "mutate":
-                safe_run_async(h.handle_mutate(args))
+                sys.exit(safe_run_async(h.handle_mutate(args)) or 0)
             elif args.command == "scenario":
                 if args.scenario_command == "generate":
-                    safe_run_async(h.handle_scenario_generate(args))
+                    sys.exit(safe_run_async(h.handle_scenario_generate(args)) or 0)
                 elif args.scenario_command == "inspect":
-                    safe_run_async(h.handle_inspect(args))
+                    sys.exit(safe_run_async(h.handle_inspect(args)) or 0)
             elif args.command == "spec-to-eval":
-                safe_run_async(h.handle_spec_to_eval(args))
+                sys.exit(safe_run_async(h.handle_spec_to_eval(args)) or 0)
             elif args.command == "import-drift":
-                safe_run_async(h.handle_import_drift(args))
+                sys.exit(safe_run_async(h.handle_import_drift(args)) or 0)
 
         elif args.command in [
             "calibrate",
@@ -637,17 +639,17 @@ def main():
             from .handlers import analysis as h
 
             if args.command == "calibrate":
-                h.handle_calibrate(args)
+                sys.exit(safe_run_async(h.handle_calibrate(args)) or 0)
             elif args.command == "explain":
-                h.handle_explain(args)
+                sys.exit(safe_run_async(h.handle_explain(args)) or 0)
             elif args.command == "leaderboard":
-                h.handle_leaderboard(args)
+                sys.exit(safe_run_async(h.handle_leaderboard(args)) or 0)
             elif args.command == "report":
-                h.handle_report(args)
+                sys.exit(safe_run_async(h.handle_report(args)) or 0)
             elif args.command == "taxonomy":
-                h.handle_taxonomy(args)
+                sys.exit(safe_run_async(h.handle_taxonomy(args)) or 0)
             elif args.command == "list-metrics":
-                h.handle_list_metrics(args)
+                sys.exit(safe_run_async(h.handle_list_metrics(args)) or 0)
 
         elif args.command in [
             "analyze",
@@ -666,50 +668,52 @@ def main():
             from .handlers import environment as h
 
             if args.command == "analyze":
-                safe_run_async(h.handle_analyze(args))
+                sys.exit(safe_run_async(h.handle_analyze(args)) or 0)
             elif args.command == "list-plugins":
-                safe_run_async(h.handle_plugin_list(args))
+                sys.exit(safe_run_async(h.handle_plugin_list(args)) or 0)
             elif args.command == "auto-translate":
-                safe_run_async(h.handle_auto_translate(args))
+                sys.exit(safe_run_async(h.handle_auto_translate(args)) or 0)
             elif args.command == "ci" and args.ci_command == "generate":
-                safe_run_async(h.handle_ci_generate(args))
+                sys.exit(safe_run_async(h.handle_ci_generate(args)) or 0)
             elif args.command == "cleanup-runs":
-                safe_run_async(h.handle_cleanup_runs(args))
+                sys.exit(safe_run_async(h.handle_cleanup_runs(args)) or 0)
             elif args.command == "doctor":
-                safe_run_async(h.handle_doctor(args))
+                sys.exit(safe_run_async(h.handle_doctor(args)) or 0)
             elif args.command == "export":
-                safe_run_async(h.handle_export(args))
+                sys.exit(safe_run_async(h.handle_export(args)) or 0)
             elif args.command == "failures" and args.failures_command == "search":
-                safe_run_async(h.handle_failures_search(args))
+                sys.exit(safe_run_async(h.handle_failures_search(args)) or 0)
             elif args.command == "init":
-                safe_run_async(h.handle_init(args))
+                sys.exit(safe_run_async(h.handle_init(args)) or 0)
             elif args.command == "install":
-                safe_run_async(h.handle_install(args))
+                sys.exit(safe_run_async(h.handle_install(args)) or 0)
             elif args.command == "registry":
                 if args.registry_command == "sync":
-                    safe_run_async(h.handle_registry_sync(args))
+                    sys.exit(safe_run_async(h.handle_registry_sync(args)) or 0)
                 elif args.registry_command == "add":
-                    safe_run_async(h.handle_registry_add(args))
+                    sys.exit(safe_run_async(h.handle_registry_add(args)) or 0)
                 elif args.registry_command == "search":
-                    safe_run_async(h.handle_registry_search(args))
+                    sys.exit(safe_run_async(h.handle_registry_search(args)) or 0)
             elif args.command == "plugin":
                 if args.plugin_command == "list":
-                    safe_run_async(h.handle_plugin_list(args))
+                    sys.exit(safe_run_async(h.handle_plugin_list(args)) or 0)
                 elif args.plugin_command == "register":
-                    safe_run_async(h.handle_plugin_register(args))
+                    sys.exit(safe_run_async(h.handle_plugin_register(args)) or 0)
                 elif args.plugin_command == "unregister":
-                    safe_run_async(h.handle_plugin_unregister(args))
+                    sys.exit(safe_run_async(h.handle_plugin_unregister(args)) or 0)
 
         elif args.command == "console":
             from .console.app import run_server
 
             print(f"[CLI] Launching Visual Debugger on http://{args.host}:{args.port}")
             run_server(host=args.host, port=args.port, debug=args.debug)
+            sys.exit(0)
 
         elif args.command == "contribute":
             from .contributor import ContributeWizard
 
             ContributeWizard.run()
+            sys.exit(0)
 
         else:
             parser.print_help()

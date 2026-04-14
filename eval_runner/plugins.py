@@ -74,7 +74,7 @@ class PluginManager:
     def __init__(self):
         self.plugins: list[BaseEvalPlugin] = []
         self._plugins = self.plugins  # Alias for diagnostic visibility
-        self.provenance_map: list[dict[str, Any]] = []
+        self.provenance_map: dict[str, dict[str, Any]] = {}
         self._loaded = False
         self._last_load_time = 0
 
@@ -131,9 +131,45 @@ class PluginManager:
         if not found:
             raise ValueError(f"No valid BaseEvalPlugin found in {path}")
 
-        metadata = {"path": str(path_obj), "hash": file_hash, "class": loaded_class}
-        self.provenance_map.append(metadata)
+        metadata = {
+            "path": str(path_obj),
+            "hash": file_hash,
+            "class": loaded_class,
+            "origin": "EXTERNAL",  # Ad-hoc injection
+        }
+        self.provenance_map[loaded_class] = metadata
         return metadata
+
+    def _record_provenance(self, plugin_obj, origin="MEMBER"):
+        """Internal helper to capture industrial provenance for any loaded plugin."""
+        plugin_cls = plugin_obj.__class__
+        class_name = plugin_cls.__name__
+
+        if class_name in self.provenance_map:
+            return
+
+        try:
+            source_file = inspect.getfile(plugin_cls)
+            path_obj = Path(source_file).resolve()
+
+            from .forensics import compute_file_hash
+
+            file_hash = compute_file_hash(path_obj)
+
+            self.provenance_map[class_name] = {
+                "path": str(path_obj),
+                "hash": file_hash,
+                "class": class_name,
+                "origin": origin,
+            }
+        except Exception:
+            # Fallback for built-in or dynamically generated classes without physical files
+            self.provenance_map[class_name] = {
+                "path": "builtin",
+                "hash": "unknown",
+                "class": class_name,
+                "origin": "CORE",
+            }
 
     def load_plugins(self, force: bool = False):
         """Discovers and loads plugins with an industrial 60s TTL debounce."""
@@ -153,7 +189,9 @@ class PluginManager:
             try:
                 plugin_cls = entry_point.load()
                 if not any(isinstance(p, plugin_cls) for p in self.plugins):
-                    self.plugins.append(plugin_cls())
+                    instance = plugin_cls()
+                    self.plugins.append(instance)
+                    self._record_provenance(instance, origin="MEMBER")
             except Exception as e:
                 # Forensic Transparency: Log all entry-point failures
                 print(
@@ -204,7 +242,9 @@ class PluginManager:
                         module = importlib.import_module(module_name)
                         plugin_cls = getattr(module, class_name)
                         if not any(isinstance(p, plugin_cls) for p in self.plugins):
-                            self.plugins.append(plugin_cls())
+                            instance = plugin_cls()
+                            self.plugins.append(instance)
+                            self._record_provenance(instance, origin="MEMBER")
                     except Exception as e:
                         msg = (
                             f"   [PluginManager] Failed to load plugin "
@@ -225,6 +265,7 @@ class PluginManager:
         for p in root_plugins:
             if not any(isinstance(existing, p.__class__) for existing in self.plugins):
                 self.plugins.append(p)
+                self._record_provenance(p, origin="PROJECT")
 
         # 4. Fallback for Internal Essential Plugins & Ecosystem Adapters
         # Discovery: Ensures core capabilities are loaded if entry-points are shadowed.
@@ -314,7 +355,9 @@ class PluginManager:
             try:
                 # Deduplication: Only load if an instance of this class doesn't exist
                 if not any(isinstance(p, PluginClass) for p in self.plugins):
-                    self.plugins.append(PluginClass())
+                    instance = PluginClass()
+                    self.plugins.append(instance)
+                    self._record_provenance(instance, origin="CORE")
             except Exception as e:
                 # Log isolated failure without crashing the manager
                 print(f"   [PluginManager] Isolated Failure loading {PluginClass.__name__}: {e}")
@@ -355,24 +398,63 @@ class PluginManager:
                 except Exception as e:
                     print(f"   [PluginManager] Cleanup Error ({plugin.__class__.__name__}): {e}")
 
-    def trigger_interceptor(self, hook_name: str, *args, **kwargs) -> bool:
+    def trigger_interceptor(self, hook_name: str, *args, **kwargs) -> bool | dict:
         """
-        Triggers an interceptor hook and returns False if any plugin rejects the action.
-        Defaults to True (allow).
+        Triggers an interceptor hook and returns consolidation of mutations or False if rejected.
+        Supports binary (bool) and mutative (dict) return types.
+
+        Mutative Return Schema:
+        {
+            "allowed": bool,
+            "tool_name": str,
+            "arguments": dict,
+            "short_circuit_result": Any
+        }
         """
         self.load_plugins()
+        mutations = {"allowed": True}
+        has_mutation = False
+
         for plugin in self.plugins:
             if hasattr(plugin, hook_name):
                 try:
                     hook = getattr(plugin, hook_name)
-                    result = hook(*args, **kwargs)
+                    # Support both standard args and mutated args if they were
+                    # modified by a previous plugin
+                    current_args = mutations.get("arguments", args[2] if len(args) > 2 else {})
+                    current_tool = mutations.get("tool_name", args[1] if len(args) > 1 else None)
+
+                    # We pass the original context (args[0]) but updated tool/args if applicable
+                    call_args = list(args)
+                    if len(call_args) > 1:
+                        call_args[1] = current_tool
+                    if len(call_args) > 2:
+                        call_args[2] = current_args
+
+                    result = hook(*call_args, **kwargs)
+
                     if result is False:
                         return False
+
+                    if isinstance(result, dict):
+                        has_mutation = True
+                        if result.get("allowed") is False:
+                            return False
+                        # Consolidate mutations (sequential override)
+                        if "tool_name" in result:
+                            mutations["tool_name"] = result["tool_name"]
+                        if "arguments" in result:
+                            mutations["arguments"] = result["arguments"]
+                        if "short_circuit_result" in result:
+                            mutations["short_circuit_result"] = result["short_circuit_result"]
+
                 except Exception as e:
                     print(
-                        f"   [PluginManager] Error in interceptor {hook_name} for {plugin.__class__.__name__}: {e}"  # noqa: E501
+                        f"   [PluginManager] Error in interceptor {hook_name} "
+                        f"for {plugin.__class__.__name__}: {e}"
                     )
-        return True
+
+        return mutations if has_mutation else True
 
     def register_persistent(
         self,
