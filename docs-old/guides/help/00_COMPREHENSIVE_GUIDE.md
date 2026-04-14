@@ -35,6 +35,8 @@ AgentV CLI is organized around 8 logical intents to guide you through the full e
 - **7. CI/CD**: `ci`, `export`, `import-drift`, `registry sync`
 - **8. Control**: `console`, `contribute`, `cleanup-runs`, `doctor`, `plugin`
 
+> For a step-by-step narrative flow of these commands, see the [CLI Lifecycle Overview](09_CLI_LIFECYCLE_OVERVIEW.md).
+
 > [!TIP]
 > **Integrated Visual Suite**: Launch the premium web dashboard via `agentv console`. It now features a Live Debugger that streams real-time state from your evaluations using the Zero-Touch `RemoteBridgePlugin`.
 
@@ -99,5 +101,6 @@ agentv run --scenario industries/<ind>/scenarios/<file>.json
 
 For deep-dives into specific topics, see the specialized guides in `docs/guides/help/`:
 - [State-Level Triage & VFS Guide](06_TRIAGE_ENGINE_AND_VFS.md) — how root cause isolation works
+- [CLI Lifecycle Overview](09_CLI_LIFECYCLE_OVERVIEW.md) — logical flow narrative of all tools
 - [Adding World Shims](08_ADDING_WORLD_SHIMS.md) — extending the simulator suite
 - [Plugin Development](../../plugins.md) — zero-touch extensibility

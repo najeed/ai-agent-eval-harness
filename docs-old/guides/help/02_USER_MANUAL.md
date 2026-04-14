@@ -138,7 +138,10 @@ agentv evaluate --run-id <id> --format jsonl --output reports/latest_results.jso
 | `contribute` | (none) | Start the interactive contribution wizard |
 | `cleanup-runs` | `--days`, `-f` | Prune old traces and rotate log artifacts |
 | `doctor` | (none) | Audit local environment and dependencies |
-| `plugin` | `register`, `unregister` | Manage external and built-in plugins |
+| `plugin` | `list`, `register`, `unregister` | Manage external and built-in plugins |
+
+> [!TIP]
+> **Logical Flow**: For a detailed journey through the AgentV lifecycle using these tools, see the [CLI Lifecycle Narrative Overview](09_CLI_LIFECYCLE_OVERVIEW.md).
 
 ### 🧩 `run` — single scenario
 

@@ -221,10 +221,9 @@ class ScenarioCatalog:
             disk_count = 0
             for sp in search_paths:
                 if sp.exists():
-                    for _root, _, files in os.walk(str(sp)):
-                        disk_count += len([f for f in files if f.endswith(".json")])
+                    disk_count += len(list(sp.glob("**/*.json")))
 
-            stale = disk_count != self._disk_count
+            stale = disk_count != len(self.scenarios)
             if force or stale:
                 self.manifest["last_top_mtime"] = current_top_mtime
                 self.build_index()
