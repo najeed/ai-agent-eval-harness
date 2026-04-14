@@ -18,7 +18,10 @@ from dataclasses import replace  # noqa: E402
 from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
 
-import psutil  # Forensic telemetry fallback
+try:
+    import psutil  # Forensic telemetry fallback
+except ImportError:
+    psutil = None
 
 logger = logging.getLogger(__name__)
 
@@ -150,6 +153,10 @@ class SessionManager:
 
         # [Forensic Hardening] Resource Telemetry storage
         self.resource_telemetry: list[dict[str, float]] = []
+        if not psutil:
+            logger.info(
+                "      [Session] psutil not found; hardware resource telemetry is disabled."
+            )
 
     async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:
         from graphlib import CycleError, TopologicalSorter
@@ -840,6 +847,9 @@ class SessionManager:
 
     def _capture_telemetry(self):
         """Captures hardware resource metrics for forensic gradient analysis."""
+        if not psutil:
+            return
+
         try:
             process = psutil.Process(os.getpid())
             mem_info = process.memory_info()

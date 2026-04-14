@@ -105,6 +105,7 @@ async def parse_markdown_to_scenario(markdown_text: str) -> dict[str, Any]:
                         scenario["workflow"]["edges"].append(
                             {"from": scenario["workflow"]["nodes"][-2]["id"], "to": node["id"]}
                         )
+                print(f"   [SpecParser] Found {len(task_headers)} structured tasks via H3 headers.")
             else:
                 # Fallback: Try to parse as bullet points if no H3 found
                 bullet_tasks = re.findall(r"^\s*-\s*(.*)", body, re.MULTILINE)
@@ -133,8 +134,13 @@ async def parse_markdown_to_scenario(markdown_text: str) -> dict[str, Any]:
                             scenario["workflow"]["edges"].append(
                                 {"from": scenario["workflow"]["nodes"][-2]["id"], "to": node["id"]}
                             )
+                    print(f"   [SpecParser] Found {len(bullet_tasks)} tasks via bullet points.")
                 else:
                     # No structured tasks found - trigger LLM synthesis for real implementation
+                    print(
+                        "   [SpecParser] No structured tasks found. "
+                        "Falling back to LLM synthesis..."
+                    )
                     try:
                         synthesized = await synthesize_tasks_from_prd(markdown_text)
                         for i, task in enumerate(synthesized):  # noqa: B007

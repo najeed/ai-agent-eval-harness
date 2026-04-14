@@ -48,11 +48,26 @@ def get_parser(is_help=False):
     try:
         from . import engine
 
-        # Discovery must happen early for dynamic protocol choices
-        if not is_help:
+        # Discovery is heavy: trigger only for commands that need agent protocols
+        needs_discovery = False
+        if len(sys.argv) > 1:
+            cmd = sys.argv[1]
+            needs_discovery = cmd in {
+                "evaluate",
+                "run",
+                "playground",
+                "record",
+                "quickstart",
+                "init",
+                "console",
+                "doctor",
+            }
+
+        if not is_help and needs_discovery:
             engine.AgentAdapterRegistry._discover()
             available_protocols = list(engine.AgentAdapterRegistry._adapters.keys())
         else:
+            # Minimal core set for non-interactive commands or help
             available_protocols = ["http", "local", "socket", "autogen", "crewai", "langgraph"]
     except ImportError:
         available_protocols = ["http", "local", "socket"]

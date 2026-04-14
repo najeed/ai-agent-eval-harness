@@ -32,7 +32,7 @@ class OllamaProvider(LLMProvider):
                         "stream": False,
                         "options": {"temperature": kwargs.get("temperature", 0.0)},
                     },
-                    timeout=aiohttp.ClientTimeout(total=10),
+                    timeout=aiohttp.ClientTimeout(total=30),
                 ) as response:
                     if response.status == 200:
                         data = await response.json()
@@ -197,7 +197,11 @@ class GeminiProvider(LLMProvider):
         """Lazy initialization of the GenAI client."""
         from google import genai
 
-        return genai.Client(api_key=self.api_key, vertexai=self.vertex_ai)
+        return genai.Client(
+            api_key=self.api_key,
+            vertexai=self.vertex_ai,
+            http_options={"timeout": 30000},  # 30s in ms for the SDK
+        )
 
     async def generate(self, prompt: str, **kwargs) -> str:
         if not self.api_key:
