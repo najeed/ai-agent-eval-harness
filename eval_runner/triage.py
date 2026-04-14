@@ -273,6 +273,17 @@ class TriageEngine:
         for i, turn in enumerate(history):
             content = turn.get("content", {})
             status = content.get("status") if isinstance(content, dict) else turn.get("status")
+            event = turn.get("event")
+
+            # 0. JIT Root Cause Marker (Highest Priority)
+            if turn.get("is_root_cause") is True:
+                return {
+                    "index": i,
+                    "confidence": Confidence.CERTAIN,
+                    "category": FailureCategory.POLICY_VIOLATION,
+                    "reason": "Event explicitly marked as root cause by simulator/guardrail.",
+                    "rank": 10,
+                }
 
             # Support Identity-First checks (PBAC)
             identity = turn.get("identity") or turn.get("identity_id")
@@ -297,7 +308,7 @@ class TriageEngine:
                         "rank": 2,
                     }
 
-            if status == "policy_violation":
+            if status == "policy_violation" or event == "policy_violation":
                 return {
                     "index": i,
                     "confidence": Confidence.HIGH,
@@ -305,7 +316,7 @@ class TriageEngine:
                     "reason": "Explicit policy violation detected in trajectory metadata.",
                     "rank": 5,
                 }
-            if status == "safety_block":
+            if status == "safety_block" or event == "safety_block":
                 return {
                     "index": i,
                     "confidence": Confidence.CERTAIN,

@@ -92,46 +92,53 @@ agentv evaluate --run-id <id> --format jsonl --output reports/latest_results.jso
 
 ### ⚡ CLI Quick Reference
 
-| Command | Common Options | Purpose |
+| Command | Common Options | Intent |
 |---|---|---|
-| **Core Evaluation** | | |
-| `evaluate` | `--path`, `-k`, `-f`, `-v`, `--agent`, `--protocol` | Batch execution of scenarios across a dataset |
-| `run` | `--scenario`, `-k`, `-f`, `-v`, `--agent` | Execution of a single specific scenario file |
-| `playground` | `--agent`, `--protocol`, `-v` | Interactive REPL for real-time agent experimentation |
-| `record` | `--agent`, `--protocol`, `--agent-name` | Capture live interactions into an executable trace |
-| `replay` | `--run-id` | Replay a recorded trace via the Flight Recorder |
-| `verify` | `--run-id` | Verify cryptographic integrity of a run trace using autonomous resolution |
-| `certify` | `--run-id`, `--identity` | Generate a Verification Certificate (VC) for a specific run |
-| `gate` | `--run-id`, `--verify-ledger` | Hard Gate CI/CD enforcement with Identity Registry verification |
-| `quickstart` | (none) | 60-second engine demonstration (spawns agent + eval) |
-| **Specifications** | | |
-| `aes validate` | `--path` | Validate a scenario against AES JSON schema |
-| `aes add-standard`| `--id`, `--industry`, `--description` | Register a new industry standard to local manifest |
-| **Scenario Management** | | |
-| `inspect` | `--scenario-path` | Display task breakdown and architecture for a scenario |
-| `lint` | `--path` | Score scenario for AES compliance and quality |
-| `list` | `--search`, `--refresh` | Search and explore the local industry registry |
-| `catalog-search` | `--query` | Search global and local scenario catalogs |
-| `mutate` | `--input`, `--type`, `-f` | Generate adversarial/edge-case scenario variants |
+| **1. Authoring & Scaffolding** | | Create new tests |
+| `init` | `--dir`, `--industry` | Scaffold a new benchmark environment |
+| `scenario generate` | (none) | Start the interactive scenario wizard |
 | `spec-to-eval` | `--input`, `--output` | Convert Markdown PRD/Spec to Scenario JSON |
-| **Analysis & Reporting** | | |
-| `calibrate` | `--run-id`, `--plot` | Measure judge agreement against human labels |
+| `mutate` | `--input`, `--type` | Generate adversarial/edge-case scenario variants |
+| `analyze` | `github_url` | Auto-generate scenarios from agent repositories |
+| `auto-translate` | `--input`, `--model` | Translate technical docs to AES via local LLM |
+| **2. Discovery & Exploration** | | Find scenarios and info |
+| `list` | `--search`, `--refresh` | Filter and explore the local scenario registry |
+| `catalog-search` | `--query` | Deep search across global/local catalogs |
+| `inspect` | `--scenario-path` | Display task breakdown for a scenario |
+| `list-metrics` | (none) | Display descriptions for all registered metrics |
+| `taxonomy` | (none) | Display the official failure taxonomy |
+| `list-plugins` | (none) | Display active and registered plugins |
+| **3. Executing Evaluations** | | Run engine tests |
+| `run` | `--scenario`, `-k`, `-f` | Execute a single specific scenario file |
+| `evaluate` | `--path`, `-k`, `-f` | Batch execution of scenarios across a dataset |
+| `quickstart` | (none) | 60-second engine demonstration run |
+| **4. Debugging & Diagnosis** | | Fix failing tests |
+| `replay` | `--run-id` | Replay a recorded trace in the terminal |
 | `explain` | `--run-id` | Diagnose root causes from evaluation traces |
-| `leaderboard` | `--dir`, `--output` | Generate performance rankings from run traces |
-| `list-metrics` | (none) | Display all registered evaluation metrics |
-| `report` | `--run-id`, `--share` | Generate stylized HTML reports from run traces |
-| `taxonomy` | (none) | Display the official AEH failure taxonomy |
-| **Environment** | | |
-| `init` | `--dir`, `--industry`, `--registry` | Scaffold a new benchmark environment |
-| `doctor` | (none) | Audit local environment and dependencies |
-| `cleanup-runs` | `--days`, `-f` | Prune old traces and rotate log artifacts |
+| `failures search` | `--query` | Search global corpus for failure patterns |
+| `playground` | `--agent`, `-v` | Interactive REPL for real-time agent testing |
+| `record` | `--agent`, `-v` | Capture live interactions into a trace |
+| **5. Reporting & Benchmarking** | | Analyze performance |
+| `report` | `--run-id`, `--share` | Generate stylized Premium HTML reports |
+| `leaderboard` | `--dir`, `--output` | Generate rankings from multiple run traces |
+| `calibrate` | `--run-id`, `--plot` | Measure judge agreement vs human labels |
+| **6. Trust & Verification** | | Prove test validity |
+| `verify` | `--run-id` | Verify cryptographic integrity of a run trace |
+| `certify` | `--run-id`, `--identity` | Generate signed Verification Certificates (VC) |
+| `gate` | `--run-id` | Enforce "Hard Gate" compliance in CI/CD |
+| `aes validate` | `--path` | Validate scenario files against AES schema |
+| `lint` | `--path` | Score scenario for compliance and quality |
+| **7. Automation & Integration** | | Scale and integrate |
+| `ci generate` | (none) | Scaffold GitHub Actions workflow templates |
 | `export` | `--input`, `--output` | Export traces to HF, CSV, or custom formats |
-| `install` | `pack_name` | Install curated industrial scenario packs |
-| `plugin` | `list`, `register <path>` | Manage external and built-in plugins |
-| `registry` | `sync`, `add --url` | Synchronize industry scenario registries |
-| `ci generate` | (none) | Generate GitHub Actions workflows for the environment |
-| **Industrial Standards Registry** | | |
-| `init --standard` | `--id`, `--dir` | Scaffold a benchmark environment aligned with a global standard (ISO 20022, HL7 FHIR) |
+| `import-drift` | `--input`, `--industry` | Convert production logs to evaluation scenarios |
+| `registry sync` | (none) | Synchronize local registry with remote standards |
+| **8. Maintenance & Control** | | Govern the environment |
+| `console` | `--host`, `--port` | Launch Visual Debugger (Web UI & REST API) |
+| `contribute` | (none) | Start the interactive contribution wizard |
+| `cleanup-runs` | `--days`, `-f` | Prune old traces and rotate log artifacts |
+| `doctor` | (none) | Audit local environment and dependencies |
+| `plugin` | `register`, `unregister` | Manage external and built-in plugins |
 
 ### 🧩 `run` — single scenario
 

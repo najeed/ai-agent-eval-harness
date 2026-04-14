@@ -23,21 +23,20 @@ agentv quickstart
 
 **What it does:** Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a **Premium HTML report** in `reports/`. 
 
+### 1.2 The Industrial User Intent Lifecycle (CLI Summary)
+AgentV CLI is organized around 8 logical intents to guide you through the full evaluation lifecycle:
+
+- **1. Authoring**: `init`, `scenario`, `spec-to-eval`, `mutate`, `analyze`, `auto-translate`
+- **2. Discovery**: `list`, `catalog-search`, `inspect`, `list-metrics`, `taxonomy`, `list-plugins`
+- **3. Execution**: `run`, `evaluate`, `quickstart`
+- **4. Debugging**: `replay`, `explain`, `failures search`, `playground`, `record`
+- **5. Reporting**: `report`, `leaderboard`, `calibrate`
+- **6. Trust**: `verify`, `certify`, `gate`, `aes`, `lint`
+- **7. CI/CD**: `ci`, `export`, `import-drift`, `registry sync`
+- **8. Control**: `console`, `contribute`, `cleanup-runs`, `doctor`, `plugin`
+
 > [!TIP]
 > **Integrated Visual Suite**: Launch the premium web dashboard via `agentv console`. It now features a Live Debugger that streams real-time state from your evaluations using the Zero-Touch `RemoteBridgePlugin`.
-
-### 1.2 Useful CLI Commands
-- `agentv console`: Launch the React Visual Debugger GUI for visual management.
-- `agentv doctor`: Check your environment health.
-- `agentv list --search <query>`: Search the scenario catalog (supports faceted filtering).
-- `agentv lint --run-id <id><path>`: Verify scenario quality and AES specification compliance.
-- `agentv spec-to-eval --fill-defaults`: Convert rough specs into valid, lint-passable scenarios.
-- `agentv auto-translate --input <doc>`: Convert PDFs/Docs into JSON scenarios using Ollama.
-- `agentv run --scenario <benchmark-uri>`: Zero-config execution for community benchmarks (GAIA, AssistantBench).
-- `agentv report --run-id <id>`: Generate a standalone Premium HTML report (reconstructed from any `.jsonl` trace).
-- `agentv gate --run-id <id>`: Enforce cryptographic integrity in a CI/CD pipeline using the **Trust Protocol**.
-- `agentv replay --run-id <id>`: View the step-by-step history of a run in terminal.
-- Advanced Utilities: `install`, `analyze`, `ci generate`, `failures search`, and `explain`.
 
 > [!NOTE]
 > **Path Decoupling**: Evaluations can now be run from any directory. The harness automatically resolves relative dataset paths and tags ad-hoc scenarios as `local`.

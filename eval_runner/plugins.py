@@ -7,6 +7,7 @@ Updated to respect Zero-Touch architecture and immutable core.
 """
 
 from abc import ABC  # noqa: I001
+import atexit
 import concurrent.futures
 import importlib.metadata
 import importlib.util
@@ -605,3 +606,4 @@ class PluginManager:
 
 
 manager = PluginManager()
+atexit.register(manager.finalize)

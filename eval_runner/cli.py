@@ -71,54 +71,61 @@ def get_parser(is_help=False):
             available_protocols = ["http", "local", "socket", "autogen", "crewai", "langgraph"]
     except ImportError:
         available_protocols = ["http", "local", "socket"]
-
     usage_text = """
 Usage: agentv <command> [options]
 
-Core Evaluation:
-  console        Launch the Visual Debugger (Web UI & REST API)
-  contribute     Start the interactive scenario contribution wizard
-  evaluate       Execute batch evaluation on a scenario dataset
-  playground     Launch an interactive REPL for agent experimentation
-  quickstart     Run the 60-second engine demonstration
-  record         Record live agent interactions to a session trace
-  replay         Replay a previously recorded run trace
-  run            Execute evaluation on a single specific scenario
-  verify         Verify the cryptographic integrity of a run trace
-  certify        Generate a Verification Certificate (VC) for a specific run trace
-  gate           CI/CD "Hard Gate": Enforce verification and signature checks
-
-Specification & Scenarios:
-  aes            AES Specification utilities (Validate/Register)
-  catalog-search Search the global and local scenario catalogs
-  inspect        Display task breakdown for a specific scenario
-  lint           Static analysis for AES compliance and quality
-  list           Filter and list available local scenarios
-  mutate         Generate adversarial/edge-case scenario variants
+1. Authoring & Scaffolding (Intent: Create new tests)
+  init           Scaffold a new benchmark environment
   scenario       Generic scenario management (Generate/Inspect)
   spec-to-eval   Convert Markdown PRD/Specs into Scenario JSON
-
-Analysis & Reporting:
-  calibrate      Measure judge agreement against human labels
-  explain        Diagnose root causes from evaluation traces
-  leaderboard    Generate performance rankings from run traces
-  list-metrics   List all registered evaluation metrics
-  report         Generate stylized HTML reports from run traces
-  taxonomy       Display the official AEH failure taxonomy
-
-Utilities & Environment:
+  mutate         Generate adversarial/edge-case scenario variants
   analyze        Auto-generate scenarios from GitHub repositories
   auto-translate Use local LLMs to translate docs to AES JSON
-  ci             GitHub Actions / CI/CD pipeline integration
-  cleanup-runs   Prune old traces and rotate log artifacts
-  doctor         Audit the local environment and dependencies
-  export         Export traces to external formats (HF, CSV)
+
+2. Discovery & Exploration (Intent: Find scenarios/info)
+  list           Filter and list available local scenarios
+  catalog-search Search the global and local scenario catalogs
+  inspect        Display task breakdown for a specific scenario
+  list-metrics   List all registered evaluation metrics
+  taxonomy       Display the official AEH failure taxonomy
+  list-plugins   Display all active and registered plugins
+
+3. Executing Evaluations (Intent: Run tests)
+  run            Execute evaluation on a single specific scenario
+  evaluate       Execute batch evaluation on a scenario dataset
+  quickstart     Run the 60-second engine demonstration
+
+4. Debugging & Diagnosis (Intent: Fix tests)
+  replay         Replay a previously recorded run trace
+  explain        Diagnose root causes from evaluation traces
   failures       Search the global Failure Corpus and patterns
+  playground     Launch an interactive REPL for agent experimentation
+  record         Record live agent interactions to a session trace
+
+5. Reporting & Benchmarking (Intent: Analyze performance)
+  report         Generate stylized HTML reports from run traces
+  leaderboard    Generate performance rankings from run traces
+  calibrate      Measure judge agreement against human labels
+
+6. Trust & Verification (Intent: Prove validity)
+  verify         Verify the cryptographic integrity of a run trace
+  certify        Generate a Verification Certificate (VC) for a trace
+  gate           CI/CD "Hard Gate": Enforce verification/compliance
+  aes            AES Specification utilities (Validate/Register)
+  lint           Static analysis for AES compliance and quality
+
+7. Automation & Integration (Intent: Scale & Integrate)
+  ci             GitHub Actions / CI/CD pipeline integration
+  export         Export traces to external formats (HF, CSV)
   import-drift   Convert production traces to evaluation scenarios
-  init           Initialize a new benchmark environment
-  install        Install curated industry scenario packs
-  plugin         Manage external and built-in plugins
   registry       Synchronize industry scenario registries
+
+8. Maintenance & Control (Intent: Govern environment)
+  console        Launch the Visual Debugger (Web UI & REST API)
+  contribute     Start the interactive contribution wizard
+  cleanup-runs   Prune old traces and rotate log artifacts
+  doctor         Audit the environment and dependencies
+  plugin         Manage external and built-in plugins
 """
     parser = argparse.ArgumentParser(
         description="AgentV (OpenCore)",

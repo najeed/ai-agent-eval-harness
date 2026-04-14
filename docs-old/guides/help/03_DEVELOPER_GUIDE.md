@@ -37,32 +37,62 @@ The version is defined in exactly ONE place: **`pyproject.toml`**.
 
 ---
 
-## 🧩 2 CLI Architecture
+## 🧩 2 CLI Architecture: User Intent Lifecycle
 
-Entry point: `eval_runner/cli.py`
+Entry point: `eval_runner/cli.py`. The CLI is structured around the industrial evaluation lifecycle:
 
-### Main commands
-- `evaluate` — Run a batch of scenarios
-- `quickstart` — End-to-end evaluation demo using `sample_agent`
-- `console` — Launch the Integrated Visual Suite backend (with background execution and live visual debugging)
-- `doctor` — Validate environment health and dependencies
+### 1. Authoring & Scaffolding
 - `init` — Scaffold new project directories with synthetic datasets
-- `report` — Generate a standalone **Premium HTML report** (reconstructed from any `.jsonl` trace)
-- `run` — Run a single scenario file
-- `replay` — Replay a run trace
-- `aes validate` — Validate AES benchmark definitions
+- `scenario` — Generic scenario management (Generate/Inspect)
 - `spec-to-eval` — Convert Markdown specs into JSON scenarios
-- `auto-translate` — Automatically translate documents into scenarios using Ollama
-- `import-drift` — Convert production traces into scenarios
 - `mutate` — Generate adversarial variants (typos, ambiguity, injection)
-- `scenario generate` — Interactive generator for boilerplate scenarios
-- `record` — Real-time agent interaction logger
-- `playground` — Interactive CLI REPL for agent testing
-- `install` — Rapid deployment of curated scenario packs
 - `analyze` — Proactive agent codebase scanning and AES scaffolding
-- `ci generate` — Instant GitHub Actions integration for evaluation
-- `failures search` — Query the global Failure Corpus for edge cases
+- `auto-translate` — Automatically translate documents into scenarios using LLMs
+
+### 2. Discovery & Exploration
+- `list` — Filter and explore the local scenario registry
+- `catalog-search` — Deep search across global/local catalogs
+- `inspect` — Display task breakdown for a specific scenario
+- `list-metrics` — Metadata: List all registered evaluation metrics
+- `taxonomy` — Metadata: Show the official failure taxonomy
+- `list-plugins` — Registry: List active and registered plugins
+
+### 3. Executing Evaluations
+- `run` — Execute single scenario or Benchmark URI
+- `evaluate` — Execute batch evaluation on a scenario dataset
+- `quickstart` — 60-second end-to-end evaluation demo
+
+### 4. Debugging & Diagnosis
+- `replay` — Replay a previously recorded run trace
 - `explain` — Automated trace diagnostics for root cause analysis
+- `failures search` — Query the global Failure Corpus for patterns
+- `playground` — Interactive CLI REPL for agent testing
+- `record` — Real-time agent interaction logger
+
+### 5. Reporting & Benchmarking
+- `report` — Generate stylized **Premium HTML reports** from traces
+- `leaderboard` — Performance rankings from multiple run traces
+- `calibrate` — Measure judge agreement against human labels
+
+### 6. Trust & Verification
+- `verify` — Cryptographic integrity check (Forensic Audit)
+- `certify` — Generate signed Verification Certificates (VC)
+- `gate` — CI/CD Hard Gate: Enforce verification/compliance
+- `aes` — AES Specification utilities (Validate/Register)
+- `lint` — Static analysis for AES compliance quality
+
+### 7. Automation & Integration
+- `ci generate` — GitHub Actions integration for evaluation
+- `export` — Format traces for HF/CSV/Dataset export
+- `import-drift` — Convert production traces into evaluation scenarios
+- `registry sync` — Synchronize industrial registries with remote standards
+
+### 8. Maintenance & Control
+- `console` — Launch Visual Debugger (Web UI & REST API)
+- `contribute` — Start the interactive contribution wizard
+- `cleanup-runs` — Prune old traces and rotate log artifacts
+- `doctor` — Audit environment health and dependencies
+- `plugin` — Manage external and built-in plugins
 
 ---
 

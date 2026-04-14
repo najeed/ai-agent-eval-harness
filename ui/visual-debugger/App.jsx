@@ -763,7 +763,7 @@ const FlowView = ({ events, selectedEvent, onNodeSelect, highlightFailure = fals
     );
 };
 
-const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTimeline = false, highlightFailure = false, apiFetch }) => {
+const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTimeline = false, highlightFailure = false, apiFetch, authRequired }) => {
     const [events, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -845,11 +845,17 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
     }, [runId, highlightFailure]);
 
     useEffect(() => {
-        if (!isLive) return;
+        if (!isLive || authRequired) return;
 
         const interval = setInterval(() => {
             apiFetch('/api/debugger/state')
                 .then(data => {
+                    // Circuit Breaker: If data is null, the session has expired and
+                    // apiFetch has already triggered the login overlay.
+                    if (data === null) {
+                        clearInterval(interval);
+                        return;
+                    }
                     if (data && data.data && data.data.timeline) {
                         setEvents(data.data.timeline);
                     }
@@ -858,7 +864,7 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [isLive]);
+    }, [isLive, authRequired]);
 
     const handleExport = () => {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(events, null, 2));
@@ -921,14 +927,20 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                                                     (e.response && (e.response.status === 'error' || e.response.status === 'refusal'))
                                                 );
                                                 if (failureNode) {
-                                                    setSelectedEvent(failureNode);
-                                                    onNotify("Focused on isolated root cause");
                                                 } else {
                                                     const runEnd = events.find(e => e.event === 'run_end' && e.status === 'failed');
                                                     if (runEnd) {
-                                                        const lastAction = [...events].reverse().find(e => e.event === 'agent_response' || e.event === 'tool_call');
-                                                        if (lastAction) {
-                                                            setSelectedEvent(lastAction);
+                                                        // Robust Search: Priority to explicit root-cause markers or violations
+                                                        const targetEvent = [...events].reverse().find(e =>
+                                                            e.is_root_cause === true ||
+                                                            e.event === 'policy_violation' ||
+                                                            e.event === 'safety_block'
+                                                        ) || [...events].reverse().find(e =>
+                                                            e.event === 'agent_response' ||
+                                                            e.event === 'tool_call'
+                                                        ) || runEnd || events[events.length - 1];
+                                                        if (targetEvent) {
+                                                            setSelectedEvent(targetEvent);
                                                             onNotify("Isolated probable root cause (heuristic)");
                                                             return;
                                                         }
@@ -1740,7 +1752,7 @@ const App = () => {
             case 'scenarios': return <ScenarioExplorer onNotify={showToast} searchQuery={globalSearch} apiFetch={apiFetch} />;
             case 'reports': return <ReportsView onViewReport={handleViewReport} searchQuery={globalSearch} apiFetch={apiFetch} />;
             case 'editor': return <ScenarioEditor />;
-            case 'debugger': return <VisualDebugger runId={selectedRunId} onNotify={showToast} apiFetch={apiFetch} />;
+            case 'debugger': return <VisualDebugger runId={selectedRunId} onNotify={showToast} apiFetch={apiFetch} authRequired={authRequired} />;
             case 'demo':
                 if (!isDemoReady) {
                     return (

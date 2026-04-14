@@ -2,7 +2,7 @@
 
 The **dataproc-engine** is an enterprise-grade framework designed to generate high-fidelity industrial datasets for AI agent evaluation. By consolidating 16 distinct sectors into a unified hierarchical fleet, the engine provides a robust foundation for benchmarking agents across finance, healthcare, energy, the public sector, and more.
 
-## 🛡️ Core Pillars
+## 🛡️ Industrial Principles
 
 1.  **Zero-Bundling Architecture**: Guarantees that no PII or restricted commercial records are leaked into the evaluation stream, leveraging high-fidelity simulations where necessary.
 2.  **Industrial Parity**: Achieves high-fidelity statistical match against standard benchmarks (SEC EDGAR, World Bank, etc.).

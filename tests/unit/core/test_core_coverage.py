@@ -1,6 +1,5 @@
 import json
 import os
-import stat
 from pathlib import Path
 from unittest.mock import patch
 
@@ -80,25 +79,22 @@ def test_rmtree_resilient_error_handling(tmp_path):
     path = tmp_path / "unfixable"
     path.mkdir()
 
-    # To trigger handle_errors (onerror), we need a real PermissionError on a file inside
-    unfixable = path / "secret.txt"
-    unfixable.write_text("protected")
-    # Make it read-only
-    os.chmod(unfixable, stat.S_IREAD)
-
-    with patch("os.chmod", side_effect=Exception("chmod fail")):
+    # Manual trigger of handle_errors to ensure coverage across all OS platforms
+    with patch("shutil.rmtree") as mock_rm:
         with patch("sys.stderr.write") as mock_err:
             from eval_runner.utils import rmtree_resilient
 
-            # shutil.rmtree will call handle_errors when it fails to remove unfixable
-            # We don't mock rmtree here so it actually does the work
-            with patch("time.sleep"):
-                rmtree_resilient(path, retries=1)
+            rmtree_resilient(path)
+            # Extract the internal handle_errors function from the call
+            _, kwargs = mock_rm.call_args
+            onerror = kwargs.get("onerror")
+
+            # Simulate a chmod failure inside the handler
+            with patch("os.chmod", side_effect=Exception("chmod fail")):
+                onerror(os.chmod, str(path), None)
+
             output = "".join(call[0][0] for call in mock_err.call_args_list)
             assert "Failed to force R/W bits" in output or "chmod fail" in output
-
-    # Cleanup: make it writable again so pytest can delete tmp_path
-    os.chmod(unfixable, stat.S_IWRITE)
 
 
 def test_rmtree_resilient_rename_retry(tmp_path):
@@ -341,6 +337,7 @@ def test_failure_corpus_comprehensive(tmp_path, monkeypatch):
 
 def test_failure_corpus_error_handling():
     with (
+        patch("eval_runner.failure_corpus.Path.exists", return_value=True),
         patch("builtins.open", side_effect=Exception("Read error")),
         patch("builtins.print") as mock_print,
     ):

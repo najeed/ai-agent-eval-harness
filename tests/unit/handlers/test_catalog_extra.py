@@ -171,8 +171,8 @@ def test_check_for_updates_sync(tmp_path):
     # Configure glob to return 2 items
     mock_industries.glob.return_value = [MagicMock(), MagicMock()]
 
-    # Set internal state to 2 items
-    cat.scenarios = [{}, {}]
+    # Set internal state to 2 items with valid 'path' markers
+    cat.scenarios = [{"path": "s1"}, {"path": "s2"}]
 
     # Now disk_count (2) == len(self.scenarios) (2), so False (no updates needed)
     assert cat.check_for_updates() is False

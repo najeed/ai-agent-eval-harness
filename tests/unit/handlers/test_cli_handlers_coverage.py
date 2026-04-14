@@ -211,4 +211,4 @@ def test_main_help(capsys):
             cli.main()
         captured = capsys.readouterr()
         assert "Usage:" in captured.out
-        assert "Core Evaluation:" in captured.out
+        assert "Authoring & Scaffolding" in captured.out

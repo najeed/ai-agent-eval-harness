@@ -23,9 +23,7 @@ print(
 
 
 def create_app():
-    # Eager Hydration: Ensure plugins and scenarios are loaded before the first request
-    # This eliminates the "0 scenarios" state on initial load.
-    manager.load_plugins()
+    # Eager Hydration: Ensure scenarios are loaded before the first request
     from eval_runner.catalog import ScenarioCatalog
 
     # [STARTUP ACCELERATION]: Bypass heavy indexing for Trust Portal Stability
