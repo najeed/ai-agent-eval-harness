@@ -273,49 +273,51 @@ async def handle_replay(args):
     Reconstructs the interaction history from a run trace.
     """
 
-    run_id = args.run_id
-    if not run_id:
-        print("❌ Error: Run ID is mandatory for replay.")
-        return 1
-
-    # --- [TIERED RESOLUTION] ---
-    path = _resolve_replay_trace(run_id)
-    if not path:
-        print(
-            f"❌ [ERROR] Replay trace not found for Run ID '{run_id}'. "
-            "Vault and Master Log are missing or security check failed."
-        )
-        return 1
-
-    events = trace_utils.load_events(path)
-    if path.name == "run.jsonl" and path.parent == config.RUN_LOG_DIR:
-        # Filtering based on Master Log resolution
-        events = [e for e in events if e.get("run_id") == run_id]
-        if not events:
-            print(f"❌ [ERROR] Run ID '{run_id}' not found in master log fallback.")
+    try:
+        run_id = args.run_id
+        if not run_id:
+            print("❌ Error: Run ID is mandatory for replay.")
             return 1
-        print(
-            f"❌ [ERROR] Vault directory not found for Run ID '{run_id}'. "
-            "Falling back to master log."
-        )
 
-    print(f"\n[Replay] Reconstructing from Run ID: {run_id}")
+        # --- [TIERED RESOLUTION] ---
+        path = _resolve_replay_trace(run_id)
+        if not path:
+            print(
+                f"❌ [ERROR] Replay trace not found for Run ID '{run_id}'. "
+                "Vault and Master Log are missing or security check failed."
+            )
+            return 1
 
-    # Reconstruct and display events
+        events = trace_utils.load_events(path)
+        if path.name == "run.jsonl" and path.parent == config.RUN_LOG_DIR:
+            # Filtering based on Master Log resolution
+            events = [e for e in events if e.get("run_id") == run_id]
+            if not events:
+                print(f"❌ [ERROR] Run ID '{run_id}' not found in master log fallback.")
+                return 1
+            print(
+                f"❌ [ERROR] Vault directory not found for Run ID '{run_id}'. "
+                "Falling back to master log."
+            )
 
-    # Reconstruct and display events
-    for event in events:
-        ev_type = event.get("event", "unknown")
-        if ev_type == "run_start":
-            print(f"--- Run Started: {event.get('run_id')} ({event.get('scenario')}) ---")
-        elif ev_type == "prompt":
-            print(f"[{event.get('role', 'user').upper()}]: {event.get('content', '')}")
-        elif ev_type == "agent_response":
-            print(f"Agent: {event.get('content', '')}")
-        elif ev_type == "run_end":
-            print(f"--- Run Finished: {event.get('status')} ---")
+        print(f"\n[Replay] Reconstructing from Run ID: {run_id}")
 
-    return 0
+        # Reconstruct and display events
+        for event in events:
+            ev_type = event.get("event", "unknown")
+            if ev_type == "run_start":
+                print(f"--- Run Started: {event.get('run_id')} ({event.get('scenario')}) ---")
+            elif ev_type == "prompt":
+                print(f"[{event.get('role', 'user').upper()}]: {event.get('content', '')}")
+            elif ev_type == "agent_response":
+                print(f"Agent: {event.get('content', '')}")
+            elif ev_type == "run_end":
+                print(f"--- Run Finished: {event.get('status')} ---")
+
+        return 0
+    except Exception as e:
+        print(f"❌ [ERROR] Replay FAILED: {e}")
+        return 1
 
 
 async def handle_verify(args):
@@ -324,41 +326,49 @@ async def handle_verify(args):
     Standard Pillar 1 of the industrial Trust Protocol.
     """
 
-    # --- [SSOT] Mandatory Run ID Resolution ---
-    run_id = args.run_id  # Verified mandatory by CLI parser
+    try:
+        # --- [SSOT] Mandatory Run ID Resolution ---
+        run_id = args.run_id  # Verified mandatory by CLI parser
 
-    if not run_id:
-        print("      [CRITICAL] FAILED: Run ID is mandatory for verification.")
-        return 1
+        if not run_id:
+            print("      [CRITICAL] FAILED: Run ID is mandatory for verification.")
+            return 1
 
-    run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
-    trace_path = run_log_dir / "run.jsonl"
-    manifest_path = run_log_dir / "run_manifest.json"
+        run_log_dir = (config.RUN_LOG_DIR / run_id).resolve()
+        trace_path = run_log_dir / "run.jsonl"
+        manifest_path = run_log_dir / "run_manifest.json"
 
-    # [INDUSTRIAL HARDENING] Check security cage BEFORE existence to catch traversals early
-    if not _ensure_path_safe(trace_path, "Trace file"):
-        return 1
+        # [INDUSTRIAL HARDENING] Check security cage BEFORE existence to catch traversals early
+        if not _ensure_path_safe(trace_path, "Trace file"):
+            return 1
 
-    print(f"      [Identity] Resolving trace for {run_id} -> {trace_path}")
-    print(f"      [Identity] Resolving manifest for {run_id} -> {manifest_path}")
+        print(f"      [Identity] Resolving trace for {run_id} -> {trace_path}")
+        print(f"      [Identity] Resolving manifest for {run_id} -> {manifest_path}")
 
-    if not trace_path.exists():
-        print(f"      [CRITICAL] FAILED: Trace file for {run_id} missing after vault lookup.")
-        return 1
+        if not trace_path.exists():
+            print(f"      [CRITICAL] FAILED: Trace file for {run_id} missing after vault lookup.")
+            return 1
 
-    if not manifest_path.exists():
-        print(f"      [CRITICAL] FAILED: Manifest for {run_id} missing (Certification required).")
-        return 1
+        if not manifest_path.exists():
+            print(
+                f"      [CRITICAL] FAILED: Manifest for {run_id} missing (Certification required)."
+            )
+            return 1
 
-    # Canonical Verification Call (Pillar 1)
-    # TraceVerifier.verify_trace is the industrial standard method.
-    is_valid = await verifier.TraceVerifier.verify_trace_async(str(trace_path), str(manifest_path))
+        # Canonical Verification Call (Pillar 1)
+        # TraceVerifier.verify_trace is the industrial standard method.
+        is_valid = await verifier.TraceVerifier.verify_trace_async(
+            str(trace_path), str(manifest_path)
+        )
 
-    if is_valid:
-        print("      [OK] VERIFIED: Trace integrity matches manifest.")
-        return 0
-    else:
-        print("      [CRITICAL] FAILED: Trace integrity compromised!")
+        if is_valid:
+            print("      [OK] VERIFIED: Trace integrity matches manifest.")
+            return 0
+        else:
+            print("      [CRITICAL] FAILED: Trace integrity compromised!")
+            return 1
+    except Exception as e:
+        print(f"❌ [ERROR] Verification FAILED: {e}")
         return 1
 
 
