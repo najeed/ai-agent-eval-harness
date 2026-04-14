@@ -25,7 +25,7 @@
     
     
       
-        <title>API Reference (Programmatic Authorization) - AgentV</title>
+        <title>API Reference: Industrial REST Protocol - AgentV</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#api-reference-programmatic-authorization" class="md-skip">
+        <a href="#api-reference-industrial-rest-protocol" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              API Reference (Programmatic Authorization)
+              API Reference: Industrial REST Protocol
             
           </span>
         </div>
@@ -3637,14 +3637,47 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Authentication">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-core-system-telemetry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Core System &amp; Telemetry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Core System &amp; Telemetry">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#provisioning" class="md-nav__link">
+  <a href="#get-apiinfo" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Provisioning
+        GET /api/info
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-apiping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /api/ping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-apicleanup-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /api/cleanup-runs
       
     </span>
   </a>
@@ -3657,22 +3690,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#endpoints" class="md-nav__link">
+  <a href="#2-evaluation-orchestration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Endpoints
+        2. Evaluation &amp; Orchestration
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Endpoints">
+    <nav class="md-nav" aria-label="2. Evaluation &amp; Orchestration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-trigger-evaluation" class="md-nav__link">
+  <a href="#post-apiv1evaluate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Trigger Evaluation
+        POST /api/v1/evaluate
       
     </span>
   </a>
@@ -3680,10 +3713,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-verify-run-public-trust" class="md-nav__link">
+  <a href="#get-apiv1runsrun_id" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Verify Run (Public Trust)
+        GET /api/v1/runs/&lt;run_id&gt;
       
     </span>
   </a>
@@ -3691,21 +3724,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-retrieve-certificate-industrial-vc" class="md-nav__link">
+  <a href="#get-apiruns" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Retrieve Certificate (Industrial VC)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-identity-resolution-public" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Identity Resolution (Public)
+        GET /api/runs
       
     </span>
   </a>
@@ -3718,13 +3740,213 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#polling-pattern-cli-integration" class="md-nav__link">
+  <a href="#3-trust-verification-public-protocol" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Polling Pattern (CLI Integration)
+        3. Trust &amp; Verification (Public Protocol)
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="3. Trust &amp; Verification (Public Protocol)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-v1certificatesrun_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/certificates/&lt;run_id&gt;
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1verifyrun_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/verify/&lt;run_id&gt;
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1identityidentity_idpublic_key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/identity/&lt;identity_id&gt;/public_key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-apiv1certify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /api/v1/certify
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-scenario-specification-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Scenario Specification &amp; Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Scenario Specification &amp; Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-apiscenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /api/scenarios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-apiscenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /api/scenarios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-apiscenariosrefresh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /api/scenarios/refresh
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-visual-debugger-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Visual Debugger &amp; Documentation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Visual Debugger &amp; Documentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-apidebuggerstaterun_idrun_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /api/debugger/state?run_id=&lt;run_id&gt;
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-apinav" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /api/nav
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-apidocs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /api/docs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-apidocspath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /api/docs/&lt;path&gt;
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-industrial-demo-jailed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Industrial Demo (Jailed)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Industrial Demo (Jailed)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#post-apidemoexecute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /api/demo/execute
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-apidemoreset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /api/demo/reset
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3745,55 +3967,98 @@
 
 
 
-<h1 id="api-reference-programmatic-authorization">API Reference (Programmatic Authorization)<a class="headerlink" href="#api-reference-programmatic-authorization" title="Permanent link">&para;</a></h1>
-<p>This document provides a technical guide for interacting with the Advanced AgentV Harness REST API using specialized service keys.</p>
+<h1 id="api-reference-industrial-rest-protocol">API Reference: Industrial REST Protocol<a class="headerlink" href="#api-reference-industrial-rest-protocol" title="Permanent link">&para;</a></h1>
+<p>The Advanced AgentV Harness provides a high-fidelity REST API for orchestration, forensic auditing, and CI/CD integration. Access is governed by the <strong>Identity Manager</strong> using PBAC (Permission-Based Access Control) nodes.</p>
 <h2 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h2>
-<p>Programmatic access is controlled via the <code>X-Api-Key</code> header.</p>
-<h3 id="provisioning">Provisioning<a class="headerlink" href="#provisioning" title="Permanent link">&para;</a></h3>
-<p>To enable headless access for Enterprise CI/CD pipelines:
-1. Define a <code>SERVICE_API_KEY</code> in your environment.
-2. If <code>SERVICE_API_KEY</code> is not defined, the harness will fallback to <code>DASHBOARD_API_KEY</code> for compatibility.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Example environment setup</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">SERVICE_API_KEY</span><span class="o">=</span><span class="s2">&quot;aeh_service_prod_sha256_pk_...&quot;</span>
-</code></pre></div>
-<h2 id="endpoints">Endpoints<a class="headerlink" href="#endpoints" title="Permanent link">&para;</a></h2>
-<h3 id="1-trigger-evaluation">1. Trigger Evaluation<a class="headerlink" href="#1-trigger-evaluation" title="Permanent link">&para;</a></h3>
-<p><code>POST /api/evaluate</code></p>
-<p>Triggers an evaluation of a specific scenario in a background thread.</p>
-<p><strong>Headers:</strong>
-- <code>X-Api-Key</code>: <code>{SERVICE_API_KEY}</code>
-- <code>Content-Type</code>: <code>application/json</code></p>
-<p><strong>Body:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;industries/fintech/scenarios/loan_decision.json&quot;</span><span class="p">,</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;max_turns&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">&quot;metadata_overrides&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="nt">&quot;compliance_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Strict&quot;</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="p">}</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">}</span>
-</code></pre></div></p>
-<p><strong>Response (202 Accepted):</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;started&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Evaluation started for loan_decision.yaml&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fin_loan_001&quot;</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">}</span>
-</code></pre></div></p>
-<h3 id="2-verify-run-public-trust">2. Verify Run (Public Trust)<a class="headerlink" href="#2-verify-run-public-trust" title="Permanent link">&para;</a></h3>
-<p><code>GET /v1/verify/&lt;run_id&gt;</code></p>
-<p>Public endpoint that verifies a completed run against its industrial manifest using autonomous artifact resolution. (Unprotected for Public Trust compatibility).</p>
-<h3 id="3-retrieve-certificate-industrial-vc">3. Retrieve Certificate (Industrial VC)<a class="headerlink" href="#3-retrieve-certificate-industrial-vc" title="Permanent link">&para;</a></h3>
-<p><code>GET /v1/certificates/&lt;run_id&gt;</code></p>
-<p>Retrieves the Verification Certificate (VC) for a specific run, including SHA-256 hashes and identity signatures. (Unprotected for Public Trust compatibility).</p>
-<h3 id="4-identity-resolution-public">4. Identity Resolution (Public)<a class="headerlink" href="#4-identity-resolution-public" title="Permanent link">&para;</a></h3>
-<p><code>GET /v1/identity/&lt;identity_id&gt;/public_key</code></p>
-<p>Resolves the public key for a forensic identity to support multi-party signature verification. (Unprotected for Public Trust compatibility).</p>
+<p>Programmatic access is controlled via the <code>X-Api-Key</code> header.
+- <strong>Service Access</strong>: Define <code>SERVICE_API_KEY</code> in your environment.
+- <strong>Dashboard Access</strong>: Define <code>DASHBOARD_API_KEY</code> for UI-bridged workflows.</p>
 <hr />
-<h2 id="polling-pattern-cli-integration">Polling Pattern (CLI Integration)<a class="headerlink" href="#polling-pattern-cli-integration" title="Permanent link">&para;</a></h2>
-<p>For headless CI/CD, use the following pattern:
-1. POST to <code>/api/evaluate</code>
-2. Poll the report directory for the generated <code>aggregated_results.json</code> or <code>run.jsonl</code>.
-3. Verify the run using the <code>agentv verify</code> CLI tool for industrial gating.</p>
+<h2 id="1-core-system-telemetry">1. Core System &amp; Telemetry<a class="headerlink" href="#1-core-system-telemetry" title="Permanent link">&para;</a></h2>
+<h3 id="get-apiinfo"><code>GET /api/info</code><a class="headerlink" href="#get-apiinfo" title="Permanent link">&para;</a></h3>
+<p>Returns consolidated system health, versioning, and telemetry.
+- <strong>Permission</strong>: <code>SCENARIOS_READ</code>
+- <strong>Security</strong>: Protected</p>
+<h3 id="get-apiping"><code>GET /api/ping</code><a class="headerlink" href="#get-apiping" title="Permanent link">&para;</a></h3>
+<p>Liveness check for the dashboard and API engine.
+- <strong>Security</strong>: Public (v1.5.0 verified)</p>
+<h3 id="post-apicleanup-runs"><code>POST /api/cleanup-runs</code><a class="headerlink" href="#post-apicleanup-runs" title="Permanent link">&para;</a></h3>
+<p>Prunes historical traces and rotates log artifacts.
+- <strong>Permission</strong>: <code>DEMO_EXECUTE</code>
+- <strong>Security</strong>: Protected</p>
+<hr />
+<h2 id="2-evaluation-orchestration">2. Evaluation &amp; Orchestration<a class="headerlink" href="#2-evaluation-orchestration" title="Permanent link">&para;</a></h2>
+<h3 id="post-apiv1evaluate"><code>POST /api/v1/evaluate</code><a class="headerlink" href="#post-apiv1evaluate" title="Permanent link">&para;</a></h3>
+<p>Triggers an asynchronous evaluation for a specific scenario or path.
+- <strong>Permission</strong>: <code>EVAL_TRIGGER</code>
+- <strong>Security</strong>: Protected
+- <strong>Body</strong>: <code>{"path": "industries/fin/scenarios/loan.json", "max_turns": 10}</code></p>
+<h3 id="get-apiv1runsrun_id"><code>GET /api/v1/runs/&lt;run_id&gt;</code><a class="headerlink" href="#get-apiv1runsrun_id" title="Permanent link">&para;</a></h3>
+<p>Returns the real-time status and metadata of a specific evaluation.
+- <strong>Permission</strong>: <code>RUNS_READ</code>
+- <strong>Security</strong>: Protected
+- <strong>Statuses</strong>: <code>RUNNING</code>, <code>COMPLETED</code>, <code>NOT_FOUND</code></p>
+<h3 id="get-apiruns"><code>GET /api/runs</code><a class="headerlink" href="#get-apiruns" title="Permanent link">&para;</a></h3>
+<p>Lists historical run traces with faceted filtering.
+- <strong>Permission</strong>: <code>RUNS_READ</code>
+- <strong>Security</strong>: Protected</p>
+<hr />
+<h2 id="3-trust-verification-public-protocol">3. Trust &amp; Verification (Public Protocol)<a class="headerlink" href="#3-trust-verification-public-protocol" title="Permanent link">&para;</a></h2>
+<h3 id="get-v1certificatesrun_id"><code>GET /v1/certificates/&lt;run_id&gt;</code><a class="headerlink" href="#get-v1certificatesrun_id" title="Permanent link">&para;</a></h3>
+<p>Retrieves the Verification Certificate (VC) for a specific run.
+- <strong>Security</strong>: <strong>Public</strong> (Industrial Trust Anchor)</p>
+<h3 id="get-v1verifyrun_id"><code>GET /v1/verify/&lt;run_id&gt;</code><a class="headerlink" href="#get-v1verifyrun_id" title="Permanent link">&para;</a></h3>
+<p>Autonomous integrity verification: Checks a trace against its signed manifest.
+- <strong>Security</strong>: <strong>Public</strong></p>
+<h3 id="get-v1identityidentity_idpublic_key"><code>GET /v1/identity/&lt;identity_id&gt;/public_key</code><a class="headerlink" href="#get-v1identityidentity_idpublic_key" title="Permanent link">&para;</a></h3>
+<p>Resolves the PEM-encoded public key for a forensic identity.
+- <strong>Security</strong>: <strong>Public</strong></p>
+<h3 id="post-apiv1certify"><code>POST /api/v1/certify</code><a class="headerlink" href="#post-apiv1certify" title="Permanent link">&para;</a></h3>
+<p>Issues a cryptographically signed Verification Certificate (VC) for a completed run.
+- <strong>Permission</strong>: <code>CERTIFY_WRITE</code>
+- <strong>Security</strong>: Protected</p>
+<hr />
+<h2 id="4-scenario-specification-management">4. Scenario Specification &amp; Management<a class="headerlink" href="#4-scenario-specification-management" title="Permanent link">&para;</a></h2>
+<h3 id="get-apiscenarios"><code>GET /api/scenarios</code><a class="headerlink" href="#get-apiscenarios" title="Permanent link">&para;</a></h3>
+<p>Lists available scenarios with keyword and industry filtering.
+- <strong>Permission</strong>: <code>SCENARIOS_READ</code>
+- <strong>Security</strong>: Protected</p>
+<h3 id="post-apiscenarios"><code>POST /api/scenarios</code><a class="headerlink" href="#post-apiscenarios" title="Permanent link">&para;</a></h3>
+<p>Saves or updates a scenario JSON file in the industry registry.
+- <strong>Permission</strong>: <code>SCENARIOS_WRITE</code>
+- <strong>Security</strong>: Protected</p>
+<h3 id="post-apiscenariosrefresh"><code>POST /api/scenarios/refresh</code><a class="headerlink" href="#post-apiscenariosrefresh" title="Permanent link">&para;</a></h3>
+<p>Manually rebuilds the global scenario catalog index.
+- <strong>Permission</strong>: <code>INDEX_REFRESH</code>
+- <strong>Security</strong>: Protected</p>
+<hr />
+<h2 id="5-visual-debugger-documentation">5. Visual Debugger &amp; Documentation<a class="headerlink" href="#5-visual-debugger-documentation" title="Permanent link">&para;</a></h2>
+<h3 id="get-apidebuggerstaterun_idrun_id"><code>GET /api/debugger/state?run_id=&lt;run_id&gt;</code><a class="headerlink" href="#get-apidebuggerstaterun_idrun_id" title="Permanent link">&para;</a></h3>
+<p>Retrieves or streams the latest trajectory events for a specific run.
+- <strong>Permission</strong>: <code>DEBUG_READ</code>
+- <strong>Security</strong>: Protected</p>
+<h3 id="get-apinav"><code>GET /api/nav</code><a class="headerlink" href="#get-apinav" title="Permanent link">&para;</a></h3>
+<p>Retrieves the dynamic UI navigation registry.
+- <strong>Permission</strong>: <code>SCENARIOS_READ</code>
+- <strong>Security</strong>: Protected</p>
+<h3 id="get-apidocs"><code>GET /api/docs</code><a class="headerlink" href="#get-apidocs" title="Permanent link">&para;</a></h3>
+<p>Lists available guides and internal technical documentation.
+- <strong>Permission</strong>: <code>DOCS_READ</code>
+- <strong>Security</strong>: Protected</p>
+<h3 id="get-apidocspath"><code>GET /api/docs/&lt;path&gt;</code><a class="headerlink" href="#get-apidocspath" title="Permanent link">&para;</a></h3>
+<p>Reads the content of a specific documentation markdown file.
+- <strong>Permission</strong>: <code>DOCS_READ</code>
+- <strong>Security</strong>: Protected</p>
+<hr />
+<h2 id="6-industrial-demo-jailed">6. Industrial Demo (Jailed)<a class="headerlink" href="#6-industrial-demo-jailed" title="Permanent link">&para;</a></h2>
+<h3 id="post-apidemoexecute"><code>POST /api/demo/execute</code><a class="headerlink" href="#post-apidemoexecute" title="Permanent link">&para;</a></h3>
+<p>Executes whitelisted CLI commands within the demo jail.
+- <strong>Permission</strong>: <code>DEMO_EXECUTE</code>
+- <strong>Security</strong>: Protected (Hardened Subprocess)</p>
+<h3 id="post-apidemoreset"><code>POST /api/demo/reset</code><a class="headerlink" href="#post-apidemoreset" title="Permanent link">&para;</a></h3>
+<p>Resets the demo environment to its authoritative state.
+- <strong>Permission</strong>: <code>DEMO_EXECUTE</code>
+- <strong>Security</strong>: Protected</p>
 
 
 

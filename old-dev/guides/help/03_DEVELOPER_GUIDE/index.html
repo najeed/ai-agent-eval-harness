@@ -756,22 +756,99 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-cli-architecture" class="md-nav__link">
+  <a href="#2-cli-architecture-user-intent-lifecycle" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🧩 2 CLI Architecture
+        🧩 2 CLI Architecture: User Intent Lifecycle
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🧩 2 CLI Architecture">
+    <nav class="md-nav" aria-label="🧩 2 CLI Architecture: User Intent Lifecycle">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#main-commands" class="md-nav__link">
+  <a href="#1-authoring-scaffolding" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Main commands
+        1. Authoring &amp; Scaffolding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-discovery-exploration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Discovery &amp; Exploration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-executing-evaluations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Executing Evaluations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-debugging-diagnosis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Debugging &amp; Diagnosis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-reporting-benchmarking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Reporting &amp; Benchmarking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-trust-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Trust &amp; Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-automation-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Automation &amp; Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-maintenance-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Maintenance &amp; Control
       
     </span>
   </a>
@@ -4300,22 +4377,99 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-cli-architecture" class="md-nav__link">
+  <a href="#2-cli-architecture-user-intent-lifecycle" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🧩 2 CLI Architecture
+        🧩 2 CLI Architecture: User Intent Lifecycle
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🧩 2 CLI Architecture">
+    <nav class="md-nav" aria-label="🧩 2 CLI Architecture: User Intent Lifecycle">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#main-commands" class="md-nav__link">
+  <a href="#1-authoring-scaffolding" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Main commands
+        1. Authoring &amp; Scaffolding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-discovery-exploration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Discovery &amp; Exploration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-executing-evaluations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Executing Evaluations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-debugging-diagnosis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Debugging &amp; Diagnosis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-reporting-benchmarking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Reporting &amp; Benchmarking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-trust-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Trust &amp; Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-automation-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Automation &amp; Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-maintenance-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Maintenance &amp; Control
       
     </span>
   </a>
@@ -4854,31 +5008,68 @@
 2.  The <code>config.py</code> module will automatically resolve and propagate this to all simulators, verifiers, and exporters.</p>
 <p><strong>Warning</strong>: Hardcoding version strings in logic will cause the <strong>Forensic Consistency Tests</strong> to fail in CI.</p>
 <hr />
-<h2 id="2-cli-architecture">🧩 2 CLI Architecture<a class="headerlink" href="#2-cli-architecture" title="Permanent link">&para;</a></h2>
-<p>Entry point: <code>eval_runner/cli.py</code></p>
-<h3 id="main-commands">Main commands<a class="headerlink" href="#main-commands" title="Permanent link">&para;</a></h3>
+<h2 id="2-cli-architecture-user-intent-lifecycle">🧩 2 CLI Architecture: User Intent Lifecycle<a class="headerlink" href="#2-cli-architecture-user-intent-lifecycle" title="Permanent link">&para;</a></h2>
+<p>Entry point: <code>eval_runner/cli.py</code>. The CLI is structured around the industrial evaluation lifecycle:</p>
+<h3 id="1-authoring-scaffolding">1. Authoring &amp; Scaffolding<a class="headerlink" href="#1-authoring-scaffolding" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>evaluate</code> — Run a batch of scenarios</li>
-<li><code>quickstart</code> — End-to-end evaluation demo using <code>sample_agent</code></li>
-<li><code>console</code> — Launch the Integrated Visual Suite backend (with background execution and live visual debugging)</li>
-<li><code>doctor</code> — Validate environment health and dependencies</li>
 <li><code>init</code> — Scaffold new project directories with synthetic datasets</li>
-<li><code>report</code> — Generate a standalone <strong>Premium HTML report</strong> (reconstructed from any <code>.jsonl</code> trace)</li>
-<li><code>run</code> — Run a single scenario file</li>
-<li><code>replay</code> — Replay a run trace</li>
-<li><code>aes validate</code> — Validate AES benchmark definitions</li>
+<li><code>scenario</code> — Generic scenario management (Generate/Inspect)</li>
 <li><code>spec-to-eval</code> — Convert Markdown specs into JSON scenarios</li>
-<li><code>auto-translate</code> — Automatically translate documents into scenarios using Ollama</li>
-<li><code>import-drift</code> — Convert production traces into scenarios</li>
 <li><code>mutate</code> — Generate adversarial variants (typos, ambiguity, injection)</li>
-<li><code>scenario generate</code> — Interactive generator for boilerplate scenarios</li>
-<li><code>record</code> — Real-time agent interaction logger</li>
-<li><code>playground</code> — Interactive CLI REPL for agent testing</li>
-<li><code>install</code> — Rapid deployment of curated scenario packs</li>
 <li><code>analyze</code> — Proactive agent codebase scanning and AES scaffolding</li>
-<li><code>ci generate</code> — Instant GitHub Actions integration for evaluation</li>
-<li><code>failures search</code> — Query the global Failure Corpus for edge cases</li>
+<li><code>auto-translate</code> — Automatically translate documents into scenarios using LLMs</li>
+</ul>
+<h3 id="2-discovery-exploration">2. Discovery &amp; Exploration<a class="headerlink" href="#2-discovery-exploration" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>list</code> — Filter and explore the local scenario registry</li>
+<li><code>catalog-search</code> — Deep search across global/local catalogs</li>
+<li><code>inspect</code> — Display task breakdown for a specific scenario</li>
+<li><code>list-metrics</code> — Metadata: List all registered evaluation metrics</li>
+<li><code>taxonomy</code> — Metadata: Show the official failure taxonomy</li>
+<li><code>list-plugins</code> — Registry: List active and registered plugins</li>
+</ul>
+<h3 id="3-executing-evaluations">3. Executing Evaluations<a class="headerlink" href="#3-executing-evaluations" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>run</code> — Execute single scenario or Benchmark URI</li>
+<li><code>evaluate</code> — Execute batch evaluation on a scenario dataset</li>
+<li><code>quickstart</code> — 60-second end-to-end evaluation demo</li>
+</ul>
+<h3 id="4-debugging-diagnosis">4. Debugging &amp; Diagnosis<a class="headerlink" href="#4-debugging-diagnosis" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>replay</code> — Replay a previously recorded run trace</li>
 <li><code>explain</code> — Automated trace diagnostics for root cause analysis</li>
+<li><code>failures search</code> — Query the global Failure Corpus for patterns</li>
+<li><code>playground</code> — Interactive CLI REPL for agent testing</li>
+<li><code>record</code> — Real-time agent interaction logger</li>
+</ul>
+<h3 id="5-reporting-benchmarking">5. Reporting &amp; Benchmarking<a class="headerlink" href="#5-reporting-benchmarking" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>report</code> — Generate stylized <strong>Premium HTML reports</strong> from traces</li>
+<li><code>leaderboard</code> — Performance rankings from multiple run traces</li>
+<li><code>calibrate</code> — Measure judge agreement against human labels</li>
+</ul>
+<h3 id="6-trust-verification">6. Trust &amp; Verification<a class="headerlink" href="#6-trust-verification" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>verify</code> — Cryptographic integrity check (Forensic Audit)</li>
+<li><code>certify</code> — Generate signed Verification Certificates (VC)</li>
+<li><code>gate</code> — CI/CD Hard Gate: Enforce verification/compliance</li>
+<li><code>aes</code> — AES Specification utilities (Validate/Register)</li>
+<li><code>lint</code> — Static analysis for AES compliance quality</li>
+</ul>
+<h3 id="7-automation-integration">7. Automation &amp; Integration<a class="headerlink" href="#7-automation-integration" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>ci generate</code> — GitHub Actions integration for evaluation</li>
+<li><code>export</code> — Format traces for HF/CSV/Dataset export</li>
+<li><code>import-drift</code> — Convert production traces into evaluation scenarios</li>
+<li><code>registry sync</code> — Synchronize industrial registries with remote standards</li>
+</ul>
+<h3 id="8-maintenance-control">8. Maintenance &amp; Control<a class="headerlink" href="#8-maintenance-control" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>console</code> — Launch Visual Debugger (Web UI &amp; REST API)</li>
+<li><code>contribute</code> — Start the interactive contribution wizard</li>
+<li><code>cleanup-runs</code> — Prune old traces and rotate log artifacts</li>
+<li><code>doctor</code> — Audit environment health and dependencies</li>
+<li><code>plugin</code> — Manage external and built-in plugins</li>
 </ul>
 <hr />
 <h2 id="3-evaluation-engine-zero-touch-core">🧠 3 Evaluation Engine (Zero-Touch Core)<a class="headerlink" href="#3-evaluation-engine-zero-touch-core" title="Permanent link">&para;</a></h2>

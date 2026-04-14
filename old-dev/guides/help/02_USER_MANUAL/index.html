@@ -5264,104 +5264,24 @@
 <tr>
 <th>Command</th>
 <th>Common Options</th>
-<th>Purpose</th>
+<th>Intent</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Core Evaluation</strong></td>
+<td><strong>1. Authoring &amp; Scaffolding</strong></td>
 <td></td>
-<td></td>
+<td>Create new tests</td>
 </tr>
 <tr>
-<td><code>evaluate</code></td>
-<td><code>--path</code>, <code>-k</code>, <code>-f</code>, <code>-v</code>, <code>--agent</code>, <code>--protocol</code></td>
-<td>Batch execution of scenarios across a dataset</td>
+<td><code>init</code></td>
+<td><code>--dir</code>, <code>--industry</code></td>
+<td>Scaffold a new benchmark environment</td>
 </tr>
 <tr>
-<td><code>run</code></td>
-<td><code>--scenario</code>, <code>-k</code>, <code>-f</code>, <code>-v</code>, <code>--agent</code></td>
-<td>Execution of a single specific scenario file</td>
-</tr>
-<tr>
-<td><code>playground</code></td>
-<td><code>--agent</code>, <code>--protocol</code>, <code>-v</code></td>
-<td>Interactive REPL for real-time agent experimentation</td>
-</tr>
-<tr>
-<td><code>record</code></td>
-<td><code>--agent</code>, <code>--protocol</code>, <code>--agent-name</code></td>
-<td>Capture live interactions into an executable trace</td>
-</tr>
-<tr>
-<td><code>replay</code></td>
-<td><code>--run-id</code></td>
-<td>Replay a recorded trace via the Flight Recorder</td>
-</tr>
-<tr>
-<td><code>verify</code></td>
-<td><code>--run-id</code></td>
-<td>Verify cryptographic integrity of a run trace using autonomous resolution</td>
-</tr>
-<tr>
-<td><code>certify</code></td>
-<td><code>--run-id</code>, <code>--identity</code></td>
-<td>Generate a Verification Certificate (VC) for a specific run</td>
-</tr>
-<tr>
-<td><code>gate</code></td>
-<td><code>--run-id</code>, <code>--verify-ledger</code></td>
-<td>Hard Gate CI/CD enforcement with Identity Registry verification</td>
-</tr>
-<tr>
-<td><code>quickstart</code></td>
+<td><code>scenario generate</code></td>
 <td>(none)</td>
-<td>60-second engine demonstration (spawns agent + eval)</td>
-</tr>
-<tr>
-<td><strong>Specifications</strong></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><code>aes validate</code></td>
-<td><code>--path</code></td>
-<td>Validate a scenario against AES JSON schema</td>
-</tr>
-<tr>
-<td><code>aes add-standard</code></td>
-<td><code>--id</code>, <code>--industry</code>, <code>--description</code></td>
-<td>Register a new industry standard to local manifest</td>
-</tr>
-<tr>
-<td><strong>Scenario Management</strong></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><code>inspect</code></td>
-<td><code>--scenario-path</code></td>
-<td>Display task breakdown and architecture for a scenario</td>
-</tr>
-<tr>
-<td><code>lint</code></td>
-<td><code>--path</code></td>
-<td>Score scenario for AES compliance and quality</td>
-</tr>
-<tr>
-<td><code>list</code></td>
-<td><code>--search</code>, <code>--refresh</code></td>
-<td>Search and explore the local industry registry</td>
-</tr>
-<tr>
-<td><code>catalog-search</code></td>
-<td><code>--query</code></td>
-<td>Search global and local scenario catalogs</td>
-</tr>
-<tr>
-<td><code>mutate</code></td>
-<td><code>--input</code>, <code>--type</code>, <code>-f</code></td>
-<td>Generate adversarial/edge-case scenario variants</td>
+<td>Start the interactive scenario wizard</td>
 </tr>
 <tr>
 <td><code>spec-to-eval</code></td>
@@ -5369,14 +5289,84 @@
 <td>Convert Markdown PRD/Spec to Scenario JSON</td>
 </tr>
 <tr>
-<td><strong>Analysis &amp; Reporting</strong></td>
-<td></td>
-<td></td>
+<td><code>mutate</code></td>
+<td><code>--input</code>, <code>--type</code></td>
+<td>Generate adversarial/edge-case scenario variants</td>
 </tr>
 <tr>
-<td><code>calibrate</code></td>
-<td><code>--run-id</code>, <code>--plot</code></td>
-<td>Measure judge agreement against human labels</td>
+<td><code>analyze</code></td>
+<td><code>github_url</code></td>
+<td>Auto-generate scenarios from agent repositories</td>
+</tr>
+<tr>
+<td><code>auto-translate</code></td>
+<td><code>--input</code>, <code>--model</code></td>
+<td>Translate technical docs to AES via local LLM</td>
+</tr>
+<tr>
+<td><strong>2. Discovery &amp; Exploration</strong></td>
+<td></td>
+<td>Find scenarios and info</td>
+</tr>
+<tr>
+<td><code>list</code></td>
+<td><code>--search</code>, <code>--refresh</code></td>
+<td>Filter and explore the local scenario registry</td>
+</tr>
+<tr>
+<td><code>catalog-search</code></td>
+<td><code>--query</code></td>
+<td>Deep search across global/local catalogs</td>
+</tr>
+<tr>
+<td><code>inspect</code></td>
+<td><code>--scenario-path</code></td>
+<td>Display task breakdown for a scenario</td>
+</tr>
+<tr>
+<td><code>list-metrics</code></td>
+<td>(none)</td>
+<td>Display descriptions for all registered metrics</td>
+</tr>
+<tr>
+<td><code>taxonomy</code></td>
+<td>(none)</td>
+<td>Display the official failure taxonomy</td>
+</tr>
+<tr>
+<td><code>list-plugins</code></td>
+<td>(none)</td>
+<td>Display active and registered plugins</td>
+</tr>
+<tr>
+<td><strong>3. Executing Evaluations</strong></td>
+<td></td>
+<td>Run engine tests</td>
+</tr>
+<tr>
+<td><code>run</code></td>
+<td><code>--scenario</code>, <code>-k</code>, <code>-f</code></td>
+<td>Execute a single specific scenario file</td>
+</tr>
+<tr>
+<td><code>evaluate</code></td>
+<td><code>--path</code>, <code>-k</code>, <code>-f</code></td>
+<td>Batch execution of scenarios across a dataset</td>
+</tr>
+<tr>
+<td><code>quickstart</code></td>
+<td>(none)</td>
+<td>60-second engine demonstration run</td>
+</tr>
+<tr>
+<td><strong>4. Debugging &amp; Diagnosis</strong></td>
+<td></td>
+<td>Fix failing tests</td>
+</tr>
+<tr>
+<td><code>replay</code></td>
+<td><code>--run-id</code></td>
+<td>Replay a recorded trace in the terminal</td>
 </tr>
 <tr>
 <td><code>explain</code></td>
@@ -5384,44 +5374,79 @@
 <td>Diagnose root causes from evaluation traces</td>
 </tr>
 <tr>
-<td><code>leaderboard</code></td>
-<td><code>--dir</code>, <code>--output</code></td>
-<td>Generate performance rankings from run traces</td>
+<td><code>failures search</code></td>
+<td><code>--query</code></td>
+<td>Search global corpus for failure patterns</td>
 </tr>
 <tr>
-<td><code>list-metrics</code></td>
-<td>(none)</td>
-<td>Display all registered evaluation metrics</td>
+<td><code>playground</code></td>
+<td><code>--agent</code>, <code>-v</code></td>
+<td>Interactive REPL for real-time agent testing</td>
+</tr>
+<tr>
+<td><code>record</code></td>
+<td><code>--agent</code>, <code>-v</code></td>
+<td>Capture live interactions into a trace</td>
+</tr>
+<tr>
+<td><strong>5. Reporting &amp; Benchmarking</strong></td>
+<td></td>
+<td>Analyze performance</td>
 </tr>
 <tr>
 <td><code>report</code></td>
 <td><code>--run-id</code>, <code>--share</code></td>
-<td>Generate stylized HTML reports from run traces</td>
+<td>Generate stylized Premium HTML reports</td>
 </tr>
 <tr>
-<td><code>taxonomy</code></td>
-<td>(none)</td>
-<td>Display the official AEH failure taxonomy</td>
+<td><code>leaderboard</code></td>
+<td><code>--dir</code>, <code>--output</code></td>
+<td>Generate rankings from multiple run traces</td>
 </tr>
 <tr>
-<td><strong>Environment</strong></td>
+<td><code>calibrate</code></td>
+<td><code>--run-id</code>, <code>--plot</code></td>
+<td>Measure judge agreement vs human labels</td>
+</tr>
+<tr>
+<td><strong>6. Trust &amp; Verification</strong></td>
 <td></td>
+<td>Prove test validity</td>
+</tr>
+<tr>
+<td><code>verify</code></td>
+<td><code>--run-id</code></td>
+<td>Verify cryptographic integrity of a run trace</td>
+</tr>
+<tr>
+<td><code>certify</code></td>
+<td><code>--run-id</code>, <code>--identity</code></td>
+<td>Generate signed Verification Certificates (VC)</td>
+</tr>
+<tr>
+<td><code>gate</code></td>
+<td><code>--run-id</code></td>
+<td>Enforce "Hard Gate" compliance in CI/CD</td>
+</tr>
+<tr>
+<td><code>aes validate</code></td>
+<td><code>--path</code></td>
+<td>Validate scenario files against AES schema</td>
+</tr>
+<tr>
+<td><code>lint</code></td>
+<td><code>--path</code></td>
+<td>Score scenario for compliance and quality</td>
+</tr>
+<tr>
+<td><strong>7. Automation &amp; Integration</strong></td>
 <td></td>
+<td>Scale and integrate</td>
 </tr>
 <tr>
-<td><code>init</code></td>
-<td><code>--dir</code>, <code>--industry</code>, <code>--registry</code></td>
-<td>Scaffold a new benchmark environment</td>
-</tr>
-<tr>
-<td><code>doctor</code></td>
+<td><code>ci generate</code></td>
 <td>(none)</td>
-<td>Audit local environment and dependencies</td>
-</tr>
-<tr>
-<td><code>cleanup-runs</code></td>
-<td><code>--days</code>, <code>-f</code></td>
-<td>Prune old traces and rotate log artifacts</td>
+<td>Scaffold GitHub Actions workflow templates</td>
 </tr>
 <tr>
 <td><code>export</code></td>
@@ -5429,34 +5454,44 @@
 <td>Export traces to HF, CSV, or custom formats</td>
 </tr>
 <tr>
-<td><code>install</code></td>
-<td><code>pack_name</code></td>
-<td>Install curated industrial scenario packs</td>
+<td><code>import-drift</code></td>
+<td><code>--input</code>, <code>--industry</code></td>
+<td>Convert production logs to evaluation scenarios</td>
+</tr>
+<tr>
+<td><code>registry sync</code></td>
+<td>(none)</td>
+<td>Synchronize local registry with remote standards</td>
+</tr>
+<tr>
+<td><strong>8. Maintenance &amp; Control</strong></td>
+<td></td>
+<td>Govern the environment</td>
+</tr>
+<tr>
+<td><code>console</code></td>
+<td><code>--host</code>, <code>--port</code></td>
+<td>Launch Visual Debugger (Web UI &amp; REST API)</td>
+</tr>
+<tr>
+<td><code>contribute</code></td>
+<td>(none)</td>
+<td>Start the interactive contribution wizard</td>
+</tr>
+<tr>
+<td><code>cleanup-runs</code></td>
+<td><code>--days</code>, <code>-f</code></td>
+<td>Prune old traces and rotate log artifacts</td>
+</tr>
+<tr>
+<td><code>doctor</code></td>
+<td>(none)</td>
+<td>Audit local environment and dependencies</td>
 </tr>
 <tr>
 <td><code>plugin</code></td>
-<td><code>list</code>, <code>register &lt;path&gt;</code></td>
+<td><code>register</code>, <code>unregister</code></td>
 <td>Manage external and built-in plugins</td>
-</tr>
-<tr>
-<td><code>registry</code></td>
-<td><code>sync</code>, <code>add --url</code></td>
-<td>Synchronize industry scenario registries</td>
-</tr>
-<tr>
-<td><code>ci generate</code></td>
-<td>(none)</td>
-<td>Generate GitHub Actions workflows for the environment</td>
-</tr>
-<tr>
-<td><strong>Industrial Standards Registry</strong></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><code>init --standard</code></td>
-<td><code>--id</code>, <code>--dir</code></td>
-<td>Scaffold a benchmark environment aligned with a global standard (ISO 20022, HL7 FHIR)</td>
 </tr>
 </tbody>
 </table>

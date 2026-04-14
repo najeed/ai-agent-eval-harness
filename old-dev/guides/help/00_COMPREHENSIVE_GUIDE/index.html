@@ -3582,10 +3582,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#12-useful-cli-commands" class="md-nav__link">
+  <a href="#12-the-industrial-user-intent-lifecycle-cli-summary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1.2 Useful CLI Commands
+        1.2 The Industrial User Intent Lifecycle (CLI Summary)
       
     </span>
   </a>
@@ -3836,10 +3836,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#12-useful-cli-commands" class="md-nav__link">
+  <a href="#12-the-industrial-user-intent-lifecycle-cli-summary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1.2 Useful CLI Commands
+        1.2 The Industrial User Intent Lifecycle (CLI Summary)
       
     </span>
   </a>
@@ -3980,25 +3980,21 @@ It is organized into three levels: <strong>Quick Start</strong>, <strong>User Ma
 </li>
 </ol>
 <p><strong>What it does:</strong> Spawns a mock sample agent, runs a troubleshooting evaluation, and generates a <strong>Premium HTML report</strong> in <code>reports/</code>. </p>
+<h3 id="12-the-industrial-user-intent-lifecycle-cli-summary">1.2 The Industrial User Intent Lifecycle (CLI Summary)<a class="headerlink" href="#12-the-industrial-user-intent-lifecycle-cli-summary" title="Permanent link">&para;</a></h3>
+<p>AgentV CLI is organized around 8 logical intents to guide you through the full evaluation lifecycle:</p>
+<ul>
+<li><strong>1. Authoring</strong>: <code>init</code>, <code>scenario</code>, <code>spec-to-eval</code>, <code>mutate</code>, <code>analyze</code>, <code>auto-translate</code></li>
+<li><strong>2. Discovery</strong>: <code>list</code>, <code>catalog-search</code>, <code>inspect</code>, <code>list-metrics</code>, <code>taxonomy</code>, <code>list-plugins</code></li>
+<li><strong>3. Execution</strong>: <code>run</code>, <code>evaluate</code>, <code>quickstart</code></li>
+<li><strong>4. Debugging</strong>: <code>replay</code>, <code>explain</code>, <code>failures search</code>, <code>playground</code>, <code>record</code></li>
+<li><strong>5. Reporting</strong>: <code>report</code>, <code>leaderboard</code>, <code>calibrate</code></li>
+<li><strong>6. Trust</strong>: <code>verify</code>, <code>certify</code>, <code>gate</code>, <code>aes</code>, <code>lint</code></li>
+<li><strong>7. CI/CD</strong>: <code>ci</code>, <code>export</code>, <code>import-drift</code>, <code>registry sync</code></li>
+<li><strong>8. Control</strong>: <code>console</code>, <code>contribute</code>, <code>cleanup-runs</code>, <code>doctor</code>, <code>plugin</code></li>
+</ul>
 <blockquote>
 <p>[!TIP]
 <strong>Integrated Visual Suite</strong>: Launch the premium web dashboard via <code>agentv console</code>. It now features a Live Debugger that streams real-time state from your evaluations using the Zero-Touch <code>RemoteBridgePlugin</code>.</p>
-</blockquote>
-<h3 id="12-useful-cli-commands">1.2 Useful CLI Commands<a class="headerlink" href="#12-useful-cli-commands" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>agentv console</code>: Launch the React Visual Debugger GUI for visual management.</li>
-<li><code>agentv doctor</code>: Check your environment health.</li>
-<li><code>agentv list --search &lt;query&gt;</code>: Search the scenario catalog (supports faceted filtering).</li>
-<li><code>agentv lint --run-id &lt;id&gt;&lt;path&gt;</code>: Verify scenario quality and AES specification compliance.</li>
-<li><code>agentv spec-to-eval --fill-defaults</code>: Convert rough specs into valid, lint-passable scenarios.</li>
-<li><code>agentv auto-translate --input &lt;doc&gt;</code>: Convert PDFs/Docs into JSON scenarios using Ollama.</li>
-<li><code>agentv run --scenario &lt;benchmark-uri&gt;</code>: Zero-config execution for community benchmarks (GAIA, AssistantBench).</li>
-<li><code>agentv report --run-id &lt;id&gt;</code>: Generate a standalone Premium HTML report (reconstructed from any <code>.jsonl</code> trace).</li>
-<li><code>agentv gate --run-id &lt;id&gt;</code>: Enforce cryptographic integrity in a CI/CD pipeline using the <strong>Trust Protocol</strong>.</li>
-<li><code>agentv replay --run-id &lt;id&gt;</code>: View the step-by-step history of a run in terminal.</li>
-<li>Advanced Utilities: <code>install</code>, <code>analyze</code>, <code>ci generate</code>, <code>failures search</code>, and <code>explain</code>.</li>
-</ul>
-<blockquote>
 <p>[!NOTE]
 <strong>Path Decoupling</strong>: Evaluations can now be run from any directory. The harness automatically resolves relative dataset paths and tags ad-hoc scenarios as <code>local</code>.</p>
 </blockquote>
