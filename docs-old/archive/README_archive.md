@@ -1,58 +1,52 @@
 <!-- README.md (root of the project) -->
 
-# 🛡️ AgentV, The Verification OS for Enterprise AI Agents
+# 🤖 AgentV - The Enterprise-Grade Reliability Framework for AI Agents
 
 [![CI](https://github.com/najeed/ai-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/najeed/ai-agent-eval-harness/actions)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Full Test Coverage](https://img.shields.io/badge/Full%20Test%20Coverage-86%25-brightgreen.svg)](TESTING.md)
+[![Utility Stack](https://img.shields.io/badge/Utility%20Coverage-92%25-brightgreen.svg)](eval_runner/utils.py)
 [![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-VC%20v3.0.0-gold.svg)](docs-old/spec/trust_protocol_spec_v1.md)
+[![Security Audit](https://img.shields.io/badge/Security-Audit--Verified-brightgreen.svg)](tests/security/test_security_audit.py)
+[![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs-old/guides/help/00_COMPREHENSIVE_GUIDE.md)
+[![Security Scan](https://img.shields.io/badge/Security-Scanning--Passing-brightgreen.svg)](tests/security/test_security_audit.py)
 
-## The Reliability Gap: Why AgentV Exists
+## 🛡️ Industrial AI Agent Verification & Trustworthiness
 
-**88% of enterprise AI agents fail to reach production.** Not because the model is wrong. Because no one verified that the agent actually did the right thing.
+AgentV is a **Verification OS** for mission-critical AI agents. As of **April 2026**, the framework is aligned with the **NIST AI-100-1** trustworthiness framework, providing high-fidelity telemetry (**Behavioral DNA**) and deterministic verification of agent reliability across core industrial sectors.
 
-AgentV sits inside the execution loop and verifies state parity, policy adherence, and business outcomes before your agent earns the right to act. Cryptographically signed traces (Ed25519). HIPAA/FINRA/GDPR compliance packs. CI/CD hard gating. NIST AI-100-1 aligned. Built for regulated industries.
-
-*[5,000+ OOTB scenarios] • [45 verticals] • [Apache 2.0] • [Enterprise Edition available]*
-
-## Architecture Overview
-
-```mermaid
-graph TD
-    classDef agent fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef os fill:#1B3B5F,stroke:#fff,stroke-width:2px,color:#fff;
-    classDef pass fill:#00d26a,stroke:#333,stroke-width:2px,color:#000;
-    classDef fail fill:#ff4b4b,stroke:#333,stroke-width:2px,color:#fff;
-
-    Agent["🤖 Autonomous Agent"]:::agent
-    
-    subgraph "AgentV Verification OS"
-        Sim["🌍 World Shims (Isolated State)"]:::os
-        Tel["🧬 Behavioral DNA (Telemetry)"]:::os
-        Vault["🔒 ED25519 Trace Vault"]:::os
-        Judge["⚖️ Industrial Policy Judges"]:::os
-    end
-    
-    Pass["🟢 Verified (Cleared for Prod)"]:::pass
-    Fail["🔴 Hard Gated (Violation)"]:::fail
-
-    Agent -- "Proposes Action/Tool" --> Sim
-    Sim -- "Intercepts State Delta" --> Tel
-    Tel -- "Hashes Trace Evidence" --> Vault
-    Tel -- "Evaluates Adherence" --> Judge
-    Judge -- "100% Policy Parity" --> Pass
-    Judge -- "Anomalous Behavior" --> Fail
-```
-
+[![NIST AI-100-1](https://img.shields.io/badge/Alignment-NIST%20AI--100--1--Aligned-brightgreen.svg)](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md#nist-ai-100-1-alignment-suite-r4)
+[![Behavioral DNA](https://img.shields.io/badge/Telemetry-Behavioral%20DNA--v2-blue.svg)](docs-old/architecture.md#eventemitter-bus-passive-observation)
 
 | Attribute | Specification |
 | :--- | :--- |
 | **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.5.0 (April 2026 Forensic Baseline) |
+| **Version** | v1.4.1 (April 2026 Forensic Baseline) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
 | **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
+
+### 🛡️ Add the Badge to Your Agent
+
+Showcase your agent's rigorous reliability by adding the official **Works with AgentV** badge to your repository to show that it has been evaluated by the AgentV framework.
+
+#### Option 1: Using img.shields.io
+You can use the Shields.io service to generate a consistent badge for your project:
+
+```markdown
+[![Works with AgentV](https://img.shields.io/badge/Works%20with-AgentV-2c62c7)](https://github.com/najeed/ai-agent-eval-harness)
+```
+
+#### Option 2: Using GitHub Asset
+Alternatively, link directly to our high-fidelity SVG asset:
+
+```markdown
+[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
+```
 
 ## Table of Contents
 - [Mission](#mission)
@@ -81,7 +75,7 @@ agentv quickstart
 
 ## Mission
 
-Autonomous software must be provably trustworthy before it earns the right to act. AgentV is the open infrastructure that provides the evidence, not just whether your agent said the right thing, but whether it did the right thing, changed the right state, and followed the right policy.
+Our goal is to create a standardized, community-driven benchmark for AI agent performance. By providing a rich set of industry-specific starter scenarios and a flexible evaluation runner, we aim to help developers, researchers, and businesses measure and improve their agent-based systems.
 
 ## 🎓 Master the Art of Industrial Evaluation
 
@@ -424,29 +418,8 @@ This project follows an **Open Core** model. The open-source capabilities provid
 
 **Legend:** ✅ Full Capability • 🔶 Basic/OSS Only • ❌ Enterprise Only
 
-### 🛡️ Add the Badge to Your Agent
-
-Showcase your agent's rigorous reliability by adding the official **Works with AgentV** badge to your repository to show that it has been evaluated by the AgentV framework.
-
-#### Option 1: Using img.shields.io
-You can use the Shields.io service to generate a consistent badge for your project:
-
-```markdown
-[![Works with AgentV](https://img.shields.io/badge/Works%20with-AgentV-2c62c7)](https://github.com/najeed/ai-agent-eval-harness)
-```
-
-#### Option 2: Using GitHub Asset
-Alternatively, link directly to our high-fidelity SVG asset:
-
-```markdown
-[![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
-```
-
----
-
-Ready for production-grade verification? The Enterprise Edition delivers WORM audit logs, OIDC SSO, RBAC, HIPAA/FINRA/GDPR compliance packs, and Docker-sandboxed isolation, everything regulated industries need before autonomous agents earn the right to act.
-
-👉 Book a 30-minute call: [AgentVOS.ai](https://agentvos.ai)
+**Looking for Production-Grade Reliability?**
+The Enterprise Edition guarantees that you can safely evaluate agents over sensitive datasets without exposing credentials or executing dangerous code, backed by mathematical proof of non-repudiation. Contact `ai.eval.harness.contact+enterprise@gmail.com`.
 
 ### License
 The core of this project is licensed under the **Apache License 2.0**. 
