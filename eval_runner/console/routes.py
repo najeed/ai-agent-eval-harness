@@ -124,12 +124,13 @@ def get_system_info():
                 # If is_relative_to fails due to casing on some platforms,
                 # we calculate the relative part manually via string slicing or robust fallback.
                 try:
-                    return f"./{p.relative_to(root)}"
+                    rel_path = os.path.relpath(p, root)
+                    return f"./{Path(rel_path).as_posix()}"
                 except ValueError:
                     # Robust Slice: last resort for Windows casing drift
                     rel_part = str(p)[len(str(root)) :].lstrip("\\/")
-                    return f"./{rel_part}"
-            return p.name  # Fallback to basename only for safety
+                    return f"./{Path(rel_part).as_posix()}"
+            return Path(p.name).as_posix()  # Fallback to basename only for safety
         except Exception as e:
             # forensic visibility for path masking failures
             import sys
@@ -1199,6 +1200,11 @@ def get_debugger_state():
         if run_id in DEMO_IDS or run_id.startswith("run-loan-"):
             events = get_demo_trace(run_id)
             if events:
+                # [Hardening] Invoke Triage Engine for demo reconstituted traces
+                from eval_runner.triage import TriageEngine
+
+                root_cause = TriageEngine.identify_root_cause(events)
+
                 return jsonify(
                     {
                         "status": "ok",
@@ -1217,6 +1223,7 @@ def get_debugger_state():
                                 ),
                             },
                             "timeline": events,
+                            "root_cause": root_cause,
                         },
                     }
                 )

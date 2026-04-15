@@ -153,7 +153,7 @@ class TriageEngine:
                     is_agent = (
                         turn.get("identity") == "agent_id"
                         or turn.get("role") == "agent"
-                        or turn.get("event") == "agent_response"
+                        or turn.get("event") in ("agent_response", "agent_thought")
                     )
                     if is_agent:
                         top_match["index"] = i
@@ -377,7 +377,11 @@ class TriageEngine:
         # Search backwards for the last agent action
         fallback_idx = len(history) - 1
         for i in range(len(history) - 1, -1, -1):
-            if history[i].get("role") == "agent":
+            turn = history[i]
+            if turn.get("role") == "agent" or turn.get("event") in (
+                "agent_response",
+                "agent_thought",
+            ):
                 fallback_idx = i
                 break
 

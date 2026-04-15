@@ -28,7 +28,7 @@ const Icon = ({ name, size = 20, className = "" }) => {
         x: <> <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>,
         compliance: <> <polyline points="9 11 12 14 22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></>,
         shield: <> <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></>,
-        rbac: <> <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+        policy: <> <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
         cluster: <> <rect x="2" y="2" width="20" height="8" rx="2" ry="2" /><rect x="2" y="14" width="20" height="8" rx="2" ry="2" /><line x1="6" y1="6" x2="6" y2="6.01" /><line x1="6" y1="18" x2="6" y2="18.01" /></>,
         factory: <> <path d="M2 20V9l4-2 4 2 4-2 4 2V20H2z" /><path d="M18 20V15h4v5h-4z" /></>,
         audit: <> <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M7 8h10" /><path d="M7 12h10" /><path d="M7 16h10" /></>,
@@ -51,7 +51,7 @@ const Icon = ({ name, size = 20, className = "" }) => {
                                     name === 'github' ? 'github' :
                                         name === 'file-check' ? 'compliance' :
                                             name === 'lock' ? 'shield' :
-                                                name === 'users' ? 'rbac' :
+                                                name === 'users' ? 'policy' :
                                                     name === 'server' ? 'cluster' :
                                                         name === 'zap' ? 'factory' :
                                                             name === 'shield-check' ? 'audit' :
@@ -818,10 +818,15 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                             if (failureNode) {
                                 targetEvent = failureNode;
                             } else {
-                                // Heuristic: if run_end says status=failed, highlight the last agent response
+                                // Industrial Heuristic: if run_end says status=failed, highlight the last agent response
                                 const runEnd = eventsList.find(e => e.event === 'run_end' && e.status === 'failed');
                                 if (runEnd) {
-                                    const lastAction = [...eventsList].reverse().find(e => e.event === 'agent_response' || e.event === 'tool_call');
+                                    const lastAction = [...eventsList].reverse().find(e =>
+                                        e.is_root_cause === true ||
+                                        e.event === 'policy_violation' ||
+                                        e.event === 'agent_response' ||
+                                        e.event === 'tool_call'
+                                    );
                                     if (lastAction) targetEvent = lastAction;
                                 }
                             }
@@ -900,61 +905,57 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                                 <Icon name="box" size={14} />
                             </button>
                             <div className="w-px h-4 bg-slate-800 mx-1 self-center" />
-                            {(rootCause?.index >= 0 || events.some(e =>
-                                e.is_root_cause ||
-                                e.event === 'policy_violation' ||
-                                e.event === 'safety_trigger' ||
-                                e.event === 'refusal' ||
-                                e.event === 'error' ||
-                                e.error ||
-                                (e.response && (e.response.status === 'error' || e.response.status === 'refusal'))
-                            )) && (
-                                    <button
-                                        onClick={() => {
-                                            if (rootCause?.index >= 0 && events[rootCause.index]) {
-                                                setSelectedEvent(events[rootCause.index]);
-                                                const confidencePercent = Math.round(rootCause.confidence * 100);
-                                                onNotify(`Isolated root cause (${confidencePercent}% confidence): ${rootCause.reason}`);
+                            {(events.some(e => e.event === 'run_end' && e.status === 'failed')) && (
+                                <button
+                                    onClick={() => {
+                                        const isRootCauseRunEnd = rootCause?.index >= 0 && events[rootCause.index] && events[rootCause.index].event === 'run_end';
+                                        if (rootCause?.index >= 0 && events[rootCause.index] && !isRootCauseRunEnd) {
+                                            setSelectedEvent(events[rootCause.index]);
+                                            const confidencePercent = Math.round(rootCause.confidence * 100);
+                                            onNotify(`Isolated root cause (${confidencePercent}% confidence): ${rootCause.reason}`);
+                                        } else {
+                                            // Fallback to local heuristic
+                                            const failureNode = events.find(e =>
+                                                e.is_root_cause === true ||
+                                                e.event === 'policy_violation' ||
+                                                e.event === 'safety_trigger' ||
+                                                e.event === 'refusal' ||
+                                                e.event === 'error' ||
+                                                e.error ||
+                                                (e.response && (e.response.status === 'error' || e.response.status === 'refusal'))
+                                            );
+                                            if (failureNode) {
+                                                setSelectedEvent(failureNode);
+                                                onNotify("Isolated explicit root cause");
+                                                return;
                                             } else {
-                                                // Fallback to local heuristic
-                                                const failureNode = events.find(e =>
-                                                    e.is_root_cause === true ||
-                                                    e.event === 'policy_violation' ||
-                                                    e.event === 'safety_trigger' ||
-                                                    e.event === 'refusal' ||
-                                                    e.event === 'error' ||
-                                                    e.error ||
-                                                    (e.response && (e.response.status === 'error' || e.response.status === 'refusal'))
-                                                );
-                                                if (failureNode) {
-                                                } else {
-                                                    const runEnd = events.find(e => e.event === 'run_end' && e.status === 'failed');
-                                                    if (runEnd) {
-                                                        // Robust Search: Priority to explicit root-cause markers or violations
-                                                        const targetEvent = [...events].reverse().find(e =>
-                                                            e.is_root_cause === true ||
-                                                            e.event === 'policy_violation' ||
-                                                            e.event === 'safety_block'
-                                                        ) || [...events].reverse().find(e =>
-                                                            e.event === 'agent_response' ||
-                                                            e.event === 'tool_call'
-                                                        ) || runEnd || events[events.length - 1];
-                                                        if (targetEvent) {
-                                                            setSelectedEvent(targetEvent);
-                                                            onNotify("Isolated probable root cause (heuristic)");
-                                                            return;
-                                                        }
+                                                const runEnd = events.find(e => e.event === 'run_end' && e.status === 'failed');
+                                                if (runEnd) {
+                                                    // Robust Search: Priority to explicit root-cause markers or violations
+                                                    const targetEvent = [...events].reverse().find(e =>
+                                                        e.is_root_cause === true ||
+                                                        e.event === 'policy_violation' ||
+                                                        e.event === 'safety_block'
+                                                    ) || [...events].reverse().find(e =>
+                                                        e.event === 'agent_response' ||
+                                                        e.event === 'tool_call'
+                                                    ) || events[rootCause?.index >= 0 ? rootCause.index : events.length - 1];
+                                                    if (targetEvent) {
+                                                        setSelectedEvent(targetEvent);
+                                                        onNotify("Isolated probable root cause (heuristic)");
+                                                        return;
                                                     }
-                                                    onNotify("No clear root cause detected in trace", "error");
                                                 }
+                                                onNotify("No clear root cause detected in trace", "error");
                                             }
-                                        }}
-                                        title="Isolate Root Cause"
-                                        className="p-1.5 text-red-400 hover:text-red-300 bg-red-400/10 rounded-lg border border-red-400/20"
-                                    >
-                                        <Icon name="alert" size={14} />
-                                    </button>
-                                )}
+                                        }
+                                    }}
+                                    title="Isolate Root Cause"
+                                    className="p-1.5 text-red-400 hover:text-red-300 bg-red-400/10 rounded-lg border border-red-400/20"
+                                >
+                                    <Icon name="alert" size={14} />
+                                </button>
+                            )}
                         </div>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -1440,14 +1441,14 @@ const Dashboard = ({ onNavigate, navItems, systemInfo, onRefreshInfo, apiFetch }
                             <Icon name="terminal" size={14} className="text-blue-500" />
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Execution Traces (JSONL)</span>
                         </div>
-                        <p className="text-[10px] font-mono text-slate-500 break-all select-all">{systemInfo.runs_dir || 'Calculating authority...'}</p>
+                        <p className="text-[10px] font-mono text-slate-500 break-all select-all">{systemInfo.runs_dir || 'Calculating path...'}</p>
                     </div>
                     <div className="bg-[#161b22]/50 border border-slate-800/50 rounded-2xl p-5 hover:border-emerald-500/20 transition-all">
                         <div className="flex items-center gap-2 mb-2">
                             <Icon name="reports" size={14} className="text-emerald-500" />
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Visual Trajectories (Reports)</span>
                         </div>
-                        <p className="text-[10px] font-mono text-slate-500 break-all select-all">{systemInfo.trajectories_dir || 'Calculating authority...'}</p>
+                        <p className="text-[10px] font-mono text-slate-500 break-all select-all">{systemInfo.trajectories_dir || 'Calculating path...'}</p>
                     </div>
                 </div>
             </div>

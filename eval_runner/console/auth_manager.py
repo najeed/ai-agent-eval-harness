@@ -28,30 +28,6 @@ class Permission:
     DEBUG_RESET = "debugger:reset"
     SYSTEM_CONFIG = "system:config"
 
-    # PBAC Collections (Standard Profiles)
-    @classmethod
-    def ALL_READ(cls) -> list[str]:
-        return [cls.SCENARIOS_READ, cls.RUNS_READ, cls.DOCS_READ, cls.DEBUG_READ, cls.IDENTITY_READ]
-
-    @classmethod
-    def OPERATOR(cls) -> list[str]:
-        return cls.ALL_READ() + [
-            cls.EVAL_TRIGGER,
-            cls.DEMO_EXECUTE,
-            cls.INDEX_REFRESH,
-            cls.DEBUG_EVENT,
-            cls.CERTIFY_WRITE,
-        ]
-
-    @classmethod
-    def ADMIN(cls) -> list[str]:
-        return cls.OPERATOR() + [
-            cls.SCENARIOS_WRITE,
-            cls.SCENARIOS_DELETE,
-            cls.DEBUG_RESET,
-            cls.SYSTEM_CONFIG,
-        ]
-
 
 class AuthManager(ABC):
     """Base interface for authentication and PBAC integration."""
@@ -68,7 +44,7 @@ class AuthManager(ABC):
 
 
 class StaticKeyProvider(AuthManager):
-    """Default OSS provider: Single Master/Root Key maps to full ADMIN suite."""
+    """Default OSS provider: Single Master/Root Key maps to explicit granular nodes."""
 
     def __init__(self, key: str):
         self.key = key
@@ -77,17 +53,33 @@ class StaticKeyProvider(AuthManager):
         if not self.key or credentials != self.key:
             return None
 
+        # [Hardening] Explicit Granular Nodes
         return {
             "id": "root-admin",
             "name": "System Administrator",
-            "permissions": Permission.ADMIN(),
+            "permissions": [
+                Permission.SCENARIOS_READ,
+                Permission.RUNS_READ,
+                Permission.DOCS_READ,
+                Permission.DEBUG_READ,
+                Permission.IDENTITY_READ,
+                Permission.EVAL_TRIGGER,
+                Permission.DEMO_EXECUTE,
+                Permission.INDEX_REFRESH,
+                Permission.DEBUG_EVENT,
+                Permission.CERTIFY_WRITE,
+                Permission.SCENARIOS_WRITE,
+                Permission.SCENARIOS_DELETE,
+                Permission.DEBUG_RESET,
+                Permission.SYSTEM_CONFIG,
+            ],
             "type": "static-root",
         }
 
     def has_permission(self, user: dict, permission_node: str) -> bool:
-        """Strict PBAC implementation: Verifies granular permissions node without RBAC fallback."""
+        """Strict PBAC implementation: Verifies granular permissions node."""
         user_perms = user.get("permissions", [])
-        # Authoritative PBAC check
+        # Equality check (No wildcards or role logic)
         result = permission_node in user_perms
         if not result and os.getenv("DEBUG", "false").lower() == "true":
             print(f"   [Auth] [DENIED] Node '{permission_node}' not in user perms: {user_perms}")
