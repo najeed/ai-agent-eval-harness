@@ -3099,15 +3099,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#8-custom-extensions-identity-pbac-integration" class="md-nav__link">
+  <a href="#8-permissions-based-access-control-pbac" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🔑 8. Custom Extensions Identity &amp; PBAC Integration
+        🔑 8. Permissions-Based Access Control (PBAC)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🔑 8. Custom Extensions Identity &amp; PBAC Integration">
+    <nav class="md-nav" aria-label="🔑 8. Permissions-Based Access Control (PBAC)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4286,15 +4286,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#8-custom-extensions-identity-pbac-integration" class="md-nav__link">
+  <a href="#8-permissions-based-access-control-pbac" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🔑 8. Custom Extensions Identity &amp; PBAC Integration
+        🔑 8. Permissions-Based Access Control (PBAC)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🔑 8. Custom Extensions Identity &amp; PBAC Integration">
+    <nav class="md-nav" aria-label="🔑 8. Permissions-Based Access Control (PBAC)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -4529,7 +4529,7 @@ If the <code>DASHBOARD_API_KEY</code> is not set in the environment, the harness
 <h3 id="b-certification-api">B. Certification API<a class="headerlink" href="#b-certification-api" title="Permanent link">&para;</a></h3>
 <p>The <strong>Certification API</strong> serves as a public "Trust Anchor," allowing external systems and CI/CD gates to verify the authenticity of an evaluation run without requiring administrative access to the harness.</p>
 <ul>
-<li><strong>Endpoint</strong>: <code>GET /api/v1/certificates/&lt;run_id&gt;</code></li>
+<li><strong>Endpoint</strong>: <code>GET /v1/certificates/&lt;run_id&gt;</code></li>
 <li><strong>Response</strong>: Returns a non-repudiable JSON object containing the trace hash, run metadata, and the <strong>signature_ed25519</strong> field from the issuing harness.</li>
 <li><strong>Verification CLI</strong>: Stakeholders can use the <code>verify --run-id &lt;id&gt;</code> command locally or the <code>gate --run-id &lt;id&gt;</code> command in CI/CD pipelines to verify the signature (field: <code>signature_ed25519</code>) and re-compute the trace hash locally to prove absolute veracity.</li>
 </ul>
@@ -4537,7 +4537,7 @@ If the <code>DASHBOARD_API_KEY</code> is not set in the environment, the harness
 <p>The Trust Protocol is designed for <strong>HMS-Readiness</strong>, supporting the transition to professional Hardware Security Modules (HSM) or Cloud KMS providers.
 - <strong>Pluggable KeyLoader</strong>: The harness uses a modular interface for key retrieval. While the <code>LocalFileKeyLoader</code> is the default, <strong>custom extensions</strong> can implement loaders for AWS KMS, GCP KMS, or Azure Key Vault, ensuring that private keys never reside on the local evaluation disk.</p>
 <hr />
-<h2 id="8-custom-extensions-identity-pbac-integration">🔑 8. Custom Extensions Identity &amp; PBAC Integration<a class="headerlink" href="#8-custom-extensions-identity-pbac-integration" title="Permanent link">&para;</a></h2>
+<h2 id="8-permissions-based-access-control-pbac">🔑 8. Permissions-Based Access Control (PBAC)<a class="headerlink" href="#8-permissions-based-access-control-pbac" title="Permanent link">&para;</a></h2>
 <p>For professional and high-compliance environments, the harness uses a <strong>Permission-Based Access Control (PBAC)</strong> system, which replaces rigid roles with granular, string-based permission nodes.</p>
 <h4 id="permission-nodes">Permission Nodes<a class="headerlink" href="#permission-nodes" title="Permanent link">&para;</a></h4>
 <ul>
@@ -4550,7 +4550,7 @@ If the <code>DASHBOARD_API_KEY</code> is not set in the environment, the harness
 - Map custom extensions groups (e.g., <code>Harness-SuperUser</code>) to granular permission nodes (e.g., <code>EVAL_TRIGGER</code>).
 - Define custom extensions permission strings (e.g., <code>governance:audit:export</code>) for protected plugin routes.
 - Enforce multi-factor authentication (MFA).</p>
-<p>For technical details on extending authentication, see the <a href="../help/03_DEVELOPER_GUIDE/#11-extending-authentication--rbac">Developer Guide</a>.</p>
+<p>For technical details on extending authentication, see the <a href="../help/03_DEVELOPER_GUIDE/#11-extending-authentication--pbac">Developer Guide</a>.</p>
 <hr />
 <h2 id="troubleshooting-401-unauthorized-errors">🛠️ Troubleshooting 401 Unauthorized Errors<a class="headerlink" href="#troubleshooting-401-unauthorized-errors" title="Permanent link">&para;</a></h2>
 <p>If you encounter a <code>401 Unauthorized</code> error when accessing the Visual Debugger or API, follow these steps:</p>
@@ -4570,7 +4570,7 @@ If the <code>DASHBOARD_API_KEY</code> is not set in the environment, the harness
 <li><strong>Environment Variable</strong>: Run <code>agentv doctor</code> to verify that the <code>DASHBOARD_API_KEY</code> is correctly detected by the harness.</li>
 <li><strong>501 Not Implemented</strong>: If you see this error, it means <strong>no key</strong> is configured. The harness will block all sensitive routes until a key is provided.</li>
 </ul>
-<p>For further assistance, contact <code>ai.eval.harness.contact+security@gmail.com</code>.</p>
+<p>For further assistance, contact <code>agentv@agentvos.ai</code>.</p>
 
 
 

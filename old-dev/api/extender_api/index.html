@@ -4149,7 +4149,8 @@
 <p>Triggers an asynchronous evaluation run using the authoritative industrial namespace.
 - <strong>Method</strong>: <code>POST</code>
 - <strong>Body</strong>:
-    - <code>path</code> (string, <strong>required</strong>): Absolute or relative path to the scenario JSON.
+    - <code>path</code> (string, <strong>required</strong>): Scenario ID alias or relative path to the scenario JSON.
+    - <em>Note</em>: Priority resolution on <strong>Scenario ID</strong> via the catalog. If no match is found, it fallbacks to direct file resolution. Use <code>agentv list</code> to find IDs.
     - <code>max_turns</code> (int, optional): Maximum conversation depth (Default: 10).
 - <strong>Response</strong>:
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;started&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;run_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;eval_20240412_...&quot;</span><span class="p">}</span>

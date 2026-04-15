@@ -3684,6 +3684,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#get-apiv1doctor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /api/v1/doctor
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3713,10 +3724,65 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#post-apiv1mutate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /api/v1/mutate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-apiv1metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /api/v1/metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-apiv1taxonomy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /api/v1/taxonomy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-apiv1spec-to-eval" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /api/v1/spec-to-eval
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#get-apiv1runsrun_id" class="md-nav__link">
     <span class="md-ellipsis">
       
         GET /api/v1/runs/&lt;run_id&gt;
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-apiv1explainrun_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /api/v1/explain/&lt;run_id&gt;
       
     </span>
   </a>
@@ -3986,18 +4052,41 @@
 <p>Prunes historical traces and rotates log artifacts.
 - <strong>Permission</strong>: <code>DEMO_EXECUTE</code>
 - <strong>Security</strong>: Protected</p>
+<h3 id="get-apiv1doctor"><code>GET /api/v1/doctor</code><a class="headerlink" href="#get-apiv1doctor" title="Permanent link">&para;</a></h3>
+<p>Roadmap (P1): Environmental health audit and project readiness check.
+- <strong>Permission</strong>: <code>SCENARIOS_READ</code>
+- <strong>Security</strong>: Protected</p>
+<hr />
 <hr />
 <h2 id="2-evaluation-orchestration">2. Evaluation &amp; Orchestration<a class="headerlink" href="#2-evaluation-orchestration" title="Permanent link">&para;</a></h2>
 <h3 id="post-apiv1evaluate"><code>POST /api/v1/evaluate</code><a class="headerlink" href="#post-apiv1evaluate" title="Permanent link">&para;</a></h3>
 <p>Triggers an asynchronous evaluation for a specific scenario or path.
 - <strong>Permission</strong>: <code>EVAL_TRIGGER</code>
 - <strong>Security</strong>: Protected
-- <strong>Body</strong>: <code>{"path": "industries/fin/scenarios/loan.json", "max_turns": 10}</code></p>
+- <strong>Body</strong>: <code>{"path": "loan-scenario-v1", "max_turns": 10}</code>
+  - <em>Note</em>: <code>path</code> acts as an alias. It first resolves against the <strong>Scenario ID</strong> in the catalog index. If no match is found, it expects a <strong>project-relative path</strong> (e.g., <code>industries/fin/scenarios/loan.json</code>).</p>
+<h3 id="post-apiv1mutate"><code>POST /api/v1/mutate</code><a class="headerlink" href="#post-apiv1mutate" title="Permanent link">&para;</a></h3>
+<p>Roadmap (P0): Programmatic scenario mutation for variance testing.
+- <strong>Permission</strong>: <code>SCENARIOS_READ</code>
+- <strong>Body</strong>: <code>{"type": "typo", "path": "...", "raw_json": {...}}</code> (Supports raw content).</p>
+<h3 id="get-apiv1metrics"><code>GET /api/v1/metrics</code><a class="headerlink" href="#get-apiv1metrics" title="Permanent link">&para;</a></h3>
+<p>Roadmap (P0): Lists all registered evaluation metrics.
+- <strong>Permission</strong>: <code>SCENARIOS_READ</code></p>
+<h3 id="get-apiv1taxonomy"><code>GET /api/v1/taxonomy</code><a class="headerlink" href="#get-apiv1taxonomy" title="Permanent link">&para;</a></h3>
+<p>Roadmap (P0): Returns the authoritative failure taxonomy (AEH v1.5).
+- <strong>Permission</strong>: <code>SCENARIOS_READ</code></p>
+<h3 id="post-apiv1spec-to-eval"><code>POST /api/v1/spec-to-eval</code><a class="headerlink" href="#post-apiv1spec-to-eval" title="Permanent link">&para;</a></h3>
+<p>Roadmap (P1): Converts Markdown PRDs to scenario JSON stubs.
+- <strong>Permission</strong>: <code>SCENARIOS_READ</code>
+- <strong>Body</strong>: <code>{"markdown": "...", "input_path": "..."}</code> (Supports raw content).</p>
 <h3 id="get-apiv1runsrun_id"><code>GET /api/v1/runs/&lt;run_id&gt;</code><a class="headerlink" href="#get-apiv1runsrun_id" title="Permanent link">&para;</a></h3>
 <p>Returns the real-time status and metadata of a specific evaluation.
 - <strong>Permission</strong>: <code>RUNS_READ</code>
 - <strong>Security</strong>: Protected
 - <strong>Statuses</strong>: <code>RUNNING</code>, <code>COMPLETED</code>, <code>NOT_FOUND</code></p>
+<h3 id="get-apiv1explainrun_id"><code>GET /api/v1/explain/&lt;run_id&gt;</code><a class="headerlink" href="#get-apiv1explainrun_id" title="Permanent link">&para;</a></h3>
+<p>Roadmap (P2): Forensic Root Cause Analysis (RCA) as a service.
+- <strong>Permission</strong>: <code>RUNS_READ</code></p>
 <h3 id="get-apiruns"><code>GET /api/runs</code><a class="headerlink" href="#get-apiruns" title="Permanent link">&para;</a></h3>
 <p>Lists historical run traces with faceted filtering.
 - <strong>Permission</strong>: <code>RUNS_READ</code>

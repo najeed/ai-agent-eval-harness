@@ -5082,7 +5082,7 @@
 <li><strong>Plugins (<code>plugins.py</code>)</strong>: Flexible hooks that can observe or intercept core behavior.</li>
 <li><strong>ToolSandbox (<code>tool_sandbox.py</code>)</strong>: Managed execution environment with automated workspace lifecycle and <strong>Environmental DNA</strong> snapshotting.</li>
 <li><strong>Registry Manager (<code>config.py</code>)</strong>: Authoritative source for the decoupled <strong>Hybrid Registry</strong>, enabling environment-agnostic benchmark portability.</li>
-<li><strong>Loader &amp; Catalog (<code>loader.py</code>, <code>catalog.py</code>)</strong>: Support for <strong>Path Decoupling</strong>, enabling scenarios to be loaded from any location with relative dataset resolution and automatic industry tagging (<code>local</code>, <code>unclassified</code>).</li>
+<li><strong>Loader &amp; Catalog (<code>loader.py</code>, <code>catalog.py</code>)</strong>: Support for <strong>Path Decoupling</strong>, enabling scenarios to be loaded from any location. The <code>path</code> parameter acts as an alias for a <strong>Scenario ID</strong> (priority resolution) or a physical filesystem path (fallback).</li>
 </ol>
 <h3 id="32-immutability">3.2 Immutability<a class="headerlink" href="#32-immutability" title="Permanent link">&para;</a></h3>
 <p><code>EvaluationContext</code> and <code>TurnContext</code> are <strong>frozen</strong> dataclasses. You cannot modify them directly inside hooks; instead, use <code>dataclasses.replace</code> if you need to pass a modified state upstream.</p>
@@ -5314,10 +5314,10 @@ If <code>cleanup_workspace</code> is <code>false</code> (default for many resear
 <p>For enterprise/SaaS scenarios, the <code>AuthManager</code> can be replaced with a custom provider (e.g., Okta, Azure AD).</p>
 <ol>
 <li><strong>Subclass AuthManager</strong>: Implement <code>authenticate</code> and <code>has_permission</code> using granular permission strings.</li>
-<li><strong>Permission Mapping</strong>: Map your external identity claims (e.g., JWT groups) to harness permission nodes (e.g., <code>Role.EVAL_TRIGGER</code>).</li>
+<li><strong>Permission Mapping</strong>: Map your external identity claims (e.g., JWT groups) to harness permission nodes (e.g., <code>Permission.EVAL_TRIGGER</code>).</li>
 <li><strong>Custom Nodes</strong>: Enterprise plugins can define their own strings (e.g., <code>governance:report:export</code>) to protect their unique API endpoints.</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">.auth_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthManager</span><span class="p">,</span> <span class="n">Role</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">.auth_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuthManager</span><span class="p">,</span> <span class="n">Permission</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">OktaAuthProvider</span><span class="p">(</span><span class="n">AuthManager</span><span class="p">):</span>
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">authenticate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -5325,7 +5325,7 @@ If <code>cleanup_workspace</code> is <code>false</code> (default for many resear
 <a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>        <span class="c1"># 2. Extract &#39;groups&#39; or &#39;roles&#39; claims</span>
 <a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>        <span class="k">return</span> <span class="p">{</span>
 <a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;user@org.com&quot;</span><span class="p">,</span>
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>            <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">Role</span><span class="o">.</span><span class="n">SCENARIOS_READ</span><span class="p">,</span> <span class="n">Role</span><span class="o">.</span><span class="n">EVAL_TRIGGER</span><span class="p">]</span> 
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>            <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">Permission</span><span class="o">.</span><span class="n">SCENARIOS_READ</span><span class="p">,</span> <span class="n">Permission</span><span class="o">.</span><span class="n">EVAL_TRIGGER</span><span class="p">]</span> 
 <a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>        <span class="p">}</span>
 <a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>
 <a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">permission_node</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -5334,11 +5334,11 @@ If <code>cleanup_workspace</code> is <code>false</code> (default for many resear
 </code></pre></div>
 <h3 id="113-protecting-routes">11.3 Protecting Routes<a class="headerlink" href="#113-protecting-routes" title="Permanent link">&para;</a></h3>
 <p>Use the <code>@require_permission</code> decorator in <code>routes.py</code> with granular nodes:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">.auth_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">Role</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">.auth_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">Permission</span>
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">.auth_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_permission</span> <span class="c1"># Re-imported from manager in routes.py</span>
 <a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
 <a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="nd">@core_bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/admin/settings&quot;</span><span class="p">)</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="nd">@require_permission</span><span class="p">(</span><span class="n">Role</span><span class="o">.</span><span class="n">SYSTEM_CONFIG</span><span class="p">)</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="nd">@require_permission</span><span class="p">(</span><span class="n">Permission</span><span class="o">.</span><span class="n">SYSTEM_CONFIG</span><span class="p">)</span>
 <a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">admin_settings</span><span class="p">():</span>
 <a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="k">return</span> <span class="s2">&quot;Sensitive Data&quot;</span>
 </code></pre></div>
