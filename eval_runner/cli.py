@@ -150,7 +150,12 @@ Usage: agentv <command> [options]
 
     eval_parser = subparsers.add_parser("evaluate", help="Run evaluation on a dataset of scenarios")
     eval_parser.add_argument(
-        "--path", required=True, help="Path to scenario file or directory (Required)"
+        "--path",
+        required=True,
+        help=(
+            "Cataloged scenario ID (e.g., 'loan_risk') OR project-relative path "
+            "to a scenario JSON/dataset. (Check 'agentv list' for IDs)"
+        ),
     )
     eval_parser.add_argument(
         "--format", default="jsonl", choices=["jsonl", "csv"], help="Dataset format"
@@ -239,7 +244,11 @@ Usage: agentv <command> [options]
 
     run_parser = subparsers.add_parser("run", help="Single scenario eval")
     run_parser.add_argument("--run-id", help="Authoritative Run ID for this run.")
-    run_parser.add_argument("--scenario", required=True)
+    run_parser.add_argument(
+        "--scenario",
+        required=True,
+        help="Cataloged scenario ID OR project-relative path to the scenario JSON file.",
+    )
     run_parser.add_argument("--attempts", type=int, default=1)
     run_parser.add_argument("--agent")
     run_parser.add_argument("--protocol", default="http", choices=available_protocols)
@@ -332,7 +341,9 @@ Usage: agentv <command> [options]
         "inspect", help="Display architectural details and task breakdown for a scenario"
     )
     inspect_parser.add_argument(
-        "--scenario-path", required=True, help="Path to the scenario file to inspect"
+        "--scenario-path",
+        required=True,
+        help="Cataloged scenario ID OR project-relative path to inspect.",
     )
 
     lint_parser = subparsers.add_parser(

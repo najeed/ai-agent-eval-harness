@@ -188,6 +188,10 @@ Comprehensive coverage for **50+ verticals** including:
 3.  **Run Evaluation**: 
     ```bash
     # Standard HTTP (default)
+    # Using Scenario ID alias (Cataloged)
+    agentv evaluate --path loan_risk
+
+    # Using project-relative path (Ad-hoc)
     agentv evaluate --path industries/telecom
 
     # Local Subprocess (stdin/stdout)
@@ -420,7 +424,7 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | **Parallel Engine** | 🔶 Sequential only | ✅ Ray/Local JobQueue Distributed Runs |
 | **Interactive Triage** | 🔶 Heuristic only | ✅ Multi-user Sync & Human Annotation |
 | **Advanced Sandbox** | 🔶 Path/Shell Gating | ✅ Hardened Docker Isolation & Red-Team Probes |
-| **Auth & Governance** | 🔶 Mandatory Authentication | ✅ OIDC SSO, RBAC, Managed Leaderboards |
+| **Auth & Governance** | 🔶 Mandatory Authentication | ✅ OIDC SSO, PBAC, Managed Leaderboards |
 
 **Legend:** ✅ Full Capability • 🔶 Basic/OSS Only • ❌ Enterprise Only
 
@@ -444,7 +448,7 @@ Alternatively, link directly to our high-fidelity SVG asset:
 
 ---
 
-Ready for production-grade verification? The Enterprise Edition delivers WORM audit logs, OIDC SSO, RBAC, HIPAA/FINRA/GDPR compliance packs, and Docker-sandboxed isolation, everything regulated industries need before autonomous agents earn the right to act.
+Ready for production-grade verification? The Enterprise Edition delivers WORM audit logs, OIDC SSO, PBAC, HIPAA/FINRA/GDPR compliance packs, and Docker-sandboxed isolation, everything regulated industries need before autonomous agents earn the right to act.
 
 👉 Book a 30-minute call: [AgentVOS.ai](https://agentvos.ai)
 

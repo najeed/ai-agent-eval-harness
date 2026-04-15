@@ -27,7 +27,7 @@ We take the security of the AgentV seriously. If you discover a security vulnera
 ### How to Report
 
 1. **Do NOT create a public GitHub issue** for security vulnerabilities
-2. Send an email to ai.eval.harness.contact+security@gmail.com with the subject line: "Security Vulnerability Report"
+2. Send an email to agentv@agentvos.ai with the subject line: "Security Vulnerability Report"
 3. Include the following information:
    - Description of the vulnerability
    - Steps to reproduce the issue
@@ -147,9 +147,9 @@ This project aims to follow security best practices including:
 ## Contact Information
 
 For security-related questions or concerns:
-- Security issues: ai.eval.harness.contact+security@gmail.com
-- General questions: ai.eval.harness.contact@gmail.com
-- Maintainer: ai.eval.harness.contact+najeed@gmail.com
+- Security issues: agentv@agentvos.ai
+- General questions: agentv@agentvos.ai
+- Maintainer: agentv@agentvos.ai
 
 ## Acknowledgments
 

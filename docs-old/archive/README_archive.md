@@ -414,12 +414,12 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | **Parallel Engine** | 🔶 Sequential only | ✅ Ray/Local JobQueue Distributed Runs |
 | **Interactive Triage** | 🔶 Heuristic only | ✅ Multi-user Sync & Human Annotation |
 | **Advanced Sandbox** | 🔶 Path/Shell Gating | ✅ Hardened Docker Isolation & Red-Team Probes |
-| **Auth & Governance** | 🔶 Mandatory Authentication | ✅ OIDC SSO, RBAC, Managed Leaderboards |
+| **Auth & Governance** | 🔶 Mandatory Authentication | ✅ OIDC SSO, PBAC, Managed Leaderboards |
 
 **Legend:** ✅ Full Capability • 🔶 Basic/OSS Only • ❌ Enterprise Only
 
 **Looking for Production-Grade Reliability?**
-The Enterprise Edition guarantees that you can safely evaluate agents over sensitive datasets without exposing credentials or executing dangerous code, backed by mathematical proof of non-repudiation. Contact `ai.eval.harness.contact+enterprise@gmail.com`.
+The Enterprise Edition guarantees that you can safely evaluate agents over sensitive datasets without exposing credentials or executing dangerous code, backed by mathematical proof of non-repudiation. Contact `agentv@agentvos.ai`.
 
 ### License
 The core of this project is licensed under the **Apache License 2.0**. 

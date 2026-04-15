@@ -174,7 +174,9 @@ def test_debugger_historical_exception(client, tmp_path):
     # routes.py has try-except. Let's force an actual Exception in json.loads
     with (
         patch("eval_runner.console.routes.config.RUN_LOG_DIR", runs_dir),
-        patch("eval_runner.console.routes.json.loads", side_effect=Exception("Corrupt format")),
+        patch(
+            "eval_runner.console.routes.system.json.loads", side_effect=Exception("Corrupt format")
+        ),
     ):
         res = client.get("/api/debugger/state?run_id=x")
         assert res.status_code == 500

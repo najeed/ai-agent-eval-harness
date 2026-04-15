@@ -40,6 +40,9 @@ Returns system status, including:
 #### `GET /api/nav`
 Returns the dynamic navigation registry. Extenders can inject items here via the `on_register_console_routes` hook.
 
+#### `GET /api/ping`
+Public diagnostic health check. Returns system availability status.
+
 ---
 
 ### 📂 Scenario Management
@@ -61,10 +64,31 @@ Saves or updates a scenario JSON file in the `industries/` directory.
 Triggers an asynchronous evaluation run using the authoritative industrial namespace.
 - **Method**: `POST`
 - **Body**:
-    - `path` (string, **required**): Absolute or relative path to the scenario JSON.
+    - `path` (string, **required**): Scenario ID alias (e.g., `loan_risk`) OR a project-relative path (e.g., `industries/fin/scenarios/loan.json`).
+    - *Note*: `path` acts as an alias. It first resolves against the **Scenario ID** in the catalog index. If no match is found, it expects a project-relative path. Use `agentv list` to verify IDs.
     - `max_turns` (int, optional): Maximum conversation depth (Default: 10).
 - **Response**: `{"status": "started", "run_id": "eval_20240412_..."}`
 - **Note**: initiates a background thread. Results are streamed to `runs/<run_id>/run.jsonl`. Enforces strict vault affinity.
+
+#### `POST /api/v1/mutate`
+Programmatic scenario mutation for variance testing.
+- **Body**: `type` (mutation name), `path` (file path), or `raw_json` (raw object).
+
+#### `GET /api/v1/metrics`
+Discovery service for all registered evaluation metrics.
+
+#### `GET /api/v1/taxonomy`
+Retrieves the authoritative Industrial Failure Taxonomy (AEH v1.5).
+
+#### `POST /api/v1/spec-to-eval`
+Converts Markdown PRDs into validated scenario JSON stubs.
+- **Body**: `markdown` (text) or `input_path` (file).
+
+#### `GET /api/v1/doctor`
+Environmental health audit and project readiness check.
+
+#### `GET /api/v1/explain/<run_id>`
+Forensic Root Cause Analysis (RCA) as a service.
 
 #### `GET /api/v1/runs/<run_id>`
 Industrial Polling Primitive.

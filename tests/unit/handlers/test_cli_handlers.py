@@ -126,7 +126,7 @@ async def test_handle_taxonomy(mock_args, capsys):
     """Test 'taxonomy' command handler. Forensic alignment: Verify header string."""
     await analysis.handle_taxonomy(mock_args)
     captured = capsys.readouterr()
-    assert "AGENT-EVAL FAILURE TAXONOMY" in captured.out
+    assert "AGENTV FAILURE TAXONOMY" in captured.out
 
 
 @pytest.mark.asyncio

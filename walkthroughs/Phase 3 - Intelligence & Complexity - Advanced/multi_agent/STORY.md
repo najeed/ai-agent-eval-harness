@@ -6,7 +6,7 @@
 
 "The challenge is the baton," the lead replies. "How do we know the researcher gave the writer the right data? How do we know the auditor didn't miss a logic gap? If the hand-off fails, the mission fails."
 
-"That's why we don't evaluate them as individuals," you say, opening the **Multi-Agent Console**. "We evaluate the **Interaction**. We measure the flow of state from node to node, ensuring that the 'Silent Swarm' is just as coordinated as they are intelligent."
+"That's why we don't evaluate them as individuals," you say, opening the **AgentV Console**. "We evaluate the **Interaction**. We measure the flow of state from node to node, ensuring that the 'Silent Swarm' is just as coordinated as they are intelligent."
 
 ---
 *Ready to coordinate the swarm? Open the [README.md](./README.md) to begin.*

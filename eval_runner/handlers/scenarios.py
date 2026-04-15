@@ -97,12 +97,8 @@ async def handle_aes_validate(args):
 async def handle_inspect(args):
     """Handler for 'inspect' command."""
     try:
-        path = Path(getattr(args, "scenario_path", None) or getattr(args, "path", ""))
-        if not path.exists():
-            print(f"❌ Error: Scenario file not found: {path}")
-            return 1
-
-        scenario = loader.load_scenario(str(path))
+        path_input = getattr(args, "scenario_path", None) or getattr(args, "path", "")
+        scenario = loader.load_scenario(path_input)
         print("\n" + "=" * 60)
         print(f"{'SCENARIO INSPECTOR':^60}")
         print("=" * 60)

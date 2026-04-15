@@ -25,6 +25,13 @@ Prunes historical traces and rotates log artifacts.
 - **Permission**: `DEMO_EXECUTE`
 - **Security**: Protected
 
+### `GET /api/v1/doctor`
+Roadmap (P1): Environmental health audit and project readiness check.
+- **Permission**: `SCENARIOS_READ`
+- **Security**: Protected
+
+---
+
 ---
 
 ## 2. Evaluation & Orchestration
@@ -33,13 +40,36 @@ Prunes historical traces and rotates log artifacts.
 Triggers an asynchronous evaluation for a specific scenario or path.
 - **Permission**: `EVAL_TRIGGER`
 - **Security**: Protected
-- **Body**: `{"path": "industries/fin/scenarios/loan.json", "max_turns": 10}`
+- **Body**: `{"path": "loan-scenario-v1", "max_turns": 10}`
+  - *Note*: `path` acts as an alias. It first resolves against the **Scenario ID** in the catalog index. If no match is found, it expects a **project-relative path** (e.g., `industries/fin/scenarios/loan.json`).
+
+### `POST /api/v1/mutate`
+Roadmap (P0): Programmatic scenario mutation for variance testing.
+- **Permission**: `SCENARIOS_READ`
+- **Body**: `{"type": "typo", "path": "...", "raw_json": {...}}` (Supports raw content).
+
+### `GET /api/v1/metrics`
+Roadmap (P0): Lists all registered evaluation metrics.
+- **Permission**: `SCENARIOS_READ`
+
+### `GET /api/v1/taxonomy`
+Roadmap (P0): Returns the authoritative failure taxonomy (AEH v1.5).
+- **Permission**: `SCENARIOS_READ`
+
+### `POST /api/v1/spec-to-eval`
+Roadmap (P1): Converts Markdown PRDs to scenario JSON stubs.
+- **Permission**: `SCENARIOS_READ`
+- **Body**: `{"markdown": "...", "input_path": "..."}` (Supports raw content).
 
 ### `GET /api/v1/runs/<run_id>`
 Returns the real-time status and metadata of a specific evaluation.
 - **Permission**: `RUNS_READ`
 - **Security**: Protected
 - **Statuses**: `RUNNING`, `COMPLETED`, `NOT_FOUND`
+
+### `GET /api/v1/explain/<run_id>`
+Roadmap (P2): Forensic Root Cause Analysis (RCA) as a service.
+- **Permission**: `RUNS_READ`
 
 ### `GET /api/runs`
 Lists historical run traces with faceted filtering.

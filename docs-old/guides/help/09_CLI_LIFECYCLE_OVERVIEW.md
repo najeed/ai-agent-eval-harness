@@ -37,8 +37,8 @@ Before running tests, you explore the ecosystem to ensure you aren't duplicating
 
 Now, you trigger the engine.
 
-1.  **`run`**: You execute a single, high-priority scenario to verify the agent's basic logic.
-2.  **`evaluate`**: You trigger a batch evaluation across the entire adversarial dataset to calculate the agent's robust accuracy.
+1.  **`run`**: You execute a single, high-priority scenario by its **Scenario ID** (alias) or Benchmark URI to verify the agent's basic logic.
+2.  **`evaluate`**: You trigger a batch evaluation across the entire adversarial dataset (by ID or path) to calculate the agent's robust accuracy.
 3.  **`quickstart`**: (Optional) You run the 60-second engine demo to verify that the environment is "Ready for Flight."
 
 ---

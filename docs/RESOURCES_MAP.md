@@ -1,6 +1,6 @@
 # AgentV Documentation: Legacy Resource Map
 
-This document provides a transition bridge between the legacy `/docs-old` repository and the new persona-based documentation structure. It identifies which legacy files and specific sections map to each of the five core roles.
+This document provides a transition bridge between the legacy `/docs-old` repository and the new persona-based documentation structure. It identifies which legacy files and specific sections map to each of the five core roles. The `/docs-old` directory remains supported as a reference for detailed technical narratives.
 
 ---
 
@@ -71,4 +71,4 @@ All legacy resources have been successfully migrated to the persona-based Starli
 5.  **Builder**: `architecture.md`, `developer-guide.md`, `core-functions.md`.
 
 > [!NOTE]
-> The `docs-old/` directory is now redundant and preserved only for historical traceability.
+> The `docs-old/` directory contains high-fidelity narrative guides and technical references. While modernized persona-based docs are preferred for onboarding, `docs-old` is maintained for forensic depth.

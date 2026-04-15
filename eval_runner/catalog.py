@@ -306,6 +306,10 @@ class ScenarioCatalog:
     def get_absolute_path(self, identifier: str) -> Path | None:
         """Resolves scenario ID to absolute path."""
         with self._lock:
+            if not self.scenarios and ScenarioCatalog._initialized:
+                # Fast-path: Load disk cache without scanning filesystem
+                self.load_index()
+
             for s in self.scenarios:
                 if s.get("id") == identifier:
                     base_join = self.root_dir / s["path"]

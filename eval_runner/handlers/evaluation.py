@@ -130,15 +130,9 @@ async def handle_evaluate(args):
 
     try:
         path_input = args.path
-        if "://" in path_input:
-            scenarios = loader.load_dataset(
-                path_input, format_type=args.format if args.format != "jsonl" else None
-            )
-        else:
-            path_obj = Path(path_input)
-            scenarios = loader.load_dataset(
-                path_obj, format_type=args.format if args.format != "jsonl" else None
-            )
+        scenarios = loader.load_dataset(
+            path_input, format_type=args.format if args.format != "jsonl" else None
+        )
     except Exception:
         print("❌ Error loading dataset:")
         traceback.print_exc()

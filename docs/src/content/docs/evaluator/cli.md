@@ -16,7 +16,9 @@ agentv evaluate \
   --attempts 3 \
   --limit 10
 ```
-- `--path`: (Required) Path to scenario file, directory, or `.jsonl` dataset.
+- `--path`: (Required) Scenario ID alias (e.g., `loan_risk`) OR a project-relative path (e.g., `industries/fin/scenarios/loan.json`).
+- `--scenario`: Alias for Scenario ID or project-relative path (used in `run` and `inspect`).
+- *Note*: Scenario IDs are resolved against the catalog index. If an ID is missing or the catalog is stale, you can optionally refresh it using `agentv list` or `agentv catalog-refresh`.
 - `--agent`: The target agent URL or local command.
 - `--protocol`: `http` (default), `local`, `socket`, `langgraph`, `crewai`.
 - `--attempts`: Pass@K trials per scenario.

@@ -10,8 +10,16 @@ from eval_runner.plugins import manager
 
 from .. import config
 from .auth import auth_bp
-from .demo_agent import demo_bp
-from .routes import core_bp, register_core_routes, trust_bp
+from .routes import (
+    core_bp,
+    demo_bp,
+    register_core_routes,
+    run_bp,
+    scenario_bp,
+    subscribe_debugger,
+    system_bp,
+    trust_bp,
+)
 
 # Ensure environment variables are loaded before ANY other configuration usage (R6)
 load_dotenv()
@@ -46,9 +54,12 @@ def create_app():
 
     CORS(app, supports_credentials=True)  # Explicit support for session cookies
     app.register_blueprint(auth_bp)
-    app.register_blueprint(core_bp)
+    app.register_blueprint(system_bp, url_prefix="/api")
+    app.register_blueprint(scenario_bp, url_prefix="/api")
+    app.register_blueprint(run_bp, url_prefix="/api")
     app.register_blueprint(trust_bp)
     app.register_blueprint(demo_bp)
+    app.register_blueprint(core_bp)
 
     @app.before_request
     def trace_request():
@@ -102,7 +113,6 @@ def create_app():
     register_core_routes(app, nav_registry)
 
     # Safely initialize debugger event subscription
-    from .routes import subscribe_debugger
 
     subscribe_debugger()
 

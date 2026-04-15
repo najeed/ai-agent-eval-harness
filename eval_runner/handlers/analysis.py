@@ -125,7 +125,7 @@ async def handle_taxonomy(args):
     """Handler for 'taxonomy' command."""
     try:
         print("\n" + "=" * 40)
-        print(f"{'AGENT-EVAL FAILURE TAXONOMY':^40}")
+        print(f"{'AGENTV FAILURE TAXONOMY':^40}")
         print("=" * 40)
         for cat in taxonomy.CATEGORIES:
             print(f" - {cat.replace('_', ' ').title()}")

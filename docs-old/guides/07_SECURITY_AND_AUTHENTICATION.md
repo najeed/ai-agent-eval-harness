@@ -137,7 +137,7 @@ A **Behavioral Fingerprint** (or Verification Certificate - VC) is a signed JSON
 ### B. Certification API
 The **Certification API** serves as a public "Trust Anchor," allowing external systems and CI/CD gates to verify the authenticity of an evaluation run without requiring administrative access to the harness.
 
-- **Endpoint**: `GET /api/v1/certificates/<run_id>`
+- **Endpoint**: `GET /v1/certificates/<run_id>`
 - **Response**: Returns a non-repudiable JSON object containing the trace hash, run metadata, and the **signature_ed25519** field from the issuing harness.
 - **Verification CLI**: Stakeholders can use the `verify --run-id <id>` command locally or the `gate --run-id <id>` command in CI/CD pipelines to verify the signature (field: `signature_ed25519`) and re-compute the trace hash locally to prove absolute veracity.
 
@@ -147,7 +147,7 @@ The Trust Protocol is designed for **HMS-Readiness**, supporting the transition 
 
 ---
 
-## 🔑 8. Custom Extensions Identity & PBAC Integration
+## 🔑 8. Permissions-Based Access Control (PBAC)
 
 For professional and high-compliance environments, the harness uses a **Permission-Based Access Control (PBAC)** system, which replaces rigid roles with granular, string-based permission nodes.
 
@@ -162,7 +162,7 @@ Plugins can subclass `AuthManager` to integrate with **Okta**, **Azure AD**, or 
 - Define custom extensions permission strings (e.g., `governance:audit:export`) for protected plugin routes.
 - Enforce multi-factor authentication (MFA).
 
-For technical details on extending authentication, see the [Developer Guide](help/03_DEVELOPER_GUIDE.md#11-extending-authentication--rbac).
+For technical details on extending authentication, see the [Developer Guide](help/03_DEVELOPER_GUIDE.md#11-extending-authentication--pbac).
 
 ---
 
@@ -183,4 +183,4 @@ If you encounter a `401 Unauthorized` error when accessing the Visual Debugger o
 - **Environment Variable**: Run `agentv doctor` to verify that the `DASHBOARD_API_KEY` is correctly detected by the harness.
 - **501 Not Implemented**: If you see this error, it means **no key** is configured. The harness will block all sensitive routes until a key is provided.
 
-For further assistance, contact `ai.eval.harness.contact+security@gmail.com`.
+For further assistance, contact `agentv@agentvos.ai`.

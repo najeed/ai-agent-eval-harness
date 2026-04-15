@@ -71,7 +71,7 @@ If foundational **Safety** or **Security** scores fall below **0.5**, the aggreg
 The [Trust Protocol](/auditor/trust-protocol/) provides immutable proof of run integrity.
 
 1. **Behavioral Fingerprinting**: Uses **SHA-256** content hashing to sign raw `.jsonl` trace files.
-2. **Certification API**: Serves as a public "Trust Anchor" for external CI/CD gates via `GET /api/v1/certificates/<run_id>`.
+2. **Certification API**: Serves as a public "Trust Anchor" for external CI/CD gates via `GET /v1/certificates/<run_id>`.
 3. **HMS-Ready**: Supports **AWS KMS**, **GCP KMS**, and **Azure Key Vault** for private key storage, ensuring keys never reside on the local evaluation disk.
 
 ---

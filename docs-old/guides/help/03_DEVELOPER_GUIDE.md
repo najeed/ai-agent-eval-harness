@@ -107,7 +107,7 @@ The core has been refactored into a decoupled, event-driven architecture to supp
 5. **Plugins (`plugins.py`)**: Flexible hooks that can observe or intercept core behavior.
 6. **ToolSandbox (`tool_sandbox.py`)**: Managed execution environment with automated workspace lifecycle and **Environmental DNA** snapshotting.
 7. **Registry Manager (`config.py`)**: Authoritative source for the decoupled **Hybrid Registry**, enabling environment-agnostic benchmark portability.
-8. **Loader & Catalog (`loader.py`, `catalog.py`)**: Support for **Path Decoupling**, enabling scenarios to be loaded from any location with relative dataset resolution and automatic industry tagging (`local`, `unclassified`).
+8. **Loader & Catalog (`loader.py`, `catalog.py`)**: Support for **Path Decoupling**, enabling scenarios to be loaded from any location. The `path` parameter acts as an alias for a **Scenario ID** (priority resolution) or a physical filesystem path (fallback).
 
 ### 3.2 Immutability
 `EvaluationContext` and `TurnContext` are **frozen** dataclasses. You cannot modify them directly inside hooks; instead, use `dataclasses.replace` if you need to pass a modified state upstream.
@@ -325,11 +325,11 @@ The core auth logic is defined in `eval_runner/console/auth_manager.py`.
 For enterprise/SaaS scenarios, the `AuthManager` can be replaced with a custom provider (e.g., Okta, Azure AD).
 
 1. **Subclass AuthManager**: Implement `authenticate` and `has_permission` using granular permission strings.
-2. **Permission Mapping**: Map your external identity claims (e.g., JWT groups) to harness permission nodes (e.g., `Role.EVAL_TRIGGER`).
+2. **Permission Mapping**: Map your external identity claims (e.g., JWT groups) to harness permission nodes (e.g., `Permission.EVAL_TRIGGER`).
 3. **Custom Nodes**: Enterprise plugins can define their own strings (e.g., `governance:report:export`) to protect their unique API endpoints.
 
 ```python
-from .auth_manager import AuthManager, Role
+from .auth_manager import AuthManager, Permission
 
 class OktaAuthProvider(AuthManager):
     def authenticate(self, token: str):
@@ -337,7 +337,7 @@ class OktaAuthProvider(AuthManager):
         # 2. Extract 'groups' or 'roles' claims
         return {
             "id": "user@org.com",
-            "permissions": [Role.SCENARIOS_READ, Role.EVAL_TRIGGER] 
+            "permissions": [Permission.SCENARIOS_READ, Permission.EVAL_TRIGGER] 
         }
 
     def has_permission(self, user: dict, permission_node: str):
@@ -349,11 +349,11 @@ class OktaAuthProvider(AuthManager):
 Use the `@require_permission` decorator in `routes.py` with granular nodes:
 
 ```python
-from .auth_manager import Role
+from .auth_manager import Permission
 from .auth_manager import require_permission # Re-imported from manager in routes.py
 
 @core_bp.route("/admin/settings")
-@require_permission(Role.SYSTEM_CONFIG)
+@require_permission(Permission.SYSTEM_CONFIG)
 def admin_settings():
     return "Sensitive Data"
 ```

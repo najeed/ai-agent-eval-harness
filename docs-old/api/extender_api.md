@@ -51,7 +51,8 @@ Saves or updates a scenario JSON file in the `industries/` directory.
 Triggers an asynchronous evaluation run using the authoritative industrial namespace.
 - **Method**: `POST`
 - **Body**:
-    - `path` (string, **required**): Absolute or relative path to the scenario JSON.
+    - `path` (string, **required**): Scenario ID alias or relative path to the scenario JSON.
+    - *Note*: Priority resolution on **Scenario ID** via the catalog. If no match is found, it fallbacks to direct file resolution. Use `agentv list` to find IDs.
     - `max_turns` (int, optional): Maximum conversation depth (Default: 10).
 - **Response**:
     ```json

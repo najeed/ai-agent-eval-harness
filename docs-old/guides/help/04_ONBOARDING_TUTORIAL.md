@@ -36,7 +36,7 @@ python -m pip install -r requirements.txt
 ```
 
 > ```text
-> Successfully installed multi-agent-eval-<version> ...
+> Successfully installed agentv-<version> ...
 > ```
 
 ### ✅ Step 2: Verify the CLI is available

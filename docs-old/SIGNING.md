@@ -84,7 +84,7 @@ agentv gate \
 
 ```yaml
 jobs:
-  agent-eval:
+  agentv-eval:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

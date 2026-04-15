@@ -1,9 +1,9 @@
 # Compliance & Third-Party Licenses
 
-This document outlines the license obligations and compliance steps for the MultiAgent Verification Framework (`agentv`), as of **April 2026**.
+This document outlines the license obligations and compliance steps for the AgentV Verification Framework (`agentv`), as of **April 2026**.
 
 ## 1. Core Framework License
-The MultiAgent Verification Framework is distributed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file in the root directory for details.
+The AgentV Verification Framework is distributed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file in the root directory for details.
 
 ## 2. Third-Party Dependency Licenses
 The following table summarizes the licenses of our core dependencies. All used licenses are permissive (MIT, BSD, Apache 2.0).
@@ -25,7 +25,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **opentelemetry-api** | 1.40.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **opentelemetry-sdk** | 1.40.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **google-genai** | 1.70.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **pypdf** | 6.10.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **pypdf** | 6.10.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **streamlit** | 1.56.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **pandas** | 3.0.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |

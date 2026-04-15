@@ -163,16 +163,27 @@ def test_check_for_updates_sync(tmp_path):
     cat = ScenarioCatalog()
     cat.root_dir = MagicMock(spec=Path)
 
-    # Configure the mock industries path
-    mock_industries = MagicMock(spec=Path)
-    cat.root_dir.__truediv__.return_value = mock_industries
-    mock_industries.exists.return_value = True
+    # 1. Patch _get_search_paths to return deterministic distinct mocks
+    # This avoids OS-specific Path(mock) or dupe-mock behavior
+    mock_industries = MagicMock(spec=Path, name="MockIndustries")
+    mock_scenarios = MagicMock(spec=Path, name="MockScenarios")
 
-    # Configure glob to return 2 items
-    mock_industries.glob.return_value = [MagicMock(), MagicMock()]
+    with patch.object(cat, "_get_search_paths", return_value=[mock_industries, mock_scenarios]):
+        # Configure industries to exist, scenarios to not exist for this test
+        mock_industries.exists.return_value = True
+        mock_scenarios.exists.return_value = False
 
-    # Set internal state to 2 items with valid 'path' markers
-    cat.scenarios = [{"path": "s1"}, {"path": "s2"}]
+        # 2. Control mtime fast-path
+        # current_top_mtime = max(...)
+        mock_industries.stat.return_value.st_mtime = 100
+        cat.manifest["last_top_mtime"] = 0  # Force it to proceed past mtime check
+        cat._last_sync_check = 0  # Bypass 30s debounce
 
-    # Now disk_count (2) == len(self.scenarios) (2), so False (no updates needed)
-    assert cat.check_for_updates() is False
+        # 3. Configure glob to return 2 items
+        mock_industries.glob.return_value = [MagicMock(), MagicMock()]
+
+        # 4. Set internal state to 2 items
+        cat.scenarios = [{"path": "s1"}, {"path": "s2"}]
+
+        # Now disk_count (2) == len(self.scenarios) (2), so False (no updates needed)
+        assert cat.check_for_updates() is False

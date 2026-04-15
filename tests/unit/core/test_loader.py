@@ -58,7 +58,7 @@ def test_load_invalid_scenario(tmp_path):
 def test_load_nonexistent_scenario(tmp_path):
     """Test error handling when attempting to load a non-existent scenario file."""
     scenario_file = tmp_path / "nonexistent.json"
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(FileNotFoundError, match="ensure the catalog is indexed"):
         loader.load_scenario(scenario_file)
 
 
@@ -95,7 +95,7 @@ def test_load_jsonl_dataset():
 
 def test_load_dataset_file_not_found():
     """Test that loading a non-existent dataset raises FileNotFoundError."""
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(FileNotFoundError, match="ensure the catalog is indexed"):
         loader.load_dataset(Path("nonexistent/dataset.csv"))
 
 

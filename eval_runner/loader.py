@@ -217,10 +217,26 @@ def load_scenario(
             print(f"      [Loader] Warning: Unknown benchmark scheme '{scheme}'")
             return []
 
-    # 2. Handle File Paths
-    file_path = Path(path)
+    # 2. Handle Scenario IDs (Industrial Alias resolution v1.5.0)
+    from .catalog import ScenarioCatalog
+
+    catalog = ScenarioCatalog.get_instance()
+    abs_path = catalog.get_absolute_path(path_str)
+
+    if abs_path:
+        file_path = abs_path
+    else:
+        # Fallback to direct file path
+        file_path = Path(path)
+
     if not file_path.exists():
-        raise FileNotFoundError(f"Scenario file not found at {file_path}")
+        msg = (
+            f"Scenario not found: '{path}'.\n"
+            f"   - If this is a Scenario ID, ensure the catalog is indexed (run 'agentv list').\n"
+            "   - If this is a file, verify the project-relative path "
+            "(e.g., 'industries/fin/...')."
+        )
+        raise FileNotFoundError(msg)
 
     with open(file_path) as f:
         try:
@@ -294,10 +310,27 @@ def load_dataset(file_path: str | Path, format_type: str | None = None) -> list[
         scenarios = load_scenario(file_path)
         return scenarios if isinstance(scenarios, list) else [scenarios]
 
-    path_obj = Path(file_path) if isinstance(file_path, str) else file_path
+    # 1. Alias Resolution (v1.5.0)
+    # Check if 'file_path' is an ID before path-ifying it
+    if isinstance(file_path, str):
+        from .catalog import ScenarioCatalog
+
+        catalog = ScenarioCatalog.get_instance()
+        abs_p = catalog.get_absolute_path(file_path)
+        if abs_p:
+            path_obj = abs_p
+        else:
+            path_obj = Path(file_path)
+    else:
+        path_obj = file_path
 
     if not path_obj.exists():
-        raise FileNotFoundError(f"Path not found: {path_obj}")
+        msg = (
+            f"Dataset or Path not found: '{file_path}'.\n"
+            f"   - If this is a Scenario ID, ensure the catalog is indexed (run 'agentv list').\n"
+            f"   - If this is a file, verify the project-relative path."
+        )
+        raise FileNotFoundError(msg)
 
     # Handle Directory
     if path_obj.is_dir():

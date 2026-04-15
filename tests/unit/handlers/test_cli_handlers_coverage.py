@@ -40,7 +40,7 @@ async def test_handle_inspect_missing(capsys):
     args = MagicMock(scenario_path="non_existent.json")
     await scenarios.handle_inspect(args)
     captured = capsys.readouterr()
-    assert "Scenario file not found" in captured.out
+    assert "Scenario not found" in captured.out
 
 
 @pytest.mark.asyncio
