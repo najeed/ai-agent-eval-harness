@@ -111,24 +111,26 @@ def get_run_status(run_id):
     vault_trace = config.RUN_LOG_DIR / run_id / "run.jsonl"
     if vault_trace.exists():
         is_finished = False
+        size = 0
+        mtime = 0
         try:
+            size = os.path.getsize(vault_trace)
+            mtime = os.path.getmtime(vault_trace)
             with open(vault_trace, "rb") as f:
-                size = os.path.getsize(vault_trace)
                 if size > 0:
                     f.seek(max(0, size - 2048))
                     if b'"event": "run_end"' in f.read():
                         is_finished = True
         except Exception as e:
             logger.warning(f"Error checking run-end event for {run_id}: {e}")
-            # We don't raise 500 here to allow partial status retrieval if mtime/size worked
             pass
 
         return jsonify(
             {
                 "run_id": run_id,
                 "status": "COMPLETED" if is_finished else "RUNNING",
-                "size": os.path.getsize(vault_trace),
-                "mtime": os.path.getmtime(vault_trace),
+                "size": size,
+                "mtime": mtime,
             }
         )
     return jsonify({"error": "Run not found"}), 404

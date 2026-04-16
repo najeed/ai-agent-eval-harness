@@ -9,7 +9,8 @@ import os
 from pathlib import Path
 
 import yaml
-from jsonschema import RefResolver, validate
+from jsonschema import validate
+from referencing import Registry, Resource
 
 from .. import catalog, drift_importer, linter, loader, mutator, spec_parser
 
@@ -52,7 +53,22 @@ async def handle_aes_validate(args):
         with open(schema_path) as f:
             schema = json.load(f)
 
-        resolver = RefResolver(f"file:///{schema_path.parent.as_posix()}/", schema)
+        # Industrial Migration: Use referencing.Registry instead of deprecated RefResolver
+        def _get_definitions():
+            defs = {}
+            defs_dir = schema_path.parent / "definitions"
+            if defs_dir.exists():
+                for fpath in defs_dir.glob("*.json"):
+                    with open(fpath) as f_def:
+                        defs[f"definitions/{fpath.name}"] = json.load(f_def)
+            return defs
+
+        definitions = _get_definitions()
+        registry = Registry()
+        for ref_path, def_schema in definitions.items():
+            registry = registry.with_resource(
+                uri=ref_path, resource=Resource.from_contents(def_schema)
+            )
 
         path = Path(args.path)
         if path.is_file():
@@ -73,7 +89,7 @@ async def handle_aes_validate(args):
                     else:
                         data = json.load(f)
 
-                validate(instance=data, schema=schema, resolver=resolver)
+                validate(instance=data, schema=schema, registry=registry)
                 ver = data.get("aes_version", "unknown")
                 print(f"✔ {f_path.name}: Valid (AES v{ver})")
                 success_count += 1

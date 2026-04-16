@@ -296,7 +296,21 @@ class ScenarioCatalog:
 
         return results[offset : offset + limit]
 
+    def get_scenario(self, identifier: str) -> dict[str, Any] | None:
+        """Returns a single scenario by ID or title (Authoritative)."""
+        with self._lock:
+            if not self.scenarios and ScenarioCatalog._initialized:
+                self.load_index()
+            for s in self.scenarios:
+                if s.get("id") == identifier or s.get("title") == identifier:
+                    return s
+        return None
+
     def list_scenarios(self) -> list[str]:
+        """Backward compatibility alias for get_scenario_ids."""
+        return self.get_scenario_ids()
+
+    def get_scenario_ids(self) -> list[str]:
         """Backward compatibility with main branch API."""
         with self._lock:
             if not self.scenarios and ScenarioCatalog._initialized:

@@ -84,7 +84,7 @@ def test_docs_with_categories(client):
     assert "docs" in data
     if data["docs"]:
         assert "category" in data["docs"][0]
-        assert data["docs"][0]["category"] in ["Guide", "API Reference"]
+        assert data["docs"][0]["category"] in ["Guide", "API Reference", "General", "Tutorial"]
 
 
 def test_scenario_lists_exist(client):

@@ -23,7 +23,8 @@ import os
 from pathlib import Path
 
 import pytest
-from jsonschema import RefResolver, ValidationError, validate  # type: ignore
+from jsonschema import ValidationError, validate
+from referencing import Registry, Resource
 
 # Systemic path resolution
 BASE_DIR = Path(__file__).parent.parent.parent
@@ -133,10 +134,25 @@ def test_all_scenarios_are_valid(scenario_schema):
                 continue
 
             count += 1
-            # Industrial Fix: Use RefResolver to handle local $ref in split schemas
-            schema_path = SCHEMA_PATH.absolute()
-            resolver = RefResolver(schema_path.as_uri(), scenario_schema)
-            validate(instance=scenario, schema=scenario_schema, resolver=resolver)
+
+            # Industrial Fix: Use referencing.Registry instead of deprecated RefResolver
+            def _get_definitions():
+                defs = {}
+                defs_dir = SCHEMA_PATH.parent / "definitions"
+                if defs_dir.exists():
+                    for fpath in defs_dir.glob("*.json"):
+                        with open(fpath) as f_def:
+                            defs[f"definitions/{fpath.name}"] = json.load(f_def)
+                return defs
+
+            definitions = _get_definitions()
+            registry = Registry()
+            for ref_path, def_schema in definitions.items():
+                registry = registry.with_resource(
+                    uri=ref_path, resource=Resource.from_contents(def_schema)
+                )
+
+            validate(instance=scenario, schema=scenario_schema, registry=registry)
         except ValidationError as e:
             errors.append((path_str, str(e)))
         except Exception as e:
