@@ -371,6 +371,8 @@ class FailureTaxonomy:
                 status = content.get("status")
                 if status == "policy_violation":
                     return FailureCategory.POLICY_VIOLATION
+                if status == "safety_block":
+                    return FailureCategory.SECURITY_PII_LEAK
                 if status in ("unauthorized", "access_denied"):
                     return FailureCategory.SECURITY_UNAUTHORIZED_ACCESS
                 if status == "dacon_leak":
