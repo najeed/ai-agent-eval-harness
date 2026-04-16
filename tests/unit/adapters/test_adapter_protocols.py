@@ -69,16 +69,17 @@ async def test_gemini_adapter_success():
     """Test Google Gemini adapter."""
     adapter = GeminiAdapterPlugin()
 
-    mock_response = AsyncMock()
-    # Mocking semantic mapping for missing lines in gemini.py
-    mock_response.status = 200
-    mock_response.json.return_value = {
-        "candidates": [{"content": {"parts": [{"text": "Gemini response"}]}}]
-    }
+    # Mocking semantic mapping for Gemini SDK
+    mock_client = MagicMock()
+    mock_response = MagicMock()
+    mock_response.text = "Gemini response"
+    mock_response.usage_metadata = None
 
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value.__aenter__.return_value = mock_response
-        res = await adapter.execute_gemini_query({"api_key": "test", "task": "hi"})
+    # generate_content is async in the SDK's aio namespace
+    mock_client.aio.models.generate_content = AsyncMock(return_value=mock_response)
+
+    with patch("google.genai.Client", return_value=mock_client):
+        res = await adapter.execute_gemini_query({"api_key": "test", "task_description": "hi"})
         assert res["status"] == "success"
         assert "Gemini" in res["output"]
 
@@ -114,17 +115,17 @@ async def test_grok_adapter_success():
 
 
 def test_adapter_discovery_hooks():
-    """Test on_discover_adapters for all major plugins."""
     registry = MagicMock()
+    from unittest.mock import ANY
 
     OpenAIAdapterPlugin().on_discover_adapters(registry)
-    registry.register.assert_any_call("openai", pytest.any_call)
+    registry.register.assert_any_call("openai", ANY)
 
     ClaudeAdapterPlugin().on_discover_adapters(registry)
-    registry.register.assert_any_call("claude", pytest.any_call)
+    registry.register.assert_any_call("claude", ANY)
 
     GeminiAdapterPlugin().on_discover_adapters(registry)
-    registry.register.assert_any_call("gemini", pytest.any_call)
+    registry.register.assert_any_call("gemini", ANY)
 
 
 @pytest.mark.asyncio
@@ -134,9 +135,8 @@ async def test_autogen_adapter_fallback():
     # Test discovery
     reg = MagicMock()
     adapter.on_discover_adapters(reg)
-    reg.register.assert_any_call("autogen", adapter.execute_autogen_task)
+    reg.register.assert_any_call("autogen", adapter.execute_autogen_query)
 
-    # Test entry point error handling
-    res = await adapter.execute_autogen_task({"no_params": True})
-    # Since it needs real autogen libs or complex mocks, we test it handles missing config
+    # Test entry point error handling (fallback path)
+    res = await adapter.execute_autogen_query({"message": "hi"})
     assert res["status"] == "error"
