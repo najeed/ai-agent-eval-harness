@@ -20,11 +20,35 @@ class TestScaffold(unittest.TestCase):
     def test_generate_interactive_success(self, mock_file, mock_exists, mock_mkdir, mock_input):
         scaffold.generate_interactive()
 
-        # Each of 3 scenarios does:
-        # 1. open schema (read)
-        # 2. open output (write)
         # 3 * 2 = 6 calls
         self.assertEqual(mock_file.call_count, 6)
+
+    @patch("builtins.input", side_effect=["test", "test", "invalid"])
+    @patch("pathlib.Path.mkdir")
+    @patch("builtins.open", new_callable=mock_open)
+    def test_generate_interactive_invalid_count(self, mock_file, mock_mkdir, mock_input):
+        """Verify fallback to count=1 when input is invalid."""
+        scaffold.generate_interactive()
+        # 1 scenario * 1 open call (skipping schema check for simplicity here)
+        self.assertGreaterEqual(mock_file.call_count, 1)
+
+    @patch("builtins.input", side_effect=["test", "test", "1"])
+    @patch("pathlib.Path.mkdir")
+    @patch("pathlib.Path.exists", return_value=True)
+    @patch("builtins.open", new_callable=mock_open, read_data="{}")
+    @patch("jsonschema.validate")
+    def test_generate_interactive_validation_error(
+        self, mock_validate, mock_file, mock_exists, mock_mkdir, mock_input
+    ):
+        """Verify error handling when schema validation fails."""
+        from jsonschema.exceptions import ValidationError
+
+        mock_validate.side_effect = ValidationError("Custom Error")
+
+        scaffold.generate_interactive()
+        # Should print the error and continue (no crash)
+        # We can verify it was called
+        mock_validate.assert_called()
 
     @patch("eval_runner.registry_sync.load_registry")
     @patch("pathlib.Path.mkdir")

@@ -196,3 +196,67 @@ def test_debugger_event_mapping_complex(client):
     assert summary["current_agent"] == "Agent TestBot"
     assert summary["last_tool"] == "search"
     assert "Industrial Demo Narrative" in summary["message"]
+
+
+def test_mutate_scenario_missing_path(client):
+    """Verify 400 when input_path is missing or doesn't exist."""
+    res = client.post("/api/v1/mutate", json={"type": "typo"})
+    assert res.status_code == 400
+    assert "Missing input_path" in res.get_json()["error"]
+
+
+def test_mutate_scenario_save_output(client, console_jail):
+    """Verify that mutation results can be saved to a file."""
+    scen_path = console_jail["root"] / "to_mutate.json"
+    scen_path.write_text('{"id": "orig"}')
+    out_path = console_jail["root"] / "mutated.json"
+
+    with patch("eval_runner.mutator.mutate_scenario", return_value={"id": "mutated"}):
+        res = client.post(
+            "/api/v1/mutate",
+            json={"input_path": str(scen_path), "output_path": str(out_path), "type": "typo"},
+        )
+        assert res.status_code == 200
+        assert out_path.exists()
+
+
+def test_spec_to_eval_missing_source(client):
+    """Verify 400 when both markdown and input_path are missing."""
+    res = client.post("/api/v1/spec-to-eval", json={})
+    assert res.status_code == 400
+    assert "Missing markdown text" in res.get_json()["error"]
+
+
+def test_spec_to_eval_from_file_and_save(client, console_jail):
+    """Verify spec-to-eval using file input and saving the result."""
+    md_path = console_jail["root"] / "spec.md"
+    md_path.write_text("# Industrial Spec")
+    out_path = console_jail["root"] / "scen.json"
+
+    with patch(
+        "eval_runner.spec_parser.parse_markdown_to_scenario", AsyncMock(return_value={"id": "md"})
+    ):
+        res = client.post(
+            "/api/v1/spec-to-eval",
+            json={"input_path": str(md_path), "output_path": str(out_path)},
+        )
+        assert res.status_code == 200
+        assert out_path.exists()
+
+
+def test_spec_to_eval_exception(client):
+    """Verify 500 when spec parsing fails."""
+    with patch(
+        "eval_runner.spec_parser.parse_markdown_to_scenario",
+        AsyncMock(side_effect=RuntimeError("Parse Fail")),
+    ):
+        res = client.post("/api/v1/spec-to-eval", json={"markdown": "# Broken"})
+        assert res.status_code == 500
+        assert "Parse Fail" in res.get_json()["message"]
+
+
+def test_evaluate_scenario_not_found(client, console_jail):
+    """Verify 404 when scenario is missing from catalog and disk."""
+    res = client.post("/api/v1/evaluate", json={"path": "ghost.json"})
+    assert res.status_code == 404
+    assert "Scenario not found" in res.get_json()["error"]

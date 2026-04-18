@@ -95,3 +95,64 @@ def test_routing_resolve_empty(temp_routing_root):
     RoutingRegistry.reload()
     resolved = RoutingRegistry.resolve(["something"])
     assert resolved == {}
+
+
+def test_routing_cache_hit(temp_routing_root):
+    """Verify that the cache is utilized on multiple calls."""
+    manifest = {"mappings": {"cached": {"protocol": "test", "endpoint": "test"}}}
+    with open(temp_routing_root["manifest"], "w") as f:
+        json.dump(manifest, f)
+
+    RoutingRegistry.reload()
+
+    # First call loads into cache
+    first_res = RoutingRegistry.get_resolved_registry()
+    assert "cached" in first_res
+
+    # Modify file on disk - if cache works, we should still get the old value
+    with open(temp_routing_root["manifest"], "w") as f:
+        json.dump({"mappings": {"new": {"protocol": "new", "endpoint": "new"}}}, f)
+
+    second_res = RoutingRegistry.get_resolved_registry()
+    assert "cached" in second_res
+    assert "new" not in second_res
+
+
+def test_routing_yaml_extension(temp_routing_root):
+    """Verify loading from YAML extensions."""
+    ext_path = temp_routing_root["d_dir"] / "overrides.yaml"
+    with open(ext_path, "w") as f:
+        f.write("mappings:\n  yaml_cap: {protocol: yaml, endpoint: yaml_url}")
+
+    RoutingRegistry.reload()
+    resolved = RoutingRegistry.resolve(["yaml_cap"])
+    assert resolved["protocol"] == "yaml"
+
+
+def test_routing_load_error_handling(temp_routing_root, caplog):
+    """Verify that corrupt files don't crash the registry."""
+    with open(temp_routing_root["manifest"], "w") as f:
+        f.write("{corrupt: json")
+
+    # Should log error and return empty instead of crashing
+    RoutingRegistry.reload()
+    res = RoutingRegistry.get_resolved_registry()
+    assert res == {}
+    assert "Failed to load routing manifest" in caplog.text
+
+
+def test_routing_extension_load_error(temp_routing_root, caplog):
+    """Verify that a single corrupt extension doesn't kill others."""
+    # Good manifest
+    manifest = {"mappings": {"base": {"protocol": "base", "endpoint": "base"}}}
+    with open(temp_routing_root["manifest"], "w") as f:
+        json.dump(manifest, f)
+
+    # Corrupt extension
+    bad_ext = temp_routing_root["d_dir"] / "bad.json"
+    bad_ext.write_text("{corrupt}")
+
+    RoutingRegistry.reload()
+    res = RoutingRegistry.get_resolved_registry()
+    assert "base" in res
+    assert "Failed to load routing extension" in caplog.text

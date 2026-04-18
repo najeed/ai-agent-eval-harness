@@ -114,3 +114,69 @@ def test_verify_integrity_non_existent_manifest():
     result = plugin.verify_integrity("non_existent_manifest.json")
     assert result["status"] == "error"
     assert "not found" in result["message"]
+
+
+def test_get_signing_key_from_env(monkeypatch):
+    """Verify that private key can be loaded from AES_PRIVATE_KEY environment variable."""
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    private_key = ed25519.Ed25519PrivateKey.generate()
+    pem = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    ).decode()
+
+    monkeypatch.setenv("AES_PRIVATE_KEY", pem)
+    plugin = ArtifactPlugin()
+    key = plugin._get_signing_key()
+    assert isinstance(key, ed25519.Ed25519PrivateKey)
+
+
+def test_get_signing_key_from_file(tmp_path, monkeypatch):
+    """Verify that private key can be loaded from persistent file."""
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+
+    from eval_runner import config
+
+    # Mock project root to point to tmp_path
+    monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
+
+    key_dir = tmp_path / ".aes" / "keys"
+    key_dir.mkdir(parents=True)
+    key_path = key_dir / "system_id.pem"
+
+    private_key = ed25519.Ed25519PrivateKey.generate()
+    pem = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    key_path.write_bytes(pem)
+
+    plugin = ArtifactPlugin()
+    key = plugin._get_signing_key()
+    assert isinstance(key, ed25519.Ed25519PrivateKey)
+
+
+def test_verify_integrity_signature_failure(tmp_path):
+    """Verify that tampering with the signature results in invalid integrity."""
+    f = tmp_path / "data.txt"
+    f.write_text("secure data")
+
+    plugin = ArtifactPlugin()
+    res = plugin.bundle_artifacts(str(tmp_path), ["data.txt"], generate_manifest=True)
+
+    manifest_path = Path(res["manifest_path"])
+    with open(manifest_path) as mf:
+        manifest = json.load(mf)
+
+    # Tamper with signature
+    manifest["signature_ed25519"] = ""
+    with open(manifest_path, "w") as mf:
+        json.dump(manifest, mf)
+
+    verify_res = plugin.verify_integrity(str(manifest_path))
+    assert verify_res["is_valid"] is False

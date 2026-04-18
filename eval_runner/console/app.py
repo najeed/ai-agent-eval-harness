@@ -212,9 +212,13 @@ def manage_pid_file():
         if pid_path.exists():
             try:
                 # Only remove if it's OUR pid
+                should_unlink = False
                 with open(pid_path) as check_f:
                     if check_f.read().strip() == str(os.getpid()):
-                        pid_path.unlink()
+                        should_unlink = True
+
+                if should_unlink:
+                    pid_path.unlink()
             except Exception as e:
                 import sys
 
