@@ -28,6 +28,7 @@ cryptography==46.0.7
 opentelemetry-api==1.40.0
 opentelemetry-sdk==1.40.0
 google-genai==1.70.0
+psutil==7.2.2
 
 # --- Document Processing ---
 pypdf==6.10.2
