@@ -61,7 +61,7 @@ Saves or updates a scenario JSON file in the `industries/` directory.
 ### ⚡ Execution & Monitoring (Industrial v1)
 
 #### `POST /api/v1/evaluate`
-Triggers an asynchronous evaluation run using the authoritative industrial namespace.
+Triggers an asynchronous evaluation run using the industrial namespace.
 - **Method**: `POST`
 - **Body**:
     - `path` (string, **required**): Scenario ID alias (e.g., `loan_risk`) OR a project-relative path (e.g., `industries/fin/scenarios/loan.json`).
@@ -78,7 +78,7 @@ Programmatic scenario mutation for variance testing.
 Discovery service for all registered evaluation metrics.
 
 #### `GET /api/v1/taxonomy`
-Retrieves the authoritative Industrial Failure Taxonomy (AEH v1.5).
+Retrieves the Industrial Failure Taxonomy (AEH v1.5).
 
 #### `POST /api/v1/spec-to-eval`
 Converts Markdown PRDs into validated scenario JSON stubs.
@@ -93,7 +93,7 @@ Forensic Root Cause Analysis (RCA) as a service.
 #### `GET /api/v1/runs/<run_id>`
 Industrial Polling Primitive.
 - **Response**: Returns run status (`COMPLETED`, `RUNNING`), vault source, and file metadata.
-- **Note**: Checks the authoritative vault first, falling back to the master log if the vault directory is missing.
+- **Note**: Checks the vault first, falling back to the master log if the vault directory is missing.
 
 #### `GET /api/runs`
 Legacy faceted listing of all traces (supports master log and vault discovery).
@@ -105,7 +105,7 @@ Legacy faceted listing of all traces (supports master log and vault discovery).
 These endpoints live at the top-level `/v1/` namespace to clearly distinguish **Public Audit Services** (unprotected, read-only) from **Private Management APIs** (protected under `/api/`).
 
 #### `POST /api/v1/certify`
-Industrial Certification Service. Signs the trace zero-copy within the authoritative vault.
+Industrial Certification Service. Signs the trace zero-copy within the vault.
 - **Body**: `run_id` (required), `identity`, `status`, `score`, `policy_ref`, `ttl`.
 - **Note**: Requires write access to the vault. Generates `run_manifest.json`.
 

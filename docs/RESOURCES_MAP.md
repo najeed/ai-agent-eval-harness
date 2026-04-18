@@ -62,7 +62,7 @@ For files that serve multiple personas through specific sections:
 
 ## 🏁 Migration Status: 100% Complete
 
-All legacy resources have been successfully migrated to the persona-based Starlight structure. The following mappings are now authoritative:
+All legacy resources have been successfully migrated to the persona-based Starlight structure. The following mappings are now:
 
 1.  **Evaluator**: `guide.md`, `drift.md`, `taxonomy.md`, `cli.md`, `advanced-publication-suite.md`.
 2.  **Auditor**: `trust-protocol.md`, `security.md`, `compliance.md`, `verification.md`.

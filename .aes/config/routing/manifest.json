@@ -1,1 +1,13 @@
-{}
+{
+  "$schema": "../../../spec/routing/routing.schema.json",
+  "mappings": {
+    "telecom_support_agent": {
+      "protocol": "http",
+      "endpoint": "http://localhost:5001/execute_task",
+      "metadata": {
+        "provider": "Sample_Flask_Agent",
+        "region": "dev-local-node"
+      }
+    }
+  }
+}

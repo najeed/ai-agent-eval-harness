@@ -29,7 +29,7 @@ def list_industries() -> list[str]:
     except Exception:
         reg_industries = []
 
-    # Merge with authoritative mapping
+    # Merge with mapping
     mapped = list(utils.INDUSTRY_MAPPING.values())
     return sorted(
         list(

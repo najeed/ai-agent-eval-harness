@@ -32,8 +32,6 @@ Roadmap (P1): Environmental health audit and project readiness check.
 
 ---
 
----
-
 ## 2. Evaluation & Orchestration
 
 ### `POST /api/v1/evaluate`
@@ -53,7 +51,7 @@ Roadmap (P0): Lists all registered evaluation metrics.
 - **Permission**: `SCENARIOS_READ`
 
 ### `GET /api/v1/taxonomy`
-Roadmap (P0): Returns the authoritative failure taxonomy (AEH v1.5).
+Roadmap (P0): Returns the failure taxonomy (AEH v1.5).
 - **Permission**: `SCENARIOS_READ`
 
 ### `POST /api/v1/spec-to-eval`
@@ -150,6 +148,6 @@ Executes whitelisted CLI commands within the demo jail.
 - **Security**: Protected (Hardened Subprocess)
 
 ### `POST /api/demo/reset`
-Resets the demo environment to its authoritative state.
+Resets the demo environment to its state.
 - **Permission**: `DEMO_EXECUTE`
 - **Security**: Protected

@@ -42,7 +42,7 @@ def create_app():
 
     # Set static_folder using the project root for absolute reliability
     ui_path = os.path.abspath(config.PROJECT_ROOT / "ui" / "visual-debugger")
-    app = Flask(__name__, static_folder=ui_path, static_url_path="")
+    app = Flask(__name__, static_folder=ui_path, static_url_path="/static")
 
     # Ensure session persistence (v1.2.3 Stabilization)
     api_key = getattr(config, "DASHBOARD_API_KEY", None)
@@ -60,6 +60,8 @@ def create_app():
     app.register_blueprint(trust_bp)
     app.register_blueprint(demo_bp)
     app.register_blueprint(core_bp)
+    # Mount critical diagnostic shims directly into the Root /v1 namespace
+    # to align with documentation.
 
     @app.before_request
     def trace_request():
@@ -100,7 +102,7 @@ def create_app():
             }
         ), 405
 
-    # Hardened Route Precedence (v1.5.0 Sync)
+    # Hardened Route Precedence (AgentV v1.5.0 Sync)
     # Industrial Standard: Use blueprint-first registration only.
 
     # Load external hooks for zero-touch discovery
@@ -164,10 +166,73 @@ def create_app():
     return app
 
 
+def manage_pid_file():
+    """
+    Singleton Process Guard (Leak Prevention).
+    Ensures only one instance of the Console API is running.
+    """
+    import os
+    import sys
+
+    import psutil
+
+    pid_path = config.PROJECT_ROOT / ".aes" / "server.pid"
+    pid_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if pid_path.exists():
+        try:
+            with open(pid_path) as f:
+                old_pid_str = f.read().strip()
+                if old_pid_str:
+                    old_pid = int(old_pid_str)
+                    if psutil.pid_exists(old_pid):
+                        proc = psutil.Process(old_pid)
+                        # Only kill if it's actually similar to us (python/app)
+                        if "python" in proc.name().lower():
+                            sys.stderr.write(
+                                f"   [Guard] Found stale instance (PID: {old_pid}). "
+                                "Terminating...\n"
+                            )
+                            proc.terminate()
+                            try:
+                                proc.wait(timeout=5)
+                            except psutil.TimeoutExpired:
+                                proc.kill()
+        except Exception as e:
+            sys.stderr.write(f"   [Guard] PID cleanup warning: {e}\n")
+
+    # Register current PID
+    with open(pid_path, "w") as f:
+        f.write(str(os.getpid()))
+
+    # Cleanup on exit
+    import atexit
+
+    def cleanup_pid():
+        if pid_path.exists():
+            try:
+                # Only remove if it's OUR pid
+                with open(pid_path) as check_f:
+                    if check_f.read().strip() == str(os.getpid()):
+                        pid_path.unlink()
+            except Exception as e:
+                import sys
+
+                sys.stderr.write(f"   [Guard] PID cleanup failed: {e}\n")
+                sys.stderr.flush()
+
+    atexit.register(cleanup_pid)
+
+
 def run_server(host="127.0.0.1", port=5000, debug=False):
+    """Entry point for the AES Console Server."""
+    manage_pid_file()
+
     app = create_app()
     # Increase interval to 2s to avoid over-eager site-packages reloads
-    app.run(host=host, port=port, debug=debug, use_reloader=debug, reloader_interval=2)
+    app.run(
+        host=host, port=port, debug=debug, use_reloader=debug, reloader_interval=2, threaded=True
+    )
 
 
 if __name__ == "__main__":

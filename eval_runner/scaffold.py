@@ -49,7 +49,6 @@ def generate_interactive():
         identifier = f"gen_{industry}_{capability.replace(' ', '_')}_{i}"
         scenario = {
             "aes_version": 1.4,
-            "id": identifier,
             "metadata": {
                 "id": identifier,
                 "name": f"Generated {capability.replace('_', ' ').title()} Scenario {i}",
@@ -169,11 +168,10 @@ def scaffold_benchmark(dir_path: str, industry: str, protocol: str):
     with open(base_dir / "eval_config.json", "w", encoding="utf-8") as f:
         json.dump(config_data, f, indent=4)
 
-    # Generate starter scenario using v1.4 schema (Industrial Identity v1.5.0)
+    # Generate starter scenario using v1.4 schema (Industrial Identity AgentV v1.5.0)
     starter_id = f"scenario-{uuid.uuid4().hex[:8]}"
     starter = {
         "aes_version": 1.4,
-        "id": starter_id,
         "metadata": {
             "id": starter_id,
             "compliance_level": "Standard",

@@ -23,8 +23,7 @@ class RoutingRegistry:
         Resolves the best matching infrastructure for a list of capabilities.
         Returns a dict with 'protocol', 'endpoint', and optional 'metadata'.
         """
-        registry = cls.get_resolved_registry()
-        mappings = registry.get("mappings", {})
+        mappings = cls.get_resolved_registry()
 
         # 1. Exact Capability Match
         for cap in capabilities:
@@ -114,7 +113,7 @@ class RoutingRegistry:
             f"Strategy: {config.get_routing_strategy()}"
         )
 
-        cls._cache = {"mappings": resolved_mappings}
+        cls._cache = resolved_mappings
         return resolved_mappings
 
     @classmethod

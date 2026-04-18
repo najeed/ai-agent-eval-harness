@@ -20,6 +20,7 @@ def test_static_key_provider_auth():
 def test_require_permission_decorator():
     """Verify that the require_permission decorator correctly enforces access control."""
     app = Flask(__name__)
+    app.testing = True
     app.secret_key = "test-secret"
 
     @app.route("/test")

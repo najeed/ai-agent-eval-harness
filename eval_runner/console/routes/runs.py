@@ -5,6 +5,7 @@ import os
 from flask import Blueprint, jsonify, request
 
 from eval_runner import config
+from eval_runner.explainer import explain_trace
 from eval_runner.metrics import MetricRegistry
 
 from ..auth_manager import Permission, require_permission
@@ -32,14 +33,14 @@ def explain_run(run_id):
         return jsonify({"error": "Trace not found"}), 404
 
     try:
-        # For API, we want the explanation data as JSON
-        # Assuming explainer.explain_trace can be adapted or we use its analysis
-        # For now, we'll return a placeholder/basic analysis
+        # Invoke the core forensic explainer (RCA Engine)
+        analysis = explain_trace(trace_path)
+
         return jsonify(
             {
                 "run_id": run_id,
                 "status": "explained",
-                "diagnosis": "Automated RCA placeholder for " + run_id,
+                "analysis": analysis,
             }
         )
     except Exception as e:

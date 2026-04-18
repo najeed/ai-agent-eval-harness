@@ -66,7 +66,7 @@ class TriageEngine:
     @staticmethod
     def categorize_failure(task_result: dict[str, Any]) -> str:
         """
-        Refined v1.5.0 baseline: Delegates classification to the FailureTaxonomy.
+        Refined AgentV v1.5.0 baseline: Delegates classification to the FailureTaxonomy.
         Returns standardized industrial codes (Standardized PBAC).
         """
         # 1. Prefer existing report if available
@@ -74,7 +74,7 @@ class TriageEngine:
         if report and "root_cause" in report:
             return str(report["root_cause"]).upper()
 
-        # 2. Delegate to authoritative taxonomy
+        # 2. Delegate to taxonomy
         category = FailureTaxonomy.classify(task_result)
 
         # Standardized Industrial Output
@@ -131,7 +131,7 @@ class TriageEngine:
 
         # --- ROBUST STEP-BACK ANCHORING ---
         # If the failure is infrastructure-internal or a metric divergence,
-        # we scan backward for the last authoritative Agent stimulus.
+        # we scan backward for the last Agent stimulus.
         curr_idx = top_match.get("index", -1)
         if curr_idx > 0:
             cat = top_match.get("category")

@@ -3,9 +3,20 @@
   "metadata": {
     "name": "Home Internet Troubleshooting - Slow Speed",
     "compliance_level": "Standard",
-    "id": "13814-home-internet-slow-speed"
+    "id": "13814-home-internet-slow-speed",
+    "description": "A customer reports their home internet service is very slow. The agent must diagnose the cause.",
+    "complexity": "medium",
+    "capabilities": [
+      "telecom_support_agent"
+    ],
+    "forensics": [
+      "LAB_STANDARD_V1"
+    ],
+    "agent": {
+      "protocol": "http",
+      "endpoint": "http://localhost:5001/execute_task"
+    }
   },
-  "description": "A customer reports their home internet service is very slow. The agent must diagnose the cause.",
   "industry": "Telecom",
   "workflow": {
     "nodes": [
@@ -16,7 +27,12 @@
           "type": "typed_value",
           "data_type": "object",
           "value": "Agent confirms the customer is on a '100 Mbps' plan."
-        }
+        },
+        "keywords": [
+          "100 Mbps",
+          "Jane Doe",
+          "Fiber"
+        ]
       },
       {
         "id": "task-2",
@@ -25,7 +41,12 @@
           "type": "typed_value",
           "data_type": "object",
           "value": "Agent's remote test shows the modem is receiving the full 100 Mbps speed."
-        }
+        },
+        "keywords": [
+          "full speed",
+          "remote test",
+          "modem"
+        ]
       },
       {
         "id": "task-3",
@@ -34,7 +55,12 @@
           "type": "typed_value",
           "data_type": "object",
           "value": "Agent provides clear instructions for the customer to perform a local speed test."
-        }
+        },
+        "keywords": [
+          "Ethernet",
+          "speed test",
+          "instructions"
+        ]
       },
       {
         "id": "task-4",
@@ -43,7 +69,13 @@
           "type": "typed_value",
           "data_type": "object",
           "value": "Agent correctly identifies the problem as local Wi-Fi and provides relevant troubleshooting advice."
-        }
+        },
+        "keywords": [
+          "Wi-Fi",
+          "channel",
+          "router",
+          "troubleshooting"
+        ]
       }
     ],
     "edges": [
@@ -62,13 +94,9 @@
     ]
   },
   "evaluation": {
-    "consensus": {
-      "strategy": "Majority_Vote",
-      "min_judges": 1,
-      "judge_panel": [
-        "Luna-1"
-      ]
-    }
+    "metrics": [
+      "keyword_match"
+    ]
   },
   "initial_state": {
     "session_active": true,

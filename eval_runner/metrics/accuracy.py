@@ -146,3 +146,49 @@ def calculate_verification_accuracy(criterion: dict[str, Any], agent_summary: st
         f"      [Metrics] Verification accuracy: {score:.2f} (Keyword: {has_keyword}, Similarity: {sim:.2f})"  # noqa: E501
     )
     return score
+
+
+@MetricRegistry.register("output_matches")
+def calculate_output_matches(criterion: dict[str, Any], agent_summary: str) -> float:
+    """
+    High-fidelity output verification (AES v1.4.1 compliance).
+    Checks if the agent summary matches one or more expected criteria.
+    Supports:
+    - Lists of strings (All must match)
+    - Single string (Exact or partial match)
+    - Regex patterns (via 'regex:' prefix)
+    """
+    targets = criterion.get("expected")
+    if not targets:
+        # Robustness: Metric called without target
+        return 1.0
+
+    summary_lower = str(agent_summary).lower()
+
+    # Normalize targets to a list for unified processing
+    if isinstance(targets, str):
+        target_list = [targets]
+    elif isinstance(targets, list):
+        target_list = targets
+    else:
+        target_list = [str(targets)]
+
+    matches = 0
+    import re
+
+    for t in target_list:
+        t_str = str(t)
+        if t_str.startswith("regex:"):
+            pattern = t_str[6:]
+            if re.search(pattern, str(agent_summary), re.IGNORECASE):
+                matches += 1
+        elif t_str.lower() in summary_lower:
+            matches += 1
+
+    score = matches / len(target_list) if target_list else 1.0
+    msg = (
+        f"      [Metrics] [Output-Match] Score: {score:.2f} "
+        f"({matches}/{len(target_list)} targets matched)"
+    )
+    print(msg)
+    return score

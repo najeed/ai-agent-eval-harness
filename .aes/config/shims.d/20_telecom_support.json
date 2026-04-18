@@ -1,0 +1,12 @@
+{
+  "shims": {
+    "telecom_support": {
+      "name": "Telecom Support Bridge",
+      "capability": "telecom_support_agent",
+      "resources": {
+        "provider": "Sample_Flask",
+        "mode": "stateless"
+      }
+    }
+  }
+}

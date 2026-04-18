@@ -183,3 +183,4 @@ class CoreEvents:
 
     # Infrastructure & Target Abstraction (v1.3.0)
     ROUTING_RESOLVED = "routing_resolved"
+    ADAPTER_DEBUG = "adapter_debug"

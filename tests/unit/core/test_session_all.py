@@ -38,7 +38,11 @@ def session(scenario, metadata):
 
 class TestSession:
     def test_init(self, session, scenario):
-        assert session.scenario == scenario
+        # We verify core keys instead of full dict equality as SessionManager adds resolved metadata
+        assert session.scenario["id"] == scenario["id"]
+        assert session.identifier == scenario["id"]
+        assert session.session_metadata["protocol"] == "http"
+        assert "agent" in session.session_metadata
         assert session.fork_depth == 0
         assert session.max_turns >= 5
 
@@ -69,9 +73,9 @@ class TestSession:
     @pytest.mark.asyncio
     async def test_execute_tasks_happy_path(self, session):
         with patch(
-            "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+            "eval_runner.session.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
         ) as mock_call_agent:
-            with patch("eval_runner.tool_sandbox.ToolSandbox") as mock_sandbox_cls:
+            with patch("eval_runner.session.ToolSandbox") as mock_sandbox_cls:
                 with patch("eval_runner.events.EventEmitter.emit"):
                     with patch("eval_runner.plugins.manager.trigger"):
                         mock_sandbox = mock_sandbox_cls.return_value
@@ -309,14 +313,17 @@ class TestSession:
                 assert len(res) == 2
 
     @pytest.mark.asyncio
-    async def test_execute_tasks_protocol_defaults(self, session):
+    async def test_execute_tasks_protocol_defaults(self, scenario):
         with patch(
-            "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+            "eval_runner.session.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
         ) as mock_call:
             with patch("eval_runner.events.EventEmitter.emit"):
                 mock_call.return_value = {"action": "final_answer"}
-                session.session_metadata = {"protocol": "local"}
+                # [Fix] Create a fresh session to trigger protocol resolution in __init__
                 with patch.dict(os.environ, {"AGENT_LOCAL_CMD": "my-cmd"}):
+                    session = SessionManager(
+                        "test_run", scenario, metadata={"protocol": "local", "agent": None}
+                    )
                     await session.execute_tasks(1)
                     mock_call.assert_called()
                     assert mock_call.call_args[1]["endpoint"] == "my-cmd"

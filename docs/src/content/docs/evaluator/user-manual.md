@@ -62,7 +62,7 @@ The **Visual Console** (launch with `agentv console`) provides a high-density in
 
 ## 📦 Forensic Storage & Vaulting
 
-AgentV uses a **Strict Vault Architecture** to isolate and protect forensic traces. This is controlled primarily by the `FlightRecorderPlugin` and ensures that all execution artifacts for a specific run are contained within a single, authoritative directory.
+AgentV uses a **Strict Vault Architecture** to isolate and protect forensic traces. This is controlled primarily by the `FlightRecorderPlugin` and ensures that all execution artifacts for a specific run are contained within a single directory.
 
 ### Configuration Tiers
 

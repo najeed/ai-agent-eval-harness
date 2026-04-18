@@ -2,10 +2,13 @@ import os
 import time
 import uuid
 
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 from langchain_core.tools import tool
 from langchain_google_genai import ChatGoogleGenerativeAI
+
+load_dotenv()
 
 
 # -----------------------------
@@ -73,10 +76,13 @@ def loan_api(input_str: str) -> str:
         parts = [p.strip() for p in input_str.split(",")]
         name, credit_score, income, debt = parts[0], int(parts[1]), int(parts[2]), int(parts[3])
         dti = debt / income
-        if credit_score >= 700 and dti < 0.4:
+        # [Industrial Rule] DTI >= 0.4 is an automatic REJECTION
+        if dti >= 0.4:
+            return f"REJECTED: {name} (high DTI: {dti:.2f})"
+        elif credit_score >= 700:
             return f"APPROVED: {name}"
         elif credit_score < 600:
-            return f"REJECTED: {name} (low credit)"
+            return f"REJECTED: {name} (low credit: {credit_score})"
         else:
             return f"MANUAL REVIEW: {name}"
     except Exception as e:
@@ -179,8 +185,52 @@ def run_agent(prompt: str, logger: TraceLogger):
 app = Flask(__name__)
 
 
+# -----------------------------
+# INDUSTRIAL API (AES v1.4.1)
+# -----------------------------
+RESULTS = {}
+
+
+@app.route("/apply", methods=["POST"])
+def apply():
+    data = request.json or {}
+    # Map applicant_id to a prompt/context for the LLM
+    applicant_id = data.get("applicant_id", 1)
+    amount = data.get("amount", 0)
+
+    # Contextual prompt generation
+    prompt = f"Process loan application for applicant ID {applicant_id} for amount {amount}."
+
+    app_id = str(uuid.uuid4())
+    RESULTS[app_id] = {"status": "PROCESSING"}
+
+    # Run agent synchronously for the demo (simplifies state)
+    logger = TraceLogger()
+    try:
+        output = run_agent(prompt, logger)
+        # Extract the decision from the output
+        decision = "MANUAL REVIEW"
+        if "APPROVED" in output:
+            decision = "APPROVED"
+        elif "REJECTED" in output:
+            decision = "REJECTED"
+
+        RESULTS[app_id] = {"status": decision, "decision_reason": output, "trace": logger.get()}
+    except Exception as e:
+        RESULTS[app_id] = {"status": "FAILED", "decision_reason": str(e)}
+
+    return jsonify({"application_id": app_id})
+
+
+@app.route("/status/<app_id>", methods=["GET"])
+def status(app_id):
+    res = RESULTS.get(app_id, {"status": "FAILED", "decision_reason": "Not found"})
+    return jsonify(res)
+
+
 @app.route("/run", methods=["POST"])
 def run():
+    # Legacy /run endpoint for direct evaluation
     data = request.json
     prompt = data.get("prompt", "")
     trace_id = str(uuid.uuid4())
@@ -216,7 +266,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--server", action="store_true")
-    parser.add_argument("--port", type=int, default=8001)
+    parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
 
     if args.server:

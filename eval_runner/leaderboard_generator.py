@@ -12,7 +12,7 @@ class LeaderboardGenerator:
         """Generates a Markdown leaderboard table from traces in a directory."""
         path = Path(runs_dir)
         # --- [INDUSTRIAL DISCOVERY] ---
-        # Strictly scan for authoritative vault traces. Flat files in the root are ignored.
+        # Strictly scan for vault traces. Flat files in the root are ignored.
         traces = list(path.glob("*/run.jsonl"))
 
         stats = []

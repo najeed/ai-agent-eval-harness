@@ -199,7 +199,7 @@ class TraceVerifier:
                 "Identity Basis Failure: Explicit 'run_id' is required for certification."
             )
 
-        # 2. Authoritative Vault Affinity (AES v1.5.0 Strict)
+        # 2. Authoritative Vault Affinity (AgentV v1.5.0 Strict)
         # The trace MUST be in the vault folder or the master log.
         # [REMEDIATION]: Use absolute resolution to handle mock/test environments
         vault_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()

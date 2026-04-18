@@ -50,6 +50,7 @@ def get_loan_demo_context():
 
 
 @demo_bp.route("/agent", methods=["POST"])
+@require_permission(Permission.DEMO_EXECUTE)
 def demo_agent_route():
     """In-process demo loan agent. Accepts {prompt, hardened}."""
     data = request.json or {}
@@ -61,6 +62,7 @@ def demo_agent_route():
 
 
 @demo_bp.route("/evaluate", methods=["POST"])
+@require_permission(Permission.DEMO_EXECUTE)
 def demo_evaluate_route():
     """Runs the in-process demo agent against both scenario tasks."""
     # Logic is handled in demo_logic.py as part of the evaluate handler if we wanted,

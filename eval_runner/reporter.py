@@ -385,11 +385,12 @@ def generate_report(
 
     print(f"Scenario: {title} ({scenario_identifier})")
 
+    # Priority 1: Metadata (Resolved during session)
+    # Priority 2: System Defaults (Last resort)
+    agent_target = (metadata or {}).get("agent")
     protocol = (metadata or {}).get("protocol", "http")
-    agent_target = (metadata or {}).get("agent", "Unknown")
 
-    # Defaulting: Resolve from system defaults if metadata is missing
-    if agent_target == "Unknown" or agent_target is None:
+    if not agent_target or agent_target == "Unknown":
         if protocol == "http":
             agent_target = config.AGENT_API_URL
         elif protocol == "local":

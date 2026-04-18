@@ -34,7 +34,7 @@ When a failure occurs, the engine performs a stratified analysis by executing al
 3.  **Audit Layer**: Correlates events into a **Causal Chain**.
 
 ### Causal Chain Attribution
-The engine distinguishes between the **Root Cause (Trigger)** and the **Terminal Status (Symptom)**. Anchoring is performed via the **Robust Step-Back Scan**, which searches for the last authoritative **Identity Node** (agent_id) to pin the failure.
+The engine distinguishes between the **Root Cause (Trigger)** and the **Terminal Status (Symptom)**. Anchoring is performed via the **Robust Step-Back Scan**, which searches for the last **Identity Node** (agent_id) to pin the failure.
 
 ---
 

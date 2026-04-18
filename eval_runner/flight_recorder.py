@@ -54,7 +54,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
     def _enforce_safety_floor(self):
         """
-        [Forensic Safety Floor] (v1.5.0)
+        [Forensic Safety Floor] (AgentV v1.5.0)
         Prevents "Black Hole" configurations where no telemetry is recorded.
         If both logging paths are disabled, forces Vaulted isolation.
         """
@@ -95,7 +95,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
             self.run_id = data.get("run_id", "unknown")
 
-            # [AES v1.5.0] Enforce Run-ID Directory Affinity
+            # [AgentV v1.5.0] Enforce Run-ID Directory Affinity
             # Telemetry MUST reside within the forensic vault directory
             if self.per_run:
                 self.run_vault_dir = self.log_dir / self.run_id

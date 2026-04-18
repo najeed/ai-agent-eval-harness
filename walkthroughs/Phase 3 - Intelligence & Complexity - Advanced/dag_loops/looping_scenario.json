@@ -31,13 +31,13 @@
     ],
     "edges": [
       {
-        "source": "node_writer",
-        "target": "node_auditor",
+        "from": "node_writer",
+        "to": "node_auditor",
         "condition": "on_success"
       },
       {
-        "source": "node_auditor",
-        "target": "node_writer",
+        "from": "node_auditor",
+        "to": "node_writer",
         "condition": "on_failure",
         "label": "RETRY_LOOP"
       }

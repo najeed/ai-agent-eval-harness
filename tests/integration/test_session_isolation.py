@@ -43,8 +43,8 @@ async def test_event_bus_isolation(minimal_scenario):
 
 @pytest.mark.asyncio
 async def test_global_vs_session_leakage(minimal_scenario):
-    """Verify that global listeners do not receive session-specific events by default."""
-    session = SessionManager("run-scoped", minimal_scenario)
+    """Verify that global listeners do not receive session-specific events when isolated."""
+    session = SessionManager("run-scoped", minimal_scenario, metadata={"isolate_events": True})
 
     global_received = []
     from eval_runner.events import subscribe

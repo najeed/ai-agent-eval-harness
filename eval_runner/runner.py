@@ -95,6 +95,16 @@ class DefaultRunner(BaseRunner):
 
             session = SessionManager(effective_run_id, scenario_copy, metadata=ctx.metadata)
             attempt_results = await session.execute_tasks(k)
+
+            # [Forensic Sync] propagate resolved routing (e.g. Port 8000)
+            # Since ctx.metadata is frozen (MappingProxyType), we use the bypass pattern
+            # to ensure the ReportingPlugin sees the final resolved state.
+            from .context import _freeze_dict
+
+            new_meta = dict(ctx.metadata)
+            new_meta.update(session.metadata)
+            object.__setattr__(ctx, "metadata", _freeze_dict(new_meta))
+
             all_attempt_results.append(attempt_results)
         events.emit(
             events.CoreEvents.PHASE_END,
@@ -119,6 +129,7 @@ class DefaultRunner(BaseRunner):
                     1 for res in all_attempt_results if self._is_attempt_successful(res)
                 ),
                 "total_attempts": attempts,
+                "metadata": dict(ctx.metadata),
             },
             span_context=ctx.span_context,
         )

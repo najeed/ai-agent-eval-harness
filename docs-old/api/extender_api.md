@@ -48,7 +48,7 @@ Saves or updates a scenario JSON file in the `industries/` directory.
 ---
 
 #### `POST /api/v1/evaluate`
-Triggers an asynchronous evaluation run using the authoritative industrial namespace.
+Triggers an asynchronous evaluation run using the industrial namespace.
 - **Method**: `POST`
 - **Body**:
     - `path` (string, **required**): Scenario ID alias or relative path to the scenario JSON.
@@ -75,7 +75,7 @@ Industrial Polling Primitive.
       "mtime": 1712952000.0
     }
     ```
-- **Note**: Checks the authoritative vault first, falling back to a shallow scan of the master log if the vault directory is missing or unlinked.
+- **Note**: Checks the vault first, falling back to a shallow scan of the master log if the vault directory is missing or unlinked.
 
 #### `GET /api/runs`
 Legacy faceted listing of all traces (supports master log and vault discovery).
@@ -118,7 +118,7 @@ class MyCustomDashboardPlugin:
 
 These endpoints are unprotected to allow external deployment gates to verify results.
 
-- `POST /api/v1/certify`: Industrial Certification Service. Signs the trace zero-copy within the authoritative vault.
+- `POST /api/v1/certify`: Industrial Certification Service. Signs the trace zero-copy within the vault.
     - **Body**:
         - `run_id` (string, **required**): Unique identifier for the evaluation run.
         - `identity` (string, optional): Signing Identity (Default: `system_id`).

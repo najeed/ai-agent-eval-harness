@@ -43,7 +43,7 @@ class DebuggerStateStore:
 
     @classmethod
     def handle_event(cls, event):
-        """Standard Forensic Event Handler (v1.5.0)."""
+        """Standard Forensic Event Handler (AgentV v1.5.0)."""
         # Unwrap object if necessary (for MockEvent compatibility in tests)
         if hasattr(event, "items"):
             name = event.get("event")
@@ -267,7 +267,7 @@ def cleanup_runs():
 @system_bp.route("/v1/doctor", methods=["GET"])
 @require_permission(Permission.SCENARIOS_READ)
 def get_doctor_audit():
-    """Roadmap: Environmental health check (v1.5.0)."""
+    """Roadmap: Environmental health check (AgentV v1.5.0)."""
     try:
         # Perform basic health checks (Sync wrapper for potential async logic)
         audit = {
@@ -276,6 +276,7 @@ def get_doctor_audit():
             "plugins_loaded": manager._loaded,
             "catalog_size": len(ScenarioCatalog.get_instance().scenarios),
             "simulator_count": len(get_simulator_registry()),
+            "pid": os.getpid(),
         }
         return jsonify(audit)
     except Exception as e:
@@ -336,4 +337,4 @@ def debugger_state():
 @system_bp.route("/ping", methods=["GET"])
 def ping():
     """Public diagnostic check."""
-    return jsonify({"status": "pong", "version": config._get_project_version()})
+    return jsonify({"status": "pong", "version": config._get_project_version(), "pid": os.getpid()})

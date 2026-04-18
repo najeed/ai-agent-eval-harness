@@ -149,7 +149,7 @@ class AbstractSandbox(ABC):
 
         import eval_runner.config as config
 
-        # [INDUSTRIAL HARDENING] Absolute Session Identity (v1.5.0)
+        # [INDUSTRIAL HARDENING] Absolute Session Identity (AgentV v1.5.0)
         # Prevents 'unknown_run' directory pollution in the root runs/ directory.
         self.run_id = self.scenario.get("run_id")
         if not self.run_id:

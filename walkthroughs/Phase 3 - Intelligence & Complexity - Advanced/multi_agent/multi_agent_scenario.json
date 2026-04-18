@@ -40,13 +40,13 @@
     ],
     "edges": [
       {
-        "source": "node_researcher",
-        "target": "node_writer",
+        "from": "node_researcher",
+        "to": "node_writer",
         "condition": "on_completion"
       },
       {
-        "source": "node_writer",
-        "target": "node_auditor",
+        "from": "node_writer",
+        "to": "node_auditor",
         "condition": "on_completion"
       }
     ]

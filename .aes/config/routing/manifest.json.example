@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../spec/routing/routing.schema.json",
   "environments": {
     "default": {
       "type": "sandbox",

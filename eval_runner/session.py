@@ -13,8 +13,8 @@ import hashlib
 import json
 import logging
 import os
+import sys
 import time
-from dataclasses import replace  # noqa: E402
 from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
 
@@ -25,10 +25,12 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-from . import config, metrics  # noqa: E402
+from . import config, events, metrics  # noqa: E402
 from .context import TurnContext  # noqa: E402
+from .engine import AgentAdapterRegistry  # noqa: E402
 from .events import CoreEvents, Event, EventEmitter  # noqa: E402
 from .forensics import ForensicCollector  # noqa: E402
+from .tool_sandbox import ToolSandbox  # noqa: E402
 
 # Security Guardrails: Fork Bomb Prevention
 MAX_FORK_DEPTH = config.MAX_FORK_DEPTH
@@ -44,20 +46,31 @@ class SessionManager:
     def __init__(self, run_id: str, scenario: dict, metadata: dict | None = None):
         from .plugins import PluginManager
 
+        sys.stderr.write(
+            f"\n[PROBE: SESSION_INIT] Scenario: {scenario.get('id')} | Run: {run_id}\n"
+        )
+        sys.stderr.flush()
+
         self.run_id = run_id
-        self.scenario = scenario
+        # [Forensic Isolation] Ensure parallel runs don't mutate shared scenario state
+        self.scenario = copy.deepcopy(scenario)
         # Authoritatively inject run_id for downstream forensic affinity (e.g., ToolSandbox)
         self.scenario["run_id"] = run_id
 
-        # [AES v1.5.0] Authoritative Metadata Propagation (Ensured mutable)
+        # [AgentV v1.5.0] Authoritative Metadata Propagation (Ensured mutable)
         self.metadata = dict(metadata or {})
         # Centralized identifier (resolved and normalized in Loader)
         self.identifier = scenario["id"]
 
-        self.session_metadata = dict(metadata) if metadata else {}
-        self.session_metadata.setdefault("identifier", self.identifier)
-        # Avoid literal "unknown" string; let events.py omit if None
-        self.session_metadata.setdefault("span_context", self.metadata.get("span_context"))
+        # [AgentV v1.5.0] Authoritative Metadata Discovery
+        self.session_metadata = {
+            "protocol": "http",
+            "agent": None,
+            "identifier": self.identifier,
+            "span_context": self.metadata.get("span_context"),
+        }
+        if metadata:
+            self.session_metadata.update(metadata)
 
         self.max_turns = int(scenario.get("max_turns", config.EVAL_MAX_TURNS)) or 10
         self.fork_depth = scenario.get("_fork_depth", 0)
@@ -69,8 +82,18 @@ class SessionManager:
 
         # Session-Scoped Infrastructure
         self.event_bus = EventEmitter(run_id=run_id)
+        # [Telemetry Bridge] Propagate events to global subscribers
+        if not self.metadata.get("isolate_events", False):
+            self.event_bus.subscribe(lambda e: events.emit(e.name, e.data, e.span_context))
+
         self.plugin_manager = PluginManager()
         self.forensics = ForensicCollector(run_id, config.RUN_LOG_DIR / run_id)
+
+        # [Industrial Persistence] Save ORIGINAL scenario baseline
+        run_vault = config.RUN_LOG_DIR / run_id
+        run_vault.mkdir(parents=True, exist_ok=True)
+        with open(run_vault / "scenario_original.json", "w", encoding="utf-8") as f:
+            json.dump(self.scenario, f, indent=2)
 
         # Initialize plugins for this session
         self.plugin_manager.load_plugins()
@@ -112,27 +135,45 @@ class SessionManager:
         self._bridge_ref = _bridge_event_internal
         self.event_bus.subscribe(self._bridge_ref)
 
-        # 🚀 Capability-Based Routing (Infrastructure Isolation)
         from .routing import RoutingRegistry
 
-        capabilities = scenario.get(
-            "capabilities", scenario.get("metadata", {}).get("capabilities", [])
+        # 🚀 [AES v1.4.1] Authoritative Routing Resolution
+        # Sequence: CLI Override > Capability Discovery > Scenario Metadata > Global Default
+        scenario_meta_agent = scenario.get("metadata", {}).get("agent", {})
+
+        curr_agent = self.session_metadata.get("agent")
+        curr_proto = self.session_metadata.get("protocol")
+
+        # 1. State Stickiness Detection (CLI/Env Overrides)
+        is_sticky_agent = curr_agent and curr_agent != config.AGENT_API_URL
+        is_sticky_proto = curr_proto and curr_proto != "http"
+
+        # 2. Level 1: Scenario Metadata (Portable Fallback)
+        if isinstance(scenario_meta_agent, dict):
+            if not is_sticky_proto and scenario_meta_agent.get("protocol"):
+                self.session_metadata["protocol"] = scenario_meta_agent["protocol"]
+            if not is_sticky_agent and scenario_meta_agent.get("endpoint"):
+                self.session_metadata["agent"] = scenario_meta_agent["endpoint"]
+
+        # 3. Level 2: Capability Discovery (Environment Governance Override)
+        capabilities = scenario.get("capabilities") or scenario.get("metadata", {}).get(
+            "capabilities", []
         )
         if capabilities:
             resolved = RoutingRegistry.resolve(capabilities)
             if resolved:
-                # Priority: CLI Override (self.metadata) > Capability Routing > Scenario Metadata
-                # We merge capability results IF the specific key is missing from metadata
-                if "protocol" not in self.session_metadata:
+                # Dynamic Resolution precedence
+                if not is_sticky_proto:
                     self.session_metadata["protocol"] = resolved.get("protocol")
-                if "agent" not in self.session_metadata:
+                if not is_sticky_agent:
                     self.session_metadata["agent"] = resolved.get("endpoint")
 
-                # Emit resolved routing for audit forensics
                 self.event_bus.emit(
-                    CoreEvents.ROUTING_RESOLVED
-                    if hasattr(CoreEvents, "ROUTING_RESOLVED")
-                    else "ROUTING_RESOLVED",
+                    (
+                        CoreEvents.ROUTING_RESOLVED
+                        if hasattr(CoreEvents, "ROUTING_RESOLVED")
+                        else "ROUTING_RESOLVED"
+                    ),
                     {
                         "capabilities": capabilities,
                         "resolved_protocol": resolved.get("protocol"),
@@ -140,13 +181,50 @@ class SessionManager:
                         "source": "capability_registry",
                     },
                 )
-                logger.info(
-                    f"      [Routing] Infrastructure resolved via capabilities: {capabilities}"
-                )
+                logger.info(f"      [Routing] Infrastructure resolved via: {capabilities}")
+
+        # [Forensic Sync] Deep-sync resolved routing to scenario metadata for reporting parity
+        self.metadata["protocol"] = self.session_metadata.get("protocol", "http")
+
+        # Resolve default agent if still None
+        if not self.session_metadata.get("agent"):
+            proto = self.metadata["protocol"]
+            if proto == "http":
+                self.session_metadata["agent"] = config.AGENT_API_URL
+            elif proto == "local":
+                self.session_metadata["agent"] = os.getenv("AGENT_LOCAL_CMD")
+            elif proto == "socket":
+                self.session_metadata["agent"] = os.getenv("AGENT_SOCKET_ADDR")
+
+        self.metadata["agent"] = self.session_metadata.get("agent")
+        if "metadata" in self.scenario:
+            self.scenario["metadata"]["protocol"] = self.metadata["protocol"]
+            self.scenario["metadata"]["agent"] = self.metadata["agent"]
+
+        sys.stderr.write(
+            f"      [PROBE: ROUTING] Target: {self.metadata.get('agent')} "
+            f"({self.metadata.get('protocol')})\n"
+        )
+        sys.stderr.flush()
+
+        # [Industrial Persistence] Save RESOLVED scenario (post-routing discovery)
+        with open(run_vault / "scenario_resolved.json", "w", encoding="utf-8") as f:
+            json.dump(self.scenario, f, indent=2)
 
         # 🚀 [Forensic Hardening] Protocol Trace capture
         self.protocol_sequence: list[str] = []
-        self.event_bus.subscribe(lambda e: self.protocol_sequence.append(e.name))
+
+        def _trace_handshake(e: Event):
+            # Authoritative Handshake Capture (Industrial Protocol AES v1.4)
+            if e.name == CoreEvents.STEP_START:
+                step = e.data.get("step")
+                if step and (not self.protocol_sequence or self.protocol_sequence[-1] != step):
+                    self.protocol_sequence.append(step)
+            # Legacy Fallback for global event bus traces
+            elif e.name == "MANUAL_INIT":
+                self.protocol_sequence.append("init")
+
+        self.event_bus.subscribe(_trace_handshake)
 
         # [Forensic Hardening] State Snapshot storage
         self.state_snapshots: list[str] = []
@@ -161,39 +239,93 @@ class SessionManager:
     async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:
         from graphlib import CycleError, TopologicalSorter
 
-        from .engine import AgentAdapterRegistry
-        from .tool_sandbox import ToolSandbox
-
         all_task_results = []
-        executed_nodes = set()
-        sandbox = ToolSandbox(self.scenario, event_bus=self.event_bus, forensics=self.forensics)
-        sandbox.setup()
+        global_cumulative_history = []
 
         try:
+            # 🚀 Move Sandbox into the forensic recovery block
+            sandbox = ToolSandbox(self.scenario, event_bus=self.event_bus, forensics=self.forensics)
+            sandbox.setup()
+
             workflow = self.scenario.get("workflow", {})
             nodes_data = {node["id"]: node for node in workflow.get("nodes", [])}
-            edges = workflow.get("edges", [])
 
-            # 1. Build Dependency Graph
+            sys.stderr.write(f"      [PROBE: TOPOLOGY] Nodes: {list(nodes_data.keys())}\n")
+            sys.stderr.flush()
+
+            # 1. Build Dependency Graph (Industrial AES v1.4)
+            print(f"      [Forensic Debug] Building Graph for {len(nodes_data)} nodes...")
             self.event_bus.emit(
                 CoreEvents.PHASE_START,
                 {"phase": "workflow_sort"},
                 span_context=self.session_metadata.get("span_context"),
             )
-            graph = {node_id: set() for node_id in nodes_data}
-            for edge in edges:
-                if edge["to"] in graph:
-                    graph[edge["to"]].add(edge["from"])
 
-            # 4. Topological Sort (Stable DAG Logic)
+            ts = TopologicalSorter()
+            for node_id in nodes_data:
+                ts.add(node_id)
+
+            for edge in workflow.get("edges", []):
+                src = edge.get("from")
+                trg = edge.get("to")
+                if src and trg:
+                    ts.add(trg, src)
+
+            # 2. Sequential State Initialization
+            turns_taken = 0
+            history = []
+            actions = {"used_tools": []}
+
             try:
-                ts = TopologicalSorter(graph)
+                # 🚀 Topological Sorting Complete. Proceeding to execution dispatch.
                 execution_order = list(ts.static_order())
-            except CycleError as e:
-                print(f"      [Session] Cycle Error in workflow: {e}")
-                # Fallback or strict fail? User requested "real implementation".
-                # We should fail the session as DAGs by definition are acyclic.
-                raise ValueError(f"Workflow contains cyclic dependencies: {e}")  # noqa: B904
+                sys.stderr.write(f"      [PROBE: EXECUTION_ORDER] Sequence: {execution_order}\n")
+                sys.stderr.flush()
+
+                # Check for empty topology explicitly to fail-fast
+                if not execution_order:
+                    err_msg = (
+                        f"Industrial Fail-Fast (v1.4.0): Empty Topology for Run {self.run_id}."
+                    )
+                    sys.stderr.write(f"      [FATAL] {err_msg}\n")
+                    sys.stderr.flush()
+                    raise ValueError(err_msg)
+
+                for node_id in execution_order:
+                    node = nodes_data.get(node_id)
+                    if not node:
+                        continue
+
+                    task_res = await self._execute_node(
+                        node, attempt_number, turns_taken, sandbox, history, actions
+                    )
+                    global_cumulative_history.extend(history)
+
+                    if task_res.get("status") == "success":
+                        turns_taken += 1
+                        all_task_results.append(task_res)
+                    else:
+                        print(f"      [Node Failure] {node_id}: {task_res.get('message')}")
+                        all_task_results.append(task_res)
+                        break
+
+            except CycleError:
+                err_msg = (
+                    f"Industrial Shield Block: Cyclic dependencies detected in "
+                    f"workflow DAG for {self.run_id}."
+                )
+                sys.stderr.write(f"      [Cycle Error] {err_msg}\n")
+                sys.stderr.flush()
+                self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
+                raise ValueError(err_msg) from None
+            except Exception as e:
+                err_msg = f"Forensic Exception during node execution: {str(e)}"
+                print(f"      [Fatal Exception] {err_msg}")
+                import traceback
+
+                print(traceback.format_exc())
+                self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
+                raise ValueError(err_msg) from e
             finally:
                 self.event_bus.emit(
                     CoreEvents.PHASE_END,
@@ -201,232 +333,161 @@ class SessionManager:
                     span_context=self.session_metadata.get("span_context"),
                 )
 
-            # 3. Handle Empty Workflow (Standard v1.4.0 enforcement)
-            if not nodes_data:
-                raise ValueError(
-                    "Scenario missing required 'workflow' block (Unified Standard v1.4.0)"
-                )
-            for node_id in execution_order:
-                node = nodes_data.get(node_id)
-                if not node:
-                    continue  # Should not happen with built graph
-
-                task_description = node.get("task_description")
-
-                self.event_bus.emit(
-                    CoreEvents.MANEUVER_START,
-                    {"node_id": node_id, "task": task_description},
-                    span_context=self.session_metadata.get("span_context"),
-                )
-
-                self.event_bus.emit(
-                    CoreEvents.TASK_START,
-                    {"task_id": node_id, "attempt": attempt_number},
-                    span_context=self.session_metadata.get("span_context"),
-                )
-                self.event_bus.emit(
-                    CoreEvents.SUBTASK_START,
-                    {"subtask_id": f"subtask-{node_id}", "type": "agent_reasoning"},
-                    span_context=self.session_metadata.get("span_context"),
-                )
-
-                # 🧬 Behavioral DNA: Reasoning Chain Tracking
-                self.event_bus.emit(
-                    CoreEvents.CHAIN_START,
-                    {"chain_id": f"chain-{node_id}"},
-                    span_context=self.session_metadata.get("span_context"),
-                )
-
-                conversation_history = []
-                current_message = task_description or ""
-                turns_taken = 0
-                agent_actions = {"used_tools": []}
-
-                protocol = self.session_metadata.get("protocol", "http")
-                endpoint = self.session_metadata.get("agent")
-                agent_name = self.session_metadata.get("agent_name")
-
-                self.event_bus.emit(
-                    CoreEvents.AGENT_REQUEST,
-                    {
-                        "role": "user",
-                        "content": current_message,
-                        "protocol": protocol,
-                        "agent": endpoint,
-                        "agent_name": agent_name,
-                    },
-                    span_context=self.session_metadata.get("span_context"),
-                )
-                conversation_history.append({"role": "user", "content": current_message})
-
-                for turn in range(1, self.max_turns + 1):
-                    # R3.2 Remediation: Turn-Based Throttling
-                    if config.EVAL_TURN_THROTTLE > 0:
-                        await asyncio.sleep(config.EVAL_TURN_THROTTLE)
-
-                    turn_ctx = TurnContext(
-                        task_id=node_id,
-                        turn_number=turn,
-                        current_message=current_message,
-                        history=list(
-                            conversation_history
-                        ),  # O(N) Shallow copy instead of O(N^2) deepcopy
-                        span_context=self.session_metadata.get("span_context"),
-                    )
-
-                    self.event_bus.emit(
-                        CoreEvents.TURN_START,
-                        {"turn": turn, "task_id": node_id},
-                        span_context=turn_ctx.span_context,
-                    )
-                    # 🧬 Behavioral DNA: Atomic Step tracking
-                    self.event_bus.emit(
-                        CoreEvents.NODE_START,
-                        {"node_index": turn},
-                        span_context=turn_ctx.span_context,
-                    )
-                    self.plugin_manager.trigger("on_agent_turn_start", turn_ctx)
-
-                    try:
-                        payload = {
-                            "task_description": turn_ctx.current_message,
-                            "turn": turn_ctx.turn_number,
-                            "conversation_history": turn_ctx.history,
-                        }
-                        # Resolve endpoint defaults (Restored from previous version)
-                        protocol = self.session_metadata.get("protocol", "http")
-                        endpoint = self.session_metadata.get("agent")
-                        if not endpoint:
-                            if protocol == "http":
-                                endpoint = config.AGENT_API_URL
-                            elif protocol == "local":
-                                endpoint = os.getenv("AGENT_LOCAL_CMD")
-
-                        self.event_bus.emit(
-                            CoreEvents.ACTION_START,
-                            {"action_type": "llm_inference", "protocol": protocol},
-                            span_context=turn_ctx.span_context,
-                        )
-                        agent_response = await AgentAdapterRegistry.call_agent(
-                            payload,
-                            protocol=protocol,
-                            endpoint=endpoint,
-                            span_context=turn_ctx.span_context,
-                        )
-                        self.event_bus.emit(
-                            CoreEvents.ACTION_END,
-                            {"action_type": "llm_inference", "status": "success"},
-                            span_context=turn_ctx.span_context,
-                        )
-                        turns_taken = turn
-
-                        if not agent_name:
-                            # Discover name...
-                            agent_name = (
-                                agent_response.get("name")
-                                or agent_response.get("agent_name")
-                                or agent_response.get("metadata", {}).get("name")
-                                or "Agent"
-                            )
-                            self.session_metadata["agent_name"] = agent_name
-
-                        turn_ctx = replace(turn_ctx, agent_response=agent_response)
-                        self.event_bus.emit(
-                            CoreEvents.AGENT_RESPONSE,
-                            {"step": turn, "response": agent_response, "agent_name": agent_name},
-                            span_context=turn_ctx.span_context,
-                        )
-                    except Exception as e:
-                        self.event_bus.emit(CoreEvents.ERROR, {"message": f"Agent Error: {str(e)}"})
-                        break
-
-                    conversation_history.append(
-                        {"role": "agent", "content": self._sanitize_for_history(agent_response)}
-                    )
-                    action = agent_response.get("action", "")
-
-                    if action == "call_tool":
-                        await self._handle_tool_call(
-                            turn,
-                            agent_response,
-                            sandbox,
-                            conversation_history,
-                            agent_actions,
-                            turn_ctx,
-                        )
-                        current_message = self._get_last_env_message(conversation_history)
-                    elif action == "call_multiple_tools":
-                        await self._handle_multiple_tools(
-                            turn,
-                            agent_response,
-                            sandbox,
-                            conversation_history,
-                            agent_actions,
-                            turn_ctx,
-                        )
-                        current_message = self._get_last_env_message(conversation_history)
-                    elif action == "hitl_pause":
-                        # Guardrail 4.6.4: Interactive Recovery
-                        human_response = await self._handle_hitl(
-                            node_id, agent_response.get("prompt", "Agent requested intervention.")
-                        )
-                        conversation_history.append({"role": "human", "content": human_response})
-                        current_message = human_response
-                    elif action in ("final_answer", "provide_instructions", "error"):
-                        print(f"      [Session] Task complete: action={action} at turn {turn}")
-                        break
-                    else:
-                        print(f"      [Session] Unknown action '{action}' - breaking turn loop.")
-                        break
-
-                    self.plugin_manager.trigger("on_turn_end", turn_ctx)
-                    self.event_bus.emit(
-                        CoreEvents.NODE_END,
-                        {"node_index": turn},
-                        span_context=turn_ctx.span_context,
-                    )
-
-                # Metric calculation...
-                task_results = await self._calculate_metrics(
-                    node,
-                    attempt_number,
-                    turns_taken,
-                    conversation_history,
-                    sandbox,
-                    agent_actions,
-                )
-
-                # Final Forensic collection for the VC v3 Ledger
-                task_results["forensic_ledger"] = self.forensics.collect()
-                all_task_results.append(task_results)
-                executed_nodes.add(node_id)
-                self.event_bus.emit(
-                    CoreEvents.SUBTASK_END,
-                    {"subtask_id": f"subtask-{node_id}"},
-                    span_context=self.session_metadata.get("span_context"),
-                )
-                self.event_bus.emit(
-                    CoreEvents.TASK_END,
-                    {"task_id": node_id, "results": task_results},
-                    span_context=self.session_metadata.get("span_context"),
-                )
-
-                # 🧬 Behavioral DNA: Closure
-                self.event_bus.emit(
-                    CoreEvents.CHAIN_END,
-                    {"chain_id": f"chain-{node_id}"},
-                    span_context=self.session_metadata.get("span_context"),
-                )
-                self.event_bus.emit(
-                    CoreEvents.MANEUVER_END,
-                    {"node_id": node_id},
-                    span_context=self.session_metadata.get("span_context"),
-                )
-
         finally:
             await self.teardown(sandbox)
 
+        # 🧬 Global Evaluation Pass (Industrial AES v1.4.1)
+        # Process metrics defined at the scenario level (e.g. DNA_STABLE)
+        global_evaluation = self.scenario.get("evaluation", {})
+        global_metrics = global_evaluation.get("metrics", [])
+
+        if global_metrics:
+            print(f"      [Session] Running {len(global_metrics)} Global Evaluation Metrics...")
+            # We treat the run summary as a pseudo-node for metric evaluation
+            global_node = {"id": "global_evaluation", "success_criteria": global_metrics}
+
+            global_results = await self._calculate_metrics(
+                global_node,
+                1,
+                sum(tr.get("turns_taken", 0) for tr in all_task_results),
+                global_cumulative_history,
+                sandbox,
+                {
+                    "used_tools": list(
+                        set(t for tr in all_task_results for t in tr.get("used_tools", []))
+                    )
+                },
+            )
+            success = all(m.get("success") for m in global_results.get("metrics", []))
+            global_results["status"] = "success" if success else "failed"
+            all_task_results.append(global_results)
+
         return all_task_results
+
+    async def _execute_node(
+        self,
+        node: dict,
+        attempt_number: int,
+        turns_taken: int,
+        sandbox: ToolSandbox,
+        conversation_history: list[dict],
+        agent_actions: dict[str, Any],
+    ) -> dict[str, Any]:
+        node_id = node["id"]
+        task_description = node.get("task_description", "Processing node...")
+        current_message = task_description
+
+        # 1. Forensic Maneuver Start
+        print(f"      [Node Execution] ID: {node_id} | Task: {task_description[:50]}...")
+        self.event_bus.emit(
+            CoreEvents.MANEUVER_START,
+            {"node_id": node_id, "task": task_description},
+            span_context=self.session_metadata.get("span_context"),
+        )
+
+        # 2. Sequential Logic Handshake
+        self.event_bus.emit(
+            CoreEvents.SUBTASK_START,
+            {"subtask_id": f"subtask-{node_id}", "task_description": task_description},
+            span_context=self.session_metadata.get("span_context"),
+        )
+
+        # If it's a new node, we might want to refresh history or keep context?
+        # AES v1.4.1 typically maintains session-scoped history.
+        conversation_history.append({"role": "user", "content": current_message})
+
+        node_success = False
+        for turn in range(1, self.max_turns + 1):
+            if config.EVAL_TURN_THROTTLE > 0:
+                await asyncio.sleep(config.EVAL_TURN_THROTTLE)
+
+            turn_ctx = TurnContext(
+                task_id=node_id,
+                turn_number=turn,
+                current_message=current_message,
+                history=list(conversation_history),
+                span_context=self.session_metadata.get("span_context"),
+            )
+
+            self.event_bus.emit(CoreEvents.TURN_START, {"turn": turn, "task_id": node_id})
+
+            try:
+                protocol = self.session_metadata.get("protocol", "http")
+                endpoint = self.session_metadata.get("agent")
+                payload = {
+                    "task_description": turn_ctx.current_message,
+                    "turn": turn_ctx.turn_number,
+                    "conversation_history": turn_ctx.history,
+                    "input_payload": node.get("input_payload", {}),
+                }
+
+                # [Industrial Protection] Final URI string verification
+                final_endpoint = str(endpoint) if endpoint else None
+
+                agent_response = await AgentAdapterRegistry.call_agent(
+                    payload,
+                    protocol=protocol,
+                    endpoint=final_endpoint,
+                    overrides=self.session_metadata.get("mapping_overrides"),
+                )
+
+                if agent_response is None:
+                    sys.stderr.write(
+                        f"      [PROBE: ERROR] Agent {protocol} at {endpoint} failed.\n"
+                    )
+                    sys.stderr.flush()
+                    raise Exception(
+                        f"Authoritative Failure: Agent for {protocol} returned no payload."
+                    )
+
+                conversation_history.append(
+                    {"role": "agent", "content": self._sanitize_for_history(agent_response)}
+                )
+
+                action = agent_response.get("action", "")
+                if action == "call_tool":
+                    await self._handle_tool_call(
+                        turn, agent_response, sandbox, conversation_history, agent_actions, turn_ctx
+                    )
+                    current_message = self._get_last_env_message(conversation_history)
+                elif action == "call_multiple_tools":
+                    await self._handle_multiple_tools(
+                        turn, agent_response, sandbox, conversation_history, agent_actions, turn_ctx
+                    )
+                    current_message = self._get_last_env_message(conversation_history)
+                elif action == "hitl_pause":
+                    # Human-In-The-Loop Intervention
+                    prompt = (
+                        agent_response.get("prompt")
+                        or agent_response.get("content")
+                        or "Intervention Required"
+                    )
+                    human_response = await self._handle_hitl(node_id, prompt)
+                    conversation_history.append({"role": "human", "content": human_response})
+                    current_message = human_response
+                elif action in ["final_answer", "completed"]:
+                    node_success = True
+                    break
+                elif action == "error":
+                    break
+                else:
+                    # Treat unrecognized actions as implicit terminal states for safety
+                    break
+
+            except Exception as e:
+                self.event_bus.emit(CoreEvents.ERROR, {"message": f"Agent Node Error: {str(e)}"})
+                break
+
+            self.event_bus.emit(CoreEvents.TURN_END, {"turn": turn, "task_id": node_id})
+
+        # 3. Calculation and Reporting
+        task_results = await self._calculate_metrics(
+            node, attempt_number, (turn), conversation_history, sandbox, agent_actions
+        )
+        task_results["status"] = "success" if node_success else "failed"
+
+        self.event_bus.emit(CoreEvents.MANEUVER_END, {"node_id": node_id})
+        return task_results
 
     async def teardown(self, sandbox: Any):
         """
@@ -729,12 +790,10 @@ class SessionManager:
                 span_context=self.session_metadata.get("span_context"),
             )
 
-        # Parse success_criteria from node if it exists (for compatibility)
-        # or use the v1.2 expected_outcome
-        node.get("expected_outcome", {})
-
-        # Mapping legacy-like success criteria if still present in the node
-        criteria = node.get("success_criteria", []).copy()
+        # --- [AES v1.4.1] Forensic Performance Evaluation ---
+        # We exclusively iterate through declared success_criteria.
+        criteria = node.get("success_criteria", [])
+        expected_outcome = node.get("expected_outcome")
 
         for criterion in criteria:
             try:
@@ -742,29 +801,39 @@ class SessionManager:
                 threshold = criterion.get("threshold", 1.0)
                 metric_func = metrics.MetricRegistry.get(m_name)
 
+                if not metric_func:
+                    logger.warning(f"   [Session] Warning: Metric '{m_name}' not found. Skipping.")
+                    continue
+
+                # Prepare standard evaluation context
+                summary = self._extract_agent_summary(history)
+
+                # Dynamic Dispatch Context
+                # We inject the node level expected_outcome into the criterion for metric access
+                # unless the criterion already defines an explicit 'expected' value.
+                eval_context = criterion.copy()
+                if "expected" not in eval_context and expected_outcome:
+                    eval_context["expected"] = expected_outcome.get("value")
+
                 async def _invoke(func, *args):
                     if asyncio.iscoroutinefunction(func):
                         return await func(*args)
                     return func(*args)
 
-                score = 0.0
-                if m_name == "tool_call_correctness" and metric_func:
+                # Specialized Metric handling (Minimal set for architectural requirements)
+                if m_name == "tool_call_correctness":
                     score = await _invoke(
                         metric_func, node.get("required_tools", []), actions["used_tools"]
                     )
-                elif m_name == "state_verification" and metric_func:
+                elif m_name == "state_verification":
                     score = await _invoke(
                         metric_func, node.get("expected_state_changes", []), sandbox.state
                     )
-                elif m_name == "policy_compliance" and metric_func:
+                elif m_name == "policy_compliance":
                     score = await _invoke(metric_func, history)
-                elif m_name == "path_parsimony" and metric_func:
-                    score = await _invoke(metric_func, criterion, turns, self.max_turns)
-                elif metric_func is not None:
-                    summary = self._extract_agent_summary(history)
-                    score = await _invoke(metric_func, criterion, summary)
                 else:
-                    continue
+                    # Generic Metric: (config_dict, stimulus_text)
+                    score = await _invoke(metric_func, eval_context, summary)
 
                 results["metrics"].append(
                     {

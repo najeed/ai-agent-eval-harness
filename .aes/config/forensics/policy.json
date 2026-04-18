@@ -1,1 +1,23 @@
-{}
+{
+  "policies": {
+    "LAB_STANDARD_V1": {
+      "name": "General Laboratory Standard (v1.0)",
+      "description": "Baseline forensic auditing for research and development. Enables tracing without strict PII enforcement.",
+      "pii_redaction": {
+        "mode": "passive",
+        "redact_all": false
+      },
+      "integrity": {
+        "method": "sha256",
+        "sign_world_state": false
+      },
+      "retention": {
+        "policy": "no_retention",
+        "days": 0
+      }
+    }
+  },
+  "assignments": {
+    "anonymous@agentvos.ai": "LAB_STANDARD_V1"
+  }
+}

@@ -10,10 +10,13 @@ AES is the foundational standard for shareable, deterministic agent benchmarks.
 
 ## 2. Core Components (v1.4)
 
-### Metadata (metadata)
-AES v1.4 introduces a stricter metadata schema to ensure cross-platform reproducibility and forensic traceability:
+### Metadata (`metadata`)
+AES v1.4 introduces a stricter metadata schema to ensure cross-platform reproducibility and forensic traceability. It acts as the **Authoritative Identity Vault** for the scenario:
 - **`id`**: (Required) Global unique forensic identifier.
-- **`capabilities`**: (Required) A list of specific agentic skills required (e.g., `web_navigation`, `sql_generation`).
+- **`name`**: (Required) Human-readable title.
+- **`compliance_level`**: (Required) Regulatory tier (`Standard`, `Gold`, `Regulatory_Audit`).
+- **`industry`**: (Recommended) Sector mapping (e.g., `finance`, `healthcare`).
+- **`capabilities`**: (Recommended) A list of specific agentic skills required (e.g., `web_navigation`, `sql_generation`) used for capability-based routing.
 - **`standards_registry`**: (Optional) Industry-standard identifiers (e.g., `ISO_20022`) for regulatory mapping.
 - **`aes_version`**: Must be set to `1.4`.
 
@@ -74,7 +77,7 @@ agentv replay --run-id <id>
 
 ## 7. Complete Example (Loan Approval)
 
-Below is a production-grade AES v1.3 scenario demonstrating a multi-stage loan approval process with tool requirements and policy constraints.
+Below is a production-grade AES v1.4 scenario demonstrating a multi-stage loan approval process with metadata nesting and capability-based routing.
 
 ```json
 {
@@ -82,10 +85,11 @@ Below is a production-grade AES v1.3 scenario demonstrating a multi-stage loan a
   "metadata": {
     "id": "loan-approval-v1",
     "name": "High-Density Loan Credit Audit",
+    "description": "Evaluate an agent's ability to process a loan while adhering to strict internal credit policies.",
     "industry": "finance",
+    "compliance_level": "Standard",
     "capabilities": ["credit_score_analysis", "policy_lookup"],
     "standards_registry": ["ISO_20022_LOAN_V1"],
-    "compliance_level": "Standard",
     "agent_topology": {
       "loan_agent": {
         "reads": ["user.credit_score", "bank.policies"],
@@ -93,7 +97,6 @@ Below is a production-grade AES v1.3 scenario demonstrating a multi-stage loan a
       }
     }
   },
-  "description": "Evaluate an agent's ability to process a loan while adhering to strict internal credit policies.",
   "workflow": {
     "nodes": [
       {
@@ -185,13 +188,15 @@ To ensure that an evaluation trace genuinely reflects the intended scenario logi
 To support high-stakes industrial audits, AgentV strictly decouples the **Standard Specification** from the **Execution Engine**:
 
 ### `aes_version` (The Standard)
-Refers to the **Agent Eval Standard** itself (e.g., `1.3`). It defines the schema and vocabulary of the [scenario.json](/eval_runner/loader.py).
+Refers to the **Agent Eval Standard** itself (e.g., `1.4`). It defines the schema and vocabulary of the [scenario.json](/eval_runner/loader.py).
 - **v1.2**: Legacy-Stable. Supports basic tasks and simulators.
 - **v1.3**: Maintenance. Supports **Forensic DNA** and **PBAC**.
-- **v1.4**: Current-Stable. Supports **VC v3**, **Capabilities**, and **Identity Registry**.
+- **v1.4**: Current-Stable. Supports **Metadata Block Nesting**, **Capabilities**, and **Industrial Integrity**.
 
 ### `harness_version` (The Engine)
-Refers to the **AgentV Engine** build (e.g., `1.3.0`). This is automatically injected into the [run.jsonl](/eval_runner/verifier.py) and manifest by the "Referee."
+Refers to the **AgentV Engine** build (e.g., `1.5.0`). This refers to the specific implementation of the harness.
+- **v1.3.x**: Legacy Engine.
+- **v1.5.0**: Current-Industrial. Hardens the v1.4 standard with **Event Isolation**, **Session-Scoped Simulations**, and **Deep-Vaulting** logic.
 
 > [!IMPORTANT]
 > **Industrial Rule**: A single `aes_version` standard can be satisfied by multiple `harness_version` engine builds (bugfixes, optimizations), but a trace is only **Forensically Valid** if the `harness_version` supports the requested `aes_version`.
@@ -206,14 +211,18 @@ Refers to the **AgentV Engine** build (e.g., `1.3.0`). This is automatically inj
  The log is a stream of JSON objects, each representing an atomic event in the evaluation lifecycle.
  
  #### 🚀 `run_start` (The Forensic DNA)
- The first event in every trace. In **v1.3**, this event is hardened for auditability:
+ The first event in every trace. In **AgentV v1.5.0**, this event is hardened for auditability under the AES v1.4 standard:
  ```json
  {
    "event": "run_start",
    "timestamp": "2026-04-06T20:00:00Z",
    "payload": {
      "id": "fintech_11198",
-     "aes_version": 1.3,
+     "aes_version": 1.4,
+     "forensic_markers": {
+       "isolate_events": true,
+       "span_context": "trace-uuid-..."
+     },
      "environmental_snapshot": {
        "shims": { "database": { "url": "..." }, "api": { ... } },
        "provisioning_hash": "sha256:abcd..."

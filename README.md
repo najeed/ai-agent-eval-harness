@@ -28,7 +28,7 @@ graph TD
     subgraph "AgentV Verification OS"
         Sim["🌍 World Shims (Isolated State)"]:::os
         Tel["🧬 Behavioral DNA (Telemetry)"]:::os
-        Vault["🔒 ED25519 Trace Vault"]:::os
+        Vault["🔒 Ed25519 Trace Vault"]:::os
         Judge["⚖️ Industrial Policy Judges"]:::os
     end
     
@@ -418,7 +418,7 @@ This project follows an **Open Core** model. The open-source capabilities provid
 | **Compliance Suites** | ❌ No | ✅ Production-Ready (HIPAA, FINRA, GDPR, PCI) |
 | **Observability** | 🔶 Terminal output | ✅ OTEL Drift Gauges & Dashboard Feed |
 | **Defensibility Governance**| ❌ No | ✅ WORM Audit Logs & Chained Integrity |
-| **Integrity Checks** | ✅ ED25519 Trace Validation | ✅ AES Scenario Merkle Sync (Root Verify) |
+| **Integrity Checks** | ✅ Ed25519 Trace Validation | ✅ AES Scenario Merkle Sync (Root Verify) |
 | **Visual Debugger & GUI** | ✅ Local React Native App | ✅ Enterprise Dashboard & Secure Handoff |
 | **Reproduction Workflow** | 🔶 JSONL Only | ✅ Interactive Flight Recorder & Jupyter Repro |
 | **Parallel Engine** | 🔶 Sequential only | ✅ Ray/Local JobQueue Distributed Runs |

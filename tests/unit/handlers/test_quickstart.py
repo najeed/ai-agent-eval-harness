@@ -51,8 +51,12 @@ async def test_run_quickstart_flow(tmp_path, monkeypatch, capsys):
     scen_file.parent.mkdir(parents=True, exist_ok=True)
 
     mock_scenario = {
-        "id": "test_quickstart",
-        "name": "Test Quickstart",
+        "aes_version": 1.4,
+        "metadata": {
+            "id": "test_quickstart",
+            "name": "Test Quickstart",
+            "compliance_level": "Standard",
+        },
         "description": "Test",
         "workflow": {"nodes": [{"id": "t1", "task_description": "test task"}], "edges": []},
     }

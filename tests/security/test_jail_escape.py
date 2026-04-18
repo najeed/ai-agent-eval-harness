@@ -8,6 +8,7 @@ from eval_runner.console.routes import core_bp
 @pytest.fixture
 def app(monkeypatch, tmp_path):
     app = Flask(__name__)
+    app.secret_key = "test-secret"
     app.register_blueprint(core_bp)
 
     # Configure a dummy project root for testing

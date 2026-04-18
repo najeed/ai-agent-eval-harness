@@ -44,12 +44,11 @@ async def run_quickstart():
             print(f"❌ Error: Quickstart scenario not found at {scenario_path}")
             return
 
+        from . import loader
+
         print(f"📊 Running demo scenario: {scenario_path.name}")
 
-        import json
-
-        with open(scenario_path, encoding="utf-8") as f:
-            scenario = json.load(f)
+        scenario = loader.load_scenario(scenario_path)
 
         results = await engine.run_evaluation(scenario)
 

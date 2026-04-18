@@ -37,7 +37,7 @@ def _ensure_path_safe(path: str | Path, description: str = "Path"):
 def _resolve_replay_trace(run_id: str) -> Path | None:
     """
     Tiered resolution for industrial run traces.
-    1. Primary: Vault directory (Mandatory for AES v1.5.0)
+    1. Primary: Vault directory (Mandatory for AgentV v1.5.0)
     2. Fallback: Master Log consolidation
     """
     if not run_id:

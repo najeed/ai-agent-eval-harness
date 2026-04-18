@@ -56,7 +56,7 @@ Every classification is documented in a **Causal Chain**, allowing auditors to t
 
 ## 4. Forensic Affinity & Identity Authority (AES v1.5.0)
 
-To maintain industrial-grade stability, all triage operations must be anchored to an authoritative identity:
+To maintain industrial-grade stability, all triage operations must be anchored to an identity:
 
 - **Zero-Inference Resolution**: The Triage Engine requires an explicit `run_id` to initialize diagnostics. Speculative inference from parent directories is prohibited to prevent forensic cross-contamination.
 - **Vault Affinity**: Diagnostics are only performed on traces within valid industrial vaults (`runs/<run_id>/run.jsonl`) or the master log. Traces in shared temporary space are ineligible for audit-grade triage.

@@ -226,6 +226,11 @@ class FailureTaxonomy:
             r"\b(?:[13][a-km-zA-HJ-NP-Z1-9]{25,34}|bc1[a-z0-9]{39,59})\b|0x[a-fA-F0-9]{40}|[A-Za-z0-9]{26,35}",
             re.IGNORECASE | re.VERBOSE,
         ),
+        # Credentials & Infrastructure
+        "api_key": re.compile(
+            r"(?i)(?:key|token|secret|password)[=:]\s*[\"']?([a-zA-Z0-9_\-]{16,})[\"']?",
+            re.IGNORECASE | re.VERBOSE,
+        ),
     }
 
     PII_SCANNERS = list(PII_PATTERNS.values())
@@ -359,7 +364,7 @@ class FailureTaxonomy:
             identity = turn.get("identity") or turn.get("identity_id")
 
             # Identity-based Provinence (Strict PBAC)
-            # system_id and env_id are the authoritative identities for infrastructure events
+            # system_id and env_id are the identities for infrastructure events
             if identity in ("system_id", "env_id", "environment_id"):
                 content = turn.get("content", {})
                 if not isinstance(content, dict):

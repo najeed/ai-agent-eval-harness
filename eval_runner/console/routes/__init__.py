@@ -5,9 +5,9 @@ from eval_runner.catalog import ScenarioCatalog as ScenarioCatalog
 
 from .demo import demo_bp as demo_bp
 from .demo import execute_demo_command, get_loan_demo_context
-from .runs import get_verification_certificate, list_runs
+from .runs import get_verification_certificate, list_metrics, list_runs
 from .runs import run_bp as run_bp
-from .scenarios import evaluate_scenario, list_scenarios, refresh_index, save_scenario
+from .scenarios import get_taxonomy, list_scenarios, refresh_index, save_scenario
 from .scenarios import scenario_bp as scenario_bp
 from .system import (
     DebuggerStateStore as DebuggerStateStore,
@@ -173,11 +173,6 @@ def proxy_scenarios():
     return list_scenarios()
 
 
-@core_bp.route("/api/v1/evaluate", methods=["POST"])
-def proxy_evaluate():
-    return evaluate_scenario()
-
-
 @core_bp.route("/api/v1/doctor")
 def proxy_doctor():
     return get_doctor_audit()
@@ -208,7 +203,25 @@ def proxy_refresh():
     return refresh_index()
 
 
-# --- PUBLIC /v1 SHIMS (Unprotected) ---
+# --- PUBLIC /v1 SHIMS (Unprotected Root Namespace) ---
+@core_bp.route("/v1/doctor")
+def shim_doctor():
+    """Unprefixed root shim for Industrial Doctor (AgentV v1.5.0 parity)."""
+    return get_doctor_audit()
+
+
+@core_bp.route("/v1/taxonomy")
+def shim_taxonomy():
+    """Unprefixed root shim for Industrial Taxonomy."""
+    return get_taxonomy()
+
+
+@core_bp.route("/v1/metrics")
+def shim_metrics():
+    """Unprefixed root shim for Metric Discovery."""
+    return list_metrics()
+
+
 @core_bp.route("/v1/certificates/<run_id>")
 def shim_cert(run_id):
     return get_verification_certificate(run_id)

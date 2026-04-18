@@ -10,7 +10,10 @@ Capability-Based Routing decouples the **Intent** of a scenario (what capabiliti
 Scenarios SHOULD NOT define hardcoded endpoints. Instead, they define required capabilities:
 ```json
 {
-  "id": "loan_approval_01",
+  "aes_version": 1.4,
+  "metadata": {
+    "id": "loan_approval_01"
+  },
   "capabilities": ["fintech_api"]
 }
 ```

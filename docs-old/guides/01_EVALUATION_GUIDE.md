@@ -16,16 +16,20 @@ The harness ships with a production-grade corpus of **5,000+ scenarios** across 
 
 Each evaluation is defined by a `.json` file in an industry's `scenarios` directory. The file has the following top-level keys:
 
--   `id`: A unique identifier for the scenario (e.g., `telecom-cs-001`).
--   `title`: A human-readable title.
--   `description`: A brief explanation of the overall goal of the scenario.
--   `use_case`: The specific business function being tested (e.g., `Customer Service`).
--   `industry`: The industry this scenario belongs to.
--   `core_function`: The category within the use case this scenario belongs to.
--   `dataset`: (Optional) Path and format of a synthetic or real dataset required for this scenario. **Supports Path Decoupling (v1.1+)**: Relative paths (e.g., `./data.csv`) are resolved relative to the scenario file itself, allowing for portable scenario bundles.
--   `initial_state`: (Optional) The starting state for the sandbox. Supports nested dictionaries with dot-notation verification.
--   `policies`: (Optional) Governance rules to enforce during execution.
--   `tasks`: An array of task objects that represent the steps an agent must take.
+-   `aes_version`: (String) The Agent Eval Standard version (e.g., `1.4`).
+-   `metadata`: (Required) The authoritative identity vault for the scenario.
+    -   `id`: (Required) Global unique forensic identifier.
+    -   `name`: (Required) Human-readable title of the scenario.
+    -   `description`: (Required) Brief explanation of the evaluation goal.
+    -   `compliance_level`: (Required) Regulatory tier (`Standard`, `Gold`, `Regulatory_Audit`).
+    -   `industry`: The targeted sector (e.g., `finance`).
+    -   `core_function`: The specific business category being tested.
+    -   `capabilities`: (Recommended) List of required infrastructure skills (v1.4+).
+-   `dataset`: (Optional) Path and format of a dataset required for this scenario. **Supports Path Decoupling (v1.1+)**: Relative paths are resolved relative to the scenario file itself.
+-   `initial_state`: (Optional) Seed state for the sandbox (World Genesis).
+-   `workflow`: (Required) The DAG defining the execution trajectory.
+    -   `nodes`: Array of task objects.
+    -   `edges`: Dependency mappings between tasks.
 
 ## Task Structure
 
@@ -107,9 +111,18 @@ Scenarios now support complex topologies. Example snippet:
 
 ```json
 {
-  "version": "2.0.0",
-  "agent_topology": {
-    "agent_1": { "writes": ["ns1"], "reads": ["ns2"] }
+  "aes_version": 1.4,
+  "metadata": {
+    "id": "multi_agent_flow_01",
+    "name": "Collaborative Financial Audit",
+    "compliance_level": "Gold",
+    "agent_topology": {
+      "agent_1": { "writes": ["ns1"], "reads": ["ns2"] }
+    }
+  },
+  "workflow": {
+    "nodes": [],
+    "edges": []
   }
 }
 ```

@@ -4,6 +4,7 @@
   "type": "object",
   "required": [
     "name",
+    "id",
     "compliance_level"
   ],
   "properties": {
@@ -128,6 +129,34 @@
         "type": "string"
       },
       "description": "Required infrastructure capabilities for routing (v1.4 upgrade)"
+    },
+    "description": {
+      "type": "string"
+    },
+    "complexity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "agent": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        }
+      }
+    },
+    "forensics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   }
 }

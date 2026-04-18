@@ -50,7 +50,15 @@ def console_jail():
 def client(console_jail, monkeypatch):
     """Provides a Flask test client with localized config patching."""
     app = Flask(__name__)
+    app.secret_key = "test-secret"
+    from eval_runner.console.routes import demo_bp, run_bp, scenario_bp, system_bp, trust_bp
+
     app.register_blueprint(core_bp)
+    app.register_blueprint(scenario_bp, url_prefix="/api")
+    app.register_blueprint(run_bp, url_prefix="/api")
+    app.register_blueprint(system_bp, url_prefix="/api")
+    app.register_blueprint(trust_bp)
+    app.register_blueprint(demo_bp)
 
     # Isolated monkeypatching of the config module attributes
     monkeypatch.setattr(eval_runner.config, "PROJECT_ROOT", console_jail["root"])

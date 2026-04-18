@@ -1583,14 +1583,14 @@ const App = () => {
     useEffect(() => {
         if (activeTab === 'demo' && !isDemoReady) {
             apiFetch('/api/demo/reset', { method: 'POST' }).catch(() => { });
-            loadBabelScript('/DemoHelper.jsx', 'DemoHelper')
-                .then(() => loadBabelScript('/Demo.jsx', 'Demo'))
+            loadBabelScript('/static/DemoHelper.jsx', 'DemoHelper')
+                .then(() => loadBabelScript('/static/Demo.jsx', 'Demo'))
                 .then(() => setIsDemoReady(true))
                 .catch(err => showToast(`Demo hydration failed: ${err.message}`, 'error'));
         }
         if (activeTab === 'loan_demo' && !isLoanDemoReady) {
             apiFetch('/api/demo/reset', { method: 'POST' }).catch(() => { });
-            loadBabelScript('/LoanDemo.jsx', 'LoanDemo')
+            loadBabelScript('/static/LoanDemo.jsx', 'LoanDemo')
                 .then(() => setIsLoanDemoReady(true))
                 .catch(err => showToast(`Loan Demo hydration failed: ${err.message}`, 'error'));
         }

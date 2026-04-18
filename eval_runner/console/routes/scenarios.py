@@ -61,7 +61,7 @@ def save_scenario():
 
     from eval_runner import config
 
-    # Follow AEH v1.5.0 structure: industries/{industry}/scenarios/{id}.json
+    # Follow AgentV v1.5.0 structure: industries/{industry}/scenarios/{id}.json
     save_dir = config.PROJECT_ROOT / "industries" / industry / "scenarios"
     save_dir.mkdir(parents=True, exist_ok=True)
 
@@ -100,7 +100,7 @@ def evaluate_scenario():
     if not path:
         return jsonify({"error": "Missing scenario path"}), 400
 
-    # Industrial Trigger: Prioritize Scenario ID resolution (v1.5.0)
+    # Industrial Trigger: Prioritize Scenario ID resolution (AgentV v1.5.0)
     catalog = ScenarioCatalog.get_instance()
     abs_path = catalog.get_absolute_path(path)
 
@@ -129,17 +129,32 @@ def evaluate_scenario():
         logger.error(f"Scenario load failed: {e}")
         return jsonify({"error": f"Failed to load scenario: {str(e)}", "message": str(e)}), 500
 
-    def run_wrapper(scenario_obj, turns):
+    import time
+
+    identifier = Path(path).stem
+    run_id = f"run-{identifier}-{int(time.time())}"
+
+    def run_wrapper(scenario_obj, turns, r_id):
         try:
-            asyncio.run(engine.run_evaluation(scenario_obj, max_turns=turns))
+            asyncio.run(
+                engine.run_evaluation(
+                    scenario_obj, max_turns=turns, run_id=r_id, metadata=data.get("metadata")
+                )
+            )
         except Exception as e:
             logger.error(f"Async evaluation failed: {e}")
 
-    thread = threading.Thread(target=run_wrapper, args=(scen, data.get("max_turns", 10)))
+    thread = threading.Thread(target=run_wrapper, args=(scen, data.get("max_turns", 10), run_id))
     thread.daemon = True
     thread.start()
 
-    return jsonify({"status": "started", "message": f"Evaluation of {path} initiated."})
+    return jsonify(
+        {
+            "status": "started",
+            "run_id": run_id,
+            "message": f"Evaluation of {path} initiated as {run_id}.",
+        }
+    )
 
 
 @scenario_bp.route("/v1/taxonomy", methods=["GET"])
@@ -150,7 +165,7 @@ def get_taxonomy():
 
 
 @scenario_bp.route("/v1/mutate", methods=["POST"])
-@require_permission(Permission.SCENARIOS_READ)
+@require_permission(Permission.SCENARIOS_WRITE)
 def mutate_scenario():
     """Roadmap: Programmatic mutation with raw content or file support."""
     data = request.json or {}
@@ -181,7 +196,7 @@ def mutate_scenario():
 
 
 @scenario_bp.route("/v1/spec-to-eval", methods=["POST"])
-@require_permission(Permission.SCENARIOS_READ)
+@require_permission(Permission.SCENARIOS_WRITE)
 def spec_to_eval():
     """Roadmap: Markdown PRD/Spec to AES JSON conversion."""
     data = request.json or {}

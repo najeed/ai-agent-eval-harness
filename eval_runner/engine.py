@@ -87,6 +87,7 @@ class AgentAdapterRegistry:
         protocol="http",
         endpoint: str | None = None,
         span_context: dict[str, Any] | None = None,
+        **kwargs,
     ):
         cls._discover()
 
@@ -112,7 +113,7 @@ class AgentAdapterRegistry:
             raise ValueError(f"No endpoint/command provided for protocol '{protocol}'")
 
         print(f"      [Engine] Executing {protocol} call to: {endpoint}")
-        return await adapter(payload, endpoint, span_context=span_context)
+        return await adapter(payload, endpoint, span_context=span_context, **kwargs)
 
 
 async def run_evaluation(

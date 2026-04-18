@@ -50,7 +50,7 @@ The ledger bundles metrics, trajectory history, and forensic metadata into a det
 
 ### `conversation_history` (list[dict])
 A chronological log of all interactions during the task.
-- **identity** (str): The authoritative PBAC identity node (e.g., `agent_id`, `system_id`, `env_id`). **Mandatory for forensic attribution.**
+- **identity** (str): The PBAC identity node (e.g., `agent_id`, `system_id`, `env_id`). **Mandatory for forensic attribution.**
 - **role** (str): Behavioral trace role (`user`, `agent`, `assistant`). Used for behavioral DNA and LLM compatibility.
 - **content** (Any): The message payload or environment status object.
 
