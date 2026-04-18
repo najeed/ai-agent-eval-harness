@@ -30,7 +30,7 @@ opentelemetry-sdk==1.40.0
 google-genai==1.70.0
 
 # --- Document Processing ---
-pypdf==6.10.1
+pypdf==6.10.2
 python-docx==1.2.0
 
 # --- Environment ---

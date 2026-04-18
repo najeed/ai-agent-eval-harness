@@ -54,7 +54,7 @@ class TestSession:
             )
             with pytest.raises(ValueError) as cm:
                 await session.execute_tasks(1)
-            assert "Unified Standard v1.4.0" in str(cm.value)
+            assert "Industrial Fail-Fast (v1.4.0)" in str(cm.value)
 
     @pytest.mark.asyncio
     async def test_execute_tasks_cycle_error(self):
@@ -68,7 +68,7 @@ class TestSession:
             session = SessionManager("test_run", {**scenario_cycle, "id": "cycle-v1"})
             with pytest.raises(ValueError) as cm:
                 await session.execute_tasks(1)
-            assert "cyclic dependencies" in str(cm.value)
+            assert "Cyclic dependencies detected" in str(cm.value)
 
     @pytest.mark.asyncio
     async def test_execute_tasks_happy_path(self, session):

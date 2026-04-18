@@ -101,7 +101,7 @@ def list_runs():
             logger.warning(f"Skipping malformed or inaccessible vault trace {p}: {e}")
             continue
 
-    runs.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+    runs.sort(key=lambda x: str(x.get("timestamp") or ""), reverse=True)
     return jsonify({"runs": runs[:200]})
 
 
