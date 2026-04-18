@@ -3968,16 +3968,24 @@
 <h2 id="scenario-structure">Scenario Structure<a class="headerlink" href="#scenario-structure" title="Permanent link">&para;</a></h2>
 <p>Each evaluation is defined by a <code>.json</code> file in an industry's <code>scenarios</code> directory. The file has the following top-level keys:</p>
 <ul>
-<li><code>id</code>: A unique identifier for the scenario (e.g., <code>telecom-cs-001</code>).</li>
-<li><code>title</code>: A human-readable title.</li>
-<li><code>description</code>: A brief explanation of the overall goal of the scenario.</li>
-<li><code>use_case</code>: The specific business function being tested (e.g., <code>Customer Service</code>).</li>
-<li><code>industry</code>: The industry this scenario belongs to.</li>
-<li><code>core_function</code>: The category within the use case this scenario belongs to.</li>
-<li><code>dataset</code>: (Optional) Path and format of a synthetic or real dataset required for this scenario. <strong>Supports Path Decoupling (v1.1+)</strong>: Relative paths (e.g., <code>./data.csv</code>) are resolved relative to the scenario file itself, allowing for portable scenario bundles.</li>
-<li><code>initial_state</code>: (Optional) The starting state for the sandbox. Supports nested dictionaries with dot-notation verification.</li>
-<li><code>policies</code>: (Optional) Governance rules to enforce during execution.</li>
-<li><code>tasks</code>: An array of task objects that represent the steps an agent must take.</li>
+<li><code>aes_version</code>: (String) The Agent Eval Standard version (e.g., <code>1.4</code>).</li>
+<li><code>metadata</code>: (Required) The authoritative identity vault for the scenario.<ul>
+<li><code>id</code>: (Required) Global unique forensic identifier.</li>
+<li><code>name</code>: (Required) Human-readable title of the scenario.</li>
+<li><code>description</code>: (Required) Brief explanation of the evaluation goal.</li>
+<li><code>compliance_level</code>: (Required) Regulatory tier (<code>Standard</code>, <code>Gold</code>, <code>Regulatory_Audit</code>).</li>
+<li><code>industry</code>: The targeted sector (e.g., <code>finance</code>).</li>
+<li><code>core_function</code>: The specific business category being tested.</li>
+<li><code>capabilities</code>: (Recommended) List of required infrastructure skills (v1.4+).</li>
+</ul>
+</li>
+<li><code>dataset</code>: (Optional) Path and format of a dataset required for this scenario. <strong>Supports Path Decoupling (v1.1+)</strong>: Relative paths are resolved relative to the scenario file itself.</li>
+<li><code>initial_state</code>: (Optional) Seed state for the sandbox (World Genesis).</li>
+<li><code>workflow</code>: (Required) The DAG defining the execution trajectory.<ul>
+<li><code>nodes</code>: Array of task objects.</li>
+<li><code>edges</code>: Dependency mappings between tasks.</li>
+</ul>
+</li>
 </ul>
 <h2 id="task-structure">Task Structure<a class="headerlink" href="#task-structure" title="Permanent link">&para;</a></h2>
 <p>Each object in the <code>tasks</code> array represents a single step and contains:</p>
@@ -4093,11 +4101,20 @@ The universal loader will dynamically download these datasets, wrap them in comp
 <h2 id="multi-agent-scenario-schema">Multi-Agent Scenario Schema<a class="headerlink" href="#multi-agent-scenario-schema" title="Permanent link">&para;</a></h2>
 <p>Scenarios now support complex topologies. Example snippet:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0.0&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;agent_topology&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&quot;agent_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;writes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ns1&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;reads&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ns2&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="p">}</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">}</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;aes_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.4</span><span class="p">,</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;multi_agent_flow_01&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Collaborative Financial Audit&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">&quot;compliance_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Gold&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">&quot;agent_topology&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">      </span><span class="nt">&quot;agent_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;writes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ns1&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;reads&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ns2&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span><span class="p">},</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">  </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">    </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="p">}</span>
 </code></pre></div>
 <h2 id="schema-validation">Schema Validation<a class="headerlink" href="#schema-validation" title="Permanent link">&para;</a></h2>
 <p>Scenarios are validated against <code>schemas/scenario.schema.json</code> at load time. Any scenario that fails validation will raise a <code>ValueError</code> with a clear error message.</p>

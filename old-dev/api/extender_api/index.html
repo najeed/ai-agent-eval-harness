@@ -4146,7 +4146,7 @@
 - <strong>Security</strong>: Validates against the project jail and sanitizes industry paths.</p>
 <hr />
 <h4 id="post-apiv1evaluate"><code>POST /api/v1/evaluate</code><a class="headerlink" href="#post-apiv1evaluate" title="Permanent link">&para;</a></h4>
-<p>Triggers an asynchronous evaluation run using the authoritative industrial namespace.
+<p>Triggers an asynchronous evaluation run using the industrial namespace.
 - <strong>Method</strong>: <code>POST</code>
 - <strong>Body</strong>:
     - <code>path</code> (string, <strong>required</strong>): Scenario ID alias or relative path to the scenario JSON.
@@ -4170,7 +4170,7 @@
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="nt">&quot;mtime&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1712952000.0</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">}</span>
 </code></pre></div>
-- <strong>Note</strong>: Checks the authoritative vault first, falling back to a shallow scan of the master log if the vault directory is missing or unlinked.</p>
+- <strong>Note</strong>: Checks the vault first, falling back to a shallow scan of the master log if the vault directory is missing or unlinked.</p>
 <h4 id="get-apiruns"><code>GET /api/runs</code><a class="headerlink" href="#get-apiruns" title="Permanent link">&para;</a></h4>
 <p>Legacy faceted listing of all traces (supports master log and vault discovery).
 - <strong>Method</strong>: <code>GET</code>
@@ -4203,7 +4203,7 @@
 <h3 id="public-trust-endpoints-v1">🛡️ Public Trust Endpoints (v1)<a class="headerlink" href="#public-trust-endpoints-v1" title="Permanent link">&para;</a></h3>
 <p>These endpoints are unprotected to allow external deployment gates to verify results.</p>
 <ul>
-<li><code>POST /api/v1/certify</code>: Industrial Certification Service. Signs the trace zero-copy within the authoritative vault.<ul>
+<li><code>POST /api/v1/certify</code>: Industrial Certification Service. Signs the trace zero-copy within the vault.<ul>
 <li><strong>Body</strong>:<ul>
 <li><code>run_id</code> (string, <strong>required</strong>): Unique identifier for the evaluation run.</li>
 <li><code>identity</code> (string, optional): Signing Identity (Default: <code>system_id</code>).</li>

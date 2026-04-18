@@ -22,7 +22,8 @@
               "http",
               "local",
               "socket",
-              "grpc"
+              "grpc",
+              "openapi"
             ]
           },
           "endpoint": {
@@ -31,7 +32,16 @@
           },
           "metadata": {
             "type": "object",
-            "description": "Optional environment-specific metadata (e.g. headers, timeout)"
+            "description": "Optional environment-specific metadata (e.g. headers, timeout, overrides)",
+            "properties": {
+              "mapping_overrides": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "description": "Standardized Harness Action (e.g. hitl_pause, final_answer)"
+                }
+              }
+            }
           }
         }
       }
