@@ -1,0 +1,48 @@
+---
+title: Global Benchmark Ecosystem
+description: Native support for academic and industrial AI agent benchmarks.
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+# Foundational Benchmarks
+
+AgentV provides first-class support for the world's most rigorous academic and industrial benchmarks. By using native URI schemes, researchers can execute standardized evaluations without manual data munging or environment setup.
+
+## Supported Benchmarks
+
+<CardGrid>
+    <Card title="GAIA" icon="earth">
+        **General AI Assistants**  
+        Benchmark for multi-hop reasoning and real-world tool use. [View Guide](/research/benchmarks/gaia/)
+    </Card>
+    <Card title="AssistantBench" icon="seti:db">
+        **Enterprise Intelligence**  
+        Specialized for business reasoning and industrial accuracy. [View Guide](/research/benchmarks/assistantbench/)
+    </Card>
+    <Card title="OpenCompass" icon="magnifier">
+        **Coming Soon**  
+        Native support for OpenCompass integration is currently in the v1.5.x roadmap.
+    </Card>
+</CardGrid>
+
+---
+
+## The URI Schema Advantage
+
+AgentV abstracts benchmark loading behind the **Unified Benchmark URI Schema**. This allows researchers to target specific datasets, versions, and difficultly tiers directly from the CLI.
+
+### How it works:
+```bash
+# General syntax
+agentv evaluate --path <benchmark_scheme>://<version>
+
+# Examples
+agentv evaluate --path gaia://2023_validation
+agentv evaluate --path assistantbench://v1_standard
+```
+
+### Benefits for Researchers:
+1.  **Zero-Munge Extraction**: AgentV automatically maps benchmark-specific fields (e.g., GAIA's `Correct Answer`) to high-fidelity [AES Success Criteria](/spec/aes/schema/).
+2.  **Version Consistency**: By pinning the URI (e.g., `gaia://2023`), researchers ensure they are always evaluating against a specific, immutable dataset snapshot.
+3.  **Cross-Bench Comparisons**: Because all benchmarks are normalized to the AgentV [Forensic Ledger](/research/publishing/integrity/), you can compare results from different benchmarks in a single [Comparative Leaderboard](/research/publishing/comparative-studies/).

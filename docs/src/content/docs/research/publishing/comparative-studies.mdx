@@ -1,0 +1,59 @@
+---
+title: Comparative Studies
+description: Running Model Wars and head-to-head agent benchmarking.
+---
+
+# Model Wars: Comparative Benchmarking
+
+For academic research, a single agent's performance is rarely enough. Researchers often need to compare multiple agents (or different versions of the same agent) against the same benchmark library. **Model Wars** is the dedicated protocol in AgentV for executing these comparative studies.
+
+## Head-to-Head Protocols
+
+A "Model War" ensures that all agents in a study are evaluated under identical conditions:
+1.  **Shared Scenarios**: All agents run against the exact same AES scenario set.
+2.  **Shared Seeds**: The same base seed is used for every agent's campaign.
+3.  **Identical Registry**: All agents interact with the same world shims and simulators.
+
+---
+
+## Setting Up a Comparative Study
+
+### 1. Define the Agent Inventory
+
+Create an `agents_inventory.yaml` file defining the fleet of agents to benchmark.
+```yaml
+agents:
+  - name: "GPT-4o-v1"
+    protocol: "openai"
+    agent: "gpt-4o"
+  
+  - name: "Claude-3.5-v1"
+    protocol: "claude"
+    agent: "claude-3-5-sonnet-20240620"
+
+  - name: "Local-Llama3-8B"
+    protocol: "ollama"
+    agent: "llama3"
+```
+
+### 2. Run the Campaign
+
+Use the `--compare` flag to launch the multi-agent conductor.
+```bash
+python scripts/publication_suite/publication_suite.py --mode standard --compare agents_inventory.yaml
+```
+
+---
+
+## Output: The Comparative Leaderboard
+
+Model Wars produces a unified `leaderboard.html` designed for peer review:
+
+- **Head-to-Head Win Rates**: Statistical matrix showing which agent outperformed which in specific scenario categories.
+- **Normalized Performance Gap**: Visualizing the delta between proprietary and open-source models.
+- **Robustness Radar**: A radar chart comparing agents across the 7 [NIST Dimensions](/research/methodology/scoring/).
+
+## Research Methodology Note
+
+> [!IMPORTANT]
+> **Fair Comparison**: To ensure a "fair fight," researchers should always verify that the **Agent Temperature** is consistent across all models in the inventory (typically 0.0 for research). Use the `agentv doctor` command to verify that all adapters are correctly passing these parameters.

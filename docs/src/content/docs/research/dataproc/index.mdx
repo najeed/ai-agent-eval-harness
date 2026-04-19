@@ -1,0 +1,35 @@
+---
+title: Dataproc Engine
+description: Industrial-grade data generation for research and benchmarking.
+---
+
+# Dataproc Engine
+
+The **dataproc-engine** is an enterprise-grade framework designed to generate high-fidelity industrial datasets for AI agent research. By consolidating 16 distinct sectors into a unified hierarchical fleet, the engine provides a robust foundation for benchmarking agents across finance, healthcare, energy, and the public sector.
+
+## Research-Grade Principles
+
+1.  **Industrial Parity**: Achieves high-fidelity statistical match against standard benchmarks (SEC EDGAR, World Bank, etc.).
+2.  **Zero-Bundling Architecture**: Guarantees that no PII or restricted commercial records are leaked into the evaluation stream, leveraging high-fidelity simulations where necessary.
+3.  **Deterministic Integrity**: Every extracted record is tagged with SHA-256 checksums and immutable IDs for lineage tracking.
+4.  **Multi-Tier Fallback**: Intelligent extraction pipeline that scales from Cloud APIs to local LLMs and regex heuristics.
+
+---
+
+## Getting Started
+
+To initialize the engine and run your first extraction for research purposes:
+
+```bash
+# Extract finance data from the SEC EDGAR gold standard
+python dataproc_engine/cli/main.py extract --industry finance --limit 10
+
+# Results saved to: industries/finance/datasets/finance_kb.jsonl
+```
+
+### High-Fidelity Simulations
+
+Researchers can use Dataproc to generate "Lab-Ready" environments. When live APIs are unavailable or restricted by PII policies, the engine falls back to high-fidelity simulations that maintain the **statistical distribution** and **schema integrity** of the real-world source.
+
+- [**Sector Taxonomy**](/research/dataproc/sectors/): Explore the 16 industrial sectors covered by the engine.
+- [**Architecture**](/builder/architecture/): Deep dive into the generator and provider patterns.

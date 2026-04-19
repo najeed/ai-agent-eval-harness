@@ -1,0 +1,43 @@
+---
+title: Judge Calibration
+description: Reducing evaluation variance in LLM-based scoring rubrics.
+---
+
+# Calibrating the Judge
+
+In high-stakes research, the **LLM Judge** is a source of potential variance. Even with clear rubrics, different models (or the same model at different temperatures) can produce inconsistent scores. AgentV provides tools to calibrate these judges, ensuring that your research results are stable and verifiable.
+
+## Why Calibration Matters
+
+- **Inter-Rater Reliability**: Ensuring that if you swap from GPT-4o to Claude 3.5 Sonnet as your judge, the fundamental grading criteria remain consistent.
+- **Evaluation Drift**: Detecting if updates to the judge model (e.g., a new "v2" release) silently change how your historical traces are scored.
+- **Sensitivity Analysis**: Understanding how sensitive your aggregate WSM score is to minor changes in the judge's prompt.
+
+---
+
+## The Calibration Protocol
+
+AgentV recommends a three-step calibration protocol for academic publications.
+
+### 1. Zero-Temperature Baseline
+Always set `LUNA_JUDGE_TEMPERATURE=0.0` for production research. This forces the judge to use the most deterministic tokens, significantly reducing variance across runs.
+
+### 2. Stability Benchmarking
+Execute the same evaluation trace through the judge 10 times. AgentV calculates the **Stability Index**:
+- **Index > 0.95**: High stability; suitable for publication.
+- **Index < 0.80**: High variance; requires rubric refinement or a more capable judge model.
+
+### 3. Model Head-to-Head
+Run the same batch of 100 traces through two different judge models (e.g., `openai://gpt-4o` and `ollama://llama3`). If the correlation between their scores is below 0.90, the rubric is likely too ambiguous and needs further specialization.
+
+---
+
+## Advanced: Bayesian Judge Aggregation
+
+For extreme rigor, researchers can use **Consensus Evaluation**. This involves:
+1.  Scoring a trace with 3 distinct judges (e.g., Gemini, GPT, and Claude).
+2.  Using the `consensus` metric to identify outliers.
+3.  Automatically flagging traces where judges diverge significantly for manual human-in-the-loop (HITL) review.
+
+> [!TIP]
+> **Reporting Calibration**: When publishing, include your "Judge Stability Index" in the supplemental materials. This proves that your results are not an artifact of LLM hallucinations during scoring.

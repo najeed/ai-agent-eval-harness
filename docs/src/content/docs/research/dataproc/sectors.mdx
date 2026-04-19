@@ -1,0 +1,47 @@
+---
+title: Industrial Sector Taxonomy
+description: Deep dive into the 16 sectors supported by the Dataproc Engine.
+---
+
+# 16-Sector Industrial Fleet
+
+The Dataproc Engine provides high-fidelity data generation and extraction capabilities across 16 distinct industrial sectors. Each sector is mapped to its "Gold Standard" academic or industrial counterparts.
+
+## Sector Breakdown
+
+| Category | industry | Source/Analogy |
+| :--- | :--- | :--- |
+| **Anchors** | Finance | SEC EDGAR / Bloomberg |
+| | Healthcare | EHR / HL7 / ClinicalTrials.gov |
+| | Energy | IEA Data / Grid Metrics |
+| | Telecom | ITU / Ookla Benchmarks |
+| **Core Growth** | Agriculture | FAOSTAT / USDA |
+| | Transportation | IATA / FreightOS |
+| | eCommerce | Olist / Shopify API Schema |
+| | Unstructured | Mixed OCR / PDF Layouts |
+| **Public Sector**| Demographics | Census Bureau / World Bank |
+| | Labor | ILO / BLS Data |
+| | Environment | IPCC / NOAA Reports |
+| | Housing | Zillow / Redfin Real-time |
+| **Specialized** | Education | IPEDS / OpenCourseWare |
+| | Manufacturing | IIoT / Supply Chain Logs |
+| | Media | IMDb / TMDB / OSINT |
+| | Decision Support| Hybrid Analytical Logic |
+
+---
+
+## Generator Architecture
+
+Each sector in the Dataproc Engine uses a dedicated **Generator** class. Researchers can extend these generators to create custom datasets for niche research areas.
+
+### Deterministic Noise
+Generators support **Synthetic Noise Injection**, allowing researchers to test agent robustness against:
+- Data corruption (bit flips).
+- Incomplete records (missing fields).
+- Outdated information (temporal drift).
+
+### Veracity Checks
+Every generated record includes a `veracity_score` and a SHA-256 `source_hash`. This ensures that in a research setting, you can prove the lineage of every data point used in the evaluation.
+
+> [!TIP]
+> **Extending Sectors**: To add a new research sector, refer to the [Platform Extender](/extender/plugins/) guide on registering custom providers.

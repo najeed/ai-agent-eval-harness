@@ -1,0 +1,51 @@
+---
+title: The Trust Protocol
+description: Non-repudiable forensic signing for agentic evaluation results.
+---
+
+# Forensic Result Integrity
+
+For academic and industrial publications, it is not enough to report a score. You must provide a **proof of integrity**. AgentV implements the **Trust Protocol**, a cryptographic framework based on the **Verification Certificate (VC) v3** standard.
+
+## ED25519 Forensic Signing
+
+Every evaluation trace in AgentV can be "sealed" using asymmetric cryptography (ED25519).
+
+- **Evaluator Identity**: The `IdentityService` manages your research identity, protecting your private signing key.
+- **Trace Sealing**: When a run is certified, the entire `run.jsonl` trace is hashed. This hash is signed by your identity, creating a non-repudiable link between your persona and the result.
+- **Artifact Binding**: The Trust Protocol doesn't just sign the JSONL; it binds all sidecar artifacts (HTML reports, trajectory plots) to the same certificate.
+
+---
+
+## Certification Workflow
+
+### 1. Execute & Certify
+After a successful evaluation run, use the `certify` command to generate the signature.
+```bash
+agentv certify --run-id <run_id>
+```
+
+### 2. The Verification Certificate (VC) v3
+The output is a `run_manifest.json` file containing:
+- **`signature`**: The Ed25519 signature of the evaluation.
+- **`evidence_ledger`**: A SHA-256 manifest of every artifact generated during the run.
+- **`system_id`**: The public key of the evaluator who conducted the study.
+
+---
+
+## Verification & Hard Gating
+
+Peer reviewers can verify your results using the `agentv verify` command.
+
+```bash
+# Verify the integrity of a results bundle
+agentv verify --run-id <run_id>
+```
+
+The engine will return **`SIGNATURE_MATCH`** only if:
+1.  The behavioral DNA trace has not been modified.
+2.  The report artifacts in the `evidence_ledger` match their test-time hashes.
+3.  The signature was produced by the claimed public key.
+
+> [!TIP]
+> **Use in Papers**: Include your **Public Key Fingerprint** in your research paper's "Data Availability" statement. This allow auditors to search global agent registers (where applicable) and verify your findings independently.

@@ -66,6 +66,10 @@ export default defineConfig({
 					label: 'Security Auditor',
 					autogenerate: { directory: 'auditor' },
 				},
+				{
+					label: 'Research & Academics',
+					autogenerate: { directory: 'research' },
+				},
 			],
 			customCss: [
 				// Relative path to your custom CSS file

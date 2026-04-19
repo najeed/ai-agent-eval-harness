@@ -1,0 +1,48 @@
+---
+title: GAIA Benchmark
+description: Using AgentV to execute the General AI Assistants (GAIA) benchmark.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+# GAIA: General AI Assistants
+
+The **GAIA (General AI Assistants)** benchmark, introduced by researchers from Meta and Hugging Face, focuses on tasks that are conceptually simple for humans but challenging for AI agents. These tasks require multi-hop reasoning, long-range planning, and the use of tools like web browsers or calculators.
+
+## Native Support in AgentV
+
+AgentV provides a high-fidelity loader for GAIA, automatically converting the raw dataset into the [Agent Eval Specification (AES)](/spec/aes/schema/) format.
+
+### Supported Tiers
+- **Tier 1**: Basic tool use and single-hop reasoning.
+- **Tier 2**: Complex multi-hop reasoning and data integration.
+- **Tier 3**: Long-range planning and advanced research tasks.
+
+---
+
+## Execution Guide
+
+<Steps>
+
+1.  **Configure API Keys**: Ensure your model provider keys are exported (e.g., `OPENAI_API_KEY`).
+2.  **Target GAIA**: Run the evaluation using the native URI scheme.
+    ```bash
+    # Run the 2023 Validation set (Tier 1)
+    agentv evaluate --path gaia://2023_val_t1
+    ```
+3.  **Review Traces**: Use the `agentv console` to replay the GAIA trajectories. Look for "Reasoning Loops" where the agent fails to plan correctly despite having the tools.
+
+</Steps>
+
+---
+
+## Academic Rigor
+
+When using GAIA with AgentV, the following metadata is automatically enriched:
+
+- **Factual Accuracy**: Mapped to the benchmark's "Ground Truth" answers using string normalization.
+- **Tool Utilization Efficiency**: Captures how many tool turns the agent took compared to the human-provided baseline.
+- **Environmental Parity**: GAIA scenarios often require a web browser; AgentV's `browser` shim provides a secure, isolated sandbox for these executions.
+
+> [!NOTE]
+> **Data Privacy**: When running GAIA, AgentV ensures that no private PII or local secrets are leaked into the agent's context during the "Tool-Use" phase, maintaining the integrity of the research environment.

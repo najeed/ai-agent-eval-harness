@@ -1,0 +1,49 @@
+---
+title: Artifact Bundles
+description: Packaging and sharing signed evaluation results for peer review.
+---
+
+# Sharing Research Results
+
+For academic and industrial collaboration, AgentV provides a standardized way to package evaluation results into a single, portable, and verifiable bundle. This is powered by the **ArtifactPlugin**.
+
+## The Publication Bundle
+
+A **Publication Artifact Bundle** is a signed `.zip` archive containing everything needed to audit a research study.
+
+### Generating the Bundle
+After certifying your runs, generate the bundle:
+```bash
+agentv bundle --run-id <run_id>
+```
+
+---
+
+## What's Inside?
+
+A research bundle is structured to ensure that every metric can be traced back to raw behavioral evidence.
+
+- **`manifest.json`**: The core metadata linking scenarios, seeds, and run IDs.
+- **`run.jsonl`**: The complete behavioral DNA trace of the agent's actions.
+- **`leaderboard.html`**: The professional visual report for offline viewing.
+- **`audit_manifest.json`**: The **Forensic Evidence Ledger** containing SHA-256 hashes for all files in the bundle.
+- **`signature.sig`**: The Ed25519 signature manifest.
+
+---
+
+## Verifying External Bundles
+
+Researchers receiving a bundle for peer review can verify its integrity without installing the full AgentV framework locally (provided they have the `agentv` CLI).
+
+```bash
+# Verify a shared zip bundle
+agentv verify --path ./study_results_v1.zip
+```
+
+### Verification Checks:
+1.  **File Integrity**: Does every file in the `.zip` match the hashes in the `audit_manifest.json`?
+2.  **Signature Validity**: Was the bundle signed by the author's public key?
+3.  **Trace Consistency**: Does the telemetry in `run.jsonl` actually resolve to the scores reported in the `leaderboard.html`?
+
+> [!TIP]
+> **Data Availability & Open Science**: When publishing, we recommend uploading your `publication_artifact_bundle.zip` to a repository like **Harvard Dataverse** or **Hugging Face Hub**. This allows the entire scientific community to verify your agent's reported metrics with a single CLI command.

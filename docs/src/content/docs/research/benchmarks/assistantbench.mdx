@@ -1,0 +1,38 @@
+---
+title: AssistantBench
+description: Evaluating enterprise reasoning with the AssistantBench benchmark.
+---
+
+# AssistantBench: Enterprise Intelligence
+
+**AssistantBench** is a benchmark designed to evaluate the capability of AI assistants to perform complex, multi-step tasks in an enterprise context. Unlike general-purpose benchmarks, AssistantBench emphasizes real-world tool use, data reconciliation, and industrial reasoning accuracy.
+
+## Native Support in AgentV
+
+AgentV provides full support for the AssistantBench ecosystem, focusing on the **v1 Open Source Baseline**.
+
+### Key Evaluation Pillars
+- **Industrial Reconciliation**: The ability of the agent to identify discrepancies between two data sources (e.g., a CRM and an Invoice).
+- **Tool-Chain Robustness**: Evaluating if the agent can correctly chain together a sequence of 3+ distinct tools to achieve a business goal.
+- **Enterprise Policy Adherence**: Testing if the agent follows safety and security protocols (PII masking) during task execution.
+
+---
+
+## Execution Guide
+
+### Using the AssistantBench Loader
+
+Run evaluations using the native AssistantBench URI scheme:
+```bash
+agentv evaluate --path assistantbench://v1
+```
+
+### Analyzing Results
+
+AssistantBench results in AgentV are enriched with **Behavioral DNA** telemetry. This allows researchers to distinguish between:
+1. **Planning Failures**: The agent failed to identify the correct tool sequence.
+2. **Execution Failures**: The agent identified the right tools but misused them or failed to parse the output.
+3. **Reasoning Failures**: The tools worked correctly, but the agent's final synthesis was factually incorrect.
+
+> [!TIP]
+> **Use the Visual Debugger**: When analyzing AssistantBench failures, use the `agentv console` to inspect the **State Delta** at each step. This reveals exactly where the agent's "understanding" of the industrial environment diverged from the reality.
