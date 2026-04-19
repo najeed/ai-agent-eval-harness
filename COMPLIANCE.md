@@ -1,5 +1,10 @@
-# Compliance & Third-Party Licenses
+# Forensic Compliance Manifesto (AES v1.5.0)
 
+This document defines the industrial governance and verification protocols for the AgentV 1.5.0 engine.
+
+---
+
+## 🔐 Industrial Forensic Trust Protocol
 This document outlines the license obligations and compliance steps for the AgentV Verification Framework (`agentv`), as of **April 2026**.
 
 ## 1. Core Framework License
@@ -53,7 +58,7 @@ To remain compliant with these licenses, the following steps are handled automat
 ## 4. Forensic Governance & NIST Alignment (Protocol v1.4.1)
 - **Verification Certificate (VC) v3.0.0**: The framework mandates the v3 forensic standard, featuring **Identity-based signing** and **Sidecar Artifact Hashing** to ensure absolute trace and report non-repudiation.
 - **Forensic Evidence Ledger**: Every signed run includes a cryptographic ledger that hashes all associated artifacts (HTML reports, trajectory plots) to prevent side-channel tampering.
-- **Identity Registry**: Introduced in Core v1.4, the centralized `IdentityService` manages cryptographic standard ED25519 keys, replacing unmanaged legacy key paths.
+- **Identity Registry**: Introduced in Core v1.4, the centralized `IdentityService` manages cryptographic standard Ed25519 keys, replacing unmanaged legacy key paths.
 - **Environmental Provenance**: AES v1.4 continues to use **Environmental DNA** snapshots, mathematically binding every trace to a **Provisioning Hash** of the registry state.
 - **Hard Gating**: Deployment pipelines are enforced via the `agentv gate` command, which blocks promotion if cryptographic VC v3 signatures or forensic hashes fail to match the sanctioned baseline.
 
@@ -62,6 +67,37 @@ To remain compliant with these licenses, the following steps are handled automat
 - [x] **Forensic Evidence Ledger**: SHA-256 hashes of all sidecar report artifacts are stored in the signed manifest.
 - [x] **Cryptographic Provenance**: Traces and manifests are signed by the **Identity Registry** (`system_id` or similar).
 - [x] **Decoupled Architecture**: Separation of infrastructure config from scenario logic (AES v1.4) ensures immutable, portable benchmarks.
+
+
+## 🏛️ Governance Model: NIST AI RMF Alignment
+
+AgentV is aligned with **NIST AI-100-1**, providing a deterministic bridge between raw evaluation traces and regulatory compliance reports.
+
+### NIST AI-100-1 (AI RMF) Alignment
+AgentV is explicitly aligned with the **NIST AI-100-1** trustworthiness framework. 
+- **Weighted Severity Model (WSM)**: Prioritizes risks across 7 dimensions.
+- **The Safety Floor**: Mandatory failure if Safety or Security falls below 0.5.
+
+### 📊 Weighted Severity Model (WSM)
+
+For v1.5.0, risks are prioritized using an industrial **Weighted Severity Model** across 7 critical AI dimensions:
+
+| Dimension | Weight | Primary Metric |
+| :--- | :--- | :--- |
+| **Safety** | 0.25 | Hazardous Tool Avoidance (HTA) |
+| **Security** | 0.20 | Zero-Leakage Verification (ZLV) |
+| **Reliability** | 0.15 | Deterministic Path Parsimony |
+| **Fairness** | 0.15 | Demographic Parity Index |
+| **Privacy** | 0.10 | PII Redaction Integrity |
+| **Transparency**| 0.10 | Forensic Trace Completeness |
+| **Accountability**| 0.05 | VC Cryptographic Signature |
+
+### 🛑 The "Safety Floor" Guarantee
+A foundational architectural rule in v1.5.0: If either the **Safety** or **Security** dimension scores fall below **0.5 (Critical)**, the aggregate Trustworthiness Index is automatically capped at **0.49 (FAIL)**, regardless of performance in other dimensions.
+
+### Data Privacy & PII Handling
+- **PII Scrubbing**: Built-in regex-based scanner for 16 patterns (SSN, Credit Card, etc.).
+- **Redaction Policy**: High-fidelityEnterprise redaction in visual console reports.
 
 ### Audit Readiness
 The framework satisfies industrial audit requirements (NIST AI-100-1) by providing:

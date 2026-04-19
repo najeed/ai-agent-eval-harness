@@ -103,20 +103,58 @@ The plugin system provides hooks at every stage of the evaluation loop.
 | :--- | :--- | :--- |
 | **`before_evaluation`** | `context: EvaluationContext` | Setup task-level state or mocks. |
 | **`on_agent_turn_start`** | `context: TurnContext` | Intercept the conversation flow. |
-| **`on_tool_request`** | `context`, `tool`, `args` | **Critical Security Hook**. Block or modify tools. |
+| **`on_turn_end`** | `context: TurnContext` | Observe results after an agent turn. |
+| **`on_tool_request`** | `context`, `tool`, `args` | **Interception Point**. Return `False` to block. |
 | **`on_tool_result`** | `context`, `tool`, `result` | Observe tool outputs for drift detection. |
-| **`on_diagnose_failure`**| `taxonomy` | **New (v1.5.0)**. Register [Custom Forensic Analyzers](/extender/forensic-analyzers/) for Deep Triage. |
-| **`on_register_commands`**| `registry` | Inject custom commands into the `agentv` CLI. |
-| **`on_register_console_routes`** | `app`, `nav` | Add custom views to the [Integrated Console](/extender/api-reference/). |
+| **`on_diagnose_failure`**| `taxonomy` | **v1.5.0**. Register custom forensic analyzers. |
+| **`on_error`** | `context`, `exception` | Handle unhandled core exceptions. |
 
 ---
 
-## 🔒 Security & Data Integrity
+## 🧬 Typed Context Objects
 
-To prevent prototype pollution and maintain forensic integrity, all hooks receive **Frozen Context Objects**.
+To prevent prototype pollution and maintain forensic integrity, all hooks receive **Frozen Dataclasses**. You cannot modify them directly; use `plugin_data` for state sharing.
 
-1. **`EvaluationContext`**: Global state for a single run. Includes `scenario_data` (Immutable) and `plugin_data` (Mutable).
-2. **`TurnContext`**: State for a single turn. Includes `history` (Immutable) and `agent_response`.
+### 1. `EvaluationContext`
+Represents the global state of a single scenario execution.
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `str` | Forensic ID of the scenario. |
+| `scenario_data`| `dict` | **Immutable**. The full AES JSON definition. |
+| `metadata` | `dict` | **Immutable**. Global tags (difficulty, industry). |
+| `plugin_data` | `dict` | **Mutable**. Safe bucket for plugin state. |
+| `grounding_hits`| `dict` | Real-time map of tool and policy usage. |
+
+### 2. `TurnContext`
+Encapsulates the state of a single conversation turn.
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `task_id` | `str` | Identifier for the current subtask. |
+| `turn_number` | `int` | 1-based index of the current turn. |
+| `history` | `tuple` | **Immutable**. Full message history. |
+| `agent_response` | `dict` | Parsed agent action (available in `on_turn_end`). |
+| `span_context` | `dict` | **Immutable**. Distributed tracing metadata. |
+
+---
+
+## 🔒 Security & Iframe Protocols
+
+Plugins extending the **Integrated Console** render in a secure, sandboxed environment.
+
+### 1. Security Boundaries
+- **Iframe Sandboxing**: `allow-scripts allow-forms allow-popups` are enabled. Top-level navigation is **blocked**.
+- **Origin Validation**: All `postMessage` events are validated against the expected origin.
+
+### 2. Secure PostMessage Communication
+Custom components must use `window.parent.postMessage` to communicate with the core UI:
+```javascript
+window.parent.postMessage({
+    type: 'NOTIFY',
+    payload: { message: 'Analysis complete!', type: 'success' }
+}, window.location.origin);
+```
 
 ### Plugin Timeout
 All plugin hooks are subject to a **5-second timeout** (`PLUGIN_TIMEOUT`). If a hook hangs, the engine logs a `PluginTimeoutError` and proceeds, ensuring the industrial pipeline doesn't stall.

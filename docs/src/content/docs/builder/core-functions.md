@@ -36,18 +36,20 @@ While most functions are industry-specific, several recur across domains:
 
 ## 🛠️ Usage in AES Scenarios
 
-In an **AES v1.4** scenario, the `core_function` tag is mandatory:
+In an **AES v1.4** scenario, the `core_function` tag is an **optional metadata field** used to enhance forensic diagnostics:
 
 ```json
 {
-  "industry": "Finance",
-  "use_case": "Retail Banking",
-  "core_function": "Fraud & Security",
+  "metadata": {
+    "industry": "Finance",
+    "use_case": "Retail Banking",
+    "core_function": "Fraud & Security"
+  },
   "task": "Identify if the transaction at 03:00 UTC is suspicious."
 }
 ```
 
-The `TriageEngine` uses this tag to correlate failures with historic performance benchmarks for that specific function.
+The `TriageEngine` leverages this optional tag to correlate failures with historic performance benchmarks for that specific function. It is not required for scenario validation but is recommended for high-fidelity industrial tracking.
 
 ---
 

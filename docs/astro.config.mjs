@@ -67,8 +67,8 @@ export default defineConfig({
 					autogenerate: { directory: 'auditor' },
 				},
 				{
-					label: 'Research & Academics',
-					autogenerate: { directory: 'research' },
+					label: 'The Scholar (Research)',
+					autogenerate: { directory: 'scholar' },
 				},
 			],
 			customCss: [

@@ -12,7 +12,62 @@ The system is divided into four distinct layers:
 1.  **Entry Layer (CLI/API)**: Orchestrates the evaluation lifecycle and provides namespaced access to plugins.
 2.  **Logic Layer (Engine & Session)**: Manages the turn-based conversation loop, state immutability via frozen contexts, and branching trajectories.
 3.  **Simulation Layer (World Shims)**: Stateful, VFS-aware simulators that provide deterministic environment feedback.
-4.  **Security Layer (Identity & Trust)**: Cryptographic signature generation (VC v3) and NIST-aligned risk scoring.
+4.  **Stability Layer (Process & PID)**: Singleton process enforcement and `psutil`-based stale loop remediation.
+5.  **Security Layer (Identity & Trust)**: Cryptographic signature generation (VC v3) and NIST-aligned risk scoring.
+
+---
+
+## 🧩 CLI Architecture: Intent Lifecycle
+
+The `agentv` CLI is structured around the industrial evaluation lifecycle. Every command is namespaced to prevent collision and ensure auditability.
+
+### 1. Authoring & Scaffolding
+- `init`: Scaffold new projects with industrial datasets.
+- `scenario`: Generic scenario management (Generate/Inspect).
+- `mutate`: Generate adversarial variants (ambiguity, injection).
+- `analyze`: Proactive agent codebase scanning and AES scaffolding.
+
+### 2. Discovery & Execution
+- `list`: Filter and explore the local scenario registry.
+- `run`: Execute single scenario or Benchmark URI.
+- `evaluate`: Execute batch evaluation on a scenario dataset.
+- `quickstart`: 120-second end-to-end evaluation demo.
+
+### 3. Debugging & Diagnosis
+- `replay`: Replay a previously recorded run trace.
+- `explain`: Automated trace diagnostics for root cause analysis.
+- `playground`: Interactive CLI REPL for agent testing.
+- `record`: Real-time agent interaction logger.
+
+### 4. Trust & Reporting
+- `report`: Generate stylized premium HTML reports.
+- `verify`: Cryptographic integrity check (Forensic Audit).
+- `certify`: Generate signed Verification Certificates (VC).
+- `gate`: CI/CD Hard Gate: Enforce verification/compliance.
+- `aes`: AES Specification utilities (Validate/Register).
+
+---
+
+## 🧠 Evaluation Engine (Zero-Touch Core)
+
+The core is a decoupled, event-driven architecture designed for enterprise hot-swapping:
+
+1. **Runner (`runner.py`)**: Orchestrates the high-level loop and multi-attempt (`pass@k`) logic.
+2. **SessionManager (`session.py`)**: Manages individual attempts, trajectories, and tool execution.
+3. **AgentAdapterRegistry**: Dynamically discovers and registers agent protocols at runtime.
+4. **ToolSandbox**: Managed execution environment with **Environmental DNA** snapshotting.
+5. **Loader & Catalog**: Supports **Path Decoupling**, enabling scenarios to be loaded via Scenario ID or physical path.
+
+---
+
+## 🏗️ Technical Pillar: Process Orchestration
+
+AgentV enforces a **Singleton Process Guard** to ensure that industrial evaluations remain deterministic and isolated.
+
+### The Singleton Guard
+- **PID-Based Locking**: The engine maintains a `.aes/lock/server.pid` file to prevent conflicting orchestration instances.
+- **Stale Remediation**: Using `psutil`, the harness automatically detects and cleans up "ghost processes" from previous crashed runs, ensuring that the 5000-port and internal state remain clean.
+- **Cross-Platform Parity**: The logic handles Windows file-locking quirks and Unix signals to provide a consistent `ATEPOST` cleanup lifecycle.
 
 ---
 

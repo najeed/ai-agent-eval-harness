@@ -1,69 +1,62 @@
 ---
-title: Quick Start
-description: Get up and running with AgentV in under 60 seconds.
+title: Quickstart Masterclass
+description: Your first deterministic evaluation in under 120 seconds.
 ---
 
-This guide is for developers and evaluators who want to see AgentV in action with minimal setup.
+import { Steps } from '@astrojs/starlight/components';
 
-## 🚀 The 60-Second Demo
+# Zero-Key Quickstart
 
-The fastest way to explore the harness is the `quickstart` command. It handles agent setup, scenario execution, and report generation automatically.
+Welcome to AgentV. This guide gets you from a fresh installation to your first **Forensic Evaluation** in under two minutes. No API keys, cloud accounts, or complex configurations are required for this initial walkthrough.
 
-```bash
-# 1. Install the harness
-pip install -e .
+## 🏁 The 120-Second Sprint
 
-# 2. Run the Quickstart
-agentv quickstart
-```
+<Steps>
 
-### What Happens:
-1.  **Sample Agent**: Spawns a deterministic, in-process sample agent (no API keys required).
-2.  **Execution**: Runs a telecom troubleshooting evaluation from the industrial library.
-3.  **Reporting**: Generates a **Premium HTML report** (with Mermaid maps) in the `reports/` directory.
-4.  **Cleanup**: Automatically shuts down the agent.
-
----
-
-## 🏗️ Building Your Own Suite
-
-When you're ready to build benchmarks for your specific industrial use case:
-
-### 1. Scaffold the Project
-Generate a starter workspace with realistic industry datasets.
-```bash
-agentv init --dir my_benchmarks --industry finance
-```
-
-### 2. Auto-Translate Existing Specs
-Convert PDF or Markdown PRDs into executable AES JSON scenarios (requires [Ollama](https://ollama.com/)).
-```bash
-agentv auto-translate --input specs/loan_approval.pdf --industry finance
-```
-
----
-
-## 🛠️ Manual Integration
-
-To connect your own agent to the harness:
-
-1.  **Start Your Agent**: Ensure it follows the [Agent API Contract](/integrator/agent-contract/).
-2.  **Configure `.env`**: Point `AGENT_API_URL` to your endpoint.
+1.  **Environment Setup**  
+    Create a clean virtual environment and install the harness in editable mode.
     ```bash
-    AGENT_API_URL=http://localhost:5001/execute_task
-    ```
-3.  **Run Evaluation**: Use scenarios from the [Industrial Library](/evaluator/industries/).
-    ```bash
-    agentv evaluate --run-id <id>
-    ```
-4.  **Analyze Results**: Replay a trace to debug agent reasoning.
-    ```bash
-    agentv replay --run-id <id>
+    python -m venv venv
+    venv\Scripts\activate
+    pip install -e ".[dev]"
     ```
 
+2.  **Initialize the Industrial Corpus**  
+    Scaffold the necessary local directories and download a lightweight, deterministic evaluation suite.
+    ```bash
+    agentv quickstart
+    ```
+
+3.  **Execute a Deterministic Run**  
+    Run a pre-configured scenario using the **Zero-Temperature Mock Adapter**. This verifies your local routing and event bus without incurring LLM costs.
+    ```bash
+    agentv evaluate --path industries/finance/scenarios/loan_approval.json
+    ```
+
+4.  **Visual Triage**  
+    Launch the **Integrated Console** to inspect the behavioral DNA of your run.
+    ```bash
+    agentv console
+    ```
+    Open [http://localhost:5000](http://localhost:5000) in your browser to see the trajectory, state deltas, and the forensic ledger.
+
+</Steps>
+
 ---
 
-## 🧭 Next Steps
-- **Evaluators**: Read the [User Manual](/evaluator/user-manual/) for advanced analysis.
-- **Architects**: Dive into the [Core Architecture](/builder/architecture/).
-- **Extenders**: Learn how to write [Custom Shims](/extender/shimming/).
+## 🔍 What Just Happened?
+
+When you ran `evaluate`, the AgentV engine executed several industrial-grade protocols:
+
+- **Isolated Routing**: The engine consulted `.aes/config/routing/manifest.json` to map the scenario's requirements to a local simulator.
+-- **Event-Driven Observation**: Every tool call and reasoning step was emitted to the [Global Event Bus](/builder/architecture/), allowing the dashboard to mirror the execution in real-time.
+- **Forensic Ledger Creation**: A SHA-256 hash was generated for the trace, binding the results to your local **Identity Registry**.
+
+## 🚀 Next Steps
+
+- [**The Scholar Path**](/scholar/): Learn about Deterministic Seeds and Academic Benchmarks.
+- [**The Architect Path**](/builder/architecture/): Deep-dive into Singleton Process Guards and Dynamic CLI Dispatch.
+- [**The Auditor Path**](/auditor/trust-protocol/): Implement the v1.5.0 Trust Protocol for CI/CD gating.
+
+> [!TIP]
+> **Note**: Now that your environment is verified, you can swap the mock adapter for a live model by setting your `OPENAI_API_KEY` or `GEMINI_API_KEY` and updating your [Routing Registry](/spec/routing_v1/).

@@ -42,9 +42,6 @@ The harness implements IP-level validation to prevent **Server-Side Request Forg
 - **Default (Standard)**: Allows file access within `PROJECT_ROOT` and system temporary directories for CI/CD flexibility.
 - **Strict (Hardened)**: Set `AEH_STRICT_JAIL=1` to enforce an absolute, project-only jail, blocking access to all external directories.
 
-### 3. Path Traversal Protection
-The [Integrated Console](/extender/api-reference/) implements a **Global Proactive Security Intercept**. Any request containing traversal patterns (`..`, `%2e%2e`) is immediately blocked with a **403 Forbidden** response.
-
 ---
 
 ## ⚖️ NIST AI-100-1 Alignment
@@ -76,11 +73,27 @@ The [Trust Protocol](/auditor/trust-protocol/) provides immutable proof of run i
 
 ---
 
-## 🔐 PBAC Integration
+## 🛡️ Headless Architecture (The API First Approach)
 
-For enterprise environments, the harness supports **Permission-Based Access Control (PBAC)**:
-- **`READ_ONLY`**: View-only access to scenarios and runs.
-- **`OPERATOR`**: Trigger evaluations and refresh indexes.
-- **`ADMIN`**: Full control over system configuration and scenario writing.
+While the [Integrated Console](/extender/api-reference/) provides a high-fidelity visual interface, AgentV is built as a **Headless Engine**. This allows enterprises to integrate the harness into their own proprietary portals or SOC (Security Operations Center) workflows.
+
+### 1. The Global REST Fabric
+Every core function (Evaluation, Triage, Certification) is exposed via the Namespace API (`/api/v1/`). 
+- **Statelessness**: The engine remains stateless; scenario state is passed via JWTs in the `Secure Handoff` protocol.
+- **Async-by-Default**: Long-running evaluations return a `202 Accepted` with a `TaskID` for status polling.
+
+### 2. PBAC (Permission-Based Access Control)
+Industrial environments require granular control over who can perform which forensic action. AgentV implements a **Middleware-First PBAC** model.
+
+| Role | Permissions |
+| :--- | :--- |
+| **`VIEWER`** | Read scenarios, browse completed runs, export JSONL. |
+| **`AUDITOR`** | Verify certificates, sign runs (with key access), read audit manifests. |
+| **`OPERATOR`** | Launch evaluations, manage shims, refresh catalogs. |
+| **`SUPERVISOR`** | Full registry control, identity management, PBAC configuration. |
+
+---
+
+## 🔐 Authentication Extensions
 
 Plugins can subclass `AuthManager` to integrate with **Okta** or **Azure AD** using the [Plugin System](/extender/plugins/).

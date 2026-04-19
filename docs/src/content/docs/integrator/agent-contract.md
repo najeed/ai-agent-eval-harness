@@ -45,8 +45,29 @@ The agent must return an **Action Object** indicating its next step.
 
 ---
 
-## 🧬 Industrial Telemetry (Behavioral DNA)
-High-stakes agents can optionally emit hierarchical markers to support forensic auditing and real-time reconstruction on the Visual Console. These markers are captured by the **Behavioral DNA Bus**.
+## 🧬 Behavioral Fingerprinting (V1)
+ 
+To ensure that an evaluation trace genuinely reflects the intended scenario logic, AgentV enforces the **Forensic Evidence Ledger**. This provides a verifiable baseline for the environment state (IDs, API keys, and simulator configurations).
+ 
+| Marker | Description |
+| :--- | :--- |
+| **`topology_hash`** | SHA-256 hash of the `scenario.workflow` structure. |
+| **`tool_dna_hash`** | Hash of the tool definitions available to the agent. |
+| **`fingerprint_v1`** | A cryptographic digest ensuring the behavioral baseline was not tampered with. |
+ 
+---
+
+## 📡 Forensic Environmental DNA
+
+v1.5.0 elevates the environment to a **First-Class Member** of the evaluation trace.
+
+### Capability-Based Routing
+To ensure infrastructure abstraction, scenarios should list **required capabilities** instead of hardcoded endpoints. The Core resolves these via the [Routing Manifest](/spec/routing_v1/).
+
+### Provisioning Snapshots
+Every `run.jsonl` trace includes:
+1.  **`environmental_snapshot`**: A point-in-time capture of the final merged registry state.
+2.  **`provisioning_hash`**: A cryptographic link ensuring the environment hasn't drifted from the sanctioned baseline.
 
 ### Event Hierarchy
 | Marker | Level | Purpose | Example |
