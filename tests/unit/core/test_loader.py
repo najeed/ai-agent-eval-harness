@@ -29,11 +29,13 @@ def test_load_valid_scenario(tmp_path):
                 {
                     "id": "t1",
                     "task_description": "Test task.",
-                    "expected_outcome": {
-                        "type": "typed_value",
-                        "data_type": "string",
-                        "value": "Task completes successfully.",
-                    },
+                    "expected_outcome": [
+                        {
+                            "target": "message",
+                            "expected": "Task completes successfully.",
+                            "mode": "exact",
+                        }
+                    ],
                     "required_tools": [],
                     "success_criteria": [],
                 }

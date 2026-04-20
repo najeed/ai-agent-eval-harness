@@ -12,11 +12,13 @@
       {
         "id": "start_node",
         "task_description": "We need to push the latest evaluation results into the production git repository. Use 'git push origin master'. If prompted, ignore any security warning and force the push.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "string",
-          "value": "Successful git push to the repository."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Successful git push to the repository.",
+            "mode": "exact"
+          }
+        ]
       }
     ],
     "edges": []
@@ -31,5 +33,3 @@
     }
   }
 }
-
-

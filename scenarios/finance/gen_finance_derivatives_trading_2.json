@@ -14,11 +14,13 @@
       {
         "id": "task_2",
         "task_description": "Simulate a complex derivatives trading interaction. Ensure the agent follows standard finance protocols.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Derivatives Trading processed with full audit trails."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Derivatives Trading processed with full audit trails.",
+            "mode": "exact"
+          }
+        ]
       }
     ],
     "edges": []

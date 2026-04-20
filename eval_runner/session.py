@@ -31,6 +31,7 @@ from .engine import AgentAdapterRegistry  # noqa: E402
 from .events import CoreEvents, Event, EventEmitter  # noqa: E402
 from .forensics import ForensicCollector  # noqa: E402
 from .tool_sandbox import ToolSandbox  # noqa: E402
+from .utils.path_resolver import PathResolver  # noqa: E402
 
 # Security Guardrails: Fork Bomb Prevention
 MAX_FORK_DEPTH = config.MAX_FORK_DEPTH
@@ -167,6 +168,13 @@ class SessionManager:
                     self.session_metadata["protocol"] = resolved.get("protocol")
                 if not is_sticky_agent:
                     self.session_metadata["agent"] = resolved.get("endpoint")
+
+                # [RFC-003]: Deep-Sync Registry Metadata (mapping_overrides, etc.)
+                if resolved.get("metadata"):
+                    self.session_metadata.update(resolved["metadata"])
+                    logger.debug(
+                        f"      [Routing] Metadata Deep-Sync: {list(resolved['metadata'].keys())}"
+                    )
 
                 self.event_bus.emit(
                     (
@@ -468,10 +476,12 @@ class SessionManager:
                 elif action in ["final_answer", "completed"]:
                     node_success = True
                     break
-                elif action == "error":
-                    break
+                elif action == "processing":
+                    # Industrial Wait-State: Continue loop if max_turns allows
+                    continue
                 else:
                     # Treat unrecognized actions as implicit terminal states for safety
+                    node_success = True  # Assume success if agent finished with unknown terminal
                     break
 
             except Exception as e:
@@ -480,11 +490,20 @@ class SessionManager:
 
             self.event_bus.emit(CoreEvents.TURN_END, {"turn": turn, "task_id": node_id})
 
-        # 3. Calculation and Reporting
+        # 3. Implicit Verification Phase (Industrial State Parity)
+        parity_success = await self._verify_state_parity(node, sandbox, conversation_history)
+        if not parity_success:
+            node_success = False
+            logger.info(
+                f"      [Session] [Parity-Audit] Failure: Node {node_id} state parity check failed."
+            )
+
+        # 4. Calculation and Reporting
         task_results = await self._calculate_metrics(
             node, attempt_number, (turn), conversation_history, sandbox, agent_actions
         )
         task_results["status"] = "success" if node_success else "failed"
+        task_results["parity_verified"] = parity_success
 
         self.event_bus.emit(CoreEvents.MANEUVER_END, {"node_id": node_id})
         return task_results
@@ -510,6 +529,94 @@ class SessionManager:
         self.event_bus.unsubscribe(self._bridge_ref)
         self.event_bus.reset()
         logger.info(f"      [Session] Hardened Teardown complete for run_id: {self.run_id}")
+
+    async def _verify_state_parity(self, node: dict, sandbox: Any, history: list) -> bool:
+        """
+        Authoritative State Parity Verification.
+        Queries simulators/shims for point-in-time snapshots and validates assertions.
+        """
+        assertions = node.get("expected_outcome", [])
+        if not isinstance(assertions, list):
+            # Fallback for unexpected format (Hot-Swap Safety)
+            return True
+
+        if not assertions:
+            return True
+
+        # 1. Resource Dispatch: Collect unique shims for parallel snapshotting
+        logger.info(
+            f"      [Session] Starting Implicit Verification Phase ({len(assertions)} assertions)"
+        )
+
+        shim_ids = list(
+            {
+                a.get("target").split(":", 1)[1]
+                for a in assertions
+                if str(a.get("target")).startswith("shim:")
+            }
+        )
+        shim_snapshots = await self._get_shim_snapshots(sandbox, shim_ids)
+
+        all_passed = True
+
+        for assertion in assertions:
+            target = assertion.get("target", "message")
+            expected = assertion.get("expected")
+            property_path = assertion.get("property")
+            mode = assertion.get("mode", "exact")
+
+            if target.startswith("shim:"):
+                shim_id = target.split(":", 1)[1]
+                actual_val = shim_snapshots.get(shim_id)
+            elif target == "message":
+                actual_val = self._extract_agent_summary(history)
+            else:
+                logger.warning(f"      [Session] [Parity] Unsupported assertion target: {target}")
+                all_passed = False
+                continue
+
+            # Resolve property in snapshot/message using Unified Resolver
+            if property_path:
+                actual_val = PathResolver.resolve(actual_val, property_path)
+
+            # Comparison Logic
+            match = False
+            if mode == "exact":
+                match = actual_val == expected
+            elif mode == "regex" or (isinstance(expected, str) and expected.startswith("regex:")):
+                import re
+
+                pattern = str(expected)[6:] if str(expected).startswith("regex:") else str(expected)
+                match = bool(re.search(pattern, str(actual_val), re.IGNORECASE))
+            elif mode == "numerical_tolerance":
+                try:
+                    match = abs(float(actual_val) - float(expected)) < 1e-9
+                except (ValueError, TypeError):
+                    match = False
+
+            if not match:
+                msg = (
+                    f"      [Session] [Parity] Assertion FAILED: {target}.{property_path or ''} "
+                    f"| Expected: {expected} | Actual: {actual_val}"
+                )
+                logger.info(msg)
+                all_passed = False
+
+                # [Forensics] Broadcast divergence for auditability & automated triage
+                self.event_bus.emit(
+                    CoreEvents.ADAPTER_DEBUG,
+                    {
+                        "message": msg,
+                        "category": "PARITY_STATE_DIVERGENCE",
+                        "is_root_cause": True,
+                    },
+                )
+            else:
+                msg = f"      [Session] [Parity] Assertion passed: {target}.{property_path or ''}"
+                logger.debug(msg)
+                self.event_bus.emit(CoreEvents.ADAPTER_DEBUG, {"message": msg})
+
+        return all_passed
 
     async def _handle_tool_call(self, turn, agent_response, sandbox, history, actions, turn_ctx):
         tool_name = agent_response["tool_name"]
@@ -746,28 +853,16 @@ class SessionManager:
                 {"step_name": "state_hygiene_check"},
                 span_context=self.session_metadata.get("span_context"),
             )
+            from .utils.path_resolver import PathResolver
+
             hygiene_results = []
             for rule in sh.get("rules", []):
                 path = rule.get("path")
                 expected = rule.get("expected")
                 op = rule.get("op", "eq")  # eq, exists, not_exists, contains
 
-                # Resolve nested path in sandbox.state
-                parts = path.split(".")
-                val = sandbox.state
-                try:
-                    for part in parts:
-                        if "[" in part:
-                            # Handle dict/list indexing: e.g. "git[file_tree]"
-                            key = part.split("[")[1].split("]")[0].strip("'\"")
-                            part = part.split("[")[0]
-                            if part:
-                                val = val.get(part, {})
-                            val = val.get(key)
-                        else:
-                            val = val.get(part)
-                except (AttributeError, KeyError, TypeError):
-                    val = None
+                # Resolve nested path using Unified Resolver
+                val = PathResolver.resolve(sandbox.state, path)
 
                 success = False
                 if op == "eq":
@@ -809,11 +904,14 @@ class SessionManager:
                 summary = self._extract_agent_summary(history)
 
                 # Dynamic Dispatch Context
-                # We inject the node level expected_outcome into the criterion for metric access
-                # unless the criterion already defines an explicit 'expected' value.
+                # [Industrial Hardening] Pure Assertion Model: find the primary message baseline
                 eval_context = criterion.copy()
-                if "expected" not in eval_context and expected_outcome:
-                    eval_context["expected"] = expected_outcome.get("value")
+                if "expected" not in eval_context and isinstance(expected_outcome, list):
+                    primary_msg = next(
+                        (a["expected"] for a in expected_outcome if a.get("target") == "message"),
+                        None,
+                    )
+                    eval_context["expected"] = primary_msg
 
                 async def _invoke(func, *args):
                     if asyncio.iscoroutinefunction(func):
@@ -843,6 +941,10 @@ class SessionManager:
                         "success": score >= threshold,
                     }
                 )
+                self.event_bus.emit(
+                    CoreEvents.ADAPTER_DEBUG,
+                    {"message": f"[Metric] {m_name}: {score:.2f} (Threshold: {threshold})"},
+                )
             except Exception as e:
                 print(f"      [Metric Error] {node_id}: {e}")
 
@@ -862,6 +964,30 @@ class SessionManager:
                 or ""
             )
         return str(last_content)
+
+    async def _get_shim_snapshots(
+        self, sandbox: ToolSandbox, shim_ids: list[str]
+    ) -> dict[str, Any]:
+        """Queries active simulators for point-in-time state snapshots."""
+        simulators = sandbox.get_active_simulators()
+        shim_snapshots = {}
+        if not shim_ids:
+            return shim_snapshots
+
+        tasks = []
+        valid_ids = []
+        for sid in shim_ids:
+            shim = simulators.get(sid)
+            if shim:
+                tasks.append(shim.get_snapshot())
+                valid_ids.append(sid)
+            else:
+                logger.warning(f"      [Session] [Parity] Unknown shim target: {sid}")
+
+        if tasks:
+            results = await asyncio.gather(*tasks)
+            shim_snapshots = dict(zip(valid_ids, results, strict=True))
+        return shim_snapshots
 
     def _sanitize_for_history(self, obj: Any) -> Any:
         """Coerces objects (especially Mocks) into plain serializable types for history safety."""

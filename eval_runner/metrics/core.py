@@ -1,5 +1,3 @@
-from typing import Any
-
 from .. import config
 from . import MetricRegistry
 
@@ -35,29 +33,19 @@ def calculate_communication_clarity(criterion: dict, agent_summary: str) -> floa
     return 0.0
 
 
-def get_nested_value(data: dict[str, Any], path: str) -> Any:
-    """Retrieves a value from a nested dictionary using dot-notation."""
-    keys = path.split(".")
-    current = data
-    for key in keys:
-        if isinstance(current, dict):
-            current = current.get(key)
-        else:
-            return None
-    return current
-
-
 @MetricRegistry.register("state_verification")
 def calculate_state_correctness(expected_changes: list, actual_state: dict) -> float:
     """Verifies if the sandbox state matches the expected changes using dot-notation."""
     if not expected_changes:
         return 1.0
 
+    from ..utils import PathResolver
+
     correct_count = 0
     for change in expected_changes:
         path = change.get("path")
-        expected_val = change.get("value")
-        actual_val = get_nested_value(actual_state, path) if "." in path else actual_state.get(path)
+        expected_val = change.get("expected") if "expected" in change else change.get("value")
+        actual_val = PathResolver.resolve(actual_state, path)
 
         if actual_val == expected_val:
             correct_count += 1

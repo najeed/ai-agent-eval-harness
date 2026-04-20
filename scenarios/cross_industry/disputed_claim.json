@@ -14,38 +14,46 @@
       {
         "id": "task-1",
         "task_description": "Fetch authorization AUTH-99 from the Healthcare Provider's API.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Record found with code AUTH-99, status 'Pending'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Record found with code AUTH-99, status 'Pending'.",
+            "mode": "exact"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the Insurance Payer's database for AUTH-99.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Record shows AUTH-99 is marked as 'Denied' due to 'Incomplete Documentation'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Record shows AUTH-99 is marked as 'Denied' due to 'Incomplete Documentation'.",
+            "mode": "exact"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reconcile the records and propose a 'Correction Request' to the Insurance system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Correction submitted, status updated to 'Under Review'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Correction submitted, status updated to 'Under Review'.",
+            "mode": "exact"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Notify John Smith (john.smith@example.com) about the current status and the expected resolution timeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Email sent to patient explaining the administrative correction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Email sent to patient explaining the administrative correction.",
+            "mode": "exact"
+          }
+        ]
       }
     ],
     "edges": [

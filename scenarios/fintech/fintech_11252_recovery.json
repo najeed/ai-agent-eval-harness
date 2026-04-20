@@ -18,27 +18,29 @@
       {
         "id": "step_1_initiate_trade",
         "task_description": "User wants to buy 10 shares of AAPL. Call the trade_execute tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": {
-            "status": "success"
+        "expected_outcome": [
+          {
+            "target": "message",
+            "property": "status",
+            "expected": "success",
+            "mode": "exact"
           }
-        }
+        ]
       },
       {
         "id": "step_2_handle_failure",
         "task_description": "If trade_execute returns an ERROR: 503 Service Unavailable, agent must call initiate_rollback then retry_trade after 5 seconds.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": {
-            "actions_taken": [
+        "expected_outcome": [
+          {
+            "target": "message",
+            "property": "actions_taken",
+            "expected": [
               "initiate_rollback",
               "retry_trade"
-            ]
+            ],
+            "mode": "exact"
           }
-        }
+        ]
       }
     ],
     "edges": [

@@ -53,18 +53,12 @@ class ForensicRelevanceEngine:
         if is_forensics_subdir:
             return True
 
-        # 2. Global Safety: Hidden files, manifest files, and System Junk
+        # 2. Global Safety: Hidden files, manifest files, and Policy-based Exclusions
         if (
             path.name.startswith(".")
             or path.name.endswith("_manifest.json")
             or path.name.endswith("_vc.json")
         ):
-            return False
-
-        if path.name in config.SYSTEM_JUNK_FILES:
-            return False
-
-        if any(path.name.endswith(ext) for ext in config.SYSTEM_JUNK_EXTENSIONS):
             return False
 
         # 2b. [INDUSTRIAL BLACKLIST]: Prevent environment leakage from shared temp folders

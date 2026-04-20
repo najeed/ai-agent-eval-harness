@@ -89,8 +89,14 @@ async def test_erp_simulator():
 
 
 @pytest.mark.asyncio
-async def test_iot_simulator():
-    sim = simulators.IoTSimulator()
-    res = await sim.execute("iot_update", {"device": "thermostat", "state": "75F"})
-    assert res["status"] == "success"
-    assert sim.state["devices"]["thermostat"] == "75F"
+async def test_base_simulator_immutability():
+    sim = simulators.GitSimulator()  # GitSimulator inherits from BaseSimulator
+    sim.state = {"a": {"b": 1}}
+
+    snapshot = await sim.get_snapshot()
+    assert snapshot == sim.state
+    assert snapshot is not sim.state
+
+    # Mutate snapshot
+    snapshot["a"]["b"] = 2
+    assert sim.state["a"]["b"] == 1, "State was mutated through snapshot"

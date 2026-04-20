@@ -53,7 +53,7 @@ def test_provisioning_hash_integrity(tmp_path, monkeypatch):
     content = {"shims": {"api": {"resources": {"api_key": secret_value}}}}
     (d_dir / "99_secrets.json").write_text(json.dumps(content))
 
-    monkeypatch.setattr(config, "SHIM_RESOURCES_D_DIR", d_dir)
+    monkeypatch.setattr(config, "AES_CONFIG_DIR", tmp_path)
     config._SHIM_REGISTRY_CACHE = None
 
     # 2. Initialize Sandbox

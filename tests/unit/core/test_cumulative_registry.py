@@ -33,7 +33,7 @@ def test_deep_merge_preserves_siblings(tmp_path, monkeypatch):
     ext_file.write_text(json.dumps(ext_content))
 
     # 3. Patch config paths to use tmp_path
-    monkeypatch.setattr(config, "SHIM_RESOURCES_D_DIR", d_dir)
+    monkeypatch.setattr(config, "AES_CONFIG_DIR", tmp_path)
     config._SHIM_REGISTRY_CACHE = None
 
     # 4. Reload and Verify
@@ -59,7 +59,7 @@ def test_alphabetical_override_order(tmp_path, monkeypatch):
     file_b = d_dir / "02_second.json"
     file_b.write_text(json.dumps({"shims": {"api": {"resources": {"timeout": 20}}}}))
 
-    monkeypatch.setattr(config, "SHIM_RESOURCES_D_DIR", d_dir)
+    monkeypatch.setattr(config, "AES_CONFIG_DIR", tmp_path)
     config.RegistryManager.reload()
     resolved = config.RegistryManager.get_resolved_registry()
 
@@ -77,7 +77,7 @@ def test_project_root_files_are_ignored(tmp_path, monkeypatch):
     root_file.write_text(json.dumps({"shims": {"api": {"resources": {"legacy": True}}}}))
 
     monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
-    monkeypatch.setattr(config, "SHIM_RESOURCES_D_DIR", d_dir)
+    monkeypatch.setattr(config, "AES_CONFIG_DIR", tmp_path)
 
     # 3. Resolve
     registry = config.RegistryManager.get_resolved_registry()
@@ -102,7 +102,7 @@ def test_local_overlay_precedence(tmp_path, monkeypatch):
         json.dumps({"shims": {"api": {"resources": {"val": "local"}}}})
     )
 
-    monkeypatch.setattr(config, "SHIM_RESOURCES_D_DIR", d_dir)
+    monkeypatch.setattr(config, "AES_CONFIG_DIR", tmp_path)
     config._SHIM_REGISTRY_CACHE = None
 
     registry = config.RegistryManager.get_resolved_registry()
@@ -128,14 +128,14 @@ def test_yaml_support_in_d_folder(tmp_path, monkeypatch):
     yaml_file = d_dir / "01_config.yaml"
     yaml_file.write_text("shims:\n  git:\n    resources:\n      yaml_check: true")
 
-    monkeypatch.setattr(config, "SHIM_RESOURCES_D_DIR", d_dir)
+    monkeypatch.setattr(config, "AES_CONFIG_DIR", tmp_path)
     config.RegistryManager.reload()
     resolved = config.RegistryManager.get_resolved_registry()
 
     assert resolved["shims"]["git"]["resources"]["yaml_check"] is True
 
 
-def test_malformed_file_handling(tmp_path, monkeypatch, capsys):
+def test_malformed_file_handling(tmp_path, monkeypatch, caplog):
     """Verify that a single broken file in .d doesn't stop the whole registry."""
     d_dir = tmp_path / "shims.d"
     d_dir.mkdir()
@@ -147,13 +147,12 @@ def test_malformed_file_handling(tmp_path, monkeypatch, capsys):
         json.dumps({"shims": {"api": {"resources": {"valid": True}}}})
     )
 
-    monkeypatch.setattr(config, "SHIM_RESOURCES_D_DIR", d_dir)
+    monkeypatch.setattr(config, "AES_CONFIG_DIR", tmp_path)
     config.RegistryManager.reload()
     resolved = config.RegistryManager.get_resolved_registry()
 
     # Valid file should still load
     assert resolved["shims"]["api"]["resources"]["valid"] is True
 
-    # Check for warning in stderr/stdout
-    captured = capsys.readouterr()
-    assert "Warning: Failed to load extension from 01_broken.json" in captured.out
+    # Check for warning in caplog
+    assert "Failed to load configuration from shims.d/01_broken.json" in caplog.text

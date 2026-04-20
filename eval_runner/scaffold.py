@@ -65,15 +65,17 @@ def generate_interactive():
                         "task_description": tpl["task_tpl"].format(
                             capability=capability, industry=industry
                         ),
-                        "expected_outcome": {
-                            "type": "typed_value",
-                            "data_type": "string",
-                            "value": tpl["expected_tpl"].format(
-                                capability=capability,
-                                industry=industry,
-                                capability_title=capability.title(),
-                            ),
-                        },
+                        "expected_outcome": [
+                            {
+                                "target": "message",
+                                "expected": tpl["expected_tpl"].format(
+                                    capability=capability,
+                                    industry=industry,
+                                    capability_title=capability.title(),
+                                ),
+                                "mode": "exact",
+                            }
+                        ],
                     }
                 ],
                 "edges": [],
@@ -184,11 +186,13 @@ def scaffold_benchmark(dir_path: str, industry: str, protocol: str):
                 {
                     "id": "node_1",
                     "task_description": "Initial interaction test.",
-                    "expected_outcome": {
-                        "type": "typed_value",
-                        "data_type": "string",
-                        "value": "Successful execution.",
-                    },
+                    "expected_outcome": [
+                        {
+                            "target": "message",
+                            "expected": "Successful execution.",
+                            "mode": "exact",
+                        }
+                    ],
                 }
             ],
             "edges": [],

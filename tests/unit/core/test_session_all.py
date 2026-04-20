@@ -233,6 +233,25 @@ class TestSession:
         for h in hygiene:
             assert h["success"], f"Failed op {h['op']} for path {h['path']}"
 
+    @pytest.mark.asyncio
+    async def test_calculate_metrics_complex_hygiene(self, session):
+        """Verify PathResolver mixed notation in hygiene checks."""
+        node = {
+            "id": "node-1",
+            "state_hygiene": {
+                "rules": [
+                    {"path": "data.tables['users'][0].id", "expected": 1, "op": "eq"},
+                    {"path": "data.tables.users[0].name", "expected": "Alice", "op": "eq"},
+                ]
+            },
+        }
+        mock_sandbox = MagicMock()
+        mock_sandbox.state = {"data": {"tables": {"users": [{"id": 1, "name": "Alice"}]}}}
+
+        results = await session._calculate_metrics(node, 1, 1, [], mock_sandbox, {"used_tools": []})
+        hygiene = results["state_hygiene"]
+        assert all(h["success"] for h in hygiene)
+
     def test_sanitize_for_history(self, session):
         assert session._sanitize_for_history(1) == 1
         assert session._sanitize_for_history([1, {"a": 2}]) == [1, {"a": 2}]

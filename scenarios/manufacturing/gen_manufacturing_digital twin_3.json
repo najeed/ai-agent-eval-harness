@@ -14,11 +14,7 @@
       {
         "id": "task_3",
         "task_description": "User wants to perform digital twin. Handle the request correctly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": null
-        }
+        "expected_outcome": []
       }
     ],
     "edges": []

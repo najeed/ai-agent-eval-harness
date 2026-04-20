@@ -14,11 +14,13 @@
       {
         "id": "task_1",
         "task_description": "User wants to perform derivatives trading. Handle the request correctly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Successfully handled derivatives trading."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Successfully handled derivatives trading.",
+            "mode": "exact"
+          }
+        ]
       }
     ],
     "edges": []

@@ -1,11 +1,17 @@
 {
   "$schema": "../../../spec/routing/routing.schema.json",
-  "environments": {
+  "mappings": {
+    "telecom_agent": {
+      "protocol": "http",
+      "endpoint": "http://localhost:5001/execute_task",
+      "metadata": {
+        "provider": "docker",
+        "region": "us-east-1"
+      }
+    },
     "default": {
-      "type": "sandbox",
-      "provider": "docker",
-      "config": {}
+      "protocol": "local",
+      "endpoint": "eval_runner.adapters.native.SubprocessAdapter"
     }
-  },
-  "tools": {}
+  }
 }

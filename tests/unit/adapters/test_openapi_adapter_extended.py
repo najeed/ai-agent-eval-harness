@@ -149,7 +149,7 @@ def test_normalization_hub_agnostic_mapping_keys():
     # Test different keys for status discovery
     assert DualNormalizationHub.normalize({"phase": "waiting"}, 200) == "hitl_pause"
     assert DualNormalizationHub.normalize({"outcome": "review"}, 200) == "hitl_pause"
-    assert DualNormalizationHub.normalize({"decision": "pending"}, 200) == "hitl_pause"
+    assert DualNormalizationHub.normalize({"decision": "pending"}, 200) == "processing"
 
 
 def test_normalization_hub_agnostic_mapping_heuristic():
@@ -173,7 +173,7 @@ async def test_openapi_adapter_sync_hitl_pause(mock_session):
     # Mock sync response that maps to hitl_pause with 200 OK
     mock_session.get.return_value = MockResponse(json_data={"info": {"title": "Test"}})
     mock_session.request.return_value = MockResponse(
-        status=200, json_data={"status": "processing", "message": "Still busy"}
+        status=200, json_data={"status": "waiting", "message": "Still busy"}
     )
 
     res = await adapter({}, "http://api/v1")

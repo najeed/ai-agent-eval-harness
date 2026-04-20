@@ -43,6 +43,17 @@ class BaseSimulator:
         """Standardized verification hook for shim-specific post-conditions."""
         return {"status": "success"}
 
+    async def get_snapshot(self) -> dict[str, Any]:
+        """
+        Returns a point-in-time snapshot of the world state from this shim's perspective.
+        This provides the "Ground Truth" for State Parity verification.
+        """
+        # Default behavior: Return a deep copy of the internal state dictionary
+        # This prevents accidental mutations during the verification phase.
+        import copy
+
+        return copy.deepcopy(self.state)
+
 
 class GitSimulator(BaseSimulator):
     """Simulates a dynamic Git repository state."""
@@ -235,6 +246,13 @@ class ApiSimulator(BaseSimulator):
         except Exception as e:
             return {"status": "error", "message": f"API Execution Error: {str(e)}"}
 
+    async def get_snapshot(self) -> dict[str, Any]:
+        """Returns the registered endpoints and any captured telemetry state."""
+        return {
+            "endpoints": self.state.get("endpoints", {}),
+            "is_live": os.getenv("IS_LIVE", "false").lower() == "true",
+        }
+
     # Backward compatibility shim for old execute calls
     async def execute(self, action: str, params: dict) -> dict:
         if action in ["GET", "POST", "PUT", "DELETE"]:
@@ -310,6 +328,31 @@ class DatabaseSimulator(BaseSimulator):
                 return {"status": "success", "message": "Query executed successfully."}
         except Exception as e:
             return {"status": "error", "message": f"Database Error: {str(e)}"}
+
+    async def get_snapshot(self) -> dict[str, Any]:
+        """
+        Returns a snapshot of all tables in the simulated database.
+        If the real engine is active, it performs a bulk read of the schema.
+        """
+        if not self._engine:
+            return {"tables": self.state.get("tables", {}), "engine": "mock"}
+
+        from sqlalchemy import inspect, text
+
+        snapshot = {"tables": {}, "engine": "sqlite"}
+        try:
+            with self._engine.connect() as conn:
+                inspector = inspect(self._engine)
+                for table_name in inspector.get_table_names():
+                    # Table names cannot be parameterized in standard SQL
+                    # We trust the inspector source for this simulation context.
+                    result = conn.execute(text(f"SELECT * FROM {table_name}"))  # nosec B608
+                    rows = [dict(row._mapping) for row in result]
+                    snapshot["tables"][table_name] = rows
+        except Exception as e:
+            snapshot["error"] = f"Snapshot failed: {e}"
+
+        return snapshot
 
     async def cleanup(self):
         """[Iteration 5: Secure Wipe] Dispose SQLAlchemy engine to release file locks."""

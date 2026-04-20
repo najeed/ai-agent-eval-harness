@@ -145,6 +145,19 @@ class ScenarioLinter:
                     if n_id:
                         node_ids.add(n_id)
 
+                    # 2b. Assertion Schema Check (AES v1.4.0 Compliance)
+                    expected = node.get("expected_outcome")
+                    if expected is not None:
+                        if not isinstance(expected, list):
+                            results["errors"].append(
+                                f"Node '{n_id}' expected_outcome must be an array (AES v1.4.0)"
+                            )
+                            results["status"] = "fail"
+                            results["score"] -= 30
+                        elif len(expected) == 0:
+                            results["warnings"].append(f"Node '{n_id}' has empty expected_outcome")
+                            results["score"] -= 10
+
                 # Edge Integrity
                 edges = wf.get("edges", [])
                 if not isinstance(edges, list):

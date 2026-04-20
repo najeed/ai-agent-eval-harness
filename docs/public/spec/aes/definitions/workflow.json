@@ -3,29 +3,48 @@
   "title": "AES Workflow Definition",
   "type": "object",
   "description": "The State-Machine DAG defining agentic transitions.",
-  "required": ["nodes", "edges"],
+  "required": [
+    "nodes",
+    "edges"
+  ],
   "properties": {
     "nodes": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "task_description"],
+        "required": [
+          "id",
+          "task_description"
+        ],
         "properties": {
-          "id": { "type": "string" },
-          "task_description": { "type": "string" },
+          "id": {
+            "type": "string"
+          },
+          "task_description": {
+            "type": "string"
+          },
           "required_tools": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "List of shim tools required to complete this task (v1.4 upgrade)"
           },
           "success_criteria": {
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["metric", "threshold"],
+              "required": [
+                "metric",
+                "threshold"
+              ],
               "properties": {
-                "metric": { "type": "string" },
-                "threshold": { "type": "number" }
+                "metric": {
+                  "type": "string"
+                },
+                "threshold": {
+                  "type": "number"
+                }
               }
             },
             "description": "Quantitative metrics for task success (v1.4 upgrade)"
@@ -35,26 +54,37 @@
             "description": "Assertions to check BEFORE this node can execute."
           },
           "expected_outcome": {
-            "oneOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "type": { "const": "standard_ref" },
-                  "schema_id": { "type": "string" },
-                  "value": {}
+            "type": "array",
+            "description": "Authoritative assertion list (both Message and State parity).",
+            "items": {
+              "type": "object",
+              "properties": {
+                "target": {
+                  "type": "string",
+                  "description": "Assertion target (e.g., 'message', 'shim:loan_db')."
+                },
+                "property": {
+                  "type": "string",
+                  "description": "JSONPath or query to retrieve value."
+                },
+                "expected": {
+                  "description": "The expected value."
+                },
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "exact",
+                    "regex",
+                    "numerical_tolerance"
+                  ],
+                  "default": "exact"
                 }
               },
-              {
-                "type": "object",
-                "properties": {
-                  "type": { "const": "typed_value" },
-                  "data_type": {
-                    "enum": ["string", "number", "boolean", "object", "array"]
-                  },
-                  "value": {}
-                }
-              }
-            ]
+              "required": [
+                "target",
+                "expected"
+              ]
+            }
           }
         }
       }
@@ -63,10 +93,17 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["from", "to"],
+        "required": [
+          "from",
+          "to"
+        ],
         "properties": {
-          "from": { "type": "string" },
-          "to": { "type": "string" },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
           "condition": {
             "type": "string",
             "description": "Logical condition to trigger the transition."

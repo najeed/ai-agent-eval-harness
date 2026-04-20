@@ -344,3 +344,24 @@ def test_consistency_score_standard():
     # Partial overlap: "a b" vs "a c" -> intersection=1, union=3 -> 0.33
     score = metrics.calculate_consistency_score(["a b", "a c"])
     assert 0.33 < score < 0.34
+
+
+def test_state_verification_metric():
+    """Verify that state_verification metric uses PathResolver correctly."""
+
+    expected = [
+        {"path": "git.branch", "expected": "main"},
+        {"path": "db['active']", "expected": True},
+        {"path": "tables.users[0].id", "expected": 1},
+    ]
+    actual = {"git": {"branch": "main"}, "db": {"active": True}, "tables": {"users": [{"id": 1}]}}
+
+    # We use a mocked registry or direct call if possible.
+    # metrics.calculate_state_correctness is the function.
+    score = metrics.calculate_state_correctness(expected, actual)
+    assert score == 1.0
+
+    # Partial match
+    actual["git"]["branch"] = "develop"
+    score = metrics.calculate_state_correctness(expected, actual)
+    assert score == pytest.approx(2 / 3)

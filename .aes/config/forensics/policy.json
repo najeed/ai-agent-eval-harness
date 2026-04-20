@@ -1,23 +1,50 @@
 {
-  "policies": {
-    "LAB_STANDARD_V1": {
-      "name": "General Laboratory Standard (v1.0)",
-      "description": "Baseline forensic auditing for research and development. Enables tracing without strict PII enforcement.",
-      "pii_redaction": {
-        "mode": "passive",
-        "redact_all": false
-      },
-      "integrity": {
-        "method": "sha256",
-        "sign_world_state": false
-      },
-      "retention": {
-        "policy": "no_retention",
-        "days": 0
-      }
-    }
-  },
-  "assignments": {
-    "anonymous@agentvos.ai": "LAB_STANDARD_V1"
+  "forensics": {
+    "extensions": [
+      ".jsonl",
+      ".log",
+      ".json",
+      ".png",
+      ".jpg",
+      ".pdf",
+      ".csv",
+      ".db",
+      ".sqlite",
+      ".txt",
+      ".parquet",
+      ".yaml",
+      ".yml",
+      ".sql",
+      ".patch",
+      ".diff",
+      ".zip",
+      ".tar.gz",
+      ".tgz",
+      ".html",
+      ".svg"
+    ],
+    "mandatory_patterns": [
+      "audit_.*\\.json",
+      "forensics/.*\\.json"
+    ],
+    "exclusion_patterns": [
+      ".*\\.node$",
+      ".*\\.cache$",
+      ".*\\.pyc$",
+      ".*\\.pyo$",
+      ".*\\.pyd$",
+      ".*\\.exe$",
+      ".*\\.dll$",
+      ".*\\.tmp$",
+      ".*\\.cpuprofile$",
+      "thumbs\\.db",
+      "desktop\\.ini",
+      "\\.DS_Store",
+      "AdobeARM\\.log",
+      "MpCmdRun\\.log",
+      "pipecom\\.log",
+      "StructuredQuery\\.log"
+    ],
+    "max_artifact_size": 5242880
   }
 }

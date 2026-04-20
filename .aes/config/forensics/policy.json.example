@@ -1,11 +1,13 @@
 {
-  "extensions": [
-    ".jsonl", ".log", ".json", ".png", ".jpg", ".pdf", 
-    ".csv", ".db", ".sqlite", ".txt", ".parquet", ".yaml", 
-    ".yml", ".sql", ".patch", ".diff", ".zip", ".tar.gz", 
-    ".tgz", ".html", ".svg"
-  ],
-  "mandatory_patterns": ["audit_.*\\.json"],
-  "exclusion_patterns": [".*\\.node$", ".*\\.cache$", ".*\\.pyc$", "%", "thumbs.db"],
-  "max_artifact_size": 5242880
+  "forensics": {
+    "extensions": [
+      ".jsonl", ".log", ".json", ".png", ".jpg", ".pdf", 
+      ".csv", ".db", ".sqlite", ".txt", ".parquet", ".yaml", 
+      ".yml", ".sql", ".patch", ".diff", ".zip", ".tar.gz", 
+      ".tgz", ".html", ".svg"
+    ],
+    "mandatory_patterns": ["audit_.*\\.json"],
+    "exclusion_patterns": [".*\\.node$", ".*\\.cache$", ".*\\.pyc$", "%", "thumbs.db"],
+    "max_artifact_size": 5242880
+  }
 }

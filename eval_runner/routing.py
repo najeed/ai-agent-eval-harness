@@ -1,8 +1,5 @@
-import json
 import logging
 from typing import Any
-
-import yaml
 
 from . import config
 
@@ -43,74 +40,18 @@ class RoutingRegistry:
     def get_resolved_registry(cls) -> dict[str, Any]:
         """
         Loads and merges all routing sources deterministically.
-        Priority: manifest.json (default 0) < routing.d/*.json (explicit priority field).
+        Now sources from the Centralized RegistryManager.
         """
         if cls._cache is not None:
             return cls._cache
 
-        # Collected fragments: list of (priority, filename, mappings)
-        fragments = []
+        # 1. Source from Centralized Registry
+        registry = config.RegistryManager.get_resolved_registry()
+        resolved_mappings = registry.get("routing", {}).get("mappings", {})
 
-        # 1. Main Manifest baseline
-        if config.ROUTING_CONFIG_PATH.exists():
-            try:
-                with open(config.ROUTING_CONFIG_PATH, encoding="utf-8") as f:
-                    content = json.load(f)
-                    if content:
-                        fragments.append(
-                            (
-                                content.get("priority", 0),
-                                "manifest.json",
-                                content.get("mappings", {}),
-                            )
-                        )
-            except Exception as e:
-                logger.error(
-                    f"Failed to load routing manifest from {config.ROUTING_CONFIG_PATH}: {e}"
-                )
-
-        # 2. Extension Directory (.aes/config/routing.d/)
-        d_dir = config.ROUTING_D_DIR
-        if d_dir.exists() and d_dir.is_dir():
-            paths = sorted(list(d_dir.glob("*.json")) + list(d_dir.glob("*.yaml")))
-            for path in paths:
-                try:
-                    with open(path, encoding="utf-8") as f:
-                        ext = (
-                            yaml.safe_load(f) if path.suffix in [".yaml", ".yml"] else json.load(f)
-                        )
-                        if ext and "mappings" in ext:
-                            fragments.append(
-                                (
-                                    ext.get(
-                                        "priority", 10
-                                    ),  # Extensions default to higher priority than manifest
-                                    path.name,
-                                    ext["mappings"],
-                                )
-                            )
-                except Exception as e:
-                    logger.warning(f"Failed to load routing extension from {path.name}: {e}")
-
-        # 3. Deterministic Merge: Sort by Priority (Ascending), then Name
-        # Later (higher priority) fragments will overwrite earlier ones in dict.update()
-        fragments.sort(key=lambda x: (x[0], x[1]))
-
-        resolved_mappings = {}
-        for prio, name, mappings in fragments:
-            for cap, route in mappings.items():
-                if cap in resolved_mappings:
-                    logger.info(
-                        f"      [Routing] Overwriting capability '{cap}' "
-                        f"with higher priority source: {name} (Prio: {prio})"
-                    )
-                resolved_mappings[cap] = route
-
-        # RegistryManager: Global reload (v1.2.3 Dynamic Policy Sync)
-        config.RegistryManager.reload()
         logger.debug(
-            f"   [Routing] Standard resolution complete for {len(fragments)} fragments. "
-            f"Strategy: {config.get_routing_strategy()}"
+            f"   [Routing] Resolution complete via Centralized Registry. "
+            f"Mappings: {len(resolved_mappings)}"
         )
 
         cls._cache = resolved_mappings
@@ -119,5 +60,6 @@ class RoutingRegistry:
     @classmethod
     def reload(cls):
         """Forces a reload of the registry."""
+        config.RegistryManager.reload()
         cls._cache = None
         return cls.get_resolved_registry()

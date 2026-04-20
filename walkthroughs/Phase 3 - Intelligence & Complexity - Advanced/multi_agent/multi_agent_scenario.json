@@ -31,11 +31,13 @@
         "id": "node_auditor",
         "role": "Auditor",
         "task_description": "Review the incident report. Verify that the 'Security Severity' is justified based on the 'Sector-7' source. If it is, output 'AUDIT_PASSED'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "string",
-          "value": "AUDIT_PASSED"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "AUDIT_PASSED",
+            "mode": "exact"
+          }
+        ]
       }
     ],
     "edges": [

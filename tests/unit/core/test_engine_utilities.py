@@ -49,7 +49,7 @@ def test_is_path_safe_resolution_error(tmp_path):
                 raise Exception("Resolution failure")
             return super().resolve(*args, **kwargs)
 
-    with patch("eval_runner.utils.Path", side_effect=MockPath):
+    with patch("eval_runner.utils.base.Path", side_effect=MockPath):
         assert utils.is_path_safe("fail_path", tmp_path) is False
 
 
@@ -205,7 +205,7 @@ def test_loader_normalize_identity_fallback(tmp_path):
     ):
         scenario_file.write_text(json.dumps(data), encoding="utf-8")
         res = loader.load_scenario(str(scenario_file))
-        assert res["id"] == "fallback"
+        assert res["id"] is None  # Fallback removed for spec compliance
 
 
 def test_loader_load_dataset_benchmark_uri():

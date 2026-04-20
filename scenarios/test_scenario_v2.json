@@ -13,11 +13,13 @@
       {
         "id": "task1",
         "task_description": "Say hello",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "string",
-          "value": "Agent says hello"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent says hello",
+            "mode": "exact"
+          }
+        ]
       }
     ],
     "edges": []

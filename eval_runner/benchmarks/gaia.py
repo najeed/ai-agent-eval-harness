@@ -16,35 +16,70 @@ class GAIABenchmark:
         # For the harness, we convert it to our Scenario format
         return [
             {
+                "aes_version": 1.4,
+                "metadata": {
+                    "id": "gaia_validation_001",
+                    "name": "GAIA: Complex Information Extraction",
+                    "compliance_level": "Standard",
+                },
                 "id": "gaia_validation_001",
-                "title": "GAIA: Complex Information Extraction",
-                "description": "The agent must find the total population of a specific city in 2022 and compare it to its neighboring city.",  # noqa: E501
-                "use_case": "Research & Extraction",
-                "core_function": "Multi-hop Reasoning",
+                "description": (
+                    "The agent must find the total population of a specific city in 2022 "
+                    "and compare it to its neighboring city."
+                ),
                 "industry": "General Intelligence",
-                "tasks": [
-                    {
-                        "task_id": "step_1",
-                        "description": "Identify the 2022 population for San Francisco and San Jose.",  # noqa: E501
-                        "expected_outcome": "Correct population counts retrieved from a reliable source.",  # noqa: E501
-                        "success_criteria": [{"metric": "factual_accuracy", "threshold": 1.0}],
-                    }
-                ],
+                "workflow": {
+                    "nodes": [
+                        {
+                            "id": "step_1",
+                            "task_description": (
+                                "Identify the 2022 population for San Francisco and San Jose."
+                            ),
+                            "expected_outcome": [
+                                {
+                                    "target": "message",
+                                    "expected": (
+                                        "Correct population counts retrieved from a "
+                                        "reliable source."
+                                    ),
+                                    "mode": "regex",
+                                }
+                            ],
+                            "success_criteria": [{"metric": "factual_accuracy", "threshold": 1.0}],
+                        }
+                    ],
+                    "edges": [],
+                },
             },
             {
+                "aes_version": 1.4,
+                "metadata": {
+                    "id": "gaia_validation_002",
+                    "name": "GAIA: Tool-Enabled Cross-Referencing",
+                    "compliance_level": "Standard",
+                },
                 "id": "gaia_validation_002",
-                "title": "GAIA: Tool-Enabled Cross-Referencing",
-                "description": "Given a list of scientific papers, find the most cited one and extract its main conclusion.",  # noqa: E501
-                "use_case": "Academic Research",
-                "core_function": "Academic Synthesis",
+                "description": (
+                    "Given a list of scientific papers, find the most cited one "
+                    "and extract its main conclusion."
+                ),
                 "industry": "General Intelligence",
-                "tasks": [
-                    {
-                        "task_id": "step_1",
-                        "description": "Find citation counts for the provided DOIs.",
-                        "expected_outcome": "Correct identification of the most cited paper.",
-                        "success_criteria": [{"metric": "factual_accuracy", "threshold": 0.9}],
-                    }
-                ],
+                "workflow": {
+                    "nodes": [
+                        {
+                            "id": "step_1",
+                            "task_description": "Find citation counts for the provided DOIs.",
+                            "expected_outcome": [
+                                {
+                                    "target": "message",
+                                    "expected": "Correct identification of the most cited paper.",
+                                    "mode": "regex",
+                                }
+                            ],
+                            "success_criteria": [{"metric": "factual_accuracy", "threshold": 0.9}],
+                        }
+                    ],
+                    "edges": [],
+                },
             },
         ]

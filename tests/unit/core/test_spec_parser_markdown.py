@@ -45,10 +45,10 @@ Verify bank balance. (Goal: Balance > 1000)
     assert len(nodes) == 2
     assert nodes[0]["title"] == "Identify Identity"
     assert "Determine if the user is real" in nodes[0]["task_description"]
-    assert nodes[0]["expected_outcome"]["value"] == "User is verified"
+    assert nodes[0]["expected_outcome"][0]["expected"] == "User is verified"
 
     assert nodes[1]["title"] == "Check Assets"
-    assert nodes[1]["expected_outcome"]["value"] == "Balance > 1000"
+    assert nodes[1]["expected_outcome"][0]["expected"] == "Balance > 1000"
 
     # Check edges
     assert len(scenario["workflow"]["edges"]) == 1
@@ -69,7 +69,7 @@ async def test_parse_markdown_bullet_tasks():
     nodes = scenario["workflow"]["nodes"]
     assert len(nodes) == 2
     assert "Task A" in nodes[0]["task_description"]
-    assert nodes[0]["expected_outcome"]["value"] == "Done"
+    assert nodes[0]["expected_outcome"][0]["expected"] == "Done"
     assert "Task B" in nodes[1]["task_description"]
 
 

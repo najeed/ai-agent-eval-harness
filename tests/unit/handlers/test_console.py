@@ -117,14 +117,13 @@ def test_plugin_blueprint_registration(client):
 def test_evaluate_endpoint(client):
     """Test that the evaluation endpoint is functional."""
     # Use the sample agent demo scenario which is guaranteed to exist
-    with patch("pathlib.Path.exists", return_value=True):
-        response = client.post(
-            "/api/v1/evaluate",
-            json={"path": "sample_agent/loan_agent_demo/loan_approval_scenario.json"},
-        )
-        assert response.status_code == 200
-        data = response.get_json()
-        assert data["status"] == "started"
+    response = client.post(
+        "/api/v1/evaluate",
+        json={"path": "sample_agent/loan_agent_demo/loan_approval_scenario.json"},
+    )
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["status"] == "started"
 
     # Test error case
     response = client.post("/api/v1/evaluate", json={})

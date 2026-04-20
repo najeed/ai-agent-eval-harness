@@ -94,11 +94,13 @@ async def parse_markdown_to_scenario(markdown_text: str) -> dict[str, Any]:
                         "task_description": task_body or task_title,
                     }
                     if expected_outcome:
-                        node["expected_outcome"] = {
-                            "type": "typed_value",
-                            "data_type": "string",
-                            "value": expected_outcome,
-                        }
+                        node["expected_outcome"] = [
+                            {
+                                "target": "message",
+                                "expected": expected_outcome,
+                                "mode": "exact",
+                            }
+                        ]
                     scenario["workflow"]["nodes"].append(node)
                     # Simple linear edges by default from parser
                     if len(scenario["workflow"]["nodes"]) > 1:
@@ -124,11 +126,13 @@ async def parse_markdown_to_scenario(markdown_text: str) -> dict[str, Any]:
                             "task_description": task_text,
                         }
                         if expected_outcome:
-                            node["expected_outcome"] = {
-                                "type": "typed_value",
-                                "data_type": "string",
-                                "value": expected_outcome,
-                            }
+                            node["expected_outcome"] = [
+                                {
+                                    "target": "message",
+                                    "expected": expected_outcome,
+                                    "mode": "exact",
+                                }
+                            ]
                         scenario["workflow"]["nodes"].append(node)
                         if i > 0:
                             scenario["workflow"]["edges"].append(
@@ -155,11 +159,13 @@ async def parse_markdown_to_scenario(markdown_text: str) -> dict[str, Any]:
                                 "success_criteria": task.get("success_criteria", []),
                             }
                             if task.get("expected_outcome"):
-                                node["expected_outcome"] = {
-                                    "type": "typed_value",
-                                    "data_type": "string",
-                                    "value": str(task.get("expected_outcome")),
-                                }
+                                node["expected_outcome"] = [
+                                    {
+                                        "target": "message",
+                                        "expected": str(task.get("expected_outcome")),
+                                        "mode": "exact",
+                                    }
+                                ]
                             scenario["workflow"]["nodes"].append(node)
                             if len(scenario["workflow"]["nodes"]) > 1:
                                 scenario["workflow"]["edges"].append(

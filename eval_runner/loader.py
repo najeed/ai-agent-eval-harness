@@ -180,9 +180,6 @@ def _normalize_identity(scenario_data: dict, file_path: Path) -> dict:
     # 1. Authoritative Resolution (AES v1.4.0 Compliance)
     # The schema check ensures metadata.id exists.
     identifier = metadata.get("id")
-    if not identifier:
-        # Fallback for internal robustness, though schema validation should prevent this
-        identifier = scenario_data.get("id") or file_path.stem
 
     # 2. Top-level Engine ID (Required for evaluation context and reporting)
     scenario_data["id"] = identifier
