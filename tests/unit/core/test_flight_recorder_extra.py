@@ -53,7 +53,9 @@ def test_flight_recorder_rotation_fail(tmp_path, capsys):
         recorder = FlightRecorderPlugin()
 
         # We manually patch rmtree to simulate a low-level OS failure
-        with patch("shutil.rmtree", side_effect=OSError("Perm denied")):
+        with patch(
+            "eval_runner.flight_recorder.rmtree_resilient", side_effect=OSError("Perm denied")
+        ):
             recorder.rotate_logs()
 
             # Check stderr for the industrial warning string

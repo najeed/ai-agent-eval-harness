@@ -14,6 +14,7 @@ from typing import Any
 
 from .events import CoreEvents, Event
 from .plugins import BaseEvalPlugin
+from .utils import rmtree_resilient
 
 
 class FlightRecorderPlugin(BaseEvalPlugin):
@@ -186,10 +187,8 @@ class FlightRecorderPlugin(BaseEvalPlugin):
                 # [Retention Policy Enforcement]
                 for old_vault in targets[self.log_rotate_count :]:
                     try:
-                        import shutil
-
-                        # Industrial purge of the entire vault directory
-                        shutil.rmtree(old_vault)
+                        # Industrial-grade resilient purge of the entire vault directory
+                        rmtree_resilient(old_vault)
                     except Exception as e:
                         sys.stderr.write(
                             "[FlightRecorder] [WARNING] Error rotating log vault "
