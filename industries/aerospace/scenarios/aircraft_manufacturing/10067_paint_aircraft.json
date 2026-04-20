@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Mask all areas of the aircraft that should not be painted, such as windows, antennas, and landing gear.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures all sensitive areas are correctly masked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures all sensitive areas are correctly masked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apply the primer and multiple coats of paint, following the specifications for paint type and thickness.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent applies the paint correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent applies the paint correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the customer's decals and logos, and perform a final quality inspection of the paint job.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent applies the livery and confirms the finish meets quality standards."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent applies the livery and confirms the finish meets quality standards.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

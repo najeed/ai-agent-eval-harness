@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "For each property address, look up the showing instructions and availability in the MLS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the showing requirements (e.g., 'Go and Show', 'Appointment Required') for all 5 properties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the showing requirements (e.g., 'Go and Show', 'Appointment Required') for all 5 properties.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Book showing appointments for the properties that require them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books appointments through the showing service for all necessary properties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books appointments through the showing service for all necessary properties.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a logical showing route and send the itinerary to the buyer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A geographically optimized tour with addresses and times is created and emailed to the buyer client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A geographically optimized tour with addresses and times is created and emailed to the buyer client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

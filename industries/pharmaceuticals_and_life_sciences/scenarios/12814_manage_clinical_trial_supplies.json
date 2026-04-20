@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Review the current inventory of IP at a specific clinical site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the site's inventory is running low."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the site's inventory is running low.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the site's patient enrollment forecast for the next month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees that the site is expected to enroll 5 new patients."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees that the site is expected to enroll 5 new patients.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the amount of IP needed for the resupply shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates that 10 kits are needed to meet the forecasted demand and safety stock levels."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates that 10 kits are needed to meet the forecasted demand and safety stock levels.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a shipment order for the IP to be sent to the clinical site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates a shipment order in the inventory management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates a shipment order in the inventory management system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

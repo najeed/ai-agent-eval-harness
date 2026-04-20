@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the denial for 'no coverage'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Biller identifies the denied claim and reason."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Biller identifies the denied claim and reason.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that no other insurance is on file for the patient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Biller confirms there is no other active coverage in the patient's record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Biller confirms there is no other active coverage in the patient's record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Transfer the full balance of the claim to patient responsibility.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The balance is moved from the insurance bucket to the patient bucket, so it will appear on the patient's next statement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The balance is moved from the insurance bucket to the patient bucket, so it will appear on the patient's next statement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

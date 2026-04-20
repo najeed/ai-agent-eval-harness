@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Generate the on-time performance report for the selected route and date range.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The report shows the percentage of trips that were 'on time' (e.g., between 1 minute early and 5 minutes late).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The overall OTP for the route is displayed as 88%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The overall OTP for the route is displayed as 88%.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify the specific time points or stops along the route with the highest number of delays.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows most delays occur in the downtown segment during the afternoon peak."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows most delays occur in the downtown segment during the afternoon peak.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Recommend a schedule adjustment for the afternoon trips to add more running time through the downtown segment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager proposes a data-driven solution to improve OTP."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager proposes a data-driven solution to improve OTP.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

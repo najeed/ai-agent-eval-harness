@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all required EPA air emissions reports for the facility for the previous calendar year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a list of 4 quarterly reports and 1 annual report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a list of 4 quarterly reports and 1 annual report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each required report, check the document management system for a record of its submission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that all 5 reports have a 'Submitted' status and a corresponding submission date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that all 5 reports have a 'Submitted' status and a corresponding submission date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile a summary report confirming compliance to be used as documentation for the audit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a summary document listing each report and its submission confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a summary document listing each report and its submission confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

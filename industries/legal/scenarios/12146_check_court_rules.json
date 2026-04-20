@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the court and judge assigned to the case.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the correct court and judge information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the correct court and judge information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Navigate to the court's official website and locate the 'Local Rules' section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the general rules for the court."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the general rules for the court.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Navigate to the specific judge's page on the court website to find their individual practices or standing orders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the judge's specific rules."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the judge's specific rules.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Summarize any specific requirements (e.g., 'font must be Times New Roman size 13', 'courtesy copy must be delivered to chambers').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a checklist to ensure the filing is compliant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a checklist to ensure the filing is compliant.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

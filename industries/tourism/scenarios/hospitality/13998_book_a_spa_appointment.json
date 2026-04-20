@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the spa's availability for a 60-minute deep tissue massage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an open appointment slot for the desired time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an open appointment slot for the desired time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Book the appointment under the guest's name and room number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reserves the spa appointment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reserves the spa appointment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the appointment details with the guest and inform them the charge will be posted to their room folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear confirmation of the booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear confirmation of the booking.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

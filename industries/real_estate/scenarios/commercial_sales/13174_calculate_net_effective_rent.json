@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all lease terms: base rent, lease term in months, value of free rent months, and total tenant improvement (TI) allowance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has all the financial inputs for the calculation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has all the financial inputs for the calculation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total value of all concessions (free rent + TI allowance).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly sums the value of the concessions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly sums the value of the concessions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Subtract the total concessions from the total base rent over the life of the lease, and then divide by the lease term and square footage to get the net effective rent per square foot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct net effective rent is calculated and presented to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct net effective rent is calculated and presented to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

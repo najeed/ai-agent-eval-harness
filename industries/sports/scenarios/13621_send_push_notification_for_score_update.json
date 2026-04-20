@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a real-time alert that the team has scored.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a notification from the live stats feed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a notification from the live stats feed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify all fans who have subscribed to score alerts for that team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of recipients for the push notification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of recipients for the push notification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a push notification to the subscribers with the new score.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the notification to all subscribed fans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the notification to all subscribed fans.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the guest's reservation and confirm the request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the guest's need to split the bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the guest's need to split the bill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a second folio (Folio B) for the guest's reservation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new, separate folio is created in the PMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new, separate folio is created in the PMS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Transfer all incidental charges from the primary folio to the new folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All non-room charges are successfully moved to Folio B."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All non-room charges are successfully moved to Folio B.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

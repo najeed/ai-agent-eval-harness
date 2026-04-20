@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all users whose free trials are ending today.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of users to be converted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of users to be converted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each user, charge their registered payment method for the first month of service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes the payments. Some succeed, some fail."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes the payments. Some succeed, some fail.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the account status to 'Active Subscriber' for successful payments, and 'On Hold' for failed payments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly updates the status for all users in the list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly updates the status for all users in the list.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

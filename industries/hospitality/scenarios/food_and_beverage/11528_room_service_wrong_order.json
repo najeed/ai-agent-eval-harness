@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Apologize to the guest and retrieve their original order details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the guest's correct order in the POS system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the guest's correct order in the POS system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Place a new, high-priority order for the correct items with the kitchen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A corrected order is fired to the kitchen with a 'Rush' status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A corrected order is fired to the kitchen with a 'Rush' status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the guest that the correct order is on its way and that the charge for the meal will be removed from their bill as an apology.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent effectively resolves the complaint and provides service recovery."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent effectively resolves the complaint and provides service recovery.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

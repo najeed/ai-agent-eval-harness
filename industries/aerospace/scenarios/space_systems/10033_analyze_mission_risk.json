@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all components of the communication system (transmitters, receivers, antennas).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent lists all relevant components."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent lists all relevant components.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each component, brainstorm potential failure modes (e.g., transmitter failure, antenna deployment failure).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a comprehensive list of potential failures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a comprehensive list of potential failures.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the effect of each failure on the overall mission and assign a risk score. Propose mitigations for high-risk items (e.g., add a redundant transmitter).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the FMEA table and recommends adding a backup transmitter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the FMEA table and recommends adding a backup transmitter.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the original SOW to ensure all deliverables have been met.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant confirms the project is complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant confirms the project is complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Prepare a project completion document summarizing the work done and outcomes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant creates the final sign-off document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant creates the final sign-off document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the document to the customer for their final signature to officially close the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project is formally closed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project is formally closed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

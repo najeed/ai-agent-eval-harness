@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the authenticated AMBER Alert message from the authorities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the alert text and the geographic area to be targeted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the alert text and the geographic area to be targeted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Interrupt all current programming in the specified region to broadcast the alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully triggers the EAS override system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully triggers the EAS override system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the broadcast for regulatory compliance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a log entry detailing the time and duration of the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a log entry detailing the time and duration of the alert.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

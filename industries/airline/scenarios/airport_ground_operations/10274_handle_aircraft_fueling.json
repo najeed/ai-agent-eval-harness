@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the final fuel figure from the flight plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent knows the exact amount of fuel to be loaded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent knows the exact amount of fuel to be loaded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Communicate the required fuel amount to the fueling company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the fueler with the correct order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the fueler with the correct order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Supervise the fueling process and verify that the final amount of fuel loaded matches the order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the correct amount of fuel is on board."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the correct amount of fuel is on board.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

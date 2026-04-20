@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student, course, and specific assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the context of the problem."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the context of the problem.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ask the student for the file type and size of their assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the file is a 100MB video file, exceeding the 50MB upload limit for the assignment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the file is a 100MB video file, exceeding the 50MB upload limit for the assignment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the student to compress the file or upload it to a university-approved streaming service and submit the link instead.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a viable workaround for the student."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a viable workaround for the student.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the policyholder and explain how a scheduled property endorsement works.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the customer's policy and clearly explains the benefit of the endorsement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the customer's policy and clearly explains the benefit of the endorsement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the details of the jewelry, including a recent appraisal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the required documentation for the high-value item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the required documentation for the high-value item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the endorsement to the policy and calculate the additional premium.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the endorsement and informs the customer of the cost."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the endorsement and informs the customer of the cost.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

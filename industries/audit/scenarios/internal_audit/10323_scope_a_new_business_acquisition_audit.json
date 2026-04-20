@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the acquisition's due diligence reports to identify key risks noted during the deal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor identifies key risks related to the acquired company's IT systems and cultural integration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor identifies key risks related to the acquired company's IT systems and cultural integration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Interview the head of the integration management office (IMO) to understand the integration plan and current status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor gets an overview of the integration timeline and key milestones."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor gets an overview of the integration timeline and key milestones.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft an audit scope that focuses on the highest risk areas of the integration, such as IT systems migration and employee retention.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A risk-based audit scope is developed and approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A risk-based audit scope is developed and approved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

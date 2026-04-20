@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the vulnerability to understand the specific type of malicious request that exploits it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst understands the attack vector (e.g., a specific HTTP header with a malicious value)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst understands the attack vector (e.g., a specific HTTP header with a malicious value).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a custom rule in the WAF to inspect incoming traffic and block any requests that match the exploit pattern.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully writes and deploys a WAF rule to block the attack."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully writes and deploys a WAF rule to block the attack.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Test the rule to ensure it blocks the exploit without blocking legitimate traffic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The virtual patch is confirmed to be effective and does not cause unintended side effects."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The virtual patch is confirmed to be effective and does not cause unintended side effects.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

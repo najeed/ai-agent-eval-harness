@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the question from the partner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the partner's technical question."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the partner's technical question.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Look up the API rate limits for different subscription tiers in the product documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the exact rate limits for each plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the exact rate limits for each plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a clear and accurate answer back to the partner so they can respond to their lead.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent empowers the partner to continue their sales process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent empowers the partner to continue their sales process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

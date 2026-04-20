@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the sponsorship agreement to confirm the ad placement details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the sponsor gets 5 minutes of screen time on the main video board per game."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the sponsor gets 5 minutes of screen time on the main video board per game.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Upload the sponsor's ad creatives to the stadium's digital signage system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully uploads the video ads."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully uploads the video ads.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the ads to run at specified times during the next game.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent programs the signage system to display the ads during game breaks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent programs the signage system to display the ads during game breaks.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

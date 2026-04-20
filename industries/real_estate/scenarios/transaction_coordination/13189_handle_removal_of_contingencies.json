@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive instructions from the buyer's agent to remove the contingencies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "TC gets an email from the agent confirming the buyer is moving forward."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "TC gets an email from the agent confirming the buyer is moving forward.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the contingency removal form, specifying which contingencies are being removed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct legal form is filled out, listing the inspection, appraisal, and loan contingencies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct legal form is filled out, listing the inspection, appraisal, and loan contingencies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the form to the buyer for signature and then deliver the signed copy to the seller's agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The form is fully executed and delivered, making the buyer's deposit non-refundable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The form is fully executed and delivered, making the buyer's deposit non-refundable.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

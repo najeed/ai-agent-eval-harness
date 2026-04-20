@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all the components of the rig that need to be moved and their weights/dimensions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete list of all rig loads is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete list of all rig loads is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Plan the optimal sequence for disassembling, moving, and reassembling the rig components.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A detailed rig move schedule is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A detailed rig move schedule is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the required trucks and cranes and obtain any necessary road permits for oversized loads.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All third-party logistics and permits are secured for the planned move date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All third-party logistics and permits are secured for the planned move date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

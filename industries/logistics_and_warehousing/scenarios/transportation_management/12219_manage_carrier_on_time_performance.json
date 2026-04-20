@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a performance report for the selected carrier for the previous quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the carrier scorecard report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the carrier scorecard report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the report to identify the on-time pickup and on-time delivery percentages.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the carrier's on-time delivery is 85%, which is below the 95% target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the carrier's on-time delivery is 85%, which is below the 95% target.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft an email to the carrier representative with the performance data to request a corrective action plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares a data-driven communication to the carrier to address the performance issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares a data-driven communication to the carrier to address the performance issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

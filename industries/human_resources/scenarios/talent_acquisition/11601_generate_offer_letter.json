@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the approved offer details (salary, start date, title) from the ATS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter confirms all final offer terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter confirms all final offer terms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the offer letter using the company's standard template and the approved details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter successfully generates a populated offer letter document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter successfully generates a populated offer letter document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the offer letter to the candidate for electronic signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter sends the letter via an e-signature platform."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter sends the letter via an e-signature platform.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

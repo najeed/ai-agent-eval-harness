@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the driver's profile and the history of their ratings and any prior warnings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the driver's rating fell below 4.6 and they received two prior warnings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the driver's rating fell below 4.6 and they received two prior warnings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the specific rider feedback that led to the low ratings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews comments related to unprofessionalism and unsafe driving."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews comments related to unprofessionalism and unsafe driving.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the clear history of poor performance and prior warnings, uphold the deactivation decision.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a policy-based decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a policy-based decision.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Send a notification to the driver explaining that the appeal is denied and the decision is final.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear and final communication is sent to the driver."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear and final communication is sent to the driver.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

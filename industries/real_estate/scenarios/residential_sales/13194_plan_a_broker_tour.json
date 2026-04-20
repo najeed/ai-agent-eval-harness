@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Set a date and time for the tour (typically a weekday morning).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tour is scheduled for Tuesday from 10 AM to 1 PM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tour is scheduled for Tuesday from 10 AM to 1 PM.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Announce the broker tour in the MLS and send an e-flyer to a list of local real estate agents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The event is published on the MLS, and an email invitation is sent to a list of 500+ local agents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The event is published on the MLS, and an email invitation is sent to a list of 500+ local agents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for catering (e.g., coffee and pastries) for the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An order is placed with a local caterer for the event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An order is placed with a local caterer for the event.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

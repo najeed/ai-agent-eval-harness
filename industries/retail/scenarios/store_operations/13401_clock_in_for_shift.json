@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the time clock application on a POS terminal or dedicated device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate opens the timekeeping software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate opens the timekeeping software.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter their employee ID and password.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system authenticates the associate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system authenticates the associate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the 'Clock In' option.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate's shift start time is successfully recorded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate's shift start time is successfully recorded.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather applicant information and ask about prior insurance history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The applicant discloses a 60-day lapse in coverage within the last year."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The applicant discloses a 60-day lapse in coverage within the last year.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check underwriting guidelines regarding lapses in coverage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent confirms that a lapse in coverage results in a higher premium but does not make the applicant ineligible."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent confirms that a lapse in coverage results in a higher premium but does not make the applicant ineligible.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a quote that includes the surcharge for the lapse in coverage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides an accurate quote that reflects the higher risk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides an accurate quote that reflects the higher risk.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

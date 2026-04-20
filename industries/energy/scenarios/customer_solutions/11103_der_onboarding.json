@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the customer's solar inverter and battery model are compatible with the VPP platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer's hardware is on the approved list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer's hardware is on the approved list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the customer through the process of providing API access to their system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear, step-by-step instructions for the specific hardware model."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear, step-by-step instructions for the specific hardware model.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Register the customer's assets in the DER management system and initiate a connection test.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the assets and confirms telemetry is being received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the assets and confirms telemetry is being received.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

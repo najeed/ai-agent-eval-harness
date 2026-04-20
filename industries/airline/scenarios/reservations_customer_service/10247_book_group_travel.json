@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the requirements for the group booking: number of passengers, dates, and destination.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request a special group fare from the pricing department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the request and receives a discounted group fare."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the request and receives a discounted group fare.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a group booking with the negotiated fare and provide the group leader with a deadline for submitting passenger names and payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the booking and communicates the terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the booking and communicates the terms.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

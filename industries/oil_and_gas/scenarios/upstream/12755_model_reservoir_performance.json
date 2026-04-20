@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load the reservoir simulation model that has been history-matched to past production data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The calibrated reservoir model is loaded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The calibrated reservoir model is loaded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new forecast case by adding five new infill drilling wells to the model.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new simulation case with the proposed new wells is set up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new simulation case with the proposed new wells is set up.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the forecast simulation and generate a production profile (oil rate vs. time) for the next 20 years.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A production forecast chart is generated, showing the incremental production from the new wells."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A production forecast chart is generated, showing the incremental production from the new wells.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

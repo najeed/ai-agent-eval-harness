@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the pipeline configuration to ensure that all code is scanned for vulnerabilities (SAST) before it can be merged.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms that a static code analysis tool is an integrated and required step in the pipeline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms that a static code analysis tool is an integrated and required step in the pipeline.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that deployments to the production environment require a manual approval from a senior manager and cannot be done automatically.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms there is a manual approval gate for production deployments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms there is a manual approval gate for production deployments.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the access permissions to the pipeline tool itself to ensure that developers cannot approve their own code changes into production.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms that segregation of duties is enforced within the pipeline's permissions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms that segregation of duties is enforced within the pipeline's permissions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Flag the completed draft for legal review in the workflow system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The story is marked as needing legal review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The story is marked as needing legal review.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Share the draft and all supporting documentation (interview notes, source documents) with the legal department via a secure channel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The legal team receives all necessary materials for their review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The legal team receives all necessary materials for their review.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive feedback from the legal team and work with the reporter to make any required changes to mitigate risk.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The article is revised based on legal advice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The article is revised based on legal advice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

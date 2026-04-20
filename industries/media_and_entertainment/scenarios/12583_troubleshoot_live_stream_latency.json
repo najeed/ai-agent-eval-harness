@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the configuration of the streaming encoder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the encoder is using a very large segment size, which increases latency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the encoder is using a very large segment size, which increases latency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the CDN configuration for any caching settings that might increase latency.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the CDN settings are optimized for low latency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the CDN settings are optimized for low latency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the stream operator to adjust the encoder settings to use a smaller segment size to reduce latency.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions to the operator, and stream latency improves."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions to the operator, and stream latency improves.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

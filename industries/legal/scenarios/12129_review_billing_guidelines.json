@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate and open the client's outside counsel billing guidelines document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the correct guidelines document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the correct guidelines document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify any specific rules, such as prohibitions on block billing, requirements for specific task codes, or caps on certain expenses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent extracts a list of all key billing rules."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent extracts a list of all key billing rules.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a summary of the key guidelines to be shared with the entire case team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a concise summary to ensure the team bills in compliance with the client's rules."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a concise summary to ensure the team bills in compliance with the client's rules.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

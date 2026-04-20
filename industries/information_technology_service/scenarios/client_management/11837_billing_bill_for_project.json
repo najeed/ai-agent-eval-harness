@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that the client has signed off on the project completion document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The account manager confirms the project is officially closed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The account manager confirms the project is officially closed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a one-time invoice in the PSA for the total fixed-fee amount of the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An invoice for the project work is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An invoice for the project work is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the invoice to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client receives the final bill for the project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client receives the final bill for the project.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

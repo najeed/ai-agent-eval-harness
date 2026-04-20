@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the tenant's lease agreement and review the early termination clause.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the clause stating the tenant is responsible for rent until re-rented, plus a termination fee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the clause stating the tenant is responsible for rent until re-rented, plus a termination fee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Communicate the lease-break policy and associated costs to the tenant in writing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear email is sent to the tenant explaining their financial obligations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear email is sent to the tenant explaining their financial obligations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the tenant agrees, generate an early lease termination agreement for them to sign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A legal agreement outlining the terms of the lease break is drafted and sent for signature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A legal agreement outlining the terms of the lease break is drafted and sent for signature.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

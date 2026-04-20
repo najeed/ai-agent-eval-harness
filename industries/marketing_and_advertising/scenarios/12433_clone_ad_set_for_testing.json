@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Locate the original ad set in the campaign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct ad set to be duplicated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct ad set to be duplicated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Duplicate the ad set.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a copy of the ad set, including its ads."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a copy of the ad set, including its ads.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "In the new (cloned) ad set, change the audience targeting to the new test audience.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the targeting without changing the ad creative or other settings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the targeting without changing the ad creative or other settings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Activate the new ad set.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Both the original and the new test ad set are now running."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Both the original and the new test ad set are now running.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

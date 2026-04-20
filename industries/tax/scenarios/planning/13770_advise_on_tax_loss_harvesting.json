@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Calculate the investor's total realized capital gains for the year to date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the amount of gains that need to be offset."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the amount of gains that need to be offset.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify investments in the portfolio with unrealized losses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds suitable stocks to sell at a loss."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds suitable stocks to sell at a loss.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the client on which investments to sell to generate losses, while also explaining the 'wash sale' rule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a specific strategy to offset gains while complying with all rules."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a specific strategy to offset gains while complying with all rules.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

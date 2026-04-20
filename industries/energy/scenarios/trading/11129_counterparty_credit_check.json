@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the potential counterparty's public credit rating from major agencies (S&P, Moody's).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent fetches the credit ratings and finds they are investment grade."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent fetches the credit ratings and finds they are investment grade.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the counterparty's recent financial statements (income statement, balance sheet) to assess financial health.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent summarizes key financial ratios like debt-to-equity and current ratio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent summarizes key financial ratios like debt-to-equity and current ratio.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign an internal credit risk score and recommend a maximum unsecured credit limit for the counterparty.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a risk score and a justified credit limit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a risk score and a justified credit limit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

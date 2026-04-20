@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the initially infected host from the EDR alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder correctly identifies the patient zero machine."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder correctly identifies the patient zero machine.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately isolate the infected host from the network using the EDR tool to stop it from spreading the ransomware further.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder successfully quarantines the host."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder successfully quarantines the host.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Block the command-and-control (C2) IP address identified in the malware's traffic at the network firewall.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder successfully blocks the C2 communication, preventing the ransomware from receiving new instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder successfully blocks the C2 communication, preventing the ransomware from receiving new instructions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

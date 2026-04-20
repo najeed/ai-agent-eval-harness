@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Immediately log the discovery in the project's issue tracker, classifying it as 'High Priority'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new high-priority issue is logged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new high-priority issue is logged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the local utility locating service ('Call Before You Dig') to identify the owner of the line.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The utility owner is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The utility owner is identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate an RFI to the structural engineer to request a foundation redesign to avoid the obstruction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An RFI is sent to the engineer to develop a solution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An RFI is sent to the engineer to develop a solution.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Check the submittal log for the status of the 'HVAC Unit' submittal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the submittal is 'Pending Approval' and has been outstanding for 15 days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the submittal is 'Pending Approval' and has been outstanding for 15 days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a follow-up reminder to the lead engineer requesting an update on the review status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal reminder notification is sent to the engineer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal reminder notification is sent to the engineer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

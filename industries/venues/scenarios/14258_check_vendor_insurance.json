@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Request the COI from the catering vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a request to the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a request to the vendor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the received COI to ensure it meets the minimum coverage amounts specified in the venue's policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compares the COI against the requirements and confirms it is compliant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compares the COI against the requirements and confirms it is compliant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the vendor's profile in the system to show their insurance is approved and on file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the vendor's status to 'Approved'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the vendor's status to 'Approved'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

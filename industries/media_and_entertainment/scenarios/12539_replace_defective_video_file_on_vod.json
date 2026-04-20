@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the VOD asset with the corrupted file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the specific asset in the management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the specific asset in the management system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request a new, corrected file from the content partner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a formal request for re-delivery."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a formal request for re-delivery.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Ingest the new file and run it through automated QC.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ingests the new file, and it passes the QC scan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ingests the new file, and it passes the QC scan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Replace the corrupted file with the new file on the streaming servers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the VOD asset."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the VOD asset.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Import the new Docker image into the container security scanning tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully loads the image into the scanner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully loads the image into the scanner.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Launch the vulnerability scan against the image.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The scan runs to completion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The scan runs to completion.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the results, identify a critical vulnerability in an underlying OS package, and fail the build, preventing the vulnerable image from being deployed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the risk and stops the insecure image from reaching production."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the risk and stops the insecure image from reaching production.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

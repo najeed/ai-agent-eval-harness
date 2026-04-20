@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan or upload the supplier CoC document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent attaches the CoC to the receiving record in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent attaches the CoC to the receiving record in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the information on the CoC (part number, quantity, PO number) matches the shipment details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that all details on the certificate match the physical shipment and PO."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that all details on the certificate match the physical shipment and PO.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Mark the CoC as verified and approved in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the status of the receiving record to show the CoC is approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the status of the receiving record to show the CoC is approved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

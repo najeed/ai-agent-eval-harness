@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Apologize and create a high-priority maintenance work order for the guest's room.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A priority work order is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A priority work order is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the guest through basic troubleshooting (e.g., 'Is it plugged in? Can you try the power button on the TV itself?').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Basic troubleshooting steps are provided."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Basic troubleshooting steps are provided.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If troubleshooting fails, dispatch a technician and offer to move the guest to a new room if one is available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Troubleshooting fails. A technician is dispatched, and the agent offers a room change as a service recovery option."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Troubleshooting fails. A technician is dispatched, and the agent offers a room change as a service recovery option.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

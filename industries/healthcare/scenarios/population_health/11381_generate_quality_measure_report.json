@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Navigate to the quality reporting section of the analytics tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager finds the quality measure dashboard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager finds the quality measure dashboard.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the 'Controlling High Blood Pressure (HBP)' measure and the desired payer program.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager configures the report for the correct measure and population."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager configures the report for the correct measure and population.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the report, which shows the numerator, denominator, and performance rate for the measure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report is generated, showing the practice's performance and a list of patients who are not meeting the measure's goal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report is generated, showing the practice's performance and a list of patients who are not meeting the measure's goal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the invoice in question and the detailed time entries associated with it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the bill and the underlying time records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the bill and the underlying time records.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the detailed descriptions for the time entries to understand the work that was performed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the context of the charges."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the context of the charges.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the value of the work performed to the client and, if authorized by a partner, offer a small courtesy write-off to maintain goodwill.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent professionally handles the complaint and resolves the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent professionally handles the complaint and resolves the issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

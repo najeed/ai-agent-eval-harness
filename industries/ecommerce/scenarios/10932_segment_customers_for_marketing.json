@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the criteria for a 'high-value' customer (e.g., lifetime spend > $1000 and at least 3 orders in the last year).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly sets the filtering parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly sets the filtering parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the customer database to generate a list of all customers who meet these criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the customer segment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the customer segment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Save the generated list as a new audience segment named 'VIP Customers'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent saves the segment for future use."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent saves the segment for future use.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

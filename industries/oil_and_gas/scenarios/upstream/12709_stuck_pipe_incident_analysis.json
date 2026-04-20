@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the last hour of real-time drilling data, including weight on bit, torque, and mud properties.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete dataset leading up to the incident is retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete dataset leading up to the incident is retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to diagnose the likely sticking mechanism (e.g., differential sticking, wellbore collapse).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer correctly identifies 'differential sticking' as the probable cause."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer correctly identifies 'differential sticking' as the probable cause.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend immediate actions to the rig crew, such as spotting a freeing agent and working the pipe.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Clear, actionable recommendations are sent to the rig to resolve the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Clear, actionable recommendations are sent to the rig to resolve the issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

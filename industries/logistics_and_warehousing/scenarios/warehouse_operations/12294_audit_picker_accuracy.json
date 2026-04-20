@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate the 'Picker Performance Report' for the previous week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is generated showing data for all pickers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is generated showing data for all pickers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The report shows each picker's total picks, lines picked per hour, and accuracy rate (based on audit results and reported errors).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report contains all the relevant KPIs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report contains all the relevant KPIs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The manager identifies one picker with a low accuracy rate of 96% and schedules them for retraining.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager uses the data to take a specific action to improve performance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager uses the data to take a specific action to improve performance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

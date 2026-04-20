@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the purchase order, the goods receipt record, and the supplier's invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all three relevant documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all three relevant documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the three documents and confirm that the goods receipt shows a short shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that 80 units were received, but 100 units were invoiced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that 80 units were received, but 100 units were invoiced.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the supplier, explain the discrepancy, and request a corrected invoice for the quantity received.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully communicates with the supplier and resolves the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully communicates with the supplier and resolves the issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

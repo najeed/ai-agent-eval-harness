@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Process aerial LiDAR data for a transmission corridor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates a 3D point cloud of the corridor, including conductors and vegetation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates a 3D point cloud of the corridor, including conductors and vegetation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to identify any vegetation that violates the minimum clearance distance to the conductors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System identifies 25 specific trees that are inside the clearance zone."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System identifies 25 specific trees that are inside the clearance zone.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate work orders for the vegetation management crews, including maps and GPS coordinates for each tree that needs to be trimmed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates and dispatches prioritized work orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates and dispatches prioritized work orders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

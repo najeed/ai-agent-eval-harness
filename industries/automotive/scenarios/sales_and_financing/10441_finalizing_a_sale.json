@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate the final bill of sale, including the vehicle price, taxes, title, and license fees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates an accurate and complete bill of sale."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates an accurate and complete bill of sale.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Present the financing or lease agreement to the customer and obtain their signature on all required documents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the documents and obtains all necessary signatures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the documents and obtains all necessary signatures.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the customer's down payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the payment via credit card or check."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the payment via credit card or check.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

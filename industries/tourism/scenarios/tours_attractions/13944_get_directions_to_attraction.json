@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the destination (Louvre Museum) and mode of transport (public).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the user's request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the user's request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve public transportation information for the Louvre.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the 'Palais Royal - Mus\u00e9e du Louvre' Metro station is the closest stop."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the 'Palais Royal - Mus\u00e9e du Louvre' Metro station is the closest stop.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the tourist with the correct Metro line and station information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the directions to the tourist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the directions to the tourist.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

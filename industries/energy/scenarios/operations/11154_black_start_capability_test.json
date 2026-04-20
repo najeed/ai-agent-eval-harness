@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the plant's black start procedure documentation and the ISO's requirements for the test.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent summarizes the key steps and success criteria for the test."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent summarizes the key steps and success criteria for the test.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Develop a detailed, step-by-step test plan, including safety protocols and communication plans with the ISO.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a comprehensive test plan document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a comprehensive test plan document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the test with the ISO and the plant operators for a low-demand period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully coordinates and schedules the test."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully coordinates and schedules the test.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

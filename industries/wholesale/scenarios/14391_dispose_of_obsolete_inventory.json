@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a report to identify all inventory with no sales activity in the last two years.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of obsolete stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of obsolete stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a disposal order for the obsolete items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal order to dispose of the goods is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal order to dispose of the goods is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Adjust the inventory records to write off the disposed stock.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adjusts the inventory quantity to zero, recording it as a write-off."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adjusts the inventory quantity to zero, recording it as a write-off.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

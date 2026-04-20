@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive authorization from the controller to write off the specific invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the formal approval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the formal approval.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a journal entry to debit the 'Allowance for Doubtful Accounts' and credit 'Accounts Receivable'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the correct write-off journal entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the correct write-off journal entry.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the entry to the specific customer invoice to remove it from the AR aging report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent closes the invoice and removes it from the customer's outstanding balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent closes the invoice and removes it from the customer's outstanding balance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

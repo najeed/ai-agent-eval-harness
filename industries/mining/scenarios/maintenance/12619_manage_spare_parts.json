@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the inventory level for the SAG mill motor in the warehouse management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system shows one spare motor is in stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system shows one spare motor is in stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the maintenance strategy, which specifies that one spare must always be held in inventory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The current inventory level is confirmed to be compliant with the strategy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The current inventory level is confirmed to be compliant with the strategy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If a spare was used, create a high-priority purchase order to procure a new one with a long lead time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "No action needed as a spare is on hand, but the process to reorder is confirmed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "No action needed as a spare is on hand, but the process to reorder is confirmed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

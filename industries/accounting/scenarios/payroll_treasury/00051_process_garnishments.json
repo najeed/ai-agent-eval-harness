@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive and validate the garnishment order from the court.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the order is legitimate and contains all necessary information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the order is legitimate and contains all necessary information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set up the garnishment as a post-tax deduction in the employee's payroll record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the garnishment to the employee's profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the garnishment to the employee's profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Ensure the calculated garnishment amount complies with the legal limits (e.g., Consumer Credit Protection Act).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the calculated deduction does not exceed the legal maximum."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the calculated deduction does not exceed the legal maximum.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "During the payroll run, remit the garnished amount to the appropriate state agency.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures the payment is made to the correct recipient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures the payment is made to the correct recipient.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and check their current enrollment status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student is enrolled full-time for the current semester."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student is enrolled full-time for the current semester.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a standardized enrollment verification letter from the SIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the official PDF letter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the official PDF letter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Email the verification letter to the student.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully emails the document to the student's official university address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully emails the document to the student's official university address.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

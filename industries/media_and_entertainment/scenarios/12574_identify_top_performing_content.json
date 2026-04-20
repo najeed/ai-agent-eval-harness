@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query the viewership database for all content watched last month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the raw viewership data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the raw viewership data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Aggregate the data by title and sort by total hours watched.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes the data and ranks all content by viewership."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes the data and ranks all content by viewership.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report listing the top 10 titles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a clear, ranked list of the top 10 movies and shows."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a clear, ranked list of the top 10 movies and shows.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

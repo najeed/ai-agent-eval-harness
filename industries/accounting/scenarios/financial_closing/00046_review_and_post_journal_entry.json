@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the unposted journal entry from the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent opens the journal entry prepared by the staff accountant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent opens the journal entry prepared by the staff accountant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the journal entry for correctness, ensuring it has proper supporting documentation, the debits and credits are correct, and the amounts are accurate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the entry and its support and confirms it is correct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the entry and its support and confirms it is correct.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post the journal entry to the general ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully posts the entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully posts the entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

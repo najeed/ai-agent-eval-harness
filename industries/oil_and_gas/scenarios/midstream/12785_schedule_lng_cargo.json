@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the LNG storage tank inventory to ensure there is enough product available to fill the ship.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms sufficient LNG inventory is on hand."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms sufficient LNG inventory is on hand.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the ship's specifications to determine its cargo capacity and the required loading time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The required loading volume and duration are identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The required loading volume and duration are identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a loading schedule in the terminal operations system and reserve the jetty for the vessel's ETA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The vessel is officially scheduled, and the jetty is booked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The vessel is officially scheduled, and the jetty is booked.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

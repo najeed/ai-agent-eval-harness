@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create an invitation and email it to a list of top-producing agents in the area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An email invitation is sent to a targeted list of agents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An email invitation is sent to a targeted list of agents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Arrange for catering and prepare marketing materials (flyers, feature sheets) for the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Catering is booked and marketing materials are printed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Catering is booked and marketing materials are printed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "During the event, network with attending agents to promote the property and gather feedback.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent effectively markets the property to their peers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent effectively markets the property to their peers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

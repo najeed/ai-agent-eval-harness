@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the local noise ordinance regulations for construction sites.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the document specifying that work is only allowed between 7 AM and 6 PM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the document specifying that work is only allowed between 7 AM and 6 PM.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the daily logs to confirm that all work has been conducted within the allowed hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The logs confirm that work has not occurred outside the permitted times."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The logs confirm that work has not occurred outside the permitted times.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the complaint and the compliance verification in the project's communication log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The complaint and the finding of compliance are formally documented."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The complaint and the finding of compliance are formally documented.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

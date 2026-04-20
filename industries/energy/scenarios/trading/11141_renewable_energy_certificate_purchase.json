@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Calculate the total MWh of electricity the company consumed in the last calendar year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the company needs to purchase 50,000 RECs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the company needs to purchase 50,000 RECs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query REC trading platforms for available Green-e certified wind and solar RECs and their prices.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a list of available REC bundles and their current market prices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a list of available REC bundles and their current market prices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Execute a purchase for 50,000 solar RECs from a specific vintage year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully completes the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully completes the transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Ensure the purchased RECs are formally 'retired' on behalf of the company in the appropriate registry.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the retirement of the RECs and obtains a certificate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the retirement of the RECs and obtains a certificate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

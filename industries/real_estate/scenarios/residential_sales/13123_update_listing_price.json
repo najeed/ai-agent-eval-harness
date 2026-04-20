@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain written confirmation (e.g., price reduction addendum) from the seller for the new price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives a signed document authorizing the price change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives a signed document authorizing the price change.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the price in the MLS listing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The list price is successfully changed in the MLS system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The list price is successfully changed in the MLS system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify all agents who have previously shown the property of the price reduction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A mass email is sent to all agents who have shown the property or saved the listing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A mass email is sent to all agents who have shown the property or saved the listing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

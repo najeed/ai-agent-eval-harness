@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and their vehicle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the customer's identity using security questions to prevent unauthorized access.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully authenticates the customer's identity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully authenticates the customer's identity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a remote command to unlock the vehicle's doors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the unlock command, and the customer confirms the vehicle is unlocked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the unlock command, and the customer confirms the vehicle is unlocked.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

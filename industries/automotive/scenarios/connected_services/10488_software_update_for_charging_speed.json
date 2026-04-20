@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the population of eligible vehicles for the update.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of all affected VINs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of all affected VINs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Push the update to all eligible vehicles and send a notification to owners via their mobile app explaining the benefit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The update is deployed, and a notification is sent out."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The update is deployed, and a notification is sent out.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the installation success rate over the next few weeks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent tracks a dashboard showing the percentage of vehicles that have successfully installed the update."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent tracks a dashboard showing the percentage of vehicles that have successfully installed the update.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

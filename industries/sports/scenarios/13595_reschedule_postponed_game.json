@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the postponed game and retrieve the schedules for both involved teams.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies all existing commitments for both teams."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies all existing commitments for both teams.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find all mutually available dates within the league's designated rescheduling window.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies three potential dates for the rescheduled match."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies three potential dates for the rescheduled match.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the broadcast partner's schedule to ensure they can air the game on one of the potential dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the broadcaster is available on one of the three dates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the broadcaster is available on one of the three dates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the official league schedule with the new game date and notify both teams and the broadcaster.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reschedules the game and sends notifications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reschedules the game and sends notifications.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

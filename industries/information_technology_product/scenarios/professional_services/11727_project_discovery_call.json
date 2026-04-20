@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule a discovery call with the customer's project stakeholders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the meeting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the call, ask structured questions about the customer's goals, existing systems, and technical requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary information to begin planning the project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary information to begin planning the project.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the discovery findings and share them with the customer for validation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed discovery document that will form the basis of the project plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed discovery document that will form the basis of the project plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Scan the SKUs and quantities from the supplier's packing slip.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ingests the list of SKUs and quantities received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ingests the list of SKUs and quantities received.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each SKU, increase the inventory count in the system by the quantity received.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the stock levels for all received items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the stock levels for all received items.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

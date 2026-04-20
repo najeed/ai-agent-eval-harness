@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Develop the plans for both the kinetic strike COA (using missiles) and the cyberattack COA (using malware).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner creates two detailed and distinct plans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner creates two detailed and distinct plans.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assess the risks for each COA, including potential for collateral damage (kinetic) and risk of malware discovery (cyber).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner accurately identifies the unique risks associated with each COA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner accurately identifies the unique risks associated with each COA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the COAs based on probability of success, cost, and potential for escalation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner provides a clear comparison of the two options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner provides a clear comparison of the two options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Recommend the cyberattack COA due to lower risk of escalation and no physical collateral damage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner makes a well-justified recommendation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner makes a well-justified recommendation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

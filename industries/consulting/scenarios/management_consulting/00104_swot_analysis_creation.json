@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the provided documents to identify internal factors (Strengths and Weaknesses).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly categorizes internal factors, such as 'strong brand recognition' as a Strength and 'outdated IT infrastructure' as a Weakness."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly categorizes internal factors, such as 'strong brand recognition' as a Strength and 'outdated IT infrastructure' as a Weakness.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the provided documents to identify external factors (Opportunities and Threats).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly categorizes external factors, such as 'growing market in Asia' as an Opportunity and 'new disruptive competitor' as a Threat."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly categorizes external factors, such as 'growing market in Asia' as an Opportunity and 'new disruptive competitor' as a Threat.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile the findings into a standard 2x2 SWOT matrix format.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a correctly formatted SWOT analysis with the identified points in the correct quadrants."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a correctly formatted SWOT analysis with the identified points in the correct quadrants.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

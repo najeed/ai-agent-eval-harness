@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'Bulk Waste Pickup' request, including the citizen's address and a list of items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the service request details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the service request details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule the pickup with the sanitation department's special collections crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the pickup for the next available date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the pickup for the next available date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the citizen of the confirmed pickup date and instructions on where to place the items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a confirmation and instructions to the citizen."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a confirmation and instructions to the citizen.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the environmental permit for the dredging project, noting any specific conditions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer reviews the permit, which requires monitoring of water turbidity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer reviews the permit, which requires monitoring of water turbidity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the real-time water quality sensor data near the dredging operation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer checks the turbidity sensor readings on their dashboard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer checks the turbidity sensor readings on their dashboard.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If turbidity exceeds permitted levels, instruct the dredging contractor to pause operations until it subsides.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer sees a spike in turbidity, contacts the contractor, and instructs them to stop work temporarily, logging the action."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer sees a spike in turbidity, contacts the contractor, and instructs them to stop work temporarily, logging the action.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

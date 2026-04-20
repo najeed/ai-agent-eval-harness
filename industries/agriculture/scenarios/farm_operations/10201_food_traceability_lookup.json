@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the lot number from the recalled product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the lot number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the lot number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the traceability system using the lot number to find the corresponding harvest date and field ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the spinach was harvested on July 10th from Field 7B."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the spinach was harvested on July 10th from Field 7B.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Retrieve all application and harvest records for that field for the specified date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a complete history for the specific batch of spinach, confirming no off-label chemicals were used."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a complete history for the specific batch of spinach, confirming no off-label chemicals were used.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

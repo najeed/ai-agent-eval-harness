@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the latest security patches from Microsoft and identify which are critical and relevant to the workstation environment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies all critical patches to be deployed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies all critical patches to be deployed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "First, deploy the patches to a small pilot group of test workstations to check for any negative impacts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The patches are successfully deployed to the pilot group with no reported issues."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The patches are successfully deployed to the pilot group with no reported issues.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After a successful pilot, schedule the patch deployment for all remaining workstations during the nightly maintenance window.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully schedules the enterprise-wide deployment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully schedules the enterprise-wide deployment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

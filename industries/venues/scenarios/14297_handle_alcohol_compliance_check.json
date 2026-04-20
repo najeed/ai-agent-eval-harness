@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The secret shopper, who appears underage, orders a beer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The shopper places the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The shopper places the order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The bartender follows protocol and asks to see a valid photo ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The bartender correctly requests ID."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The bartender correctly requests ID.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The shopper presents an ID showing they are underage. The bartender refuses the sale.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The bartender correctly refuses to sell alcohol to the minor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The bartender correctly refuses to sell alcohol to the minor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The shopper reveals their identity and notes the successful compliance check. The manager logs the successful test.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager logs the positive result in the staff compliance log."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager logs the positive result in the staff compliance log.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

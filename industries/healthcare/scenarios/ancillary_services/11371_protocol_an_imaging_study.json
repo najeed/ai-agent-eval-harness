@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the list of exams waiting to be protocoled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Radiologist views their worklist of pending exams."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Radiologist views their worklist of pending exams.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the patient's clinical history and the reason for the exam.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Radiologist gathers clinical context to make the best decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Radiologist gathers clinical context to make the best decision.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the appropriate protocol ('CT Abdomen/Pelvis with IV Contrast') and approve it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The exam is now ready for the technologist to perform, with clear instructions on the specific imaging technique to use."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The exam is now ready for the technologist to perform, with clear instructions on the specific imaging technique to use.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Briefly summarize the plot of the film without giving away major spoilers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A concise, spoiler-free summary is written."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A concise, spoiler-free summary is written.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the film's strengths and weaknesses, commenting on the acting, directing, screenplay, and cinematography.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A balanced and critical analysis is provided."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A balanced and critical analysis is provided.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Conclude with an overall assessment and a recommendation for who would enjoy this film.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The review gives a clear final verdict."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The review gives a clear final verdict.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

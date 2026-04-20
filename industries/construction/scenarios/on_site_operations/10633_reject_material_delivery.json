@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Document the damage by taking photos of the cracked windows.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Photographic evidence of the damage is captured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Photographic evidence of the damage is captured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the status of the purchase order to 'Delivery Rejected - Damaged'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The PO status is updated in the procurement system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The PO status is updated in the procurement system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the supplier of the rejection and attach the photos, requesting an immediate replacement shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supplier is formally notified of the issue and a replacement is requested."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supplier is formally notified of the issue and a replacement is requested.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

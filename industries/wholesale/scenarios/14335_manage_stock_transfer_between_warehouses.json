@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the inventory imbalance between the two warehouses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms one warehouse has a surplus and the other has a deficit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms one warehouse has a surplus and the other has a deficit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a stock transfer order in the inventory management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an order to move 500 units from the West Coast to the East Coast."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an order to move 500 units from the West Coast to the East Coast.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for freight transportation for the transfer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent books a truck to move the goods between warehouses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent books a truck to move the goods between warehouses.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

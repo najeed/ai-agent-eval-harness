@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Identify the former employee in the HRIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Payroll specialist locates the terminated employee's record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Payroll specialist locates the terminated employee's record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the former employee to the payroll vendor's alumni portal where they can access their tax documents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist provides the portal URL and instructions for the former employee to self-serve."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist provides the portal URL and instructions for the former employee to self-serve.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

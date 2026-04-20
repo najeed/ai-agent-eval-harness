@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the sections of the operations manual affected by the new regulation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds all relevant sections."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds all relevant sections.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Revise the manual to incorporate the new procedures.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately updates the manual."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately updates the manual.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Publish the revision and send a mandatory bulletin to all flight crew, requiring them to read and acknowledge the change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent distributes the update and tracks acknowledgements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent distributes the update and tracks acknowledgements.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

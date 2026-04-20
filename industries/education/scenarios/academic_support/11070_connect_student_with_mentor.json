@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and their major.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student's identity and academic program."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student's identity and academic program.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the peer mentor database for a suitable mentor in the same major.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an available upper-class mentor in the student's major."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an available upper-class mentor in the student's major.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a formal introduction email connecting the student and the peer mentor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent facilitates the connection between the two students."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent facilitates the connection between the two students.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

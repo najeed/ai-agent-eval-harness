@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the live feeds from all surveillance cameras in the stadium.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is viewing the live camera feeds on a dashboard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is viewing the live camera feeds on a dashboard.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use an AI-powered video analytics tool to automatically detect crowd density.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool flags a specific concourse area as having high crowd density."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool flags a specific concourse area as having high crowd density.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch security and event staff to the flagged area to help manage the crowd flow.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends staff to the location to prevent a safety issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends staff to the location to prevent a safety issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

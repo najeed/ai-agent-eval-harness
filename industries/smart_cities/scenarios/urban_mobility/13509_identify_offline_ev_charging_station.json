@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the EV charging station by its ID or location from the citizen report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct charging station in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct charging station in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a remote diagnostic on the charging station.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The diagnostic tool returns a 'No Communication' error, confirming it is offline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The diagnostic tool returns a 'No Communication' error, confirming it is offline.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for a maintenance technician to repair the station and update its status to 'Out of Service' on public maps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the work order and updates the public status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the work order and updates the public status.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

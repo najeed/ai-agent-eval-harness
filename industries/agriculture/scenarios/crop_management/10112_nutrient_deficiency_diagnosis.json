@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the image of the leaf, noting the pattern of chlorosis (yellowing).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies interveinal chlorosis on the upper leaves."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies interveinal chlorosis on the upper leaves.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Based on the visual symptoms, diagnose the most likely nutrient deficiency.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent diagnoses a likely Iron (Fe) deficiency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent diagnoses a likely Iron (Fe) deficiency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend a foliar fertilizer application to correct the deficiency and suggest a soil test to confirm the diagnosis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends a specific chelated iron fertilizer and advises on soil sampling."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends a specific chelated iron fertilizer and advises on soil sampling.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

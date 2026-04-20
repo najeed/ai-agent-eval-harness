@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft the text and select the images for the posts on different social media platforms (e.g., Instagram, Facebook).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The content for the campaign is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The content for the campaign is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a social media management tool to schedule the posts to go live at a specific time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The posts are scheduled for optimal timing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The posts are scheduled for optimal timing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the posts for comments and engagement after they go live.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager can interact with customers and track the campaign's reach."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager can interact with customers and track the campaign's reach.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

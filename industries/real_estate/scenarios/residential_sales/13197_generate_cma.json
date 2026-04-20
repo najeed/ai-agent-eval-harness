@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the subject property's details (address, beds, baths, sqft).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the key features of the seller's property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the key features of the seller's property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the MLS for recently sold, active, and pending comparable properties within a 1-mile radius.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds at least 3 sold, 3 active, and 2 pending comps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds at least 3 sold, 3 active, and 2 pending comps.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a CMA report summarizing the comps and suggesting a price range.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a formatted CMA report with a logical price recommendation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a formatted CMA report with a logical price recommendation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

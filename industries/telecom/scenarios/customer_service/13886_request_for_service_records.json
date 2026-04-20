@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Authenticate the customer's identity with a high level of scrutiny.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows enhanced verification procedures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows enhanced verification procedures.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the process for requesting official records and any associated fees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the formal process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the formal process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a formal service record request ticket and escalate it to the legal compliance team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and escalates the ticket correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and escalates the ticket correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

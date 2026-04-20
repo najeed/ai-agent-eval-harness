@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the listing is active in the MLS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the listing status is 'Active'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the listing status is 'Active'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the MLS's syndication settings to ensure feeds to third-party sites like Zillow are enabled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that syndication to Zillow is active for the brokerage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that syndication to Zillow is active for the brokerage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the seller that syndication can sometimes take 24-48 hours to update and that you will re-check tomorrow.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear explanation and sets a follow-up task for themselves."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear explanation and sets a follow-up task for themselves.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

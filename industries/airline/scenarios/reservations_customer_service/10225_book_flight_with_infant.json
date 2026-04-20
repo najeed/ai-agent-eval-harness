@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a booking for the two adult passengers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the main booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the main booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the infant-in-lap to one of the adult passenger's records, including their name and date of birth.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly adds the infant to the booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly adds the infant to the booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the customer of any applicable taxes or fees for the infant and issue the tickets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent explains the costs and issues all tickets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent explains the costs and issues all tickets.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

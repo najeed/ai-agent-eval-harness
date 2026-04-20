@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve real-time chlorine residual readings from sensors throughout the network.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System displays a map with live chlorine level data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System displays a map with live chlorine level data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system alerts the operator that the chlorine level in a specific zone is dropping below the minimum required level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a low-chlorine alarm."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a low-chlorine alarm.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a technician to the area to take a manual sample and flush the main if necessary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates a work order for a water quality technician."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates a work order for a water quality technician.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

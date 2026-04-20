@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new company record for the client in the PSA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client company is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client company is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add all of the client's users as contacts under the company record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All client contacts are created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All client contacts are created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create the recurring service contract in the PSA, specifying the services provided and the monthly fee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client's contract is set up correctly for future billing and SLA tracking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client's contract is set up correctly for future billing and SLA tracking.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

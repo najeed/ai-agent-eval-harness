@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the order details and the carrier's tracking information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the tracking status is 'Delivered'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the tracking status is 'Delivered'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for detailed delivery information, such as a photo of the delivery location or GPS coordinates from the carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a proof-of-delivery photo showing the package at the correct address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a proof-of-delivery photo showing the package at the correct address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the customer to check around their property and with neighbors, and if still not found, initiate a 'lost package' claim with the carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides helpful advice and correctly starts the carrier claim process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides helpful advice and correctly starts the carrier claim process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

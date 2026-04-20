@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open a new safety observation report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates a new report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates a new report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the details of the observation: location, date, type of observation (e.g., 'At-Risk Behavior'), and a description of the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly fills in all required fields for the observation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly fills in all required fields for the observation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the observation. The system should automatically categorize it and add it to the monthly safety metrics dashboard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the report, and it is logged anonymously for trending."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the report, and it is logged anonymously for trending.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

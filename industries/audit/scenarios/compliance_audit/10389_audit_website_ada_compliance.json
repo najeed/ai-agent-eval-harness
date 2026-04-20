@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use an automated accessibility scanning tool to scan the website for common issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool identifies multiple issues, such as low-contrast text and missing alt-text for images."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool identifies multiple issues, such as low-contrast text and missing alt-text for images.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Manually test the website's keyboard navigation to ensure all interactive elements can be accessed without a mouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor finds that the main navigation menu cannot be operated using only a keyboard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor finds that the main navigation menu cannot be operated using only a keyboard.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the findings and recommend that the web development team remediate the issues to avoid potential legal action.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is created detailing the accessibility issues."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is created detailing the accessibility issues.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

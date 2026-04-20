@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Convert the final complaint document to a text-searchable PDF.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a compliant PDF file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a compliant PDF file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log in to the court's CM/ECF (Case Management/Electronic Case Files) system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully accesses the e-filing portal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully accesses the e-filing portal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate a new civil case, enter all party information, and upload the complaint PDF.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly enters all data and uploads the document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly enters all data and uploads the document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Pay the filing fee and save the receipt and notice of electronic filing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The complaint is successfully filed, and a new case is opened."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The complaint is successfully filed, and a new case is opened.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

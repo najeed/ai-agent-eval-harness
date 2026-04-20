@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log into their account and navigate to the 'Manage Subscription' page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer accesses their subscription details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer accesses their subscription details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the 'Skip Next Shipment' option.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer chooses to skip the upcoming delivery."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer chooses to skip the upcoming delivery.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system confirms the next shipment has been skipped and shows the date of the following shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer's subscription is paused for one cycle and will resume automatically."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer's subscription is paused for one cycle and will resume automatically.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

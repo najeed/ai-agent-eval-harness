@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the alert that has appeared on the screen during order entry.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician sees and acknowledges the critical alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician sees and acknowledges the critical alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the details of the interacting medications and the potential adverse effect.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician understands the clinical risk presented by the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician understands the clinical risk presented by the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Cancel the new medication order and select an alternative medication that does not have the interaction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician makes a different, safer clinical choice based on the CDS alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician makes a different, safer clinical choice based on the CDS alert.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

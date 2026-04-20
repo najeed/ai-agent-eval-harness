@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that the customer has a credit balance on their account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer has a credit balance from the advance payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer has a credit balance from the advance payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Process a payment request through Accounts Payable to issue a check to the customer for the credit balance amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a payment request in the AP system to refund the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a payment request in the AP system to refund the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post a transaction in Accounts Receivable to clear the credit balance from the customer's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts a debit memo to clear the customer's credit balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts a debit memo to clear the customer's credit balance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

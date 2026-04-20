@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Develop plans for both the high-speed transit and the deliberate transit COAs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner creates two distinct and viable transit plans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner creates two distinct and viable transit plans.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assess the risks for each COA, considering threats from shore-based missiles, mines, and small boats.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner accurately assesses that high speed reduces exposure time but limits reaction time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner accurately assesses that high speed reduces exposure time but limits reaction time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend the slower, deliberate transit, as the enhanced ISR provides better situational awareness to counter potential ambushes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner makes a well-justified recommendation prioritizing security over speed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner makes a well-justified recommendation prioritizing security over speed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

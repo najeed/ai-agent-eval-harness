@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the contract holder and calculate their RMD for the year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the amount the customer must withdraw."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the amount the customer must withdraw.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Notify the customer of their RMD amount and the deadline to take it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a clear notification to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a clear notification to the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the RMD withdrawal as requested by the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully distributes the RMD amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully distributes the RMD amount.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

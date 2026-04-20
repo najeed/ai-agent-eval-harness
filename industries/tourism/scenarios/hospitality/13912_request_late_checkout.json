@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the guest's current reservation by their room number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the guest's folio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the guest's folio.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check room availability and housekeeping schedules to see if a late check-out is possible.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that a 2 PM late check-out can be accommodated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that a 2 PM late check-out can be accommodated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the reservation with the new departure time and inform the guest.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the guest's booking and confirms the late check-out time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the guest's booking and confirms the late check-out time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the project's Budget at Completion (BAC), Earned Value (EV), and Actual Cost (AC).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves BAC=$500k, EV=$250k, AC=$275k."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves BAC=$500k, EV=$250k, AC=$275k.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the Cost Performance Index (CPI) and Estimate at Completion (EAC).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates CPI = EV/AC = 0.91 and EAC = BAC/CPI = $550k."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates CPI = EV/AC = 0.91 and EAC = BAC/CPI = $550k.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report indicating a forecasted cost overrun of $50,000.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A cost forecast report is generated with the key metrics and conclusion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A cost forecast report is generated with the key metrics and conclusion.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

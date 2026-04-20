@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the guest's room number and take their order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly records the order details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly records the order details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the order into the POS system and confirm the total price and estimated delivery time with the guest.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the order and informs the guest of the total and a 30-minute ETA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the order and informs the guest of the total and a 30-minute ETA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Charge the order to the guest's room folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The charge is successfully posted to the guest's room bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The charge is successfully posted to the guest's room bill.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all property details, photos, and the seller's disclosure document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles all necessary information including property features and required legal documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles all necessary information including property features and required legal documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter all property data into the MLS new listing form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately fills out all required fields in the MLS system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately fills out all required fields in the MLS system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload photos and all required documents (e.g., disclosures, floor plans) to the listing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All media and documents are successfully uploaded and attached to the new MLS listing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All media and documents are successfully uploaded and attached to the new MLS listing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive notification of the rain delay from the on-site production crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is informed of the delay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is informed of the delay.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Switch the live broadcast feed to a pre-prepared 'rain delay' content package (e.g., highlights, interviews).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully switches the feed to the filler content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully switches the feed to the filler content.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Display a message on screen informing viewers of the delay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent activates an on-screen graphic with the rain delay information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent activates an on-screen graphic with the rain delay information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

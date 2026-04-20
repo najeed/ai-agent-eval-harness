@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the network diagram to ensure the systems that store or process credit card data are properly segmented from the rest of the network.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms the cardholder data environment (CDE) is properly isolated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms the cardholder data environment (CDE) is properly isolated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan a sample of databases to ensure that full credit card numbers are not being stored.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The scan confirms that only the last four digits of credit card numbers are stored."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The scan confirms that only the last four digits of credit card numbers are stored.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review firewall rules to ensure that all traffic into and out of the CDE is restricted to only what is necessary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms the firewall rules are appropriately restrictive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms the firewall rules are appropriately restrictive.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

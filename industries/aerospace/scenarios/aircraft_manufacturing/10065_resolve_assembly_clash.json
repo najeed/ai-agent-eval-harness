@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the clash report from the digital mock-up software to understand the location and severity of the interference.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the two interfering components."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the two interfering components.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Modify the 3D CAD model to re-route the hydraulic line, ensuring it maintains the minimum required clearance from the wire bundle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully modifies the design to resolve the clash."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully modifies the design to resolve the clash.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue an engineering change notice to update the installation drawings for the production team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the relevant drawings to reflect the design change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the relevant drawings to reflect the design change.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

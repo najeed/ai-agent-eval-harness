@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Upload the final physical count data into the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully uploads the count for every item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully uploads the count for every item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a comparison report showing the variance (quantity and value) between the physical count and the book inventory for every item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the variance report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the variance report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Investigate the largest variances to identify potential root causes (e.g., receiving errors, unrecorded scrap).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the top 10 largest variances for further review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the top 10 largest variances for further review.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create and post a summary journal entry for the net inventory adjustment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts a single journal entry to adjust the inventory account for the net gain or loss."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts a single journal entry to adjust the inventory account for the net gain or loss.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

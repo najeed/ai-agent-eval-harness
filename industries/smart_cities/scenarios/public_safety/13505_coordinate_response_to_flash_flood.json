@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify flooded areas using data from street-level water sensors and camera analytics.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a map overlay of the flooded zones."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a map overlay of the flooded zones.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically close flooded roads in the city's navigation and traffic systems.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the status of multiple roads to 'closed'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the status of multiple roads to 'closed'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify and dispatch high-water rescue vehicles to assist stranded citizens.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches specialized units to the most critical areas."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches specialized units to the most critical areas.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

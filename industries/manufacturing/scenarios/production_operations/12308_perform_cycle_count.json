@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the system's expected on-hand quantity for the specified item at that location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls the current inventory level from the ERP system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls the current inventory level from the ERP system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a physical count of the item at the location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator physically counts the items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator physically counts the items.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the physical count into the system and flag any discrepancy for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the counted quantity and the system flags a variance for a manager to investigate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the counted quantity and the system flags a variance for a manager to investigate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

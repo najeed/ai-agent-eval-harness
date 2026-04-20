@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all upcoming production orders that depend on the delayed material.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of work orders that will be affected by the delay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of work orders that will be affected by the delay.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the supplier to get a firm revised delivery date and explore options for expediting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates with the supplier and gets a new ETA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates with the supplier and gets a new ETA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the expected delivery date on the purchase order and notify the production planning team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the PO and sends a notification to the planning department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the PO and sends a notification to the planning department.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

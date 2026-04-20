@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The dispatcher identifies the load the driver is scheduled to pick up.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct load record is found."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct load record is found.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system shows which trailer has been pre-loaded with that load.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dispatcher identifies the correct trailer number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dispatcher identifies the correct trailer number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The dispatcher creates a 'hook' event in the system, linking the driver's tractor ID with the trailer ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tractor and trailer are now linked in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tractor and trailer are now linked in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The driver is notified of the specific trailer number and its location in the yard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver knows which trailer to pick up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver knows which trailer to pick up.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

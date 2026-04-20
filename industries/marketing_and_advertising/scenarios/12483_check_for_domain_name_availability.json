@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the desired domain name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the name to be checked (e.g., 'newproduct.com')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the name to be checked (e.g., 'newproduct.com').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a domain registrar's WHOIS lookup tool to check the availability of the domain.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the domain is already registered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the domain is already registered.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Brainstorm alternative domain names or TLDs (e.g., '.io', '.co') and check their availability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an available alternative, 'newproduct.io'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an available alternative, 'newproduct.io'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain a list of all real estate leases and abstract key data points like rent amount, escalation clauses, and expiration dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A master summary of all lease data is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A master summary of all lease data is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a sample of lease payments and verify they agree with the terms in the lease agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor finds one instance where a rent escalation clause was missed, resulting in an underpayment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor finds one instance where a rent escalation clause was missed, resulting in an underpayment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend the implementation of a lease administration software to better track critical dates and payment amounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A recommendation is made to improve the lease management process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A recommendation is made to improve the lease management process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

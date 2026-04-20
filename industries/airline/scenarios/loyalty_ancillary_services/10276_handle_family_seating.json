@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "During booking, identify that the passengers are a family traveling with children.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recognizes the family booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recognizes the family booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the seat map for a block of adjacent seats large enough for the family.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a row of available seats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a row of available seats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the family to the adjacent seats, ensuring each child is seated next to an adult, in compliance with airline policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully assigns the family to seats together."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully assigns the family to seats together.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

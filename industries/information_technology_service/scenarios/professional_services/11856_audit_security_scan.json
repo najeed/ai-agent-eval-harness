@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get temporary domain administrator credentials from the client to perform the authenticated scan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analyst has the necessary credentials."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analyst has the necessary credentials.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Configure and run an internal vulnerability scan against the client's servers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The scan completes successfully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The scan completes successfully.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the results and generate a prioritized list of vulnerabilities to be remediated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear, actionable vulnerability report is created as part of the audit deliverable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear, actionable vulnerability report is created as part of the audit deliverable.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

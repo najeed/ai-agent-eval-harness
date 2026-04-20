@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the information submitted in the form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the lead's company size, industry, and stated interest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the lead's company size, industry, and stated interest.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enrich the lead's data using a third-party tool to find more information about their company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds additional details about the company's tech stack and funding."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds additional details about the company's tech stack and funding.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the enriched data, score the lead and route it to the appropriate Account Executive based on territory rules.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly qualifies the lead as 'high-value' and assigns it to the enterprise sales team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly qualifies the lead as 'high-value' and assigns it to the enterprise sales team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

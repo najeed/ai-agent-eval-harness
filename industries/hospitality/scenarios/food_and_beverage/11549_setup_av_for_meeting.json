@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the Banquet Event Order (BEO) to see the specific AV requirements (e.g., projector, screen, microphone).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager confirms the required equipment from the BEO."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager confirms the required equipment from the BEO.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assign an AV technician to set up the equipment in the correct meeting room.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A technician is dispatched to perform the setup."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A technician is dispatched to perform the setup.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The technician tests all equipment to ensure it is functioning correctly before the event starts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All AV equipment is tested and confirmed to be working."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All AV equipment is tested and confirmed to be working.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a request for temporary access for a specific person to the 'IT Server Room'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the access request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the access request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the contractor's identity against the approved vendor list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the contractor is authorized to perform work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the contractor is authorized to perform work.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Grant access to the 'IT Server Room' door for the specified contractor's ID card, valid for the next 4 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the access control system with the temporary permission."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the access control system with the temporary permission.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

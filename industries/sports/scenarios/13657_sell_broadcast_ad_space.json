@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the inventory of available ad spots for the championship game.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds there are still ad spots available in the third quarter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds there are still ad spots available in the third quarter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the company with the rate card for the available ad spots.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the pricing information to the potential advertiser."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the pricing information to the potential advertiser.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Negotiate a price and process the sale of the ad spot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sells the ad spot and generates an insertion order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sells the ad spot and generates an insertion order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

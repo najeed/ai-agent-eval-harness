@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The system's shipping process identifies multiple unshipped orders for the same customer address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system flags the orders as candidates for consolidation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system flags the orders as candidates for consolidation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system creates a single, combined shipment and links the three original orders to it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new 'master' shipment is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new 'master' shipment is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The packing instructions now show all items from all three orders to be packed in one box.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The warehouse receives a single packing list for the combined shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The warehouse receives a single packing list for the combined shipment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The operator wants to take a major water main out of service for repair. They first simulate this action in the hydraulic model.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator inputs the proposed change into the digital twin."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator inputs the proposed change into the digital twin.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The model predicts that taking the main out of service will cause low pressure for a residential neighborhood.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The simulation identifies a potential negative impact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The simulation identifies a potential negative impact.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The operator then simulates a mitigating action, such as re-routing water through a different main, and confirms this solves the low-pressure issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator finds a safe way to perform the maintenance without impacting customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator finds a safe way to perform the maintenance without impacting customers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

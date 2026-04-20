@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive reports of a power outage in a specific area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the outage is affecting the west side of the venue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the outage is affecting the west side of the venue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the backup generators have activated for emergency lighting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that emergency lights are on in the affected area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that emergency lights are on in the affected area.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch electricians to the affected electrical room to diagnose the issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the on-site electricians to investigate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the on-site electricians to investigate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Dispatch staff to the area to provide assistance and information to guests.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends guest services staff to the dark concourse to help guests."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends guest services staff to the dark concourse to help guests.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

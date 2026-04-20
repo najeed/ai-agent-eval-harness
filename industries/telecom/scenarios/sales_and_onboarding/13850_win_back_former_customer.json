@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Identify the former customer in the marketing database and verify the win-back offer details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer is eligible for '50% off for 6 months'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer is eligible for '50% off for 6 months'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new account for the customer, applying the special win-back promotion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new account with the promotional code applied."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new account with the promotional code applied.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

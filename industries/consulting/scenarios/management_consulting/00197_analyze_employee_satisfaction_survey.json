@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load the survey data, focusing on the column with open-ended text comments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads the text data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads the text data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform topic modeling on the text comments to identify the main topics of discussion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies topics like 'Work-Life Balance', 'Compensation', and 'Management'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies topics like 'Work-Life Balance', 'Compensation', and 'Management'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a summary report of the key topics and include an illustrative anonymous quote for each.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a report that effectively summarizes the qualitative feedback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a report that effectively summarizes the qualitative feedback.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

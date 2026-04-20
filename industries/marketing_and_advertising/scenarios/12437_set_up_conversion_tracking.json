@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new 'thank you' page that users are redirected to after submitting the form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the destination page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the destination page.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new 'destination' goal in Google Analytics that tracks views of the 'thank you' page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sets up the goal in Google Analytics."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sets up the goal in Google Analytics.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Import the new goal into Google Ads to enable conversion tracking for ad campaigns.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully links Google Analytics and Google Ads for conversion tracking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully links Google Analytics and Google Ads for conversion tracking.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

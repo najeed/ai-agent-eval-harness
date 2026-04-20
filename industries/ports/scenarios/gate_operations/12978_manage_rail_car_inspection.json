@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "A train arrives, and a work order is generated to inspect all its cars.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new inspection work order is created in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new inspection work order is created in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch a team of inspectors to walk the length of the train.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspection team is assigned the job."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspection team is assigned the job.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The inspectors check each car and report its status (OK, Damaged, Dirty). Any cars that fail inspection are flagged and not loaded.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspectors log their findings, flagging one car as 'Damaged'. The system prevents any container from being planned onto that car."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspectors log their findings, flagging one car as 'Damaged'. The system prevents any container from being planned onto that car.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

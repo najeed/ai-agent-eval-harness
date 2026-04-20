@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the upcoming appointment and identify the required non-stock parts (e.g., a timing belt kit).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the need for a timing belt kit for the scheduled appointment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the need for a timing belt kit for the scheduled appointment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the regional parts distribution center for availability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the part is in stock at the regional warehouse."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the part is in stock at the regional warehouse.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place an order for the part to be delivered to the dealership before the appointment date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully places the order and links it to the repair order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully places the order and links it to the repair order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and the checking account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer and their primary checking account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer and their primary checking account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Confirm the check style, quantity, and shipping address with the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all order details are correct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all order details are correct.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place the check order through the bank's vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully places the order and provides the customer with an estimated delivery date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully places the order and provides the customer with an estimated delivery date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

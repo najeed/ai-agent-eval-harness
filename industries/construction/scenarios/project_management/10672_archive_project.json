@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a final project closeout report, summarizing schedule performance, cost performance, and major issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive closeout report is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive closeout report is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather all project documents, including contracts, drawings, RFIs, and submittals, into a single archive file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All project documents are compiled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All project documents are compiled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set the project status to 'Archived' in the project management system, making it read-only.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project is successfully archived."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project is successfully archived.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

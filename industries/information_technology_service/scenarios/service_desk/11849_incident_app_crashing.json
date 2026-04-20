@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the computer's event logs for application error details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician finds an application error event related to a corrupted file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician finds an application error event related to a corrupted file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attempt to repair the application's installation via the control panel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The repair process does not fix the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The repair process does not fix the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Completely uninstall and then reinstall the application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Reinstalling the application resolves the corrupted file issue, and the report now runs successfully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Reinstalling the application resolves the corrupted file issue, and the report now runs successfully.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

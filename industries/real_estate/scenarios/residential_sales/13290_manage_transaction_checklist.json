@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Apply a standard 'Buyer Side' transaction checklist template to the new transaction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new checklist for the property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new checklist for the property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the key dates from the contract (e.g., effective date, contingency deadlines, closing date) into the checklist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately populates the checklist with all critical deadlines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately populates the checklist with all critical deadlines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "As tasks are completed (e.g., 'Earnest Money Deposited'), mark them as done in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent keeps the checklist updated in real-time throughout the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent keeps the checklist updated in real-time throughout the transaction.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

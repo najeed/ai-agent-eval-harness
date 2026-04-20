@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Check the project's inspection log for the status of the 'Plumbing Rough-in' inspection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the log and confirms the inspection status is 'Passed'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the log and confirms the inspection status is 'Passed'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the status of the 'Install Drywall - 1st Floor' task from 'Blocked' to 'Ready to Start'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The drywall task is unblocked and ready for scheduling."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The drywall task is unblocked and ready for scheduling.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

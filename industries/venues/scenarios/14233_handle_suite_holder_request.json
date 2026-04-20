@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Verify the caller is the authorized contact for the suite.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the caller's identity against the suite account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the caller's identity against the suite account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Take the details of the request (cake flavor, message, delivery time).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately records the special request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately records the special request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place a special order with the catering department for the birthday cake.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully places the order and adds the charge to the suite's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully places the order and adds the charge to the suite's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Confirm the order details back to the suite holder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a confirmation email to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a confirmation email to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

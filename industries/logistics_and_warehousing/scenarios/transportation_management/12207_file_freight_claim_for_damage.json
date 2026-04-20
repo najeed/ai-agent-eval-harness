@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the shipment record and the signed Proof of Delivery (POD) where the damage was noted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the necessary shipment details and POD document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the necessary shipment details and POD document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect documentation of the damage, including photos and a commercial invoice for the value of the goods.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles all required supporting documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles all required supporting documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the claim to the carrier through their claims portal, attaching all documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully files the claim and receives a claim number from the carrier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully files the claim and receives a claim number from the carrier.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

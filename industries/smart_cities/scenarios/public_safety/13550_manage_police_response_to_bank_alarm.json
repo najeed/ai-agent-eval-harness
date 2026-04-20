@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a silent alarm notification from 'First City Bank'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the high-priority alarm."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the high-priority alarm.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch the nearest patrol units and provide them with a live feed from the bank's exterior cameras.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends units and provides them with visual intel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends units and provides them with visual intel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Access the building's floor plan from the city database and send it to the responding officers' terminals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides tactical information to the officers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides tactical information to the officers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

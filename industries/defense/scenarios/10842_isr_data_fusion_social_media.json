@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze post-strike satellite imagery to identify visible damage to the target.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the physical damage from the imagery."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the physical damage from the imagery.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scour social media and local news for posts, photos, or videos from the target area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst finds multiple social media posts confirming the destruction of the target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst finds multiple social media posts confirming the destruction of the target.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Fuse the imagery and OSINT to create a comprehensive Battle Damage Assessment (BDA) report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst produces a report confirming mission success with evidence from multiple sources."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst produces a report confirming mission success with evidence from multiple sources.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

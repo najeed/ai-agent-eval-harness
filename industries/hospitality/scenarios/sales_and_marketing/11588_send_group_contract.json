@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate the legal contract based on the agreed-upon proposal, including rates, dates, and cancellation terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal contract is generated from a template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal contract is generated from a template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send the contract to the client for electronic signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The contract is sent via an e-signature platform."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The contract is sent via an e-signature platform.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once signed, the system automatically updates the group block status from 'Tentative' to 'Definite'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The block status is updated, confirming the sale."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The block status is updated, confirming the sale.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

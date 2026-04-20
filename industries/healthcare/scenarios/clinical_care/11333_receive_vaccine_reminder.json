@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the immunization forecast alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Provider sees the reminder that a vaccine is due."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Provider sees the reminder that a vaccine is due.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Discuss the recommended vaccine with the patient's parent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Provider communicates the recommendation to the guardian."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Provider communicates the recommendation to the guardian.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place an order for the MMR vaccine, which was prompted by the CDS reminder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Provider orders the vaccine, improving immunization rates and patient care."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Provider orders the vaccine, improving immunization rates and patient care.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

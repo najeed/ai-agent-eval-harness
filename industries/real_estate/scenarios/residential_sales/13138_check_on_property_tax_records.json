@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the property address or parcel ID number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the correct identifier for the property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the correct identifier for the property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the county tax assessor's public records database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully navigates the county website and finds the tax record for the property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully navigates the county website and finds the tax record for the property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Extract the most recent annual tax amount and any assessed value information and share it with the buyer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately reports the official tax data to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately reports the official tax data to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The employee submits a shift swap request through the scheduling app, indicating which coworker has agreed to the swap.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The request is submitted in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The request is submitted in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system sends a notification to the manager for approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager receives the request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager receives the request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The manager reviews the request, ensures it doesn't cause overtime, and approves it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager approves the swap, and the schedule is automatically updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager approves the swap, and the schedule is automatically updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

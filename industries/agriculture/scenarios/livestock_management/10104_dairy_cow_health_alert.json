@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the alert and retrieve the cow's recent health data (rumination, activity, temperature).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the complete health data for the specific cow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the complete health data for the specific cow.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data against the cow's baseline to diagnose a probable cause, such as subclinical mastitis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies a probable diagnosis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies a probable diagnosis.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a task for the farm manager to physically inspect the cow and follow the standard operating procedure for mastitis detection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a clear and actionable task in the farm management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a clear and actionable task in the farm management system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

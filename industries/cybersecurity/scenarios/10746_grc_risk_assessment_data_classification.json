@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the data in the database contains PII and should be classified as 'Confidential'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the data classification error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the data classification error.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assess the risk by identifying who currently has access to the database due to its incorrect 'Public' classification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst discovers that all employees have access, which is a significant risk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst discovers that all employees have access, which is a significant risk.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority risk mitigation plan to re-classify the data, restrict access to authorized personnel, and scan for unauthorized copies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst creates a comprehensive plan to remediate the risk from the data spill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst creates a comprehensive plan to remediate the risk from the data spill.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

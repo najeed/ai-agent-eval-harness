@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all customers booked on the cancelled tour.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves a list of affected customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves a list of affected customers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a notification (SMS or email) to all affected customers informing them of the cancellation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends out the cancellation alerts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends out the cancellation alerts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process a full refund for all bookings for the cancelled tour.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates refunds for all affected customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates refunds for all affected customers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

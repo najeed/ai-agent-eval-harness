@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the purchase agreement and contact information for the chosen title/escrow company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the contract and the contact details for the specified escrow officer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the contract and the contact details for the specified escrow officer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Email the purchase agreement to the escrow officer with a request to open escrow.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A correctly formatted email with the contract attached is sent to the escrow officer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A correctly formatted email with the contract attached is sent to the escrow officer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the escrow number and preliminary title report delivery date in the transaction management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The TC updates the transaction file with the escrow # and sets a task reminder for the title report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The TC updates the transaction file with the escrow # and sets a task reminder for the title report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

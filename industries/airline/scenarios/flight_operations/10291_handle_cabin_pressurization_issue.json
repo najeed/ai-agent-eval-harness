@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The crew follows the emergency checklist for a pressurization failure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilots follow the correct emergency procedure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilots follow the correct emergency procedure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "If the cabin altitude continues to climb, the passenger oxygen masks will deploy automatically. The crew initiates an emergency descent to a safe altitude (typically 10,000 feet).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilots perform an emergency descent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilots perform an emergency descent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The pilot declares an emergency with ATC and diverts to the nearest suitable airport.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The flight is safely diverted to resolve the technical issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The flight is safely diverted to resolve the technical issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

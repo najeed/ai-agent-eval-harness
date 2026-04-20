@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log into their account and navigate to the 'Manage Subscription' page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer accesses their subscription details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer accesses their subscription details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the option to change the delivery frequency.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer accesses the frequency setting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer accesses the frequency setting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Change the frequency from 'Every 1 Month' to 'Every 2 Months' and save.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The subscription schedule is successfully updated to the new frequency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The subscription schedule is successfully updated to the new frequency.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

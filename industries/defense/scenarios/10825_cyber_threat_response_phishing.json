@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the characteristics of the phishing emails (sender, subject, attachment) from initial reports.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the indicators of compromise (IOCs)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the indicators of compromise (IOCs).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search email logs across the enterprise to find all users who received the phishing email.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst generates a complete list of affected users."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst generates a complete list of affected users.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Remotely delete the malicious emails from all recipients' inboxes and block the sender's domain.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully contains the phishing campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully contains the phishing campaign.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

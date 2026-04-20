@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the aircraft's logbooks to verify continuous maintenance history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms there are no gaps in the logbook history."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms there are no gaps in the logbook history.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that all mandatory Airworthiness Directives (ADs) have been complied with.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent cross-references the AD list with the maintenance records and confirms compliance for all applicable ADs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent cross-references the AD list with the maintenance records and confirms compliance for all applicable ADs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the traceability and certification paperwork for all life-limited parts installed on the aircraft.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all LLPs have proper documentation and are within their life limits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all LLPs have proper documentation and are within their life limits.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

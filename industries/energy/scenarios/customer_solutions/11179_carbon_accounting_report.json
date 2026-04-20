@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Gather the client's electricity consumption data (in MWh) for all their facilities for the past year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles the total electricity usage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles the total electricity usage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each facility, find the appropriate regional grid emission factor (e.g., from eGRID) to calculate emissions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct emission factors (in kg CO2e/MWh) for each location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct emission factors (in kg CO2e/MWh) for each location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the total Scope 2 emissions for the client in metric tons of CO2 equivalent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent computes the final emissions figure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent computes the final emissions figure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a report compliant with the GHG Protocol, detailing the methodology and results.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a formal carbon accounting report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a formal carbon accounting report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

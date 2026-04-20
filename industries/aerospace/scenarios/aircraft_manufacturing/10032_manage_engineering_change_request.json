@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the ECR for completeness, including the justification, cost analysis, and impact assessment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the ECR form is filled out correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the ECR form is filled out correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Route the ECR to a board of stakeholders (e.g., stress, manufacturing, procurement) for their review and approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent routes the ECR to the correct review board."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent routes the ECR to the correct review board.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once approved, update the official engineering drawing and bill of materials to reflect the change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the relevant engineering documents with the new material specification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the relevant engineering documents with the new material specification.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

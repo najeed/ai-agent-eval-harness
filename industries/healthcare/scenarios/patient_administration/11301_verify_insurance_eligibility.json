@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the patient's appointment and their registered insurance information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the patient's chart and their primary insurance policy details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the patient's chart and their primary insurance policy details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit an electronic eligibility request (270 query) to the payer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses the eligibility tool to send the request to the insurance company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses the eligibility tool to send the request to the insurance company.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the eligibility response (271), confirm the policy is active, and note the patient's copay amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives a response confirming active coverage and updates the patient's record with the copay amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives a response confirming active coverage and updates the patient's record with the copay amount.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

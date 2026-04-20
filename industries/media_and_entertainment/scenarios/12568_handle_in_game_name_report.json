@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the player report and the reported username.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the report details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the report details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the username against the code of conduct's naming policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the name is a violation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the name is a violation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Force the player's username to be reset to a generic, temporary name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully resets the player's name."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully resets the player's name.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Issue a warning to the player and inform them they must choose a new, appropriate name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a notification to the player's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a notification to the player's account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new S3 bucket in the client's AWS account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The S3 bucket is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The S3 bucket is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Configure the bucket with private-only access, encryption-at-rest, and versioning enabled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The bucket is configured with security best practices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The bucket is configured with security best practices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a new IAM user with programmatic access restricted only to this new S3 bucket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A secure, least-privilege IAM user is created for the application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A secure, least-privilege IAM user is created for the application.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

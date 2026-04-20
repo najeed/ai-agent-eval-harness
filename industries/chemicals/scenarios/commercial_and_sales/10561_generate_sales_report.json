@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the parameters for the report: date range (last quarter) and region (US).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly sets the filters for the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly sets the filters for the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run the sales report generation tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully executes the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully executes the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The report is generated, showing total sales volume for each product sold in the US during the specified period, and is exported to Excel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains the correctly filtered and aggregated data in a downloadable format."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains the correctly filtered and aggregated data in a downloadable format.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

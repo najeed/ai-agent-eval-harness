@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the contract for the loan application deadline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the contract requires the buyer to apply for a loan within 5 days of acceptance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the contract requires the buyer to apply for a loan within 5 days of acceptance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the buyer's loan officer to confirm the application has been submitted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The loan officer confirms via email that the application is complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The loan officer confirms via email that the application is complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Mark the 'Loan Application' task as complete in the transaction management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The checklist item is updated, showing the buyer has met their contractual obligation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The checklist item is updated, showing the buyer has met their contractual obligation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

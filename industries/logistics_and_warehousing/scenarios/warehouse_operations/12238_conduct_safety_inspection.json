@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the digital safety inspection checklist for the week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the correct safety checklist form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the correct safety checklist form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Walk through the warehouse and mark each checklist item as 'Pass' or 'Fail'. For a 'Fail', take a photo of the issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a blocked fire exit, marks it as 'Fail', and captures a photo."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a blocked fire exit, marks it as 'Fail', and captures a photo.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the completed checklist. The system automatically creates a corrective action task for the failed item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system logs the inspection and creates a task for the maintenance manager to clear the fire exit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system logs the inspection and creates a task for the maintenance manager to clear the fire exit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

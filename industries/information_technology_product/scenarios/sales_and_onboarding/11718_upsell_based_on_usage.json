@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify a customer who has exceeded their plan's API limits for the past 3 consecutive months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a suitable customer from a system report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a suitable customer from a system report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the amount the customer has been paying in overage fees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the customer is paying more in overages than the cost of an upgrade."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the customer is paying more in overages than the cost of an upgrade.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the customer and present a cost-benefit analysis showing how upgrading to the 'Enterprise' plan would save them money and provide higher limits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a data-driven sales pitch and the customer agrees to upgrade."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a data-driven sales pitch and the customer agrees to upgrade.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

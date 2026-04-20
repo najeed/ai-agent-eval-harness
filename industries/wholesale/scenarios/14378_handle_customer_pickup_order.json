@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The customer places an order and selects 'Customer Pickup'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is flagged for pickup."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is flagged for pickup.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The warehouse staff picks and stages the order in the customer pickup area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is prepared and set aside."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is prepared and set aside.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the customer that their order is ready for pickup.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer receives an email or SMS notification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer receives an email or SMS notification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "When the customer arrives, verify their identity and have them sign for the order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer's identity is verified, and they receive their goods."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer's identity is verified, and they receive their goods.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

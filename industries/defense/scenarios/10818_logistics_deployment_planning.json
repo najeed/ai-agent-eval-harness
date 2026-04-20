@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Catalog all personnel, vehicles, and equipment to be deployed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner generates a complete and accurate list of all assets for deployment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner generates a complete and accurate list of all assets for deployment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine the optimal mix of transport assets (air, sea, land) to meet the deployment timeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner allocates the correct number and type of transport assets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner allocates the correct number and type of transport assets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a detailed time-phased force and deployment data (TPFDD) plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner creates a valid TPFDD that sequences the entire deployment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner creates a valid TPFDD that sequences the entire deployment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

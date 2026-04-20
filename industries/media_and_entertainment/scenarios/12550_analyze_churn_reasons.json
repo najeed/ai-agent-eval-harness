@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all cancellation data from the last month, including the logged reasons.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls a dataset of all churned subscribers and their stated reasons."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls a dataset of all churned subscribers and their stated reasons.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Categorize and quantify the cancellation reasons.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the top reasons are 'Price' (40%), 'Lack of new content' (30%), and 'Technical issues' (15%)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the top reasons are 'Price' (40%), 'Lack of new content' (30%), and 'Technical issues' (15%).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report summarizing the findings for the executive team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a clear, concise report on the primary drivers of churn."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a clear, concise report on the primary drivers of churn.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

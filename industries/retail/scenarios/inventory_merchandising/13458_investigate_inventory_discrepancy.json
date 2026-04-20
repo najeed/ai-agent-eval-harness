@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the cycle count results that show the discrepancy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager confirms the difference between the system quantity and the physical count."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager confirms the difference between the system quantity and the physical count.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the full transaction history for the item over the last month (sales, receipts, transfers).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager analyzes the item's movement history to look for errors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager analyzes the item's movement history to look for errors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After finding no errors, conclude the discrepancy is likely due to theft and make an inventory adjustment to correct the on-hand quantity, noting 'Shrinkage' as the reason.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system's inventory is corrected, and the loss is properly categorized."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system's inventory is corrected, and the loss is properly categorized.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

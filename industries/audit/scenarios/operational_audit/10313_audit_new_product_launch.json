@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Compare the final project cost and timeline to the original budget and plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor determines the project was 20% over budget and 3 months late."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor determines the project was 20% over budget and 3 months late.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the actual sales in the first six months to the sales targets set in the business case.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor finds that sales are at only 50% of the target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor finds that sales are at only 50% of the target.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Interview the product manager to understand the reasons for the shortfalls and document lessons learned for future projects.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor documents key takeaways to improve future product launches."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor documents key takeaways to improve future product launches.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

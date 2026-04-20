@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The driver calls in to report that their in/out times show they have been at the facility for 3 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent receives the detention notification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent receives the detention notification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The agent checks the warehouse's dock schedule and sees that the facility is running behind.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent confirms the facility is at fault for the delay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent confirms the facility is at fault for the delay.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The agent authorizes the detention time with the driver and logs it against the shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The detention event is recorded in the TMS, and the expected accessorial charge is noted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The detention event is recorded in the TMS, and the expected accessorial charge is noted.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The returns department receives a package with no RMA number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The package is identified as an exception."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The package is identified as an exception.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The operator opens the package and uses the packing slip or item inside to identify the original sales order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator successfully finds the original order in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator successfully finds the original order in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The operator creates a new RMA for the order retrospectively.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An RMA is created so the return can be processed correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An RMA is created so the return can be processed correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The operator proceeds with the standard inspection and disposition process using the newly created RMA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The exception is resolved, and the return is processed normally."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The exception is resolved, and the return is processed normally.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review all major threat intelligence reports, security news, and new CVEs from the past week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst synthesizes a large amount of information into key themes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst synthesizes a large amount of information into key themes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the threats and vulnerabilities that are most relevant to the organization.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly filters the information down to what is most important for their specific company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly filters the information down to what is most important for their specific company.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a concise presentation summarizing the key threats, their potential impact, and recommended actions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst produces a clear, actionable briefing for leadership."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst produces a clear, actionable briefing for leadership.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Process and stitch together the thousands of images from the drone flight to create a complete 3D model of the blade.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the 3D model."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the 3D model.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically scan the imagery for common defects like cracks, erosion, and lightning damage using a computer vision model.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The AI model flags three potential areas of concern."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The AI model flags three potential areas of concern.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Classify the severity of the identified defects according to industry standards and recommend whether immediate repair is needed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent classifies two defects as minor erosion but one as a Category 3 crack requiring repair within 6 months."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent classifies two defects as minor erosion but one as a Category 3 crack requiring repair within 6 months.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

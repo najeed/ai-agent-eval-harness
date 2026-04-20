@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'Gas Leak Detected' alert with a specific location from a pipeline sensor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the critical safety alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the critical safety alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Remotely shut off the gas valves on either side of the leak to isolate the section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully operates the valves to stop the flow of gas."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully operates the valves to stop the flow of gas.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a gas utility repair crew and the fire department to the location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches both utility and emergency response teams."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches both utility and emergency response teams.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

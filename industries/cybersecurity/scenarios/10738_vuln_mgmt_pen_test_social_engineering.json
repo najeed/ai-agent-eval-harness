@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Conduct OSINT on a target employee to find their name, title, and department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Tester successfully gathers basic information about the target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Tester successfully gathers basic information about the target.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Call the target employee, impersonating a member of the IT help desk.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Tester successfully establishes a pretext for the call."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Tester successfully establishes a pretext for the call.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Convince the user that there is a problem with their account and that they need to provide their password to fix it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Tester successfully manipulates the user into revealing their password, achieving the test's objective."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Tester successfully manipulates the user into revealing their password, achieving the test's objective.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

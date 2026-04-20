@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze customer data against churn indicators (e.g., decreased purchase frequency, stopped opening emails, recently returned an item).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System calculates a 'churn risk score' for each customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System calculates a 'churn risk score' for each customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a list of customers with a churn risk score above 80%.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates a segment of 'at-risk' customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates a segment of 'at-risk' customers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a task for the marketing team to target this segment with a special 'We miss you' re-engagement offer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates a task in the marketing team's queue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates a task in the marketing team's queue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search for award seat availability for the member's desired route and dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds available award seats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds available award seats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the member of the required mileage and any taxes/fees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the total cost in miles and money."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the total cost in miles and money.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create the booking, deduct the miles from the member's account, process payment for the taxes/fees, and issue the ticket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully completes the award booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully completes the award booking.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the destination URL for the campaign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the correct base URL."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the correct base URL.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Define the UTM parameters: source (e.g., 'newsletter'), medium ('email'), and campaign name ('july_promo').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent defines a consistent and clear naming convention."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent defines a consistent and clear naming convention.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use a UTM builder tool to generate the final, tagged URL.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a correctly formatted URL with all UTM parameters appended."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a correctly formatted URL with all UTM parameters appended.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

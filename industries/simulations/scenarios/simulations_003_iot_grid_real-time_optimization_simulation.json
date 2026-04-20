@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Analyze telemetry batch from IoT Grid (telemetry_stream.csv) and identify anomalies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent flags the correct sensor drift or failure point."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent flags the correct sensor drift or failure point.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Execute state changes in IoT Grid to restore nominal operations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Simulated system returns to stable state."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Simulated system returns to stable state.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

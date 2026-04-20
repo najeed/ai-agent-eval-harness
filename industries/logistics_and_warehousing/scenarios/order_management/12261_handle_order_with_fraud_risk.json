@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The system places a new order on 'Fraud Review' hold and creates an alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is prevented from being fulfilled automatically."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is prevented from being fulfilled automatically.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "A fraud analyst reviews the order details and the reasons it was flagged.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analyst confirms the high-risk indicators."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analyst confirms the high-risk indicators.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The analyst attempts to contact the customer via phone to verify the order details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The phone number is out of service, increasing the suspicion of fraud."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The phone number is out of service, increasing the suspicion of fraud.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The analyst cancels the order to prevent a fraudulent shipment and chargeback.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is cancelled with 'Suspected Fraud' as the reason."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is cancelled with 'Suspected Fraud' as the reason.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

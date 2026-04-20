@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the list of established photo documentation points for the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a map with 8 designated photo locations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a map with 8 designated photo locations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Capture a photo from 'Photo Point #1' and tag it with the location and date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A photo is taken and correctly tagged with metadata."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A photo is taken and correctly tagged with metadata.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload the tagged photo to the project's photo archive.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The photo is successfully stored in the correct folder in the project's document management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The photo is successfully stored in the correct folder in the project's document management system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

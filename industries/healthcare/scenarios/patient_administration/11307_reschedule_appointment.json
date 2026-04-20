@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the patient's appointment that needs to be rescheduled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct appointment on the provider's schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct appointment on the provider's schedule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Cancel the existing appointment, noting 'Provider unavailable' as the reason.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent cancels the original appointment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent cancels the original appointment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the patient, explain the situation, and find a new appointment time that works for them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully communicates with the patient and books a new appointment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully communicates with the patient and books a new appointment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate the list of all equipment requiring lubrication this week based on their PM schedules.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a list of 25 assets that need lubrication."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a list of 25 assets that need lubrication.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Group the assets into an optimized route based on their physical location in the plant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system creates an efficient path for the technician to follow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system creates an efficient path for the technician to follow.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for the lubrication route and assign it to a technician.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the work order with the list of assets and the optimized route."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the work order with the list of assets and the optimized route.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

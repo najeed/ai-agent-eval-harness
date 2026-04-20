@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the song's publishers and master recording owners.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the two separate rights holders for the song."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the two separate rights holders for the song.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request quotes for both a synchronization license (for the composition) and a master use license (for the recording).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits formal quote requests to both rights holders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits formal quote requests to both rights holders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Negotiate the fees and execute the licensing agreements upon approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the approved quotes and generates the final agreements for signature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the approved quotes and generates the final agreements for signature.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

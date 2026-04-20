@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the document to identify information that is exempt from disclosure (e.g., personal private information, deliberative process).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer identifies several pieces of personally identifiable information (PII) in the document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer identifies several pieces of personally identifiable information (PII) in the document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a redaction tool to black out the exempt information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer successfully redacts all PII."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer successfully redacts all PII.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Save the redacted version of the document, ready for release to the requestor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer prepares the final, redacted document for delivery."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer prepares the final, redacted document for delivery.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

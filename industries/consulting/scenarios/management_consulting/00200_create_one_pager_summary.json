@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Distill a long project report down to its 3-4 most critical takeaways.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the most important high-level findings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the most important high-level findings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select one key chart or data visualization from the report that best illustrates the project's success.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent chooses the most impactful visual."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent chooses the most impactful visual.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange the key takeaways and the selected visual into a clean, one-page layout description.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent describes a professional and uncluttered one-page summary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent describes a professional and uncluttered one-page summary.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

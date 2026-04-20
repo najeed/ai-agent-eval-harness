@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new part number record in the inventory system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new item master record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new item master record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter details for the part, such as description, primary supplier, cost, and reorder point.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent populates all required fields for the new part."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent populates all required fields for the new part.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Save the new part record and confirm it is now searchable in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent saves the record and successfully finds it using the search function."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent saves the record and successfully finds it using the search function.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

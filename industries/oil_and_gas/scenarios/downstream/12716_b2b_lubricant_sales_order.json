@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Look up the client's account and their contract pricing for 'Turbo Oil 560'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client's specific pricing for the requested product is retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client's specific pricing for the requested product is retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check inventory for the required quantity at the nearest distribution center.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms sufficient stock is available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms sufficient stock is available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a new sales order in the ERP system for the specified quantity and schedule the delivery.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The sales order is created and a delivery date is confirmed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The sales order is created and a delivery date is confirmed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

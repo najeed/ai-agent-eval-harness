@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the landing page content and identify the primary target keyword.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the main keyword for the page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the main keyword for the page.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Rewrite the page title and meta description to include the target keyword and be compelling for users.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces optimized and compliant title and meta description tags."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces optimized and compliant title and meta description tags.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Ensure the target keyword is present in the H1 tag and within the first paragraph of the body content.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the page content to follow on-page SEO best practices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the page content to follow on-page SEO best practices.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

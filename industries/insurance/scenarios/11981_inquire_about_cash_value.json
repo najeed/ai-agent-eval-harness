@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify and authenticate the policyholder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely verifies the customer's identity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely verifies the customer's identity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the current cash value from the policy administration system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully finds the current cash value amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully finds the current cash value amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Communicate the cash value to the policyholder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly states the current cash value."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly states the current cash value.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the target area's defenses, terrain, and weather.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner has a clear understanding of the operational environment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner has a clear understanding of the operational environment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Evaluate the pros and cons of each infiltration method (e.g., helicopter is fast but loud, HALO is stealthy but weather-dependent).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner accurately weighs the trade-offs of each option."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner accurately weighs the trade-offs of each option.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the HALO jump as the optimal method because the target is heavily defended against ground and air approaches, and the weather is clear.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner makes the correct decision based on a holistic assessment of the situation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner makes the correct decision based on a holistic assessment of the situation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

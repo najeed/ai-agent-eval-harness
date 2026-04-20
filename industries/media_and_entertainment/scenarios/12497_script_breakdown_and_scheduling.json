@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ingest the script and identify all mentioned characters, props, and locations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a structured list of all required production elements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a structured list of all required production elements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Cross-reference the identified cast and locations with an availability database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies potential scheduling conflicts for a lead actor and a key location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies potential scheduling conflicts for a lead actor and a key location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate an optimized, conflict-free preliminary shooting schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a day-by-day schedule that accounts for all known constraints."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a day-by-day schedule that accounts for all known constraints.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a report from the PMS showing all cash transactions processed during the shift.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report shows total cash receipts of $500."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report shows total cash receipts of $500.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Physically count the cash in the drawer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The physical count is $505."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The physical count is $505.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the physical count to the system report and document any variance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent documents a $5 'overage' on the reconciliation form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent documents a $5 'overage' on the reconciliation form.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the candidate and confirm the decision not to move forward.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter confirms the candidate's status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter confirms the candidate's status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the candidate's status to 'Rejected' in the ATS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter updates the system of record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter updates the system of record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the candidate a standardized rejection email thanking them for their time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter sends a polite and professional rejection notification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter sends a polite and professional rejection notification.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Calculate the net operating income (NOI) for the property for the previous month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the distributable funds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the distributable funds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the owner's bank account details and the agreed-upon reserve amount to be held in the trust account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the payment details and reserve requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the payment details and reserve requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate an ACH transfer to the owner for the calculated distribution amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the payment to the owner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the payment to the owner.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

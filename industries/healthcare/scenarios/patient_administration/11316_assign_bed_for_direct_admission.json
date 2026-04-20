@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a pre-admission shell for the patient with their basic demographic and clinical information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a temporary record for the incoming patient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a temporary record for the incoming patient.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the required unit type (e.g., 'Telemetry') and find an available bed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an open bed on the appropriate hospital unit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an open bed on the appropriate hospital unit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the bed to the patient and notify the unit of the incoming direct admission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reserves the bed and sends a notification to the receiving unit's charge nurse."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reserves the bed and sends a notification to the receiving unit's charge nurse.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

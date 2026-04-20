@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all relevant documents: the signed lease, the full tenant ledger showing non-payment, and copies of all notices sent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a complete package of all evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a complete package of all evidence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a chronological summary of events, from the first missed payment to the filing of the eviction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear, dated timeline of all events is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear, dated timeline of all events is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the complete document package and summary to the company's attorney.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The organized file is securely sent to the legal counsel preparing for the hearing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The organized file is securely sent to the legal counsel preparing for the hearing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

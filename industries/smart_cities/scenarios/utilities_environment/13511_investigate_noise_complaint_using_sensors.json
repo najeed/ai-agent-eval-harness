@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a noise complaint for the area around '3rd and Elm St'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the citizen report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the citizen report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve historical and real-time decibel level readings from noise sensors in that area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up a chart showing a spike in noise levels starting at 11 PM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up a chart showing a spike in noise levels starting at 11 PM.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Correlate the noise data with a registered event permit, finding an approved construction project that is operating outside of allowed hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the likely source of the noise and the violation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the likely source of the noise and the violation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Dispatch a bylaw officer to the location to address the violation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully dispatches the appropriate enforcement unit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully dispatches the appropriate enforcement unit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

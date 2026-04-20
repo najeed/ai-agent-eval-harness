@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the schedule for upcoming amateur tournaments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a list of all relevant tournaments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a list of all relevant tournaments.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Get the availability of all team scouts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the schedule for each scout."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the schedule for each scout.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign scouts to tournaments based on their expertise and location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an assignment list, sending each scout to a specific tournament."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an assignment list, sending each scout to a specific tournament.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

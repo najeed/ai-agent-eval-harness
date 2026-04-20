@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Provide the guest with the correct Wi-Fi network name and password.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gives the correct login credentials."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gives the correct login credentials.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "If the issue persists, remotely check the status of the Wi-Fi access point serving the guest's room.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent's diagnostic tool shows the access point is online and functioning correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent's diagnostic tool shows the access point is online and functioning correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Guide the guest to restart their device, which often resolves connectivity issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a simple troubleshooting step that resolves the guest's problem."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a simple troubleshooting step that resolves the guest's problem.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

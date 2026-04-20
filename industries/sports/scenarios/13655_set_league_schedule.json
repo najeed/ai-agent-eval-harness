@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Input all constraints into the scheduling software, including venue availability, team travel rules, and key broadcast dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly configures all constraints."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly configures all constraints.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a draft schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The software produces a complete, conflict-free draft schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The software produces a complete, conflict-free draft schedule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the draft schedule to teams and broadcast partners for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent distributes the draft for feedback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent distributes the draft for feedback.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "After making minor adjustments based on feedback, publish the final, official schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finalizes and publishes the season schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finalizes and publishes the season schedule.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

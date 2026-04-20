@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the work order and the specific operation number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly selects the work order and operation they just completed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly selects the work order and operation they just completed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the start and end times or the total duration of the work.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the time spent on the task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the time spent on the task.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the labor ticket and verify it has been posted to the work order's cost ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the labor cost has been added to the work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the labor cost has been added to the work order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

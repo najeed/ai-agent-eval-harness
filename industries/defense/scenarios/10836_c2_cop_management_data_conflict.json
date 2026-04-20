@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the unidentified track and note its conflict with a friendly air defense zone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator detects the potential blue-on-blue engagement scenario."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator detects the potential blue-on-blue engagement scenario.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the track's flight path against all scheduled friendly flight plans.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator finds a match between the track's path and a scheduled friendly flight."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator finds a match between the track's path and a scheduled friendly flight.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Manually override the track's classification to 'assumed friend' and notify the air defense commander of the IFF malfunction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator successfully deconflicts the situation and prevents a potential friendly fire incident."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator successfully deconflicts the situation and prevents a potential friendly fire incident.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

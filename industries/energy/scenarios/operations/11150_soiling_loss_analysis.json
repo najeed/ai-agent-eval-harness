@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Measure the current soiling loss by comparing the output of a dirty panel to a recently cleaned reference panel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the current soiling loss is 4%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the current soiling loss is 4%.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the expected annual energy gain if the panels were cleaned, based on the farm's total capacity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the potential increase in MWh."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the potential increase in MWh.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Estimate the revenue from the extra energy based on the expected PPA price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the potential revenue gain."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the potential revenue gain.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Compare the revenue gain to the cost of a panel cleaning service. Recommend for or against cleaning.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the revenue gain exceeds the cleaning cost and recommends scheduling a cleaning."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the revenue gain exceeds the cleaning cost and recommends scheduling a cleaning.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

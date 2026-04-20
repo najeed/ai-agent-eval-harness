@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the contract holder and their annuity details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer and their specific annuity contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer and their specific annuity contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine the surrender charge period and calculate the penalty-free withdrawal amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the customer can withdraw up to 10% of the contract value without a surrender charge."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the customer can withdraw up to 10% of the contract value without a surrender charge.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the tax implications, specifically that earnings are taxed as ordinary income.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the tax rules for a non-qualified annuity withdrawal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the tax rules for a non-qualified annuity withdrawal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

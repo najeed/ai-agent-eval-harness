@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the tenant's ledger and the specific work order in question.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the charge and the details of the repair (e.g., 'Replace broken garbage disposal')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the charge and the details of the repair (e.g., 'Replace broken garbage disposal').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the lease agreement to determine financial responsibility for that type of repair.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the lease states the landlord is responsible for appliance repair."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the lease states the landlord is responsible for appliance repair.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Remove the incorrect charge from the tenant's ledger and send a confirmation email to the tenant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A credit for the disputed amount is applied to the tenant's account, and a notification is sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A credit for the disputed amount is applied to the tenant's account, and a notification is sent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Review the duty history for a crew being considered for a new assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the crew's work history for the last 7 days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the crew's work history for the last 7 days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically calculates the crew's available work hours before they must begin a mandatory rest period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system shows the crew has 6 hours of duty time left."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system shows the crew has 6 hours of duty time left.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the available hours to the estimated trip time for the new assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent sees the trip is estimated to take 8 hours, meaning this crew cannot legally complete it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent sees the trip is estimated to take 8 hours, meaning this crew cannot legally complete it.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Select a different, fully-rested crew for the assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A compliant crew is assigned to the train."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A compliant crew is assigned to the train.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Gather the specific vehicle configuration details from the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent records the desired configuration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent records the desired configuration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the local dealership's inventory for a matching vehicle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The search returns no matches in local inventory."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The search returns no matches in local inventory.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Expand the search to include the inventory of all dealerships within a 100-mile radius.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The expanded search finds a perfect match at a dealership 75 miles away."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The expanded search finds a perfect match at a dealership 75 miles away.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Offer to arrange a dealer transfer for the vehicle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs the customer the vehicle can be transferred and explains the process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs the customer the vehicle can be transferred and explains the process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

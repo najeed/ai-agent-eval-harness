@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm receipt of the initial premium payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that the first payment has been successfully processed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that the first payment has been successfully processed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Confirm all delivery requirements have been met (e.g., signed policy delivery receipt).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all paperwork is complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all paperwork is complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Change the policy status from 'Approved' to 'In Force'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully issues the policy, making it active."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully issues the policy, making it active.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

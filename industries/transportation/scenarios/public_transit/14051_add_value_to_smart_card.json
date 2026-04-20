@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The passenger taps their smart card on the kiosk reader.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The kiosk reads the card number and displays the current balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The kiosk reads the card number and displays the current balance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The passenger selects the option to add value and chooses the $20 amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The desired transaction is selected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The desired transaction is selected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The passenger pays with a credit card, and the payment is processed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The payment is successfully authorized."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The payment is successfully authorized.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The system sends a command to the kiosk to write the new balance to the passenger's smart card.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The card's balance is updated, and the kiosk displays the new total."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The card's balance is updated, and the kiosk displays the new total.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

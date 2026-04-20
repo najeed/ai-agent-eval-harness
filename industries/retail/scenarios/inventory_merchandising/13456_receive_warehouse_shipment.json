@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the barcode on the delivery manifest to pull up the shipment details in the inventory system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system displays the list of items and quantities expected in the shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system displays the list of items and quantities expected in the shipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Unload the truck and scan the barcode on each carton received.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Each carton is scanned to confirm it has been received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Each carton is scanned to confirm it has been received.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Acknowledge receipt of the full shipment in the system, noting any discrepancies (e.g., a missing carton).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The store's inventory on-hand is increased by the received amounts, and the shipment is marked as 'Received'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The store's inventory on-hand is increased by the received amounts, and the shipment is marked as 'Received'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the asset ID, the exact time of the outage, and the total MW capacity that is now offline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the critical outage information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the critical outage information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine the initial cause of the trip from the plant's control system (e.g., 'turbine over-speed').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the system's initial fault code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the system's initial fault code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit a formal outage report (e.g., a GADS report) to the ISO/RTO portal within the required timeframe (e.g., 15 minutes).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully files the outage report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully files the outage report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

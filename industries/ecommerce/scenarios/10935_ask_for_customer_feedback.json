@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Identify orders that were marked as 'Delivered' 3-5 days ago.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a list of recent, completed orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a list of recent, completed orders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each order, send a personalized email asking the customer to rate their experience and review the products they purchased.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully sends out feedback request emails."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully sends out feedback request emails.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

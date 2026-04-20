@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and the course they wish to swap.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student is enrolled in 'ENGL101, Section 001'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student is enrolled in 'ENGL101, Section 001'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for availability in the desired section ('ENGL101, Section 005').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the target section has open seats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the target section has open seats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the section swap in the SIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully drops the student from section 001 and adds them to section 005 in a single transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully drops the student from section 001 and adds them to section 005 in a single transaction.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

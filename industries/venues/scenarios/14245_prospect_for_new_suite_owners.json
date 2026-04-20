@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search a business database for large companies headquartered in the local area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of potential corporate clients."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of potential corporate clients.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Cross-reference the list against the current and past suite holder list to identify new prospects.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent filters out existing clients to create a list of new targets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent filters out existing clients to create a list of new targets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the new prospects to sales representatives to begin outreach.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent divides the prospect list and assigns them to the sales team in the CRM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent divides the prospect list and assigns them to the sales team in the CRM.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

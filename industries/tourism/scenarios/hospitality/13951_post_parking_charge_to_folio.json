@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the guest's account using their vehicle's license plate or valet ticket number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the guest's room and folio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the guest's room and folio.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the standard daily rate for valet parking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct parking fee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct parking fee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post the parking charge to the guest's folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the charge to the guest's bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the charge to the guest's bill.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

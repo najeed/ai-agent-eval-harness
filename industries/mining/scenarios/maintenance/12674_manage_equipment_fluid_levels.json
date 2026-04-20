@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "A haul truck (HT-34) pulls into the fuel bay. Scan the equipment ID to bring up its record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The truck's record is displayed on a mobile device."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The truck's record is displayed on a mobile device.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Refuel the truck and check the levels for engine oil, coolant, and hydraulic fluid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The truck is refueled, and the fluid levels are checked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The truck is refueled, and the fluid levels are checked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Top up the engine oil and record the amount added in the system. Log the service as complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The oil is topped up, and the consumption is logged in the CMMS, which helps track engine health."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The oil is topped up, and the consumption is logged in the CMMS, which helps track engine health.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

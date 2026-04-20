@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the specific email containing the classified document and all recipients.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst quickly and accurately identifies the scope of the data spill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst quickly and accurately identifies the scope of the data spill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Remotely delete the email from the sender's and all recipients' inboxes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully removes the email from the unclassified system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully removes the email from the unclassified system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a data spill incident report and notify the appropriate security and command authorities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst follows correct procedure for reporting a security incident."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst follows correct procedure for reporting a security incident.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

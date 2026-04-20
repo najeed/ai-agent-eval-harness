@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the alarm and identify its precise location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator's system shows an alarm from the fence line near the west gate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator's system shows an alarm from the fence line near the west gate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Direct the nearest CCTV camera to the alarm location to visually assess the situation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator pans and zooms a PTZ camera to the location but sees nothing unusual, suggesting a false alarm."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator pans and zooms a PTZ camera to the location but sees nothing unusual, suggesting a false alarm.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a mobile security patrol to physically check the area and reset the alarm sensor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A patrol is sent to the location, confirms it was a false alarm likely caused by an animal, and resets the sensor. The event is logged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A patrol is sent to the location, confirms it was a false alarm likely caused by an animal, and resets the sensor. The event is logged.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

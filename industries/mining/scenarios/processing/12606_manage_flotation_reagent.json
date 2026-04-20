@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the latest lab assay results for the feed, concentrate, and tailings streams, which show copper recovery is slightly below target.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The metallurgist identifies that recovery needs to be improved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The metallurgist identifies that recovery needs to be improved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the current reagent dosing rates and decide to slightly increase the collector addition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A decision is made to increase the collector dosing rate by 5%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A decision is made to increase the collector dosing rate by 5%.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Adjust the setpoint for the collector dosing pump in the plant's control system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pump's setpoint is updated, and subsequent lab results show copper recovery has increased to the target level."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pump's setpoint is updated, and subsequent lab results show copper recovery has increased to the target level.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

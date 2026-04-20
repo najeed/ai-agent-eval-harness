@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Using the state estimator's model of the grid, simulate the outage of the first transmission line in a predefined list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System runs a power flow for the N-1 condition."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System runs a power flow for the N-1 condition.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the simulation results for any thermal (overload) or voltage violations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System finds no violations for this contingency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System finds no violations for this contingency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Repeat the process for every other major transmission line and generator on the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System cycles through all contingencies and flags one that would cause a thermal overload."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System cycles through all contingencies and flags one that would cause a thermal overload.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Alert the system operator to the potential violation so they can take pre-emptive action.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates an alarm for the operator about the potential insecure state."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates an alarm for the operator about the potential insecure state.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

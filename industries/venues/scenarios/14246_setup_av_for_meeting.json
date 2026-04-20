@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the event booking order to see the client's A/V requirements (projector, screen, two microphones).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the required equipment list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the required equipment list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a work order for the in-house A/V technical team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a ticket specifying the room, time, and required equipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a ticket specifying the room, time, and required equipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the work order to an available A/V technician.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent assigns the task to a specific technician."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent assigns the task to a specific technician.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

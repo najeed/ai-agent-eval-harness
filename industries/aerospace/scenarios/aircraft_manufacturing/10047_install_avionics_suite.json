@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Install all line-replaceable units (LRUs) such as flight displays and computers into the cockpit instrument panel racks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent physically installs all hardware components."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent physically installs all hardware components.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Connect all the wiring harnesses between the LRUs according to the installation drawings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly connects all wiring."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly connects all wiring.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Power up the system and perform a built-in test (BIT) to ensure all components are communicating correctly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the BIT and confirms there are no fault codes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the BIT and confirms there are no fault codes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

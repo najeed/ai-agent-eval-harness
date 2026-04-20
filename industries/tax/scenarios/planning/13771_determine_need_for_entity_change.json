@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Discuss the owner's goals regarding liability, taxes, and administrative complexity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the client's priorities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the client's priorities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the tax and legal characteristics of different business entities (LLC, S-Corp, C-Corp).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly outlines the pros and cons of each structure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly outlines the pros and cons of each structure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a recommendation for the most suitable business structure based on the client's specific situation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends forming an LLC and making an S-Corp tax election."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends forming an LLC and making an S-Corp tax election.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Create an automated workflow triggered when a user submits the ebook download form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets up the correct trigger for the sequence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets up the correct trigger for the sequence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule the first email (delivering the ebook) to be sent immediately.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds the first email to the workflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds the first email to the workflow.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule a second, follow-up email with related content to be sent 3 days later.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds a time delay and the second email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds a time delay and the second email.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Schedule a third email with a soft call-to-action (e.g., 'schedule a demo') to be sent 5 days after that.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the 3-part nurture sequence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the 3-part nurture sequence.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

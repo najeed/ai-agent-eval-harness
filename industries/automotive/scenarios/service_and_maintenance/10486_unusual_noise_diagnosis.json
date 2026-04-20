@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather details from the customer about when the noise occurs (e.g., speed, turning left/right).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent notes the noise happens when turning right at low speeds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent notes the noise happens when turning right at low speeds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Based on the description, search the knowledge base for possible causes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The knowledge base suggests the most likely cause is a failing CV joint."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The knowledge base suggests the most likely cause is a failing CV joint.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the customer to schedule a service appointment for a technician to physically inspect the suspension and drivetrain components.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent explains the likely issue and books an appointment for confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent explains the likely issue and books an appointment for confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify two vessels on the VTS screen with a close CPA (Closest Point of Approach).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator's system alerts to a potential conflict between two vessels."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator's system alerts to a potential conflict between two vessels.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact both vessels via VHF radio to confirm they are aware of each other's position and intentions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator establishes communication with both vessel masters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator establishes communication with both vessel masters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the outbound vessel to slightly reduce speed to ensure safe passing distance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The outbound vessel confirms they are reducing speed, and the VTS operator sees the CPA increase to a safe distance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The outbound vessel confirms they are reducing speed, and the VTS operator sees the CPA increase to a safe distance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

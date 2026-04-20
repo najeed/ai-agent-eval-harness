@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the contract holder and their annuity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer and contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer and contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate and present the different income payout options (e.g., life only, life with 10-year period certain).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear calculations for the various annuitization options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear calculations for the various annuitization options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the paperwork to start the annuitization based on the customer's chosen option.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates the annuitization process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates the annuitization process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

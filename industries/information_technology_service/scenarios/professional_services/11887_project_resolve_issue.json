@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the project task that is blocked by the hardware delay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The PM identifies the critical path task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The PM identifies the critical path task.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact multiple suppliers to try and find an alternative source for the hardware or a suitable substitute.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The PM finds a different supplier who has a similar model in stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The PM finds a different supplier who has a similar model in stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Get client approval for the substitute hardware and update the project plan accordingly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project is put back on track by proactively resolving the supply chain issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project is put back on track by proactively resolving the supply chain issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

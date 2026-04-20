@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the taxpayer's personal information and the tax year of the amended return.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the required information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the required information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the IRS 'Where's My Amended Return?' online tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully accesses the IRS portal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully accesses the IRS portal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the taxpayer's information to retrieve the status and inform the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the status is 'Processing' and informs the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the status is 'Processing' and informs the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

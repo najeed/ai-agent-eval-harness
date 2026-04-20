@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the organization's eligibility for the grant program.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the non-profit is a registered 501(c)(3) and meets the grant criteria."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the non-profit is a registered 501(c)(3) and meets the grant criteria.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the applicant through the online application, including uploading required documents like project budgets and narratives.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent helps the applicant successfully complete and submit the grant application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent helps the applicant successfully complete and submit the grant application.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the applicant with a confirmation of submission and a timeline for the review process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms receipt of the application and communicates next steps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms receipt of the application and communicates next steps.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

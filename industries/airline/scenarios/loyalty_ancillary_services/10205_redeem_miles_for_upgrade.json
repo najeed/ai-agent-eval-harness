@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the member's booking and their frequent flyer account details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the booking and confirms the member's mileage balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the booking and confirms the member's mileage balance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if upgrade seats are available on the flight and inform the member of the mileage cost.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms upgrade availability and the required number of miles."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms upgrade availability and the required number of miles.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the upgrade by deducting the miles from the member's account and re-issuing the ticket in the higher class.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the upgrade and issues the new ticket."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the upgrade and issues the new ticket.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

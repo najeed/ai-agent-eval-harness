@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new survey request in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supervisor initiates a new request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supervisor initiates a new request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Specify the coordinates that need to be staked out, referencing the official site plan drawing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supervisor provides the required coordinates from the drawing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supervisor provides the required coordinates from the drawing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the request to the project's survey team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The survey team receives the request and schedules the work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The survey team receives the request and schedules the work.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Based on wear rate forecasts, schedule the next mill reline for a specific date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The reline is scheduled in the long-term plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The reline is scheduled in the long-term plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Order the new set of liners and all necessary bolts and tooling, ensuring they arrive before the shutdown.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All materials for the reline are ordered and their delivery is tracked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All materials for the reline are ordered and their delivery is tracked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Execute the reline, managing the crews to remove the old liners and install the new ones as safely and quickly as possible to minimize plant downtime.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The reline is completed safely and ahead of schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The reline is completed safely and ahead of schedule.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

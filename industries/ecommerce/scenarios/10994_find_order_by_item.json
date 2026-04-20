@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the customer's profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the customer's profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the customer's order history for the specific product they mentioned within the given timeframe.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully finds the order containing the 'Red Scarf' purchased last month."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully finds the order containing the 'Red Scarf' purchased last month.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

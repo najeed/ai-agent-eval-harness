@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the item, which shows the full price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The POS displays the non-promotional price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The POS displays the non-promotional price.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the 'Price Check' function to look up the item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate accesses the item's detailed pricing information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate accesses the item's detailed pricing information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm that a promotion is active for the item and override the price to the correct promotional price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer is charged the correct sale price, and the associate can flag the signage or system issue for correction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer is charged the correct sale price, and the associate can flag the signage or system issue for correction.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

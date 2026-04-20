@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the location of the streetlight, including the nearest address and the pole number if visible.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately records the location details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately records the location details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the asset management system to confirm the streetlight is a utility-owned asset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the utility's responsibility for the specified pole."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the utility's responsibility for the specified pole.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a service order for the lighting department to repair the streetlight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a work order for the repair."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a work order for the repair.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

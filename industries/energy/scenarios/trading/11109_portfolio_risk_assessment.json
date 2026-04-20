@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the current positions and forward commitments for all assets in the portfolio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a complete list of portfolio assets and their contracted obligations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a complete list of portfolio assets and their contracted obligations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Simulate portfolio performance under various market price scenarios (e.g., price spikes, low prices).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs Monte Carlo simulations to model potential profit and loss."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs Monte Carlo simulations to model potential profit and loss.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the portfolio's Value at Risk (VaR) at a 95% confidence level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a single VaR figure representing potential losses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a single VaR figure representing potential losses.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

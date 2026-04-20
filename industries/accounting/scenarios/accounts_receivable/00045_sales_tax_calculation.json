@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer's shipping address from the sales order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the customer's address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the customer's address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the customer has a valid sales tax exemption certificate on file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer is not tax-exempt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer is not tax-exempt.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use a tax calculation engine to determine the correct state, county, and city sales tax rates for the shipping address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct, multi-level tax rates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct, multi-level tax rates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Apply the calculated sales tax to the invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds the correct sales tax amount to the final invoice total."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds the correct sales tax amount to the final invoice total.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

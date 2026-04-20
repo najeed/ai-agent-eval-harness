@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the recently closed maintenance ticket for the asset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the work order that was closed yesterday."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the work order that was closed yesterday.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Change the status of the ticket from 'Closed' back to 'Open' or 'Re-opened'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully re-opens the ticket."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully re-opens the ticket.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add a new log entry explaining that the issue has recurred and re-assign it to the maintenance team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds notes and the ticket appears back in the maintenance queue with a high priority."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds notes and the ticket appears back in the maintenance queue with a high priority.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a request from a retailer for training materials.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the retailer's need."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the retailer's need.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the retailer with a link to the online training portal, which contains videos and guides.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the retailer the link to the training resources."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the retailer the link to the training resources.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set up user accounts for the retailer's staff so they can access the portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the user accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the user accounts.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

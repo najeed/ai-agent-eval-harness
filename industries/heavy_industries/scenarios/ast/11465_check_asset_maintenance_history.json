@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the serial number of the equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the unique identifier for the asset."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the unique identifier for the asset.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the manufacturer's database for all warranty and service work performed on that serial number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the full service history from the manufacturer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the full service history from the manufacturer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the history for any major failures or recurring problems to inform the purchase decision.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the history and finds a recurring hydraulic issue, which is a key factor in the decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the history and finds a recurring hydraulic issue, which is a key factor in the decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

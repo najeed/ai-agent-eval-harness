@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the policyholder and their current dividend option.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the policy and confirms the current dividend election."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the policy and confirms the current dividend election.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the different dividend options, especially 'Purchase Paid-Up Additions'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains how paid-up additions work to increase the death benefit and cash value."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains how paid-up additions work to increase the death benefit and cash value.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the dividend option on the policy as requested.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully changes the dividend election in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully changes the dividend election in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

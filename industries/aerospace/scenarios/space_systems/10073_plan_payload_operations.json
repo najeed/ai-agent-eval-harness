@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the scientific targets for the upcoming week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent lists the desired observation targets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent lists the desired observation targets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the satellite's orbital track to determine when it will be over the desired targets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of observation opportunities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of observation opportunities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a command sequence to power on the instrument, point it at the target, and collect data during the scheduled opportunities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed command plan for the week's scientific operations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed command plan for the week's scientific operations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

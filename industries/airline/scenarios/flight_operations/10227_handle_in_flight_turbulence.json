@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The flight crew turns on the 'Fasten Seatbelt' sign and makes an announcement to passengers and crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilots take immediate action to secure the cabin."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilots take immediate action to secure the cabin.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Cabin crew immediately suspends service, secures carts and galleys, and takes their seats.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Cabin crew follows safety procedures to secure the cabin."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Cabin crew follows safety procedures to secure the cabin.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The flight crew requests a different altitude from ATC to escape the turbulence and files a PIREP (Pilot Report) to warn other aircraft.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilots take action to improve ride comfort and safety and warn other flights."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilots take action to improve ride comfort and safety and warn other flights.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

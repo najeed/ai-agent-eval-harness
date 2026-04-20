@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the urgent transfer order from the physician.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the order to transfer the patient to the ICU."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the order to transfer the patient to the ICU.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find an available bed in the ICU.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses the bed management tool to locate and assign an available ICU bed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses the bed management tool to locate and assign an available ICU bed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the ADT transfer message, updating the patient's location from the medical floor to the ICU.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the patient's location, ensuring all downstream systems are notified of the transfer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the patient's location, ensuring all downstream systems are notified of the transfer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

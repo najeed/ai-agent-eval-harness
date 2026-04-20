@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the requestor is an authorized user on the account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the user's identity and authority to draw funds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the user's identity and authority to draw funds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the available balance on the line of credit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms there is sufficient availability for the $100,000 draw."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms there is sufficient availability for the $100,000 draw.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the draw and transfer the funds to the company's operating account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully transfers the $100,000."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully transfers the $100,000.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

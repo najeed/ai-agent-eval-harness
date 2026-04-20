@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the new planogram for the 'healthy snacks' aisle on a tablet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The merchandiser can view the visual layout and product placement guide."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The merchandiser can view the visual layout and product placement guide.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Remove existing products from the shelves and rearrange the shelving as specified in the planogram.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The physical shelf setup is adjusted to match the new layout."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The physical shelf setup is adjusted to match the new layout.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place the products on the shelves in the exact locations and quantities shown in the planogram, and add new price labels.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The aisle is successfully reset to the new corporate merchandising standard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The aisle is successfully reset to the new corporate merchandising standard.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

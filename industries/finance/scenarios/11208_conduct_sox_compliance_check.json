@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the transaction details and its associated audit trail.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pulls the complete history for the specified transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pulls the complete history for the specified transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the audit trail against the documented SOX approval policy for that transaction type.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the transaction was approved by two authorized managers as per policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the transaction was approved by two authorized managers as per policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the result of the compliance check in the audit management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs a 'Pass' result for the compliance test."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs a 'Pass' result for the compliance test.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

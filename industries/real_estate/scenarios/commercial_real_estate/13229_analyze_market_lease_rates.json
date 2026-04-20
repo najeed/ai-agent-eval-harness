@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the property's submarket and class.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly categorizes the subject property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly categorizes the subject property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search commercial real estate databases for recent lease comparables in the same submarket and class.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds at least 5 comparable lease transactions from the last 6 months."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds at least 5 comparable lease transactions from the last 6 months.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a lease comparable report and advise the client on a competitive asking price based on the data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a report and provides a data-backed recommendation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a report and provides a data-backed recommendation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

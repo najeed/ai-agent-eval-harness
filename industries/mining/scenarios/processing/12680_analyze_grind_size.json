@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Take a sample of the slurry from the cyclone overflow.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A representative sample is collected for analysis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A representative sample is collected for analysis.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the sample using a laser particle size analyzer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analyzer generates a particle size distribution curve."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analyzer generates a particle size distribution curve.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the results, checking the P80 (the size that 80% of the particles are smaller than). If it's too coarse, adjust the cyclone settings to fix it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The P80 is found to be too coarse. The cyclone's vortex finder is adjusted to make the grind finer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The P80 is found to be too coarse. The cyclone's vortex finder is adjusted to make the grind finer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

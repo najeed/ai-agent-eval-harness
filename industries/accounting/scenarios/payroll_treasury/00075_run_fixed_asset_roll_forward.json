@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the beginning of year balances for 'Fixed Assets - Cost' and 'Accumulated Depreciation'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the starting balances."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the starting balances.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve all fixed asset additions, disposals, and depreciation expense for the year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all the transaction data for the year."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all the transaction data for the year.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the roll-forward report, which starts with the beginning balance, adds acquisitions, subtracts disposals, and calculates the ending balance, ensuring it matches the year-end GL.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a formatted roll-forward report that reconciles all asset movements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a formatted roll-forward report that reconciles all asset movements.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

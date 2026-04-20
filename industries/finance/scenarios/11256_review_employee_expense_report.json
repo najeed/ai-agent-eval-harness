@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the employee's submitted expense report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the specified expense report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the specified expense report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically scan the report for common policy violations (e.g., expenses over limit, missing receipts).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system flags one expense for a meal that is over the per-diem limit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system flags one expense for a meal that is over the per-diem limit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reject the non-compliant line item and notify the employee to correct it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent rejects the specific expense and sends an automated notification to the employee with the reason."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent rejects the specific expense and sends an automated notification to the employee with the reason.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the hydrostatic test procedure for the pipeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspector finds the procedure, which specifies the required test pressure and duration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspector finds the procedure, which specifies the required test pressure and duration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Fill the pipeline with water and use a pump to bring it up to the required test pressure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The crew successfully pressurizes the pipeline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The crew successfully pressurizes the pipeline.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the pressure for the required duration. If there is no pressure drop, record the test as successful and generate a test certificate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pressure holds steady, and the inspector logs the passing test and generates the final certificate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pressure holds steady, and the inspector logs the passing test and generates the final certificate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

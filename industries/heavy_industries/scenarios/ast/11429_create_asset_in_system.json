@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new asset record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates the creation of a new asset."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates the creation of a new asset.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the asset's details, such as make, model, serial number, and location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly populates the asset's master data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly populates the asset's master data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the standard preventative maintenance plan for this type of pump to the new asset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent links the correct PM plan to the new asset, which will automatically schedule future maintenance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent links the correct PM plan to the new asset, which will automatically schedule future maintenance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Enter the dimensions (length, width, height) and weight of the item being shipped.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately inputs the item's physical characteristics."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately inputs the item's physical characteristics.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system calculates the item's density (pounds per cubic foot).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The density is calculated correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The density is calculated correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the density and the item's commodity type, the system looks up the correct freight class from an NMFC table.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system returns the correct freight class (e.g., Class 70)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system returns the correct freight class (e.g., Class 70).",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the document for spelling and grammatical errors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies all errors in the text."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies all errors in the text.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Correct all identified errors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a corrected version of the text."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a corrected version of the text.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the standard company style guide (e.g., specific fonts, heading sizes, margins).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reformats the document according to the style guide rules."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reformats the document according to the style guide rules.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

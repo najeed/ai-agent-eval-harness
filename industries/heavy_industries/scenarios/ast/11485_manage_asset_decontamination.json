@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the decontamination procedure for the specific asset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the approved procedure for cleaning the equipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the approved procedure for cleaning the equipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a work order for the decontamination, ensuring the assigned personnel have the required radiation safety training.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the work order and verifies the qualifications of the assigned crew."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the work order and verifies the qualifications of the assigned crew.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After cleaning, perform a radiation survey to confirm the asset is clean, and document the results before releasing it for repair.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the successful radiation survey results, clearing the equipment for general maintenance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the successful radiation survey results, clearing the equipment for general maintenance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

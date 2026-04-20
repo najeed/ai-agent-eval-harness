@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Announce the Q&A session in advance to gather questions from the audience.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A pool of questions is ready before the event starts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A pool of questions is ready before the event starts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the live session, monitor incoming questions and select the most relevant ones to answer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent effectively filters and prioritizes questions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent effectively filters and prioritizes questions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide clear and concise answers to the selected questions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The audience's questions are answered satisfactorily."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The audience's questions are answered satisfactorily.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

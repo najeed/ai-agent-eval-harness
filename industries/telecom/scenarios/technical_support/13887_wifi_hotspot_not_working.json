@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the customer's plan includes a mobile hotspot feature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the plan has hotspot capability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the plan has hotspot capability.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the customer to check their hotspot settings on their phone, including the password and network name (SSID).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions for checking hotspot settings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions for checking hotspot settings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reset the network settings on the customer's device to resolve any configuration glitches.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent guides the customer through a network settings reset."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent guides the customer through a network settings reset.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

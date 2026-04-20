@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer's recent order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the order's status to confirm it has not yet been picked or packed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the order is still in the 'confirmed' status and has not been sent to the warehouse."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the order is still in the 'confirmed' status and has not been sent to the warehouse.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the new item to the sales order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully modifies the order to include the new item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully modifies the order to include the new item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Send an updated order confirmation to the customer with the new total.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the revised confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the revised confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

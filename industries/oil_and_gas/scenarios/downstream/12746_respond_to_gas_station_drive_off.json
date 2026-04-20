@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the transaction in the point-of-sale (POS) system that corresponds to the drive-off.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The specific unpaid transaction is located."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The specific unpaid transaction is located.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the CCTV footage from the corresponding pump and time to capture the vehicle's license plate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear image of the license plate is retrieved from the security system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear image of the license plate is retrieved from the security system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the incident in the company's loss prevention system and generate a report to be filed with local police.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The incident is officially logged, and a police report is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The incident is officially logged, and a police report is drafted.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

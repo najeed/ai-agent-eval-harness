@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Connect the IoT device to an isolated test network.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The device is safely isolated for testing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The device is safely isolated for testing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a network vulnerability scanner against the device to identify open ports and known vulnerabilities in its services.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The scan reveals the device has an open Telnet port with default credentials."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The scan reveals the device has an open Telnet port with default credentials.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Fail the device's security review and send a report to the vendor detailing the critical vulnerability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst prevents an insecure device from being added to the network and notifies the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst prevents an insecure device from being added to the network and notifies the vendor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

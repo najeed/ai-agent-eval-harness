@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule a meeting with the audit team assigned to the engagement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A meeting is scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A meeting is scheduled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the meeting, lead a discussion on how fraud could occur in the accounts receivable process (e.g., lapping schemes, fictitious credits).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team identifies at least three plausible fraud schemes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team identifies at least three plausible fraud schemes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the potential fraud schemes and design specific audit tests to detect them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The audit plan is updated with specific fraud-focused tests."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The audit plan is updated with specific fraud-focused tests.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get a real-time quote for the EUR/USD exchange rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the current spot rate from the FX trading platform."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the current spot rate from the FX trading platform.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Execute the spot trade for 1 million EUR.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully executes the trade at the quoted rate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully executes the trade at the quoted rate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the trade details and the expected settlement date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a trade confirmation, including the USD amount and settlement date (T+2)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a trade confirmation, including the USD amount and settlement date (T+2).",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

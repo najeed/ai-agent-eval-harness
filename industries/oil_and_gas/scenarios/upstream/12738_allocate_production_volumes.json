@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the total commingled production volumes from the central facility for the previous day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The total sales volumes are retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The total sales volumes are retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather the latest well test data for all wells connected to the facility.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Individual well test results (oil/gas/water rates) are compiled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Individual well test results (oil/gas/water rates) are compiled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the production allocation algorithm to distribute the total facility volumes back to each well based on their test rates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system calculates and assigns the final allocated production volumes for each well for the day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system calculates and assigns the final allocated production volumes for each well for the day.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

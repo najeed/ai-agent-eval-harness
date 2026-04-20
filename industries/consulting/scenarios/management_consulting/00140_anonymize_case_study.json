@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Replace the client's name throughout the document with a generic descriptor like 'a leading retail company'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully replaces all instances of the client name."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully replaces all instances of the client name.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Redact all specific financial figures by replacing them with descriptive phrases (e.g., 'significant revenue growth', 'multi-million dollar investment').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly redacts all financial data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly redacts all financial data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Remove all names of individual client employees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully removes all names."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully removes all names.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

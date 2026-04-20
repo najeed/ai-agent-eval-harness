@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the listing's performance metrics (views, inquiries) and the current market comps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the listing is priced too high compared to the market."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the listing is priced too high compared to the market.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Advise the property owner on a recommended price reduction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The owner approves the new, lower price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The owner approves the new, lower price.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the price on the rental listing across all syndicated platforms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The listing price is updated online."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The listing price is updated online.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

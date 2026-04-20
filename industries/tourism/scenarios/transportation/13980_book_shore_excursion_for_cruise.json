@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the passenger's cruise booking and the list of available excursions for their itinerary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the booking and the list of available tours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the booking and the list of available tours.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check availability for the 'Dolphin Swim' excursion on the desired port day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms there are spots available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms there are spots available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the excursion for the passenger and charge it to their onboard account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the tour and adds the charge to the passenger's folio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the tour and adds the charge to the passenger's folio.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

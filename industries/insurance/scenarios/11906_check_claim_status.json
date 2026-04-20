@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the policyholder and locate their open claim.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the open water damage claim."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the open water damage claim.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the claim notes to find the latest update.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reads the notes and finds that the adjuster has visited and is waiting for the repair estimate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reads the notes and finds that the adjuster has visited and is waiting for the repair estimate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a clear update to the customer and set the expectation for the next communication.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs the customer about the pending estimate and that the adjuster will call them within 2 business days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs the customer about the pending estimate and that the adjuster will call them within 2 business days.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Document the source's request for anonymity and the reasons why.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal request is documented."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal request is documented.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Present the request to a senior editor, explaining the importance of the source's information and the potential risks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The reporter makes a case for granting anonymity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The reporter makes a case for granting anonymity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The editor reviews the request against the publication's ethical guidelines for anonymous sources and gives their approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal decision is made and recorded, adhering to ethical standards."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal decision is made and recorded, adhering to ethical standards.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all parking violation data from the last 3 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully queries the parking enforcement database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully queries the parking enforcement database.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a heatmap visualization showing the density of violations across the city.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a map highlighting the streets with the most tickets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a map highlighting the streets with the most tickets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a report with the top 5 violation hotspots for the enforcement manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides an actionable intelligence report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides an actionable intelligence report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

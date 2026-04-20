@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the crew change request with the names and details of the signing on/off crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator has the full list of crew members."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator has the full list of crew members.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Coordinate with immigration and customs authorities to get the necessary clearances and shore passes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator submits the crew list to the authorities for approval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator submits the crew list to the authorities for approval.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for transportation to take the signing-off crew from the vessel to the airport and the signing-on crew to the vessel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Transport is booked with an approved provider."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Transport is booked with an approved provider.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

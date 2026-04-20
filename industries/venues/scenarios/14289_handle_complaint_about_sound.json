@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the complaint and get the guest's exact seat location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the complaint and location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the complaint and location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the in-house audio engineer at the soundboard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reaches the audio engineer via radio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reaches the audio engineer via radio.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Relay the complaint and ask the engineer to check the sound levels in that specific section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer checks the levels and makes a slight adjustment to the mix for that area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer checks the levels and makes a slight adjustment to the mix for that area.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Offer the guest complimentary earplugs from the guest services booth.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent offers a solution to improve the guest's comfort."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent offers a solution to improve the guest's comfort.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log the landowner's complaint, capturing their name, address, and the details of the incident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new complaint case is created in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new complaint case is created in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check work order records to identify which crew was working at that location on the specified date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system identifies the specific maintenance crew responsible."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system identifies the specific maintenance crew responsible.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the crew supervisor to address the issue and dispatch someone to close the gate immediately. Follow up with the landowner to confirm resolution.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The issue is resolved promptly, and the resolution is communicated back to the landowner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The issue is resolved promptly, and the resolution is communicated back to the landowner.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

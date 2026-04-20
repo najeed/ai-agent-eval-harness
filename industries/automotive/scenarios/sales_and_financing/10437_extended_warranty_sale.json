@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify customers whose factory warranties are expiring within the next 60 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of eligible customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of eligible customers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Call a customer, explain the benefits of an extended warranty, and present the available coverage options and pricing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the different tiers of extended warranty plans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the different tiers of extended warranty plans.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the customer agrees, process the sale of the extended warranty plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sells and activates the new warranty plan for the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sells and activates the new warranty plan for the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

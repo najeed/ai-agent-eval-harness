@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Run a final report of all open data queries in the EDC system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a report showing 5 remaining open queries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a report showing 5 remaining open queries.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Work with the clinical monitoring team to ensure all open queries are resolved and closed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows up with CRAs until all queries are closed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows up with CRAs until all queries are closed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform the final data reconciliation between the clinical and safety databases.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs a reconciliation and confirms there are no discrepancies in adverse event reporting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs a reconciliation and confirms there are no discrepancies in adverse event reporting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Execute the database lock procedure in the EDC system, making the data read-only.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully locks the database and generates an audit trail of the action."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully locks the database and generates an audit trail of the action.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

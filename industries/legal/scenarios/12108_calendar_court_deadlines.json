@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the scheduling order document and extract all dates and corresponding deadlines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a list of dates and events (e.g., 'Discovery Cutoff: Oct 31', 'Final Pretrial Conference: Nov 15')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a list of dates and events (e.g., 'Discovery Cutoff: Oct 31', 'Final Pretrial Conference: Nov 15').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each deadline, create an entry in the firm's master calendar and the specific case calendar.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent populates the calendars with the deadlines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent populates the calendars with the deadlines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set up automated reminders for the case team for 14 days, 7 days, and 1 day before each deadline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent configures the necessary reminders to prevent missed deadlines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent configures the necessary reminders to prevent missed deadlines.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

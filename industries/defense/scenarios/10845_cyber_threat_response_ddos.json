@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge alerts of high traffic and server unavailability for the website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst confirms the symptoms of a DDoS attack."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst confirms the symptoms of a DDoS attack.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze incoming traffic to identify the characteristics of the attack (e.g., source countries, traffic type).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the nature of the malicious traffic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the nature of the malicious traffic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Engage a cloud-based DDoS mitigation service to scrub the malicious traffic before it reaches the website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully reroutes traffic through the scrubbing service, restoring website availability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully reroutes traffic through the scrubbing service, restoring website availability.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

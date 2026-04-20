@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Check the availability of suites for the full season.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that Suite 215 is available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that Suite 215 is available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the client with the season lease price and a list of included amenities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the price and benefits (e.g., VIP parking, catering credit)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the price and benefits (e.g., VIP parking, catering credit).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate and send the season lease agreement to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the contract for e-signature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the contract for e-signature.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Once signed, process the deposit payment and mark the suite as 'Sold' for the season.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the payment and updates the suite's status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the payment and updates the suite's status.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

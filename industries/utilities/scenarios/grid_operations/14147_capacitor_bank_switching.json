@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor real-time power factor on the feeder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System gathers live power factor readings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System gathers live power factor readings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system detects a low power factor, indicating a need for reactive power support.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System identifies the need to switch on a capacitor bank."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System identifies the need to switch on a capacitor bank.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a command to close the switch for the optimal capacitor bank to bring the power factor closer to unity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully operates the capacitor bank switch."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully operates the capacitor bank switch.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

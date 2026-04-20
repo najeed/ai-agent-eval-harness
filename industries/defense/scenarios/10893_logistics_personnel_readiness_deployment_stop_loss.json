@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query the personnel database to identify all soldiers in the unit affected by the stop-loss policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer generates an accurate list of all affected soldiers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer generates an accurate list of all affected soldiers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Monitor the morale and well-being of these specific soldiers, flagging any who may require additional support.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer uses available tools to track morale indicators for the affected cohort."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer uses available tools to track morale indicators for the affected cohort.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Ensure that the administrative and pay processes are correctly handled for these soldiers to reflect their extended service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer verifies that all administrative actions are completed correctly for the stop-lossed soldiers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer verifies that all administrative actions are completed correctly for the stop-lossed soldiers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

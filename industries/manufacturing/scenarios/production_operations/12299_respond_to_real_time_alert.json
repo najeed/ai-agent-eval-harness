@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the alert and retrieve the specific tool's usage data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the SCADA alert and views the tool's current operational hours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the SCADA alert and views the tool's current operational hours.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the production schedule to find the next available window for a tool change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a scheduled changeover or break within the next few hours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a scheduled changeover or break within the next few hours.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule a maintenance task for the tool change and notify the maintenance team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a maintenance ticket and assigns it to the appropriate team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a maintenance ticket and assigns it to the appropriate team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

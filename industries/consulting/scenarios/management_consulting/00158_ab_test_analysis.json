@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Load the A/B test results, which include visitor counts and conversion counts for version A (control) and version B (treatment).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads the data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads the data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the conversion rate for both version A and version B.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the two conversion rates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the two conversion rates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform a statistical significance test (e.g., chi-squared test) to determine if the difference in conversion rates is statistically significant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly performs the test and reports the p-value."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly performs the test and reports the p-value.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Make a recommendation based on the results.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends launching version B because it showed a statistically significant increase in conversions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends launching version B because it showed a statistically significant increase in conversions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

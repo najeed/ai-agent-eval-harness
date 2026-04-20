@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The system sends an automated email to the customer warning them their payment method is about to expire.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer is proactively notified of the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer is proactively notified of the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The customer logs into their account and navigates to the payment methods section for their subscription.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer accesses the correct page to update their card."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer accesses the correct page to update their card.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The customer adds their new credit card information and sets it as the default for the subscription.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The payment method is successfully updated, ensuring no interruption in their subscription service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The payment method is successfully updated, ensuring no interruption in their subscription service.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

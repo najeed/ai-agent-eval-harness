@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the annual gift tax exclusion amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates how much can be gifted to each person per year without tax consequences."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates how much can be gifted to each person per year without tax consequences.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the lifetime gift and estate tax exemption.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent explains how larger gifts can be made by using up a portion of the lifetime exemption."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent explains how larger gifts can be made by using up a portion of the lifetime exemption.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise on strategies like setting up trusts or making direct payments for tuition or medical expenses to further minimize tax.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides advanced estate planning strategies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides advanced estate planning strategies.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

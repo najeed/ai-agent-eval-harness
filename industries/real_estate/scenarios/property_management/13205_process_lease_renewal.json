@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the tenant's current lease and the agreed-upon renewal terms (e.g., 12 months, 3% rent increase).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the lease and renewal terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the lease and renewal terms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a new lease agreement with the updated dates, rent amount, and terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a legally compliant lease renewal document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a legally compliant lease renewal document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the lease renewal to the tenant for electronic signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the document for signing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the document for signing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

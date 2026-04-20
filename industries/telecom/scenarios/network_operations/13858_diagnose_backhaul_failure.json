@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ping the cell tower's management interface to confirm it is responsive.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The ping is successful, indicating the tower has power and is running."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The ping is successful, indicating the tower has power and is running.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the fiber backhaul link connected to the tower.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the backhaul link status is 'Down'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the backhaul link status is 'Down'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a ticket for the fiber optics team to investigate the physical link.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed ticket for the correct team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed ticket for the correct team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

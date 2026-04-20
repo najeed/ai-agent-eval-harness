@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Develop a rehabilitation plan for the waste dump, specifying the final landform design and the types of native vegetation to be planted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A detailed rehabilitation plan is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A detailed rehabilitation plan is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule a contractor to reshape the dump with dozers and cover it with topsoil.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The earthworks for the rehabilitation are scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The earthworks for the rehabilitation are scheduled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the growth of the vegetation over time using drone imagery to ensure the rehabilitation is successful.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Drone surveys confirm that the vegetation is establishing successfully, meeting the closure criteria."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Drone surveys confirm that the vegetation is establishing successfully, meeting the closure criteria.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

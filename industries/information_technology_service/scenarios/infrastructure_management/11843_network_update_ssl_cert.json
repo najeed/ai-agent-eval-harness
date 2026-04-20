@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Purchase a new SSL certificate for the client's domain.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new certificate file is obtained."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new certificate file is obtained.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Install the new SSL certificate on the web server (e.g., IIS, Apache).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new certificate is installed on the server."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new certificate is installed on the server.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify the new certificate is working correctly by Browse to the website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The website loads securely with the new certificate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The website loads securely with the new certificate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

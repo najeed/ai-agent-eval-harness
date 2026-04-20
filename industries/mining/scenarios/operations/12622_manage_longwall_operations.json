@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the real-time position and status of the longwall shearer as it cuts along the coal face.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator has a live view of the shearer's location and operational parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator has a live view of the shearer's location and operational parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive an alert that the shearer has stopped due to high methane levels detected at the face.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator acknowledges the safety alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator acknowledges the safety alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the system has automatically increased ventilation to the face and wait for methane levels to drop before authorizing a restart.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator follows safety procedures, waiting for the gas levels to be clear before resuming operations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator follows safety procedures, waiting for the gas levels to be clear before resuming operations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

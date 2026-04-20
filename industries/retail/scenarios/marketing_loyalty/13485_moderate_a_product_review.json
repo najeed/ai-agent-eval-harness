@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the review moderation queue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An agent sees the list of pending reviews."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An agent sees the list of pending reviews.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Read the review to ensure it does not contain inappropriate language or personal information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent confirms the review complies with site policies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent confirms the review complies with site policies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The review is now visible on the product's page on the website."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The review is now visible on the product's page on the website.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

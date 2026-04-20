@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a report from the fixed asset sub-ledger summarizing the total cost and accumulated depreciation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the summary report from the sub-ledger."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the summary report from the sub-ledger.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the month-end balances for the 'Fixed Assets - Cost' and 'Accumulated Depreciation' accounts from the general ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the corresponding GL balances."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the corresponding GL balances.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the totals from the sub-ledger to the GL balances and confirm they match.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that both cost and accumulated depreciation reconcile perfectly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that both cost and accumulated depreciation reconcile perfectly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

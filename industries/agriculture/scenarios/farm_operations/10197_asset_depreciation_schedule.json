@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the asset's purchase price, purchase date, and asset class.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the necessary details for the tractor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the necessary details for the tractor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the appropriate depreciation method (e.g., straight-line, MACRS).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the MACRS method as is standard for farm equipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the MACRS method as is standard for farm equipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate and generate the full depreciation schedule for the life of the asset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a table showing the annual depreciation expense."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a table showing the annual depreciation expense.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

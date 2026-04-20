@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Take the new client's name and date of birth.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately captures the client's identifying information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately captures the client's identifying information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run the client's details through the AML screening tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully runs the check against global watchlists."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully runs the check against global watchlists.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the results for any potential matches and clear any false positives.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the results, finds no true matches, and marks the check as complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the results, finds no true matches, and marks the check as complete.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

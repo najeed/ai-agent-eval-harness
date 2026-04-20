@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search PubMed and other medical publication databases for authors who have published frequently on a specific topic (e.g., 'CAR-T cell therapy').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent executes targeted searches and retrieves a list of authors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent executes targeted searches and retrieves a list of authors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Rank the authors by number of publications and citation count to identify the top 5 KOLs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a correctly ranked list of the most influential experts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a correctly ranked list of the most influential experts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a profile for each KOL, including their current institution and most cited work.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a concise profile for each identified expert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a concise profile for each identified expert.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

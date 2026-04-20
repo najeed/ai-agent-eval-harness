@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "A rider requests a ride from within the airport's geofence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system identifies it as an airport pickup."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system identifies it as an airport pickup.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The app displays instructions for the rider to proceed to the designated pickup zone (e.g., 'Level 3, Zone C').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The rider is given clear walking directions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The rider is given clear walking directions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system places the request in a virtual queue and offers it to the next driver waiting in the airport's designated driver waiting area (geofenced lot).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The request is offered to the first driver in the queue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The request is offered to the first driver in the queue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "A driver accepts, and is given a specific lane number to meet their rider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The rider and driver are matched and guided to each other efficiently."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The rider and driver are matched and guided to each other efficiently.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

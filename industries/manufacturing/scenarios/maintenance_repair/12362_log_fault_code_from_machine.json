@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the open maintenance ticket for the faulted machine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct work order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the fault code displayed on the machine's HMI into the work order log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately records the fault code in the ticket."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately records the fault code in the ticket.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use the fault code to look up potential causes in the knowledge base.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent searches the knowledge base with the code and finds articles related to sensor failures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent searches the knowledge base with the code and finds articles related to sensor failures.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

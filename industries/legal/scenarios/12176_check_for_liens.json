@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the property by its address and parcel number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the correct property identifiers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the correct property identifiers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the county recorder's office online database for any recorded liens against the property.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs the search."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs the search.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Search the Secretary of State's UCC filing database for any liens against the property owner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs a UCC search."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs a UCC search.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Compile a report of any found liens for the attorney to review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a summary of all discovered encumbrances."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a summary of all discovered encumbrances.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

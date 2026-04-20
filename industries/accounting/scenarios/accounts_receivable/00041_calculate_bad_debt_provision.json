@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Run the Accounts Receivable aging report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the AR aging summary, showing balances in categories like Current, 1-30 days, 31-60 days, etc."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the AR aging summary, showing balances in categories like Current, 1-30 days, 31-60 days, etc.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apply the company's provision percentages to each aging bucket (e.g., 1% of current, 5% of 1-30, 20% of 31-60).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the required allowance for each bucket."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the required allowance for each bucket.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the total required balance for the 'Allowance for Doubtful Accounts'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sums the amounts from each bucket to get the total required provision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sums the amounts from each bucket to get the total required provision.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a journal entry to adjust the current allowance balance to the new required balance, debiting 'Bad Debt Expense'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and posts the correct adjusting journal entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and posts the correct adjusting journal entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

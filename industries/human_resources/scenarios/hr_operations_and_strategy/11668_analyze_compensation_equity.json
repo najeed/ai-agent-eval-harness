@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a report from the HRIS containing employee job title, salary, gender, and ethnicity data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst pulls the necessary raw data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst pulls the necessary raw data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each major job role, calculate the average salary for different demographic groups.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst performs statistical analysis to compare pay across groups."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst performs statistical analysis to compare pay across groups.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify any statistically significant pay gaps and prepare a report of the findings for HR leadership.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst identifies potential areas of concern and creates a detailed report with recommendations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst identifies potential areas of concern and creates a detailed report with recommendations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

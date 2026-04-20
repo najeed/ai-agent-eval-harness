@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the policyholder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a new digital ID card.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates a PDF of the new ID card."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates a PDF of the new ID card.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the digital ID card to the customer's registered email address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully emails the document to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully emails the document to the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

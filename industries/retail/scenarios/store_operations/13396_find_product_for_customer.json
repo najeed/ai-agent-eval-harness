@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ask the customer for the product name or description.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate understands what product the customer is looking for."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate understands what product the customer is looking for.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a handheld device to look up the product and find its location in the store.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The device shows the product is in 'Aisle 7, Bay 3'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The device shows the product is in 'Aisle 7, Bay 3'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Escort the customer to the correct location and help them find the product on the shelf.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer successfully finds the product they were looking for."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer successfully finds the product they were looking for.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

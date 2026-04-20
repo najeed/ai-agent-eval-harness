@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all firewall rules from the main corporate firewall.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully downloads the firewall rule set."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully downloads the firewall rule set.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the rules to identify any with 'any' in both the source and destination fields.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies three overly permissive rules."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies three overly permissive rules.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a report listing the problematic rules and assign it to the security team for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a clear report for the security team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a clear report for the security team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

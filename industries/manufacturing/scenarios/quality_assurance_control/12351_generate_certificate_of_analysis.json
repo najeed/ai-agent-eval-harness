@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the specific production batch that requires a CoA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the correct batch number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the correct batch number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve all the final quality test results associated with that batch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls the test results from the LIMS (Laboratory Information Management System)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls the test results from the LIMS (Laboratory Information Management System).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the CoA document, populating it with the test results, specifications, and a statement of conformity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the CoA PDF, ready to be sent to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the CoA PDF, ready to be sent to the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

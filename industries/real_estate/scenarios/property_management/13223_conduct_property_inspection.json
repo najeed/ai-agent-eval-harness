@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Notify the tenant of the upcoming inspection, providing at least 24 hours' notice as required by law.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a compliant and professional notice to the tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a compliant and professional notice to the tenant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a mobile app to conduct the inspection, following a standardized checklist (e.g., check smoke detectors, look for leaks).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the inspection checklist, taking photos of any issues."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the inspection checklist, taking photos of any issues.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate an inspection report and create work orders for any identified maintenance issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a report and creates necessary work orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a report and creates necessary work orders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

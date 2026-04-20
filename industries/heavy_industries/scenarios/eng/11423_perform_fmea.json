@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all major components of the machinery.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team lists all key components like the engine, transmission, and hydraulic pump."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team lists all key components like the engine, transmission, and hydraulic pump.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each component, brainstorm potential failure modes (e.g., 'Engine overheats').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team identifies multiple potential failures for each component."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team identifies multiple potential failures for each component.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each failure mode, assess its severity, occurrence, and detection to calculate a Risk Priority Number (RPN) and identify the highest-risk items to address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team calculates the RPN for all failure modes and identifies the top 3 risks to focus on for mitigation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team calculates the RPN for all failure modes and identifies the top 3 risks to focus on for mitigation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the details of the deduction case, including the amount and customer reason.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the case details for the co-op fee deduction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the case details for the co-op fee deduction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the customer's marketing agreement to verify the terms of the co-op program.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the agreement and confirms the fee is valid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the agreement and confirms the fee is valid.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deny the deduction as invalid and communicate this to the customer, providing the contract as proof.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the case status to 'Denied' and sends a communication to the customer requesting payment of the deducted amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the case status to 'Denied' and sends a communication to the customer requesting payment of the deducted amount.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

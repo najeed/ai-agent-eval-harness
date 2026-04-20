@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the machine that is down.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the correct machine from a plant layout map or list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the correct machine from a plant layout map or list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log the start time of the downtime event and select a reason code (e.g., 'Mechanical Failure').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully logs the downtime event with the correct reason."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully logs the downtime event with the correct reason.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority maintenance request for the downed machine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and dispatches a maintenance ticket to the on-call technician."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and dispatches a maintenance ticket to the on-call technician.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

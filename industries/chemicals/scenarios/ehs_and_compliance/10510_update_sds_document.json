@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all finished products that contain the specified raw material using the formulation system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of 15 affected products."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of 15 affected products.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For the first affected product, create a new version of its SDS and update the toxicological information in Section 11.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully revises the SDS document with the new hazard data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully revises the SDS document with the new hazard data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Trigger a workflow to have the updated SDS reviewed and approved by the EHS manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the revised SDS into the approval workflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the revised SDS into the approval workflow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

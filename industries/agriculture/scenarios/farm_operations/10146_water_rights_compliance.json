@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the farm's annual water allocation from the regional water board database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the farm has an allocation of 500 acre-feet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the farm has an allocation of 500 acre-feet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the cumulative water usage for the farm for the current year from flow meters.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the farm has used 450 acre-feet to date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the farm has used 450 acre-feet to date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the remaining water allocation and send a notification to the farmer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent notifies the farmer that they have 50 acre-feet of water remaining for the year."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent notifies the farmer that they have 50 acre-feet of water remaining for the year.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and verify they have the 'Premium Voicemail' add-on.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the feature is active on the customer's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the feature is active on the customer's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the customer of the monthly savings and confirm they wish to proceed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly states the new, lower monthly cost."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly states the new, lower monthly cost.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Remove the add-on from the customer's plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully removes the feature using the system tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully removes the feature using the system tool.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

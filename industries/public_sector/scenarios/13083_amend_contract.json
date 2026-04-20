@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the existing contract in the contract management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The contract manager finds the correct contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The contract manager finds the correct contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a contract amendment document outlining the new end date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager creates a formal amendment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager creates a formal amendment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Route the amendment for signature by both the vendor and the authorized government official.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager sends the amendment for electronic signature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager sends the amendment for electronic signature.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

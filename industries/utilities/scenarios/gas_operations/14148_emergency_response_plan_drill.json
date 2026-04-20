@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Initiate the drill by simulating a pressure drop alarm on a major pipeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system logs the simulated alarm and notifies the on-call operator."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system logs the simulated alarm and notifies the on-call operator.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Track the response time for the operator to acknowledge the alarm and initiate the shutdown procedure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System logs the time taken for each step of the response."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System logs the time taken for each step of the response.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the operator correctly identifies which valves to close to isolate the simulated rupture.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System confirms the operator selected the correct valves according to the plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System confirms the operator selected the correct valves according to the plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a drill performance report highlighting successes and areas for improvement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System produces a formal report on the drill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System produces a formal report on the drill.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Initiate a new request for an 'Excavation Permit', attaching the drawing showing the trench location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent starts a new permit request with the required documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent starts a new permit request with the required documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The permit system automatically triggers a request to the 'Call Before You Dig' service to identify any buried utilities in the area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A request is automatically sent to the utility locating service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A request is automatically sent to the utility locating service.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the utility locate is complete and the area is marked clear, get final approval for the permit from the site supervisor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "After receiving the all-clear, the agent routes the permit to the supervisor who provides the final signature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "After receiving the all-clear, the agent routes the permit to the supervisor who provides the final signature.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Download the monthly bank statement for the property trust account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves the bank statement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves the bank statement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare each transaction on the bank statement to the transactions recorded in the property management software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent systematically checks off matching transactions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent systematically checks off matching transactions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify and resolve any discrepancies (e.g., a bank fee not recorded, a cleared check not marked as such).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds and corrects all discrepancies, resulting in a balanced reconciliation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds and corrects all discrepancies, resulting in a balanced reconciliation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

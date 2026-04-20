@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Outline the key scenes for the video ad (e.g., Scene 1: Problem, Scene 2: Solution, Scene 3: CTA).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a high-level narrative arc."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a high-level narrative arc.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each scene, write a brief description of the visuals and any accompanying on-screen text or voiceover.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent details the content of each scene."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent details the content of each scene.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select stock imagery or create rough sketches to represent the visuals for each scene.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a complete visual and written storyboard ready for production."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a complete visual and written storyboard ready for production.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

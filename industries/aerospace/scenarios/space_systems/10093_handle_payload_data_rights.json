@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the data sharing agreements for all payloads on the satellite.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the data rights and access rules for each instrument team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the data rights and access rules for each instrument team.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Configure the ground data system to automatically route the data from the university's instrument to their dedicated server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets up the data routing rules."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets up the data routing rules.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the university team can access their data and that they cannot access data from any other instruments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the access controls are working correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the access controls are working correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

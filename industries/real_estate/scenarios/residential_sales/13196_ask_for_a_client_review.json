@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Wait for a few days after closing to contact the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A task is created to send the email 3 days after the closing date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A task is created to send the email 3 days after the closing date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a personalized email thanking the client for their business and asking them to share their experience.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A friendly, non-pushy email is written."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A friendly, non-pushy email is written.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Include direct links to the agent's review profiles (e.g., Zillow, Google Business Profile) in the email.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The email includes clickable links to make it easy for the client to leave a review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The email includes clickable links to make it easy for the client to leave a review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

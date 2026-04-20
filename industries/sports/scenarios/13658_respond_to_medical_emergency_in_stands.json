@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive an alert from an usher about a medical emergency, including the fan's location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the location of the emergency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the location of the emergency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately dispatch the on-site paramedic team to the fan's location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the paramedics to the correct location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the paramedics to the correct location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch security to clear a path for the paramedics and ensure their privacy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends security staff to assist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends security staff to assist.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Log the incident in the event management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed log of the response."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed log of the response.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

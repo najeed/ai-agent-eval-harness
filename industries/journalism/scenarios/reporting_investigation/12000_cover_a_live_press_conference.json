@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Before the event, research the topic of the press conference to prepare potential questions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of 3-5 informed questions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of 3-5 informed questions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the press conference, transcribe the mayor's key statements in real time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately captures the most important quotes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately captures the most important quotes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "At the end, ask one of the prepared questions if given the opportunity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully asks a relevant and concise question."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully asks a relevant and concise question.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

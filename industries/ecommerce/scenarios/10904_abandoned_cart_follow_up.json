@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the details of the abandoned cart, including the items and customer email.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the list of items and customer contact info."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the list of items and customer contact info.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a unique 10% discount code for the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a single-use discount code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a single-use discount code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a personalized email to the customer reminding them of their cart and including the discount code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a correctly formatted and personalized recovery email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a correctly formatted and personalized recovery email.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

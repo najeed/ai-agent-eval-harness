@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new test method document in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates a new, blank test method template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates a new, blank test method template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the step-by-step procedure for the new analytical method, including required reagents and instrument parameters.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly documents the entire analytical procedure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly documents the entire analytical procedure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the new method for review and approval by the lab director.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the method into the approval workflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the method into the approval workflow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

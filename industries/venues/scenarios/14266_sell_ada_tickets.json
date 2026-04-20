@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the event the guest is interested in.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the availability of wheelchair accessible seating for that event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds several available wheelchair spaces."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds several available wheelchair spaces.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Ask the guest if they also need a companion seat.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The guest requests one companion seat."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The guest requests one companion seat.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Sell the guest one wheelchair space and one companion seat, and process the payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully completes the sale."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully completes the sale.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

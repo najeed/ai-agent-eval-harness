@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Based on a list of available metrics, select the top 5-7 most important KPIs for an executive audience.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects high-level metrics like 'Total Revenue', 'Net Profit Margin', and 'Customer Acquisition Cost'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects high-level metrics like 'Total Revenue', 'Net Profit Margin', and 'Customer Acquisition Cost'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each selected KPI, suggest the best visualization type (e.g., 'Line Chart' for trends, 'Gauge' for current status, 'Bar Chart' for comparisons).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends appropriate chart types for each KPI."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends appropriate chart types for each KPI.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a text-based description of the dashboard layout, arranging the visualizations in a logical grid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent describes a clean and readable dashboard layout."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent describes a clean and readable dashboard layout.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

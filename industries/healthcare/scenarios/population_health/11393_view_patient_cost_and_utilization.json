@@ -12,38 +12,46 @@
       {
         "id": "task-0",
         "task_description": "Verify clinician access and patient identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Identity verified/authorized"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Identity verified/authorized",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-1",
         "task_description": "Open the patient's record in the population health platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The care manager finds the correct patient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The care manager finds the correct patient.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Navigate to the cost and utilization dashboard for the patient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The care manager opens the patient's financial and utilization summary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The care manager opens the patient's financial and utilization summary.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the data, which shows the patient has had three ED visits and one inpatient admission in the last 12 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The care manager uses the data to understand the patient's history and identify opportunities to reduce unnecessary utilization."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The care manager uses the data to understand the patient's history and identify opportunities to reduce unnecessary utilization.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

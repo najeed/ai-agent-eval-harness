@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the locations of all nearby residences relative to the proposed turbine locations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent maps all homes within a 2km radius."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent maps all homes within a 2km radius.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a shadow flicker model using the turbine dimensions, sun path data, and topography.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Model calculates the expected hours of flicker per year at each residence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Model calculates the expected hours of flicker per year at each residence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the results to local regulations or industry best practices (e.g., less than 30 hours per year).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that two homes are predicted to experience more than 30 hours of flicker."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that two homes are predicted to experience more than 30 hours of flicker.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Propose mitigation, such as programming the turbines to shut down during periods when they would be causing flicker at the affected homes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends a specific operational control to solve the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends a specific operational control to solve the issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

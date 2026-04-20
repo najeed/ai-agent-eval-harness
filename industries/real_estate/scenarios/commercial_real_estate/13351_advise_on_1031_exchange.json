@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the strict timelines of a 1031 exchange (45 days to identify a replacement property, 180 days to close).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client understands the critical deadlines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client understands the critical deadlines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Refer the client to a qualified intermediary (QI) who is legally required to facilitate the exchange.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client is connected with a QI."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client is connected with a QI.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Begin searching for suitable replacement properties that meet the exchange criteria before the sale of the original property closes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A proactive search for replacement properties is initiated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A proactive search for replacement properties is initiated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Inform the employee of the suspension and its terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP and manager deliver the news to the employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP and manager deliver the news to the employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the employee's status in the HRIS to 'Suspended' for the specified date range.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP correctly updates the employee's status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP correctly updates the employee's status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Coordinate with IT to temporarily disable the employee's system access during the suspension.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP creates a ticket for IT to temporarily suspend access."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP creates a ticket for IT to temporarily suspend access.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

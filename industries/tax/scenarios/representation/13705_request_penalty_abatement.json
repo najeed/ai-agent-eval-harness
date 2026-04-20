@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the taxpayer's situation to confirm they meet the criteria for reasonable cause.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the taxpayer's circumstances qualify for penalty relief."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the taxpayer's circumstances qualify for penalty relief.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather supporting documentation, such as a doctor's note.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains the necessary evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains the necessary evidence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a letter to the IRS requesting penalty abatement and attach the supporting documents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares and sends a compelling request for relief."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares and sends a compelling request for relief.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the designated collection zone for 'Truck 7'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the geographic zone for the specified truck."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the geographic zone for the specified truck.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the fill levels for all smart bins within that zone that are over the 80% threshold.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of specific bins that require collection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of specific bins that require collection.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the most efficient route to service only the identified high-fill-level bins.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates and sends the optimized route to the truck's navigation system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates and sends the optimized route to the truck's navigation system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

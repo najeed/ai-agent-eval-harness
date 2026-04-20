@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Import the quarterly payroll data, including total wages paid and federal income tax withheld.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully imports all relevant payroll figures for the quarter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully imports all relevant payroll figures for the quarter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the employer and employee portions of Social Security and Medicare taxes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the FICA taxes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the FICA taxes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Complete Form 941 and reconcile the total taxes with the total payroll tax deposits made during the quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares an accurate Form 941 that reconciles with deposits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares an accurate Form 941 that reconciles with deposits.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

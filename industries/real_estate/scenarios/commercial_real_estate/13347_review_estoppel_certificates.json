@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Send estoppel certificate forms to all tenants for their signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All tenants receive the form to be completed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All tenants receive the form to be completed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the signed estoppel certificates from the tenants.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Signed certificates are received from all tenants."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Signed certificates are received from all tenants.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review each certificate to confirm key lease terms (e.g., rent, term, security deposit) and ensure the tenant is not claiming any defaults by the landlord.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that the tenants' understanding of the lease matches the lease documents, satisfying the due diligence contingency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that the tenants' understanding of the lease matches the lease documents, satisfying the due diligence contingency.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

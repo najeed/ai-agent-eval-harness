@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the policy exception request, including the business justification and the specific IP address and port required.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly processes the incoming request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly processes the incoming request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assess the risk of granting the exception, including researching the reputation of the third-party IP address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst determines the risk is acceptable for a limited time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst determines the risk is acceptable for a limited time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the request for a limited duration (e.g., 1 week) and create a temporary firewall rule to allow the traffic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst grants the time-bound exception and implements the required technical control."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst grants the time-bound exception and implements the required technical control.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

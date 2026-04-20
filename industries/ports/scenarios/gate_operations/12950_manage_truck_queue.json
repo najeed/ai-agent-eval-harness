@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the gate camera feeds and queue length data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager observes that the queue is extending into a public road, which is a safety concern."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager observes that the queue is extending into a public road, which is a safety concern.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Open additional gate lanes to increase throughput.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager opens two more available gate lanes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager opens two more available gate lanes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Communicate with yard operations to ensure there are enough internal vehicles to service the faster gate flow.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager coordinates with the yard to ensure container handling equipment can keep up with the increased truck volume."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager coordinates with the yard to ensure container handling equipment can keep up with the increased truck volume.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use a Software Bill of Materials (SBOM) tool to identify all in-house applications that use the vulnerable library.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst generates a complete list of affected applications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst generates a complete list of affected applications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Prioritize the applications for patching based on whether they are internet-facing and handle sensitive data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst creates a prioritized list of applications to be patched."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst creates a prioritized list of applications to be patched.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create tickets for the respective development teams to update the library to a non-vulnerable version and redeploy their applications.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully coordinates the remediation effort across multiple teams."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully coordinates the remediation effort across multiple teams.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

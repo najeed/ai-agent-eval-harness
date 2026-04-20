@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the real-time operating parameters of the SAG mill, including power draw, bearing pressure, and feed rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator has a clear view of the mill's current performance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator has a clear view of the mill's current performance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Notice that the power draw is below the optimal target, indicating the mill can take more feed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator correctly identifies an opportunity to increase throughput."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator correctly identifies an opportunity to increase throughput.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Slightly increase the speed of the conveyor belt feeding ore into the mill to increase the feed rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The feed rate is increased, and the mill's power draw moves closer to the optimal target, increasing throughput."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The feed rate is increased, and the mill's power draw moves closer to the optimal target, increasing throughput.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

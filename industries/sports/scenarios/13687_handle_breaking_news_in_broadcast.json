@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the breaking news alert from a credible source.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The producer gets confirmation of the trade."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The producer gets confirmation of the trade.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Instruct the on-air talent to announce the breaking news.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The hosts announce the trade on air."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The hosts announce the trade on air.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Direct the graphics operator to create a 'Breaking News' graphic with the trade details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A graphic with the news is quickly created and displayed on screen."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A graphic with the news is quickly created and displayed on screen.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the fraud alert and retrieve the call history for the flagged SIM.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves logs showing thousands of calls to a premium-rate number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves logs showing thousands of calls to a premium-rate number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately suspend the SIM card to prevent further fraudulent activity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully suspends the SIM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully suspends the SIM.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a report for the fraud analysis team, including the call logs and total potential financial loss.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed and accurate fraud report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed and accurate fraud report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

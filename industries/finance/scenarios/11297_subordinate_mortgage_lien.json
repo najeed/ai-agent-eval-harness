@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the subordination request from the other lender.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the request and all supporting documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the request and all supporting documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the request to ensure it meets the bank's policy for subordination (e.g., loan-to-value ratio is acceptable).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the new loan terms and confirms they meet policy guidelines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the new loan terms and confirms they meet policy guidelines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the request and generate the subordination agreement to be sent to the other lender.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent approves the request and sends the legal agreement to the title company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent approves the request and sends the legal agreement to the title company.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

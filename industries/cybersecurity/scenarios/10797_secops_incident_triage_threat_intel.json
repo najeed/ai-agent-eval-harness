@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Extract the file hash from the EDR alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst has the key IOC from the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst has the key IOC from the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query a threat intelligence platform (like VirusTotal) with the file hash.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully queries the external data source."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully queries the external data source.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The platform confirms the hash belongs to a known ransomware variant used by a specific APT group. The analyst escalates the alert to the highest priority.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst uses threat intelligence to correctly assess the severity of the alert and escalate appropriately."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst uses threat intelligence to correctly assess the severity of the alert and escalate appropriately.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

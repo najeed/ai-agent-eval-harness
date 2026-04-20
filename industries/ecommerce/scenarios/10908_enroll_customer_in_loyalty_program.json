@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the correct customer profile open."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the correct customer profile open.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the benefits of the loyalty program (e.g., points per dollar, exclusive offers).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the value proposition of the program."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the value proposition of the program.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enroll the customer in the loyalty program.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the customer's account to enroll them in the program."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the customer's account to enroll them in the program.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

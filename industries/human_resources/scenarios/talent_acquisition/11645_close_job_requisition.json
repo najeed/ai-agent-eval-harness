@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the job requisition that has been filled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter locates the correct requisition."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter locates the correct requisition.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the requisition status to 'Filled/Closed'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter successfully updates the status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter successfully updates the status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Ensure all other candidates for the role have been dispositioned correctly (e.g., rejected).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter verifies that no candidates are left in an active state for the closed req."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter verifies that no candidates are left in an active state for the closed req.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

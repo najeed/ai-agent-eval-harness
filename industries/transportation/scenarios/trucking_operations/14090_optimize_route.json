@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Enter the locations of the three delivery stops into a route optimization tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The addresses are correctly entered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The addresses are correctly entered.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The tool calculates the most efficient sequence for the stops based on road networks and expected traffic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An optimal stop sequence (e.g., B, then A, then C) is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An optimal stop sequence (e.g., B, then A, then C) is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the optimized route and stop sequence to the driver.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver receives the most efficient route to follow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver receives the most efficient route to follow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

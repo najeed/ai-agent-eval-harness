@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the original work order and verify the total quantity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the work order for 1000 units."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the work order for 1000 units.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate the 'split' function and specify the quantities for the two new work orders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent splits the order into two new work orders of 500 units each."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent splits the order into two new work orders of 500 units each.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign each new work order to a different machine and release them to the floor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully assigns and releases the two new, smaller work orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully assigns and releases the two new, smaller work orders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

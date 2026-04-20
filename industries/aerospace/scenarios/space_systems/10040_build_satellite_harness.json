@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Follow the wiring diagram to cut, strip, and crimp pins onto all the necessary wires.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly prepares all wires according to the schematic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly prepares all wires according to the schematic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Insert the pinned wires into the correct locations in the multi-pin connectors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent populates the connectors with 100% accuracy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent populates the connectors with 100% accuracy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform a continuity test on the completed harness to ensure there are no open circuits or short circuits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the test and confirms the harness passes all continuity checks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the test and confirms the harness passes all continuity checks.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

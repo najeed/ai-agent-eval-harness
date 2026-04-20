@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a complete inventory list of all equipment that needs to be shipped.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a detailed packing list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a detailed packing list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Book a freight service to transport the equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books a truck for the equipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books a truck for the equipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Track the shipment to ensure it arrives at the destination venue on time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent monitors the shipment's progress."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent monitors the shipment's progress.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

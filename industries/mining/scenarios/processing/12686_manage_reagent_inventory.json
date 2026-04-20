@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the current level of the main cyanide storage tank.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tank level is retrieved from the control system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tank level is retrieved from the control system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the remaining days of supply based on the current consumption rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The calculation shows there are only 5 days of supply left, which is below the minimum reorder point of 7 days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The calculation shows there are only 5 days of supply left, which is below the minimum reorder point of 7 days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a purchase requisition to order a new shipment of cyanide from the supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A purchase request is created to ensure the plant does not run out of the critical reagent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A purchase request is created to ensure the plant does not run out of the critical reagent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

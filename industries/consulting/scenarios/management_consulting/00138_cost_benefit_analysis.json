@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "List all the one-time costs associated with the project (e.g., 'software licenses', 'implementation services').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies all costs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies all costs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "List all the expected annual benefits (e.g., 'reduced manual effort in hours', 'lower maintenance fees').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies all benefits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies all benefits.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Convert all benefits to a monetary value and calculate the payback period for the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the payback period in years."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the payback period in years.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the required costumes and the rental dates based on the shooting schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a list of all needed costumes and the duration of the rental."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a list of all needed costumes and the duration of the rental.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the costume house to check availability and get a rental quote.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives a quote and confirmation of availability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives a quote and confirmation of availability.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the rental agreement and schedule the pickup of the costumes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finalizes the rental and arranges for logistics."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finalizes the rental and arranges for logistics.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

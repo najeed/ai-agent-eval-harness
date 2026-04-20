@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the submitted claim that needs to be voided.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Biller finds the incorrect claim."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Biller finds the incorrect claim.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify with the clinical department that the service was indeed cancelled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Biller confirms the service should not have been billed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Biller confirms the service should not have been billed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit a void/replacement claim to the payer to retract the original submission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The original claim is cancelled at the payer, preventing an incorrect payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The original claim is cancelled at the payer, preventing an incorrect payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

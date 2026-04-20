@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check room availability for the requested dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that standard king rooms are available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that standard king rooms are available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the guest with the room rate and collect their personal details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent quotes the correct rate and accurately records the guest's name and contact information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent quotes the correct rate and accurately records the guest's name and contact information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create the reservation in the system and obtain credit card details to guarantee the booking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the reservation and securely adds the payment guarantee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the reservation and securely adds the payment guarantee.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

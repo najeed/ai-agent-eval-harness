@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The DERMS forecasts a load-on-feeder that will exceed its thermal limit during the evening peak.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System identifies a need for load reduction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System identifies a need for load reduction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the available capacity from the VPP of residential batteries located on that feeder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System confirms 500 kW of dispatchable capacity is available from the VPP."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System confirms 500 kW of dispatchable capacity is available from the VPP.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a dispatch signal to the VPP, instructing the batteries to discharge for a two-hour period to reduce the peak load.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully dispatches the VPP."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully dispatches the VPP.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Load the current project plan (Gantt chart).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads the plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads the plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the delayed milestone and all subsequent tasks that depend on it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies all dependent tasks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies all dependent tasks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Shift the start dates of all dependent tasks by 2 weeks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly updates the project plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly updates the project plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Recalculate the new project end date and report the total delay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the new end date and states the overall project is now delayed by 2 weeks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the new end date and states the overall project is now delayed by 2 weeks.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

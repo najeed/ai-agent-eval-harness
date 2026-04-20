@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'Transformer Health Warning' alert based on predictive analytics.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the pre-failure alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the pre-failure alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the sensor data (temperature, oil quality, load) that triggered the alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the data indicates a high probability of imminent failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the data indicates a high probability of imminent failure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority work order to replace the transformer proactively before it fails and causes an outage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent schedules preventive maintenance to avoid an outage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent schedules preventive maintenance to avoid an outage.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

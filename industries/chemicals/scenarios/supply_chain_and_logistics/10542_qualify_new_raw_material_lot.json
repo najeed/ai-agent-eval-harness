@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log the receipt of the new material lot in the inventory system, which should automatically place it in 'Quarantine' status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new inventory record for the lot with a 'Quarantine' status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new inventory record for the lot with a 'Quarantine' status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Take a sample of the material and submit it to the QC lab for incoming inspection testing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new sample record and testing order in the LIMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new sample record and testing order in the LIMS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After QC testing is complete and approved, change the status of the inventory lot from 'Quarantine' to 'Available'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives notification of QC approval and successfully updates the inventory status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives notification of QC approval and successfully updates the inventory status.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

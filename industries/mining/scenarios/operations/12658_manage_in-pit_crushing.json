@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the feed rate and power draw of the in-pit primary crusher.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator confirms the IPCC system is running smoothly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator confirms the IPCC system is running smoothly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Coordinate with the shovel operators to ensure a steady feed of ore to the crusher to maximize utilization.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The shovels and crusher are working in sync to provide a consistent flow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The shovels and crusher are working in sync to provide a consistent flow.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the status of the overland conveyor that transports the crushed ore out of the pit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The conveyor is monitored for any signs of belt misalignment or other issues."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The conveyor is monitored for any signs of belt misalignment or other issues.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

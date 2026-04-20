@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the Estimated Time of Departure (ETD) from the vessel's agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator receives and logs the ETD."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator receives and logs the ETD.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule pilot, tugs, and mooring gang services for the ETD.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All necessary departure services are booked in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All necessary departure services are booked in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the Vessel Traffic Service (VTS) of the planned departure to ensure a clear channel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The VTS acknowledges the sailing plan and confirms the departure window."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The VTS acknowledges the sailing plan and confirms the departure window.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

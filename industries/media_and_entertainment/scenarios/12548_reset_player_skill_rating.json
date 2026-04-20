@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the player's account and check their recent match history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the player has not played any matches in over a year."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the player has not played any matches in over a year.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the policy for MMR resets and confirm the player is eligible.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the policy allows a reset after 6 months of inactivity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the policy allows a reset after 6 months of inactivity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reset the player's MMR to the default starting value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully resets the player's skill rating."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully resets the player's skill rating.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

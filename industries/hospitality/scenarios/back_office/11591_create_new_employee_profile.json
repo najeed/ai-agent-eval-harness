@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The HR manager creates a new employee profile in the main HRIS system with their personal details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new employee record is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new employee record is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "A user account is created for the new employee in the PMS with the appropriate permissions for a front desk agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A PMS user account is created with the correct access level."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A PMS user account is created with the correct access level.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The employee is added to the scheduling software so they can be assigned shifts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The employee is now available to be scheduled for work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The employee is now available to be scheduled for work.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

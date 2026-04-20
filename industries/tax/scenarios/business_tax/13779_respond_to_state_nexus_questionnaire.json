@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the questionnaire to understand the specific information the state is seeking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the scope of the state's inquiry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the scope of the state's inquiry.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather data on the company's activities in that state (e.g., sales, property, payroll, employee travel).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a complete record of the company's connections to the state."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a complete record of the company's connections to the state.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Complete the questionnaire accurately and strategically to present the company's position.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides truthful answers while avoiding unnecessary disclosures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides truthful answers while avoiding unnecessary disclosures.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

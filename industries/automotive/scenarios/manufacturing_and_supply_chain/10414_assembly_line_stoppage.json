@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the automated alert from the line monitoring system, identifying the specific robot and fault code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the alert for 'Robot WR-07' with fault 'Servo Overheat'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the alert for 'Robot WR-07' with fault 'Servo Overheat'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch the on-site robotics maintenance team to the robot's location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully dispatches the maintenance team via the internal system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully dispatches the maintenance team via the internal system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the estimated downtime and adjust the daily production target accordingly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives a 30-minute ETA, calculates the production impact, and updates the daily target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives a 30-minute ETA, calculates the production impact, and updates the daily target.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's existing contract to review the terms and pricing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the current contract from the document repository."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the current contract from the document repository.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a new draft contract for the upcoming year, applying a standard annual price increase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a draft of the new contract with updated pricing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a draft of the new contract with updated pricing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the draft contract to the customer for their review and signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent emails the new contract to the customer's procurement contact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent emails the new contract to the customer's procurement contact.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

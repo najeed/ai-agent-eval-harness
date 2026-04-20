@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the contract holder and the amount they wish to withdraw.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the customer and confirms the withdrawal amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the customer and confirms the withdrawal amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine if any surrender charges or tax penalties apply.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the withdrawal is within the penalty-free amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the withdrawal is within the penalty-free amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the withdrawal and mail the check to the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the withdrawal and issues the payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the withdrawal and issues the payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

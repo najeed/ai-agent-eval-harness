@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the studio that owns the rights to the classic movie.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the rights holder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the rights holder.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the studio's licensing department with the specific clip details and request a quote.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits a formal request for a clip license."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits a formal request for a clip license.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Negotiate the fee and execute the licensing agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finalizes the agreement and secures the right to use the clip."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finalizes the agreement and secures the right to use the clip.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

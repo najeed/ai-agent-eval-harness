@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the mobile CMMS application and select 'Create New Work Order'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The work order creation form is displayed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The work order creation form is displayed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Fill in the details, including the equipment ID of the pipeline, the location of the leak, and a description of the problem. Set the priority to 'High'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The work order is populated with accurate and complete information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The work order is populated with accurate and complete information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the work order, which is then automatically routed to the maintenance planner's queue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The work order is created in the CMMS and is ready for planning and scheduling."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The work order is created in the CMMS and is ready for planning and scheduling.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

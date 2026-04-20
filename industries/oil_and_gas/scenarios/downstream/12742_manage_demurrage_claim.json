@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the demurrage claim and the vessel's statement of facts, which details the timeline of its arrival and delay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The claim documents are received and logged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The claim documents are received and logged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the vessel's statement of facts with the terminal's own activity logs to verify the delay times.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The times are cross-referenced, and the duration of the delay is confirmed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The times are cross-referenced, and the duration of the delay is confirmed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the demurrage payment owed based on the verified delay time and the charter party's agreed-upon daily rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct payment amount is calculated and approved for settlement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct payment amount is calculated and approved for settlement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

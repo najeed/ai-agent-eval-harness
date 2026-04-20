@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the internal candidate's application in the ATS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter sees the application and notes the candidate is a current employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter sees the application and notes the candidate is a current employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Notify the employee's current manager of their application, per company policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter informs the current manager of the employee's interest in the new role."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter informs the current manager of the employee's interest in the new role.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the employee's internal performance history and tenure alongside their resume.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter considers both internal performance data and external experience during the screening process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter considers both internal performance data and external experience during the screening process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

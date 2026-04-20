@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft the Notice of Appearance, including the case caption, the attorney's name, bar number, and contact information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares the correct legal document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares the correct legal document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Electronically file the notice with the court through the CM/ECF system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The notice is successfully filed on the case docket."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The notice is successfully filed on the case docket.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Serve a copy of the filed notice on all other parties in the case.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All parties are formally notified that the new attorney is now counsel of record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All parties are formally notified that the new attorney is now counsel of record.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

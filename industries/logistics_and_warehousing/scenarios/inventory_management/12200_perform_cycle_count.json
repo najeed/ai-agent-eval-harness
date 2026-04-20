@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Get the list of locations and items to be counted for the day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the assigned cycle count task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the assigned cycle count task.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Go to a specified location, scan the location barcode, and count the physical quantity of the item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately counts the items in the location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately counts the items in the location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the counted quantity into the system. The system flags a discrepancy where the count does not match the system quantity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the count, and the system correctly identifies a variance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the count, and the system correctly identifies a variance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "For the discrepancy, create an inventory adjustment request for a supervisor to review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a request to investigate the discrepancy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a request to investigate the discrepancy.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

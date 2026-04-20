@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the missing lens by its asset tag in the asset management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the specific lens."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the specific lens.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the asset's check-in/check-out history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the lens was last checked out by the second unit camera operator."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the lens was last checked out by the second unit camera operator.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the production schedule to see where the second unit was filming on that day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the second unit was at the 'downtown alley' location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the second unit was at the 'downtown alley' location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Notify the production manager and the second unit operator about the missing lens and its last known location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a clear and concise notification to the relevant parties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a clear and concise notification to the relevant parties.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

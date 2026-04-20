@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Discuss the implications of changing strategy with the client, including potential tax consequences.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the effects of the change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the effects of the change.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the client's investment profile and target asset allocation in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent changes the client's profile to 'Balanced' with a new target of 50% stocks / 50% bonds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent changes the client's profile to 'Balanced' with a new target of 50% stocks / 50% bonds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a set of trades to align the portfolio with the new strategy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the necessary trades to sell stocks and buy bonds to meet the new target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the necessary trades to sell stocks and buy bonds to meet the new target.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

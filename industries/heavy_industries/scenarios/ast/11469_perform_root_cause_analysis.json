@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all available data about the failure, including operator logs, maintenance history, and alarm data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully compiles all relevant information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully compiles all relevant information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a structured RCA method, like a '5 Whys' or 'Fishbone Diagram', to analyze the data and identify potential causes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team works through the methodology to brainstorm causes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team works through the methodology to brainstorm causes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify the most likely root cause and create corrective actions to address it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team determines the root cause was a design flaw and creates a corrective action to redesign the faulty component."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team determines the root cause was a design flaw and creates a corrective action to redesign the faulty component.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

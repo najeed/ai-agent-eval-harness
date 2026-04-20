@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the provided client brief to extract key objectives, scope, and constraints.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the client's main goals (e.g., 'reduce operational costs by 15%') and constraints (e.g., '6-month timeline')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the client's main goals (e.g., 'reduce operational costs by 15%') and constraints (e.g., '6-month timeline').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the 'Our Understanding' and 'Proposed Scope' sections of the proposal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates well-structured text that accurately reflects the client's needs and defines clear project boundaries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates well-structured text that accurately reflects the client's needs and defines clear project boundaries.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-level project timeline with key phases (e.g., Discovery, Analysis, Recommendation, Implementation).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a logical timeline with estimated durations for each phase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a logical timeline with estimated durations for each phase.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

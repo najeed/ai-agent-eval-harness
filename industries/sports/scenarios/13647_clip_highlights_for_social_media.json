@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Access the full recording of the game broadcast.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the full video file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the full video file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use an AI tool to automatically identify the most exciting plays (e.g., goals, big hits).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool generates a list of timestamps for potential highlights."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool generates a list of timestamps for potential highlights.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create short video clips for the top 3 highlights.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates three highlight clips."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates three highlight clips.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Post the clips to the team's social media accounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully posts the highlights."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully posts the highlights.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

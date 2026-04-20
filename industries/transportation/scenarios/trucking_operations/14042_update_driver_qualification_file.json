@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a system alert that a driver's medical card expires in 30 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is notified of the pending expiration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is notified of the pending expiration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send an automated notification to the driver reminding them to renew their medical certificate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver is reminded of the requirement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver is reminded of the requirement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The driver uploads a photo of their new medical card.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new document is received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new document is received.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the driver's qualification file with the new medical card and its expiration date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver's file is now up-to-date and compliant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver's file is now up-to-date and compliant.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

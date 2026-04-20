@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Divide the large operational area into smaller patrol sectors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator creates an efficient patrol plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator creates an efficient patrol plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assign available MPA to each sector, considering aircraft endurance and sensor capabilities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator creates an optimal assignment of aircraft to sectors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator creates an optimal assignment of aircraft to sectors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the aircraft as they execute their patrols and adjust sectors as needed to respond to new intelligence or contacts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator dynamically manages the patrol fleet to maintain continuous surveillance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator dynamically manages the patrol fleet to maintain continuous surveillance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

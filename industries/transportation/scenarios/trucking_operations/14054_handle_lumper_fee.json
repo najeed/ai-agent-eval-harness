@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The driver pays the lumper service and gets a receipt.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver has proof of the expense."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver has proof of the expense.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The driver uploads a photo of the lumper receipt via their mobile app.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The receipt image is submitted to the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The receipt image is submitted to the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "An agent reviews the receipt, verifies its legitimacy, and approves it as a reimbursable expense.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The expense is approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The expense is approved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The lumper fee is added to the driver's next settlement for reimbursement and billed to the customer if applicable.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The reimbursement and customer billing are correctly processed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The reimbursement and customer billing are correctly processed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

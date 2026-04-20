@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the case file, including all pleadings, discovery responses, and deposition transcripts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all relevant factual evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all relevant factual evidence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Research legal precedents supporting the argument for summary judgment in this jurisdiction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds 3-5 relevant case law examples."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds 3-5 relevant case law examples.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft the motion, including a statement of undisputed facts, the legal argument citing the research, and a conclusion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a well-structured and persuasive legal brief."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a well-structured and persuasive legal brief.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

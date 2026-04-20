@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather basic financial information from the buyer (income, debts, down payment amount).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects necessary financial details to understand the buyer's budget."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects necessary financial details to understand the buyer's budget.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the buyer with a list of 3 trusted mortgage lenders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully provides a list of recommended lenders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully provides a list of recommended lenders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the importance of mortgage pre-approval and set a follow-up task to check on their progress.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the next steps and creates a reminder in the CRM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the next steps and creates a reminder in the CRM.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

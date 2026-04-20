@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify key stakeholder groups that will be affected by the change (e.g., 'Sales Team', 'IT Department', 'Executives').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent lists the relevant stakeholder groups."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent lists the relevant stakeholder groups.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a communication plan outlining what messages need to be sent to which groups and when.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a structured communication plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a structured communication plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Outline a training plan, including different training modules for different user groups.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a high-level training plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a high-level training plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

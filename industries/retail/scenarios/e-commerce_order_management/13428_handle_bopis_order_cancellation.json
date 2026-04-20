@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "A system job identifies BOPIS orders that have exceeded the pickup time limit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system flags the abandoned order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system flags the abandoned order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically cancels the order and triggers a refund to the customer's original form of payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is cancelled, and the refund process is initiated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is cancelled, and the refund process is initiated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "A task is created for a store associate to return the items from the staging area back to the sales floor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inventory is returned to a sellable state."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inventory is returned to a sellable state.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

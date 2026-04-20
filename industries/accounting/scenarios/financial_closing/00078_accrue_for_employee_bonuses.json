@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the company's net income for the year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the final net income figure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the final net income figure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the estimated total bonus pool based on the formula in the bonus plan (e.g., 5% of net income).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the total bonus amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the total bonus amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create and post a journal entry to debit 'Bonus Expense' and credit 'Accrued Bonuses Payable'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts the correct year-end accrual."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts the correct year-end accrual.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

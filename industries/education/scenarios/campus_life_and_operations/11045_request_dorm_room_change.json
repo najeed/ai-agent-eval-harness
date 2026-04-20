@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and their current room assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student's identity and location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student's identity and location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the room change request process, including the requirement to first attempt mediation with the Resident Advisor (RA).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the university's policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the university's policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the student with the contact information for their RA and the official room change request form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the student with the necessary resources to proceed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the student with the necessary resources to proceed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

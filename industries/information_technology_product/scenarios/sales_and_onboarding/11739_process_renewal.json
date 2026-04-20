@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a renewal quote for the customer's existing plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the renewal quote in the CRM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the renewal quote in the CRM.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send the quote to the customer for signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the document via an e-signature tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the document via an e-signature tool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once signed, process the renewal in the billing system and generate the invoice for the next term.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully renews the contract and issues the new invoice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully renews the contract and issues the new invoice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

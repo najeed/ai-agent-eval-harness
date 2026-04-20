@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the employee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the employee's identity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the employee's identity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the internal knowledge base for the 'Tuition Reimbursement Policy'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the official policy document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the official policy document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the key aspects of the policy (e.g., eligibility, maximum reimbursement amount, grade requirements) to the employee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly and accurately answers the employee's questions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly and accurately answers the employee's questions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

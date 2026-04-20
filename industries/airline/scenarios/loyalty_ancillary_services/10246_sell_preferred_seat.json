@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "During the booking process, display the seat map showing which seats are standard and which are preferred seats with a fee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly shows the available seat options and their costs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly shows the available seat options and their costs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The customer selects an exit row seat. Verify they meet the requirements to sit in an exit row.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the passenger is willing and able to assist in an emergency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the passenger is willing and able to assist in an emergency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the seat selection and the associated fee to the booking total and process the payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sells the ancillary product and assigns the seat."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sells the ancillary product and assigns the seat.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

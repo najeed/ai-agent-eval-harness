@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Ask the guest for their photo ID and the credit card used to purchase the tickets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the guest's identification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the guest's identification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Look up the order in the ticketing system to verify the purchase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the valid order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the valid order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deactivate the barcodes on the original tickets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent voids the original tickets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent voids the original tickets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Reprint the tickets on new ticket stock and give them to the guest.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prints and provides the new tickets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prints and provides the new tickets.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

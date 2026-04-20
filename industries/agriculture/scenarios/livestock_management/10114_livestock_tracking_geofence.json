@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the geofence breach alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the specific animal and its last known location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the specific animal and its last known location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send an immediate SMS notification to the rancher with the animal's ID and current GPS coordinates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the alert notification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the alert notification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a map showing the animal's location relative to the breached geofence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates and displays a map for the rancher."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates and displays a map for the rancher.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

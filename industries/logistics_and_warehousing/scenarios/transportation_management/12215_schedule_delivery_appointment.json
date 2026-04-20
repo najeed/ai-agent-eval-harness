@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an automated alert that a shipment is within 24 hours of its destination.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is prompted to schedule the delivery."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is prompted to schedule the delivery.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the receiving facility's scheduling portal to view available delivery slots.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent can see a calendar of open appointment times."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent can see a calendar of open appointment times.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book an available appointment slot and send the confirmation to the carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the appointment and notifies the carrier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the appointment and notifies the carrier.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

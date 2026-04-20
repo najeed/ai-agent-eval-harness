@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the homeowner and their property parcel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct property record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct property record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the appeals process and provide the necessary forms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the steps and provides a link to the appeal application form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the steps and provides a link to the appeal application form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Accept the submitted appeal application and schedule a hearing with the assessment board.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the appeal and schedules a hearing date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the appeal and schedules a hearing date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

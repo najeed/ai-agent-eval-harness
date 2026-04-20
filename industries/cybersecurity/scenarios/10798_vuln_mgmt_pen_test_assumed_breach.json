@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log in with the provided standard user credentials.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Tester successfully logs into the network."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Tester successfully logs into the network.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enumerate internal network shares and applications accessible to the standard user.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Tester maps out what a standard user can see and access."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Tester maps out what a standard user can see and access.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Discover a network share that is misconfigured to allow all authenticated users to read sensitive documents, achieving the test's objective of accessing sensitive data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Tester finds a critical misconfiguration and demonstrates its impact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Tester finds a critical misconfiguration and demonstrates its impact.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather documentation of all qualified adoption expenses (e.g., court costs, attorney fees).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all relevant receipts and invoices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all relevant receipts and invoices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the total expenses and the year the adoption became final.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all details needed for the credit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all details needed for the credit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare Form 8839, Qualified Adoption Expenses, to calculate the allowable credit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the credit, subject to income limitations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the credit, subject to income limitations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Read the article and extract a chronological list of key dates and events.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A structured list of timeline events is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A structured list of timeline events is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each event, write a short, concise description.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Each timeline entry has a clear explanation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Each timeline entry has a clear explanation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use a timeline creation tool to input the dates and descriptions and generate the graphic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear and professional-looking timeline is produced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear and professional-looking timeline is produced.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Collect all necessary documents from the property owner, including existing leases, tenant contact information, and vendor contracts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All required property and tenant data is collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All required property and tenant data is collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set up the new property, units, and tenants in the property management software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The property is fully and accurately set up in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The property is fully and accurately set up in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send an introductory letter to all existing tenants informing them of the change in management and new procedures for paying rent and requesting maintenance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All tenants are successfully notified of the management change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All tenants are successfully notified of the management change.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

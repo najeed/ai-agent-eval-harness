@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the alert and review the backup job's log file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A technician takes ownership and opens the log file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A technician takes ownership and opens the log file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the log and find a 'VSS writer' error, indicating a problem with the SQL Server's snapshot capability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician correctly identifies the root cause of the failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician correctly identifies the root cause of the failure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Restart the SQL Server VSS Writer service on the server and manually re-run the backup job.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Restarting the service resolves the issue, and the backup job completes successfully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Restarting the service resolves the issue, and the backup job completes successfully.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

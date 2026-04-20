@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Briefly explain the benefits of the loyalty program (e.g., 'You'll earn points on every purchase').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer understands the value and agrees to sign up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer understands the value and agrees to sign up.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the customer's name and email address into the POS loyalty enrollment form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate accurately captures the customer's information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate accurately captures the customer's information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Complete the enrollment. The system links the new loyalty account to the current transaction so the customer earns points immediately.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer is successfully enrolled and receives points for their first purchase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer is successfully enrolled and receives points for their first purchase.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

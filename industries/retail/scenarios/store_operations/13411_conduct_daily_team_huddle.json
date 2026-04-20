@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the store performance dashboard to review yesterday's sales results and today's sales goal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager retrieves the key performance indicators for the huddle."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager retrieves the key performance indicators for the huddle.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the list of key tasks and promotions for the day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager is aware of the day's operational priorities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager is aware of the day's operational priorities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Communicate the sales goals and key tasks to the team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The store team is informed and aligned on the goals for the day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The store team is informed and aligned on the goals for the day.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

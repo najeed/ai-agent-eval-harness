@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the delay notification from the rail carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives an alert that shipment #75B is delayed by 12 hours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives an alert that shipment #75B is delayed by 12 hours.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assess the impact on the production schedule by checking current inventory levels of the affected parts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines there is only enough inventory for 2 more hours of production."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines there is only enough inventory for 2 more hours of production.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the production manager and adjust the shift start time to minimize idle labor costs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the delay and the production schedule is officially updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the delay and the production schedule is officially updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

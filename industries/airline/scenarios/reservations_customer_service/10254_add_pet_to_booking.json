@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the booking and check the airline's pet policy, including any flight-specific restrictions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the flight allows pets in the cabin."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the flight allows pets in the cabin.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the flight's quota for in-cabin pets has already been reached.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms there is still space for another pet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms there is still space for another pet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the pet to the booking, collect the pet-in-cabin fee, and inform the customer of the requirements (e.g., carrier size, health documents).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the pet, takes payment, and provides all necessary information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the pet, takes payment, and provides all necessary information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

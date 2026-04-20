@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the high CPU alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent takes ownership of the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent takes ownership of the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the database monitoring tool to identify the queries consuming the most CPU.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a single, inefficient query from a new reporting feature is causing the high load."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a single, inefficient query from a new reporting feature is causing the high load.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Escalate the issue to the engineering team responsible for the reporting feature, providing the problematic query.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a high-priority ticket with actionable data for the developers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a high-priority ticket with actionable data for the developers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

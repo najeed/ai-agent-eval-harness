@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the total tons and grade delivered to the crusher for the month, as reported by the mine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The mine's production figures are retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The mine's production figures are retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Get the total tons and grade processed by the mill for the month, as measured by the plant's weightometers and samplers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The plant's processed figures are retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The plant's processed figures are retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the two sets of figures and calculate the variance. Investigate any significant discrepancy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The reconciliation shows a 5% variance in tons, which triggers an investigation into the calibration of the mine's truck scales."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The reconciliation shows a 5% variance in tons, which triggers an investigation into the calibration of the mine's truck scales.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

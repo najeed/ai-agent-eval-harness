@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the request for co-op funds from the retailer, including a proof of the ad.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the request and the ad proof."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the request and the ad proof.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the retailer is eligible for co-op funds and that the ad meets brand guidelines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the retailer is eligible and the ad is compliant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the retailer is eligible and the ad is compliant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the request and issue a credit to the retailer's account for the agreed-upon co-op amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the co-op advertising credit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the co-op advertising credit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the correct client case file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The social worker successfully pulls up the client's record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The social worker successfully pulls up the client's record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a case note summarizing the home visit, including observations and any new actions planned.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The social worker writes a clear, concise, and objective case note."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The social worker writes a clear, concise, and objective case note.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Save the note to the case file with the correct date and time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The social worker successfully adds the note to the official case record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The social worker successfully adds the note to the official case record.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

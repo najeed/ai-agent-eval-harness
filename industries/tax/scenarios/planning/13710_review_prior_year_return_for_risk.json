@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the prior year tax return into the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully digitizes the tax return."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully digitizes the tax return.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the return for common audit red flags, such as unusually high business expense deductions or missing forms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that the Schedule C auto expenses are disproportionately high for the reported income."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that the Schedule C auto expenses are disproportionately high for the reported income.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the client on the potential risk and recommend gathering supporting documentation in case of an audit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the risk and provides actionable advice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the risk and provides actionable advice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Direct the student to the nearest lost and found location (e.g., campus safety office, student union desk).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear directions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear directions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log the found item in the lost and found database, including description and location found.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The receiving agent creates a record for the found wallet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The receiving agent creates a record for the found wallet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If an ID is in the wallet, attempt to look up the owner and send them a notification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the owner's student record and sends an email that their wallet has been found."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the owner's student record and sends an email that their wallet has been found.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

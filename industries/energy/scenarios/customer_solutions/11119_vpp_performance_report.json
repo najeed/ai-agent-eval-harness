@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Aggregate performance data for all batteries in the VPP for the last month, including dispatch events and total MWh discharged.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles the total number of events and energy dispatched."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles the total number of events and energy dispatched.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total revenue generated from grid services (e.g., frequency response, capacity markets).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the total revenue figure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the total revenue figure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the individual earnings for each customer based on their contribution and the program's revenue-sharing agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of payments due to each customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of payments due to each customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a summary report with key performance indicators (KPIs) and financial results.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a structured PDF report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a structured PDF report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

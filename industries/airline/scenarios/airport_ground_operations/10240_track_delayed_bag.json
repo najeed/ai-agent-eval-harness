@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the passenger's mishandled baggage report using their name or file reference number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the existing claim file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the existing claim file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the baggage tracking system for the latest updates on the bag's location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the bag has been located and is scheduled to arrive on the next flight."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the bag has been located and is scheduled to arrive on the next flight.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the passenger of the update and confirm their delivery address for when the bag arrives.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear update and confirms delivery details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear update and confirms delivery details.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

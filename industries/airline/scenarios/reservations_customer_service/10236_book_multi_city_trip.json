@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search for flights for each of the three individual legs of the journey.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds available flights for all three legs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds available flights for all three legs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Combine the selected flights into a single multi-city booking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates one booking containing all three flights."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates one booking containing all three flights.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the total price, process payment, and issue the ticket for the entire itinerary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the booking and ticketing process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the booking and ticketing process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the campaign brief to understand the target audience and unique selling propositions (USPs).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the key messaging points."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the key messaging points.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write three headlines, each under the 30-character limit, highlighting different USPs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces three compliant and compelling headlines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces three compliant and compelling headlines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Write two descriptions, each under the 90-character limit, including a call-to-action (CTA).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces two compliant and persuasive descriptions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces two compliant and persuasive descriptions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

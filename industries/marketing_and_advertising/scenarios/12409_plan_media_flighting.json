@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze historical sales data to identify seasonal peaks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that sales peak in June-July and November."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that sales peak in June-July and November.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a flighting calendar that allocates a higher percentage of the media budget to the identified peak months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a calendar with increased spend during the peak seasons and lower spend during off-seasons."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a calendar with increased spend during the peak seasons and lower spend during off-seasons.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Share the flighting plan with the campaign management team for implementation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the plan to the execution team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the plan to the execution team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

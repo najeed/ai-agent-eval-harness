@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Determine the cost basis and holding period for the stock being sold.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the basis and determines the gain will be long-term."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the basis and determines the gain will be long-term.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the estimated capital gain from the sale.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the gain."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the gain.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Estimate the total capital gains tax due and advise the client on setting aside funds for the tax payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear estimate of the tax liability and advises the client accordingly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear estimate of the tax liability and advises the client accordingly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

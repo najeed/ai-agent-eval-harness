@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the patient encounter with the ambiguous documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coder finds the specific note that requires clarification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coder finds the specific note that requires clarification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new 'coder query' in the EHR.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coder opens the specific tool for sending clinical documentation questions to providers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coder opens the specific tool for sending clinical documentation questions to providers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Write a concise question for the provider (e.g., 'Was the pneumonia bacterial or viral?') and route it to their inbox.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The query is sent to the provider, and the claim is put on hold pending their response."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The query is sent to the provider, and the claim is put on hold pending their response.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

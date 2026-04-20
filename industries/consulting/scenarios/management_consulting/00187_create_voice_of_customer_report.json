@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ingest data from three sources: a survey results CSV, interview transcripts, and a dump of support ticket subjects.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads all three data sources."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads all three data sources.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the top 3 positive themes and top 3 negative themes that appear across all data sources.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies common themes like 'Excellent Customer Service' (Positive) and 'Product is Buggy' (Negative)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies common themes like 'Excellent Customer Service' (Positive) and 'Product is Buggy' (Negative).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a report summarizing these themes, providing a supporting example for each from one of the sources.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a comprehensive report with evidence-backed themes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a comprehensive report with evidence-backed themes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

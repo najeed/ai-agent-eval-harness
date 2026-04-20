@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "A new order is received with a specific customer delivery address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order details are captured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order details are captured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system checks inventory availability for the ordered items at all DCs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system finds that three different DCs have the items in stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system finds that three different DCs have the items in stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system calculates the shipping cost and transit time from each of the three DCs to the customer's address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system gets shipping estimates from all three potential origin points."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system gets shipping estimates from all three potential origin points.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The system selects the DC that offers the lowest shipping cost and routes the order there for fulfillment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is automatically sent to the most cost-effective DC."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is automatically sent to the most cost-effective DC.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

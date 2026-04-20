@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan and upload the red-lined drawing to the document management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully digitizes and logs the red-line markup."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully digitizes and logs the red-line markup.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check out the corresponding CAD drawing to begin edits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully checks out the drawing, locking it from edits by others."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully checks out the drawing, locking it from edits by others.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the CAD drawing to reflect the red-lined changes and submit it as a new revision for approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the design, creates a new revision (e.g., Rev B), and submits it to the approval workflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the design, creates a new revision (e.g., Rev B), and submits it to the approval workflow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

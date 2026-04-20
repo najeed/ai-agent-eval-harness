@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The passenger connects to the onboard Wi-Fi network and is directed to a payment portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Passenger accesses the portal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Passenger accesses the portal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The portal displays the available Wi-Fi packages and their prices (e.g., 1-hour pass, full-flight pass).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Passenger sees the options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Passenger sees the options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The passenger selects a package, enters their payment information, and their device is granted internet access.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Passenger successfully purchases and connects to the Wi-Fi."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Passenger successfully purchases and connects to the Wi-Fi.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

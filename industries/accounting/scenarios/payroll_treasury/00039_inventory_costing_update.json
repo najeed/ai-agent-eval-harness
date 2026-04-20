@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the bill of materials (BOM) and routing (labor steps) for each product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the manufacturing specifications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the manufacturing specifications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the new standard prices for all raw materials and the new standard labor rates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the updated cost data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the updated cost data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform a cost roll-up to calculate the new standard cost for each finished product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully calculates the new standard costs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully calculates the new standard costs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the item master file with the new standard costs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the inventory costing data in the ERP system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the inventory costing data in the ERP system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

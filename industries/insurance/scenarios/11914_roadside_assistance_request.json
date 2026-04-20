@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the policyholder and verify they have roadside assistance coverage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer and their active coverage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer and their active coverage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather the customer's location and the nature of the problem (flat tire).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately records the location and service needed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately records the location and service needed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a tow truck from a local network provider and give the customer an estimated time of arrival.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully dispatches a service vehicle and provides an accurate ETA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully dispatches a service vehicle and provides an accurate ETA.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

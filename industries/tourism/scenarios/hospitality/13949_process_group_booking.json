@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check availability for a block of 10 rooms for the specified dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that 10 rooms are available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that 10 rooms are available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide a discounted group rate per room and create a group booking proposal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates a group rate and generates a formal proposal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates a group rate and generates a formal proposal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a master group block in the system and provide the tour operator with a group booking code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sets up the group block and provides the code for individual guest assignments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sets up the group block and provides the code for individual guest assignments.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

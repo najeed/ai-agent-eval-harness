@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log a field query (FQ) in the system, describing the problem and the exact location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supervisor creates a new FQ with all the details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supervisor creates a new FQ with all the details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically routes the FQ to the responsible civil engineer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer receives a notification about the new field query."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer receives a notification about the new field query.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The engineer reviews the query, develops a solution (e.g., 'reroute the pipeline around the obstruction'), and sends the response back to the field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer provides a solution, which is logged in the system and sent back to the supervisor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer provides a solution, which is logged in the system and sent back to the supervisor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

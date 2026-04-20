@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the new meta title format (e.g., '[Product Name] | [Category] | [Brand Name]').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a clear template for the new titles."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a clear template for the new titles.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Pull a list of all product pages with their current titles, names, and categories.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of all products needing an update."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of all products needing an update.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run a script to programmatically generate the new titles based on the template and apply the changes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates all product page titles to the new format."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates all product page titles to the new format.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

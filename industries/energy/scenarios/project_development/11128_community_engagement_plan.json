@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify key community stakeholders, including local government officials, landowners, and community groups.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a categorized list of stakeholders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a categorized list of stakeholders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Research common community concerns about wind farms (e.g., visual impact, noise, property values).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent summarizes the top 5 most frequent concerns."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent summarizes the top 5 most frequent concerns.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a plan that includes a timeline of activities like town hall meetings, project newsletters, and a dedicated project website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a structured engagement plan with clear action items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a structured engagement plan with clear action items.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

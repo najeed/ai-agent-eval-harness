@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the customer's order number or name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the customer's order details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the customer's order details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the vehicle's status in the production pipeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the vehicle's status is 'In Production - Paint Shop'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the vehicle's status is 'In Production - Paint Shop'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the customer with the current status and the estimated completion and delivery dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs the customer of the current stage and the estimated delivery window."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs the customer of the current stage and the estimated delivery window.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

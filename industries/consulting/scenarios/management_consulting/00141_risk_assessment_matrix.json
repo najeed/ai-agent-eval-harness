@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "For each risk in a given list, assign a 'Likelihood' score (1-5) and an 'Impact' score (1-5).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a reasonable score for each risk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a reasonable score for each risk.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a 5x5 matrix and place each risk in the appropriate cell based on its scores.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly plots all risks on the matrix."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly plots all risks on the matrix.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Highlight the risks in the top-right quadrant (High Likelihood, High Impact) as critical.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies and flags the most critical risks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies and flags the most critical risks.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

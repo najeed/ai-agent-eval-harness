@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the customer's identity with enhanced security protocols.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully authenticates the owner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully authenticates the owner.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain the police report number from the customer, as this is required before tracking can begin.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects and validates the police report number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects and validates the police report number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Activate the vehicle's GPS tracker and provide the location data directly to the law enforcement agency handling the case.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent activates tracking and securely transmits the location to the police."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent activates tracking and securely transmits the location to the police.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

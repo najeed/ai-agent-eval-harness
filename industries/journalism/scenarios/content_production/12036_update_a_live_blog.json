@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor internal communication channels (e.g., Slack) for updates from field reporters.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is aware of all incoming information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is aware of all incoming information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Quickly write a short, clear update for each new piece of information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "New information is turned into a blog post format."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "New information is turned into a blog post format.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Publish the update to the live blog, ensuring the newest posts appear at the top.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The live blog is kept current with the latest developments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The live blog is kept current with the latest developments.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

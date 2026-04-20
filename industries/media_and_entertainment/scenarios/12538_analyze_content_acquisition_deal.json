@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Estimate the potential viewership for the show based on social media interest and its performance on other platforms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent forecasts a potential audience of 2 million subscribers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent forecasts a potential audience of 2 million subscribers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Model the potential impact on subscriber acquisition and retention.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The model predicts the show could reduce churn by 0.5% over the next year."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The model predicts the show could reduce churn by 0.5% over the next year.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the projected revenue and retention benefits against the cost of the acquisition deal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates a positive ROI for the deal and recommends proceeding."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates a positive ROI for the deal and recommends proceeding.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the passenger's booking and confirm they have misconnected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the situation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the situation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for the next available flight to the passenger's destination.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a flight later that day with available seats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a flight later that day with available seats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Rebook the passenger on the new flight and issue them a new boarding pass, along with meal vouchers for the inconvenience.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully rebooks the passenger and provides compensation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully rebooks the passenger and provides compensation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

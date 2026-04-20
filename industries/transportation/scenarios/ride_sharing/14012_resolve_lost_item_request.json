@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the trip details using the rider's account information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the trip and the driver."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the trip and the driver.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send an anonymized message to the driver asking if they found the item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A message is sent to the driver without revealing the rider's contact information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A message is sent to the driver without revealing the rider's contact information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The driver confirms they have the phone. The agent coordinates a time and public place for the rider and driver to meet for the return.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A safe and convenient return is arranged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A safe and convenient return is arranged.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

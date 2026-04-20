@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather information on the customer's expected annual mileage and how long they typically keep a car.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent learns the customer drives ~12,000 miles/year and likes a new car every 3 years."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent learns the customer drives ~12,000 miles/year and likes a new car every 3 years.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a sample monthly payment for a 36-month lease and a 60-month finance contract for the same vehicle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates two clear payment scenarios."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates two clear payment scenarios.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the pros and cons of each option based on the customer's habits (e.g., lower payments and no long-term commitment with leasing vs. building equity with financing).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear, unbiased comparison to help the customer make an informed decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear, unbiased comparison to help the customer make an informed decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

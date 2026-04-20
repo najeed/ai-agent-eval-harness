@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve revenue and cost of goods sold data broken down by business segment from the general ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the financial data for each defined segment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the financial data for each defined segment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the gross profit for each business segment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the gross profit per segment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the gross profit per segment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report in the format required for the footnote disclosure in the 10-K report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a formatted table showing revenue and profit by reportable segment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a formatted table showing revenue and profit by reportable segment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

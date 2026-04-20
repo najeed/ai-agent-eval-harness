@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the lead's profile in the CRM and review past communications and search criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the history for the old lead."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the history for the old lead.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a friendly, no-pressure follow-up email to see if they are still in the market for a home.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a personalized and engaging re-engagement email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a personalized and engaging re-engagement email.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the email and set a task to follow up again in one week if there is no response.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the email and schedules a follow-up task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the email and schedules a follow-up task.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

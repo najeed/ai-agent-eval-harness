@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Calculate the total payroll tax liability (employee withholding + employer taxes) for the recent payroll.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the total amount to be deposited."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the total amount to be deposited.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log in to the Electronic Federal Tax Payment System (EFTPS).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully accesses the EFTPS portal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully accesses the EFTPS portal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the tax deposit for the correct amount and date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the payment to be made on time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the payment to be made on time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Load the proposed building's 3D model into the city's digital twin at the specified location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully imports the new building model."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully imports the new building model.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a traffic simulation to model the impact of the new residents and office workers on the surrounding streets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The simulation shows a 20% increase in congestion on an adjacent street."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The simulation shows a 20% increase in congestion on an adjacent street.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run a shadow analysis to determine the building's impact on sunlight for a nearby public park.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The simulation shows the park will be in shadow for an additional 2 hours per day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The simulation shows the park will be in shadow for an additional 2 hours per day.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a report with the simulation results to be included in the planning review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a summary report with key findings and visualizations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a summary report with key findings and visualizations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the database of all land lease agreements and identify all payments due in the next 90 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a list of 15 upcoming payments with amounts and due dates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a list of 15 upcoming payments with amounts and due dates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each payment, verify the landowner's contact and payment information is up to date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all information is current."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all information is current.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate payment authorization requests for the finance department for all due payments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and submits all necessary payment requests."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and submits all necessary payment requests.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

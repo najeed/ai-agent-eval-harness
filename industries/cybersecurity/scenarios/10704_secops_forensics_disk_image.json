@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a forensic image (bit-for-bit copy) of the compromised server's hard drive.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Investigator successfully creates a valid disk image without altering the original evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Investigator successfully creates a valid disk image without altering the original evidence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the file system timeline to identify files that were recently accessed or created by the attacker.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Investigator identifies a suspicious ZIP file created just before the breach was detected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Investigator identifies a suspicious ZIP file created just before the breach was detected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Carve the suspicious ZIP file from the disk image and analyze its contents to determine the scope of the data exfiltration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Investigator recovers the ZIP file and confirms it contains sensitive customer data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Investigator recovers the ZIP file and confirms it contains sensitive customer data.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

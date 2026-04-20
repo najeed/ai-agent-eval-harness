@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the freelancer's income and expenses for the year to date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all financial data for the period."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all financial data for the period.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use Form 2210, Schedule AI (Annualized Income Installment Method), to project the income over the full year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly uses the form to annualize the income."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly uses the form to annualize the income.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the required estimated tax payment for the current quarter based on the annualized calculation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the precise payment needed for the quarter to avoid penalties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the precise payment needed for the quarter to avoid penalties.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

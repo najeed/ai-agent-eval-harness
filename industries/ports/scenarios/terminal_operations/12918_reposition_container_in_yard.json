@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the container that needs to be moved and its incorrect current location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner identifies the container and sees it is in the reefer block but is a standard dry container."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner identifies the container and sees it is in the reefer block but is a standard dry container.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find a suitable empty slot in the correct yard block for that container type.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner finds an open slot in a standard container block."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner finds an open slot in a standard container block.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a re-stow work order for a yard crane to move the container from the old location to the new one.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is generated in the TOS to execute the move."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is generated in the TOS to execute the move.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

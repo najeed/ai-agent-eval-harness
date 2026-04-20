@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the geoscientist's assessment of the prospect, including source rock, reservoir, trap, and seal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The key geological risks are understood."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The key geological risks are understood.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a Monte Carlo simulation to generate a probabilistic distribution of potential reservoir volumes (P10, P50, P90).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A range of possible outcomes for oil in place is calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A range of possible outcomes for oil in place is calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the project's expected monetary value (EMV) based on the volumes, costs, and chance of success to support a go/no-go decision.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project EMV is calculated, providing a key metric for the investment decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project EMV is calculated, providing a key metric for the investment decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

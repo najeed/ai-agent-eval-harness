@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the order and verify its status is not 'Shipped'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the order is in 'Picking' status and can be cancelled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the order is in 'Picking' status and can be cancelled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a cancellation request to the Warehouse Management System (WMS) to stop the picking/packing task.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends a stop request to the WMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends a stop request to the WMS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the WMS confirms the stop, cancel the order in the Order Management System (OMS) and trigger a refund.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent cancels the order and the customer is refunded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent cancels the order and the customer is refunded.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

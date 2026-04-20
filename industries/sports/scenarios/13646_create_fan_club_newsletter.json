@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather content for the newsletter, such as recent news, upcoming events, and a player spotlight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles all the necessary content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles all the necessary content.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Populate the newsletter template with the content.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the final version of the newsletter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the final version of the newsletter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the newsletter to all registered fan club members.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the email to all members."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the email to all members.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

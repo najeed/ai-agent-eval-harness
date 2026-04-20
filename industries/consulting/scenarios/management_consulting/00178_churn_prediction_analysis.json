@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load customer data, including demographic info, usage data, and a 'Churned' flag (Yes/No).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads the data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads the data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a logistic regression model to predict the 'Churned' flag based on the other variables.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully builds the predictive model."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully builds the predictive model.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify the top 3 variables with the highest coefficients in the model as the strongest predictors of churn.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the key drivers of churn (e.g., 'low usage', 'high price')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the key drivers of churn (e.g., 'low usage', 'high price').",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all required information for the record: date, time, field name, product applied, application rate, weather conditions (wind speed/direction), and applicator name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary data points."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary data points.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a formal application record in the farm management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully saves the record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully saves the record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the record meets all state and federal regulatory requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the record is compliant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the record is compliant.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

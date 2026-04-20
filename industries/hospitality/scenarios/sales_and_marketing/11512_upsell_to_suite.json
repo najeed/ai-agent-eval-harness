@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "While checking the guest in, notice their anniversary is noted in the reservation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a special occasion from the reservation notes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a special occasion from the reservation notes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for suite availability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that a junior suite is available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that a junior suite is available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Offer the guest a special, discounted rate to upgrade to the suite for their anniversary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a personalized upsell offer, which the guest accepts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a personalized upsell offer, which the guest accepts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the reservation to the new room type and rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully modifies the booking to reflect the upgrade."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully modifies the booking to reflect the upgrade.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

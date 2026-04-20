@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive an alert that an elevator at a specific station is offline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent is notified of the accessibility issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent is notified of the accessibility issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Post a service alert on the website and app, informing passengers that the station is not currently accessible.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A public alert is published."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A public alert is published.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority work order for the elevator maintenance team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A repair ticket is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A repair ticket is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Arrange for a temporary shuttle bus to connect the inaccessible station to the next nearest accessible station.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A bus bridge is set up to maintain accessibility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A bus bridge is set up to maintain accessibility.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

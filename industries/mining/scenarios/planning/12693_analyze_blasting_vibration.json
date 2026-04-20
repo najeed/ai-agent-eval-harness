@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Download the vibration data from the monitors placed near sensitive structures (like a nearby town).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The vibration data for the blast is retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The vibration data for the blast is retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to find the peak particle velocity (PPV) at each monitor location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The peak vibration levels are determined."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The peak vibration levels are determined.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the measured PPV against the legal compliance limit. Generate a report confirming the blast was compliant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The blast is confirmed to be compliant, and a report is generated for record-keeping."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The blast is confirmed to be compliant, and a report is generated for record-keeping.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

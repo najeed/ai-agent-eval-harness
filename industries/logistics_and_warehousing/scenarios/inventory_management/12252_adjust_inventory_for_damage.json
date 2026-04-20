@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The operator reports the damage incident, specifying the item, location, and quantity damaged.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A damage report is created in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A damage report is created in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "A supervisor reviews the report and approves the inventory adjustment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supervisor authorizes the write-off."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supervisor authorizes the write-off.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process an inventory adjustment to remove the damaged quantity from stock, using 'Warehouse Damage' as the reason.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system inventory is updated to reflect the loss."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system inventory is updated to reflect the loss.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

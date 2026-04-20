@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a shift summary report from the control system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains a report detailing all alarms, operator actions, and batch statuses from their shift."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains a report detailing all alarms, operator actions, and batch statuses from their shift.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the report with the incoming operator, highlighting any ongoing issues or upcoming critical steps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The outgoing operator effectively communicates the state of the plant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The outgoing operator effectively communicates the state of the plant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Both operators apply an electronic signature to the shift log to confirm the handover was completed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent and their replacement both sign the log, formally transferring responsibility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent and their replacement both sign the log, formally transferring responsibility.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

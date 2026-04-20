@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review all configurations in the central documentation system for completeness and accuracy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team reviews network diagrams, credentials, procedures, and contact lists."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team reviews network diagrams, credentials, procedures, and contact lists.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify any missing information and work to get it before the handover.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team finds that the ISP account number is missing and obtains it from the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team finds that the ISP account number is missing and obtains it from the client.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Formally sign off on the onboarding, making the client 'live' for the service desk.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The onboarding process is completed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The onboarding process is completed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

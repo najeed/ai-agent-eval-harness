@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The onboarding project manager schedules the handover meeting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Meeting is scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Meeting is scheduled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the meeting, the onboarding team walks the service desk team through the client's environment, documentation, and any special procedures.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The service desk team is fully briefed on the new client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The service desk team is fully briefed on the new client.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The client's status in the PSA is officially changed to 'Managed', and they are now supported by the service desk.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The handover is complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The handover is complete.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

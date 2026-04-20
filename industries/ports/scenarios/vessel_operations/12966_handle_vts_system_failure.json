@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Recognize the radar system has failed and is not displaying vessel positions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator sees the system alert for 'Radar Failure'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator sees the system alert for 'Radar Failure'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Switch to using the backup system (e.g., AIS data only) and report the failure to the technical department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator switches to the backup view and logs a high-priority IT ticket."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator switches to the backup view and logs a high-priority IT ticket.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Broadcast a notice to all mariners via VHF radio informing them of the reduced VTS capability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A 'securit\u00e9' message is broadcast to all vessels in the area, advising them to navigate with extra caution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A 'securit\u00e9' message is broadcast to all vessels in the area, advising them to navigate with extra caution.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

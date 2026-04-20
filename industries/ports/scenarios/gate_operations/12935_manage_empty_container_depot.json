@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the truck at the empty depot gate and identify the container number and shipping line owner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator identifies the container and its owner (e.g., Maersk)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator identifies the container and its owner (e.g., Maersk).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the shipping line is currently accepting returns of that container type at this depot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator confirms that Maersk is accepting 40' dry containers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator confirms that Maersk is accepting 40' dry containers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign a stacking location in the empty yard and instruct the driver where to go.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver is given a location, and the empty container is added to the depot's inventory."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver is given a location, and the empty container is added to the depot's inventory.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

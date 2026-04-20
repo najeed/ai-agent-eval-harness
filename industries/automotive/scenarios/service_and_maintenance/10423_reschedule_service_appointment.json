@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the customer's existing appointment in the scheduling system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the appointment for this Thursday at 10 AM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the appointment for this Thursday at 10 AM.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Cancel the existing appointment to free up the service bay and technician.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully cancels the original appointment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully cancels the original appointment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Find a new available slot next week and book the rescheduled appointment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a slot for next Tuesday at 2 PM and confirms it with the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a slot for next Tuesday at 2 PM and confirms it with the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

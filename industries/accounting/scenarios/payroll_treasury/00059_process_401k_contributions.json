@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a report from the payroll system detailing the employee contributions and company match for the period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the 401(k) contribution report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the 401(k) contribution report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate an ACH transfer to the 401(k) plan administrator for the total amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload the contribution detail file to the plan administrator's portal so they can allocate the funds to individual employee accounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully uploads the contribution data file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully uploads the contribution data file.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

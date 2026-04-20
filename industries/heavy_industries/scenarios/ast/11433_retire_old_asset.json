@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the asset in the maintenance management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully locates the correct asset record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully locates the correct asset record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that there are no open work orders or outstanding PMs for the asset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms there is no pending work on the asset."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms there is no pending work on the asset.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Change the asset's status to 'Retired' and enter the date of disposal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retires the asset, removing it from active service and maintenance plans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retires the asset, removing it from active service and maintenance plans.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all retain samples that are past their disposition date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a list of samples to be destroyed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a list of samples to be destroyed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For the first sample on the list, update its status in the LIMS to 'Pending Disposal'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent changes the sample's status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent changes the sample's status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After physically disposing of the sample according to procedure, log the disposal date and method in the LIMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent records the final disposition details, completing the sample's lifecycle."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent records the final disposition details, completing the sample's lifecycle.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

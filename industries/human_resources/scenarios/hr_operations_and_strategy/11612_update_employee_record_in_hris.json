@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the employee in the HRIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin successfully locates the correct employee record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin successfully locates the correct employee record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the 'Job Title' field from 'Analyst' to 'Senior Analyst'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin correctly changes the job title."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin correctly changes the job title.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Save the changes and verify that the new title is reflected in the employee's profile.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin saves the record and confirms the update was successful."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin saves the record and confirms the update was successful.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the tenant's request and verify their disability-related need if it is not apparent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the request and understands its basis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the request and understands its basis.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the request to ensure it is reasonable and does not pose an undue financial or administrative burden.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the request is reasonable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the request is reasonable.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the request and allow the tenant to install the grab bars at their own expense, potentially requiring them to restore the wall upon move-out.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The accommodation is approved in compliance with fair housing laws."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The accommodation is approved in compliance with fair housing laws.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

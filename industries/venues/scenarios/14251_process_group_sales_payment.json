@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Look up the group's reservation and invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the held reservation and the corresponding invoice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the held reservation and the corresponding invoice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Process the payment using the corporate credit card provided.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the payment for the full invoice amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the payment for the full invoice amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Release the hold on the tickets and deliver them to the group's organizer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the seats and sends a link for the organizer to manage and distribute the digital tickets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the seats and sends a link for the organizer to manage and distribute the digital tickets.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

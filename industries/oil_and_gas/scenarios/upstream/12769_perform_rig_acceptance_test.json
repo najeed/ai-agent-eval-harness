@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load the digital rig acceptance checklist, which contains hundreds of items to verify.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The official checklist is loaded on a tablet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The official checklist is loaded on a tablet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Go through the checklist, inspecting equipment (e.g., top drive, mud pumps, BOP) and verifying certifications.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The checklist is completed, with most items passing but a few deficiencies noted (e.g., expired sling)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The checklist is completed, with most items passing but a few deficiencies noted (e.g., expired sling).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a punch list of the deficient items and send it to the drilling contractor to be rectified before the rig can go on hire.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal punch list is created and sent to the contractor, and the items are tracked for closure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal punch list is created and sent to the contractor, and the items are tracked for closure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

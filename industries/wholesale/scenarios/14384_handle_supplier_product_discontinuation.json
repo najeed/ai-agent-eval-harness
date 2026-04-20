@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the discontinuation notice from the supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is aware of the change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is aware of the change.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check current inventory levels and any open customer backorders for the product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds there is enough stock to cover all existing backorders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds there is enough stock to cover all existing backorders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place a final 'last time buy' order with the supplier to build up a small buffer of stock.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent places one final PO for the item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent places one final PO for the item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Mark the product as 'discontinued' in the system and notify the sales team to stop selling it once stock is depleted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the product status and informs the sales team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the product status and informs the sales team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

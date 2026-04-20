@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate the performance review forms for all eligible employees in the performance management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin successfully creates review forms for all active employees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin successfully creates review forms for all active employees.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a company-wide communication announcing the start of the review cycle and the deadlines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin drafts and sends the announcement email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin drafts and sends the announcement email.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the completion status of self-assessments and manager reviews via a dashboard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin checks the dashboard to track progress against deadlines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin checks the dashboard to track progress against deadlines.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

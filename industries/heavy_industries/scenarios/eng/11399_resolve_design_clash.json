@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the clash detection report and locate the specific clash between the pipe rack and the beam.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the two interfering components in the 3D model viewer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the two interfering components in the 3D model viewer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Consult the design specifications for both the piping and structural elements to check for constraints.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the structural beam cannot be moved, but the pipe rack has some routing flexibility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the structural beam cannot be moved, but the pipe rack has some routing flexibility.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Modify the pipe rack's path in the CAD model to avoid the beam and submit the change for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reroutes the pipe rack, resolves the clash, and submits the updated drawing for approval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reroutes the pipe rack, resolves the clash, and submits the updated drawing for approval.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "A system job identifies customers who meet the criteria for the 'Lapsed Purchaser' campaign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a list of customers to target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a list of customers to target.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system generates a unique, single-use coupon for '25% off your next coffee purchase'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A personalized offer is created for the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A personalized offer is created for the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system sends an email to the customer with the personalized offer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A relevant offer is delivered to the customer to encourage a repeat purchase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A relevant offer is delivered to the customer to encourage a repeat purchase.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

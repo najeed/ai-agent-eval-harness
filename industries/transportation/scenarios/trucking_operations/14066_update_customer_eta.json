@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The driver reports a delay due to a snowstorm.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dispatcher logs the delay reason."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dispatcher logs the delay reason.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system recalculates the ETA based on the driver's current location and the reduced speed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new, later ETA is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new, later ETA is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The dispatcher sends an automated notification to the customer with the revised ETA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer is proactively informed of the delay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer is proactively informed of the delay.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

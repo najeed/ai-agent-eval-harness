@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the crossing request and the utility company's engineering designs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The request and design documents are logged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The request and design documents are logged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the design to ensure it meets the pipeline company's safety standards for crossings (e.g., minimum separation).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The review confirms the design is compliant with safety standards."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The review confirms the design is compliant with safety standards.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a formal crossing agreement that specifies the legal and technical requirements for the construction and then send it for execution.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A legal crossing agreement is drafted and sent to the utility company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A legal crossing agreement is drafted and sent to the utility company.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

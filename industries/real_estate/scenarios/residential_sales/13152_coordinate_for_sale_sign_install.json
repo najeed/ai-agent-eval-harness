@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the property address for the new listing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the correct property address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the correct property address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the preferred sign installation vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent looks up the contact info for 'Speedy Signs'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent looks up the contact info for 'Speedy Signs'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place an order with the vendor to install the sign and a flyer box at the property address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is successfully created with the sign vendor for the installation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is successfully created with the sign vendor for the installation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

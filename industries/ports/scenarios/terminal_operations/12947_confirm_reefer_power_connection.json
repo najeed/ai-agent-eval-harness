@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a work order to plug in a newly arrived reefer container at a specific yard location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician's mobile device receives the job to connect the reefer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician's mobile device receives the job to connect the reefer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Physically plug the reefer's power cable into the corresponding power socket on the reefer rack.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician connects the power cable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician connects the power cable.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the work order as 'complete' in the mobile system, which updates the TOS to show the reefer is now powered on.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician marks the job as complete, and the container's status in the TOS changes to 'Powered'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician marks the job as complete, and the container's status in the TOS changes to 'Powered'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

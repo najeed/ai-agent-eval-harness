@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select a sample of 20 recent changes from the change management system log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A sample of changes is selected for testing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A sample of changes is selected for testing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each change, verify that it was tested and approved in a formal change advisory board (CAB) meeting before being deployed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor finds one emergency change that bypassed the standard approval process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor finds one emergency change that bypassed the standard approval process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the documentation for the emergency change to ensure it was approved by executive management, as per policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms the emergency change had the required VP-level approval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms the emergency change had the required VP-level approval.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

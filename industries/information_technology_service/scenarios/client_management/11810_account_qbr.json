@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Prepare the QBR presentation deck, including performance metrics, project updates, and strategic recommendations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive QBR deck is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive QBR deck is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Lead the QBR meeting with the client, presenting the information and facilitating a discussion about their business goals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A successful strategic discussion takes place with the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A successful strategic discussion takes place with the client.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the discussion, create a quote for a new project to address a business need identified during the meeting (e.g., improving cybersecurity posture).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The QBR leads to a new sales opportunity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The QBR leads to a new sales opportunity.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

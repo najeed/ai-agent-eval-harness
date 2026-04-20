@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the client and their active matter in the case management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the correct case file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the correct case file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the case timeline and recent activity notes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent quickly understands the current stage of the case (e.g., 'in written discovery')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent quickly understands the current stage of the case (e.g., 'in written discovery').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verbally communicate the current status to the client and mention the next one or two upcoming events or deadlines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear, reassuring, and accurate update to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear, reassuring, and accurate update to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

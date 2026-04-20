@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the two specific products the farmer wants to mix.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the herbicide and fungicide products."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the herbicide and fungicide products.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query a tank mix compatibility database or the product labels for any known issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the two products are physically compatible but recommends a jar test first."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the two products are physically compatible but recommends a jar test first.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the correct mixing order for the products to ensure they go into solution properly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear, step-by-step mixing order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear, step-by-step mixing order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the daily feed intake data for all pigs in a specific pen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the feed consumption data for each pig."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the feed consumption data for each pig.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the average feed intake for the pen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the average."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the average.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify any pigs whose feed intake is significantly below the pen average for the last 3 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of 5 pigs that are potential health concerns."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of 5 pigs that are potential health concerns.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a task for the manager to check on the flagged pigs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a task in the management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a task in the management system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the specific type of consulting service being offered.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the nature of the service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the nature of the service.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Research the sales tax laws of the new state regarding the taxability of services.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the state's statutes and regulations on service taxability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the state's statutes and regulations on service taxability.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the client on whether they need to collect sales tax on their services in the new state.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the consulting services are not taxable in that state and advises the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the consulting services are not taxable in that state and advises the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

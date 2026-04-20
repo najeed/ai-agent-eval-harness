@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Present the low offer to the seller and provide context based on current market conditions and recent comps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent helps the seller understand the offer in the context of the market."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent helps the seller understand the offer in the context of the market.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Advise the seller on response options: ignore, reject, or make a counter-offer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear, strategic advice on how to proceed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear, strategic advice on how to proceed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The seller decides to counter. Draft a counter-offer with a price closer to the asking price and send it to the buyer's agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal counter-offer is generated and submitted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal counter-offer is generated and submitted.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Check the calendars of all five team members to find a mutually available time slot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a 30-minute slot where everyone is free."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a 30-minute slot where everyone is free.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a calendar invitation to all attendees with the meeting time, location (or video call link), and a brief agenda.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A meeting invitation is sent to all required personnel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A meeting invitation is sent to all required personnel.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

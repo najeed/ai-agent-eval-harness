@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify available RNG suppliers that can inject into the customer's local gas distribution network.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds two eligible RNG producers (from landfills and dairy farms)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds two eligible RNG producers (from landfills and dairy farms).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request quotes from the suppliers for a 5-year fixed-price contract for a specific volume of RNG.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves quotes from both suppliers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves quotes from both suppliers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the quotes and advise the customer on the most cost-effective option.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends a supplier and summarizes the contract terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends a supplier and summarizes the contract terms.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

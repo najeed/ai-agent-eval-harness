@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the citizen's name, address, and date of birth.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the information needed to perform the search."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the information needed to perform the search.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the statewide voter registration database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully searches the database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully searches the database.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the citizen of their registration status and polling place location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the citizen is registered and provides their polling location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the citizen is registered and provides their polling location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

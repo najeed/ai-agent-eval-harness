@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the marketing campaign to be analyzed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the 'Summer Sale' campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the 'Summer Sale' campaign.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve key performance metrics for the campaign, such as email open rate, click-through rate, conversion rate, and revenue generated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls all relevant metrics from the analytics platform."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls all relevant metrics from the analytics platform.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report summarizing the campaign's performance against its goals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a clear report showing the campaign's success or failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a clear report showing the campaign's success or failure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

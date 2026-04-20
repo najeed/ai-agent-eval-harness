@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the maintenance history and total operating hours for wellhead WH-101.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The asset's full maintenance history and runtime are retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The asset's full maintenance history and runtime are retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Based on the data, determine the required maintenance tasks and create a work order in the CMMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A detailed work order is created with all necessary tasks listed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A detailed work order is created with all necessary tasks listed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the work order to a qualified technician team and schedule it for next week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The work order is scheduled and assigned in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The work order is scheduled and assigned in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

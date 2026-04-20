@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Import the study data from the Electronic Lab Notebook (ELN).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully imports the raw data, including dosage groups and biomarker measurements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully imports the raw data, including dosage groups and biomarker measurements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform statistical analysis to compare the treatment groups to the control group.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly performs a t-test or ANOVA and calculates p-values."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly performs a t-test or ANOVA and calculates p-values.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a dose-response curve visualization.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a chart showing the relationship between drug dosage and efficacy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a chart showing the relationship between drug dosage and efficacy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Summarize the findings in a draft report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a summary stating that the compound showed a statistically significant effect at a specific dose."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a summary stating that the compound showed a statistically significant effect at a specific dose.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

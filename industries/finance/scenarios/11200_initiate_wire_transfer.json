@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Authenticate the customer and collect all required recipient and bank details (Name, Address, IBAN, SWIFT/BIC).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely verifies the customer and accurately collects all necessary transfer information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely verifies the customer and accurately collects all necessary transfer information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total cost including the transfer fee and currency exchange rate, and get customer confirmation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the total debit amount and receives approval from the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the total debit amount and receives approval from the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Execute the wire transfer and provide the customer with a confirmation number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the transfer and provides the correct reference number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the transfer and provides the correct reference number.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

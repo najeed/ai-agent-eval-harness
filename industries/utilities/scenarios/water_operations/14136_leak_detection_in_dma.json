@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Analyze overnight minimum flow data for the DMA, identifying higher-than-normal flow.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System flags the DMA for potential leakage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System flags the DMA for potential leakage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect and correlate noise data from acoustic sensors within the flagged DMA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System gathers acoustic data from all relevant sensors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System gathers acoustic data from all relevant sensors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Triangulate the source of the leak noise to a specific point between two sensors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System provides GPS coordinates for the suspected leak location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System provides GPS coordinates for the suspected leak location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a work order for a crew to investigate and repair the identified leak.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System dispatches a crew to the precise location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System dispatches a crew to the precise location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

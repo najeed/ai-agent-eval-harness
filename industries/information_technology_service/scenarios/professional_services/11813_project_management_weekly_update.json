@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the project plan and get status updates on all active tasks from the assigned technicians.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project manager has a clear picture of the week's progress."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project manager has a clear picture of the week's progress.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the project's RAG status (Red, Amber, Green) and note any new risks or issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project's health status is accurately updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project's health status is accurately updated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a concise status summary email to the client's main point of contact.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client is kept informed of the project's progress."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client is kept informed of the project's progress.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

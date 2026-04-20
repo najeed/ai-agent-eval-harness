@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the monthly statement from the virtual card provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the statement listing all charges."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the statement listing all charges.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve all internal purchase records where a virtual card was used as the payment method.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the list of internal V-Card transactions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the list of internal V-Card transactions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Match the transactions on the statement to the internal purchase records.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully matches all transactions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully matches all transactions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create the journal entry to record the expenses and the payment from the V-Card provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the journal entry to correctly record the activity from the V-Card statement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the journal entry to correctly record the activity from the V-Card statement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

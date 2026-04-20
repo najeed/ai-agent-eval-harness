@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the work order and the vendor's invoice for the disputed repair.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up all documentation for the job."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up all documentation for the job.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the invoice for details: hours worked, materials used, and rate charged.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent analyzes the invoice for reasonableness and accuracy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent analyzes the invoice for reasonableness and accuracy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the vendor to discuss the charges and, if appropriate, negotiate a reduction. Communicate the resolution to the owner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates with the vendor and resolves the dispute with the owner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates with the vendor and resolves the dispute with the owner.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

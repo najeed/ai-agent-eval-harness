@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Look up the patron's original order for Tuesday's show.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for availability of comparable seats for Wednesday's performance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds comparable seats are available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds comparable seats are available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the exchange in the ticketing system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent voids the Tuesday tickets and issues new tickets for Wednesday."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent voids the Tuesday tickets and issues new tickets for Wednesday.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Email the new tickets for Wednesday's performance to the patron.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the new digital tickets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the new digital tickets.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

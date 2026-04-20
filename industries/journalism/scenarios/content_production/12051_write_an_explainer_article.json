@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Research the topic thoroughly to gain a deep understanding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent becomes a temporary expert on the topic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent becomes a temporary expert on the topic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Structure the article in a Q&A format or with clear subheadings to make it easy to digest.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An easy-to-follow structure is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An easy-to-follow structure is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft the article using simple, clear language and analogies to explain complex concepts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complex topic is made understandable to a layperson."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complex topic is made understandable to a layperson.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

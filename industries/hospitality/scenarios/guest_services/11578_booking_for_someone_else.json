@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create the reservation with the guest's name, but the caller's contact information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The reservation is created with the correct guest and payer details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The reservation is created with the correct guest and payer details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Securely obtain the caller's credit card information and explain that they are paying for the room.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent clarifies the payment arrangement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent clarifies the payment arrangement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a credit card authorization form to the caller to be signed and returned, authorizing the hotel to charge their card for the guest's stay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal authorization form is sent to the payer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal authorization form is sent to the payer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

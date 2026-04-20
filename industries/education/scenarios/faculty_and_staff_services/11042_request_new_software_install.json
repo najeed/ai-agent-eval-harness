@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the faculty member and the software they are requesting (e.g., 'SPSS').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the necessary information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the necessary information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the university has a site license for the requested software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that the university has a license for SPSS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that the university has a license for SPSS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a software installation ticket for the desktop support team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a ticket to have a technician remotely install the software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a ticket to have a technician remotely install the software.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

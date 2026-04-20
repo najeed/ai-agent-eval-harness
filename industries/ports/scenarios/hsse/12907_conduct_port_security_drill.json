@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Plan the drill scenario, objectives, and participants.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "PFSO creates a drill plan outlining the scenario and what will be tested."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "PFSO creates a drill plan outlining the scenario and what will be tested.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate the drill by notifying the control room and relevant security personnel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The drill is started, and all participants are aware it is a test."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The drill is started, and all participants are aware it is a test.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Observe the response and document the outcomes, noting any areas for improvement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The PFSO creates a post-drill report summarizing performance and recommending corrective actions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The PFSO creates a post-drill report summarizing performance and recommending corrective actions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

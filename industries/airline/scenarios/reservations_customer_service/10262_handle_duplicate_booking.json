@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the two flagged bookings and confirm they are for the same passenger on the same flight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that the bookings are duplicates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that the bookings are duplicates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the passenger to ask which booking they would like to keep.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates with the passenger to understand their intent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates with the passenger to understand their intent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Cancel the unwanted booking and process a refund according to the fare rules.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent cancels one booking and processes any applicable refund."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent cancels one booking and processes any applicable refund.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the reservation in the system using the guest's name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent locates the booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent locates the booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Cancel the reservation in the system, freeing up the table.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The reservation is successfully canceled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The reservation is successfully canceled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Thank the guest and ask if they'd like to book for another time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent provides good service and attempts to retain the business."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent provides good service and attempts to retain the business.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

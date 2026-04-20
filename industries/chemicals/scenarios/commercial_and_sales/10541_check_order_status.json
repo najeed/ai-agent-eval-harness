@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ask the customer for their purchase order number or the sales order number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully gathers the identifier for the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully gathers the identifier for the order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the number to retrieve the sales order from the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct sales order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct sales order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the order's status and inform the customer that it has been shipped, providing the carrier name and tracking number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the order status is 'Shipped' and provides the customer with all relevant tracking details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the order status is 'Shipped' and provides the customer with all relevant tracking details.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

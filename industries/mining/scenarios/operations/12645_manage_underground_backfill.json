@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm that the stope has been fully mined out and is ready for backfilling.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms the stope is empty and prepped for filling."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms the stope is empty and prepped for filling.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Order a batch of backfill from the surface backfill plant with the required cement content.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The backfill plant receives and prepares the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The backfill plant receives and prepares the order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the backfill as it is piped or trucked underground and placed into the empty stope until it is full.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The stope is successfully filled, and the volume placed is recorded for reconciliation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The stope is successfully filled, and the volume placed is recorded for reconciliation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

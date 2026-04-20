@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather details about the vehicle (location, make, model, color, license plate) and how long it has been there.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary details to investigate the vehicle."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary details to investigate the vehicle.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a service request for the police or parking enforcement department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs a new service request for an abandoned vehicle check."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs a new service request for an abandoned vehicle check.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the citizen with the service request number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gives the citizen a tracking number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gives the citizen a tracking number.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

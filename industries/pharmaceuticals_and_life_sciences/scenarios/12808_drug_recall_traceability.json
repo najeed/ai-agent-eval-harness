@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the specific product and lot number to be recalled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the product and lot number from the quality alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the product and lot number from the quality alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the serialization and traceability system for the specified lot number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses the system to trace the lot from the manufacturing site to initial distribution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses the system to trace the lot from the manufacturing site to initial distribution.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a list of all wholesale distributors and pharmacies that received products from this lot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a complete and accurate list of all downstream partners."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a complete and accurate list of all downstream partners.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Draft and send a recall notification to all affected partners.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses a template to create and send the official recall notice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses a template to create and send the official recall notice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

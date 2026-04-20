@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the recalled product SKU.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the correct product identifier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the correct product identifier.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a list of all customers who have ever purchased the recalled product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a list of all affected customers and their contact information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a list of all affected customers and their contact information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send an urgent email to all affected customers with details about the recall and instructions on how to return the product for a full refund.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully sends the recall notification emails."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully sends the recall notification emails.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

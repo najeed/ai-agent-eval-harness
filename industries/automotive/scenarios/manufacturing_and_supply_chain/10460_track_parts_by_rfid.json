@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the pallet ID number from the manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the pallet ID."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the pallet ID.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the factory's RFID tracking system using the pallet ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system returns the last known location of the pallet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system returns the last known location of the pallet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Display the location on a map of the factory floor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the manager with the pallet's location: 'Zone C, Aisle 5'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the manager with the pallet's location: 'Zone C, Aisle 5'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

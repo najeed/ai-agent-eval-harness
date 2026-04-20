@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the temperature and flow rate of the elution solution being pumped through the carbon column.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator confirms the elution circuit is running at its target parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator confirms the elution circuit is running at its target parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Take samples of the solution exiting the column to check the gold grade.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The samples are taken to monitor the progress of the elution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The samples are taken to monitor the progress of the elution.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "When the gold grade in the exiting solution drops to a low level, determine that the elution is complete and switch the flow to the next column.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The elution cycle is completed successfully, and the operator begins the cycle on the next batch of loaded carbon."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The elution cycle is completed successfully, and the operator begins the cycle on the next batch of loaded carbon.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

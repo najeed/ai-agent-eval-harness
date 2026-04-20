@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer who missed their test drive appointment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the customer and the vehicle they were scheduled to drive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the customer and the vehicle they were scheduled to drive.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the customer to see if they are still interested and would like to reschedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a polite follow-up call."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a polite follow-up call.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the customer is interested, find a new time and reschedule the test drive.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reschedules the appointment for a new time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reschedules the appointment for a new time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

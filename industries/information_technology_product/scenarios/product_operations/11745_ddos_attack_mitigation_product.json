@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the DDoS alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent takes ownership of the incident."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent takes ownership of the incident.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Engage the DDoS mitigation service (e.g., Cloudflare, Akamai) to filter the malicious traffic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enables the 'I'm Under Attack' mode in the mitigation service provider's dashboard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enables the 'I'm Under Attack' mode in the mitigation service provider's dashboard.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the traffic to ensure the mitigation is effective and legitimate user traffic can still access the site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the attack is absorbed and the application remains available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the attack is absorbed and the application remains available.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

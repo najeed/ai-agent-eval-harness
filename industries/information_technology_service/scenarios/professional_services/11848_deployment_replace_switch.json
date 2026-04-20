@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Back up the configuration of the old switch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The existing configuration is saved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The existing configuration is saved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Translate and apply the configuration to the new switch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new switch is configured with all the necessary VLANs, ports, and settings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new switch is configured with all the necessary VLANs, ports, and settings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "During the maintenance window, physically swap the old switch with the new one and test connectivity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new switch is online and network functionality is restored."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new switch is online and network functionality is restored.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

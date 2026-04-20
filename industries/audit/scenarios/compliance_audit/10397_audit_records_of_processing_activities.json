@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the company's official RoPA document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor has the RoPA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor has the RoPA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a new business process and verify that it has been added to the RoPA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor finds that a new marketing analytics process that uses customer data has not yet been documented in the RoPA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor finds that a new marketing analytics process that uses customer data has not yet been documented in the RoPA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For a sample of entries in the RoPA, verify that the stated data retention period is accurate and consistent with the data retention policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms the accuracy of the sampled RoPA entries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms the accuracy of the sampled RoPA entries.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

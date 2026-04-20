@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new RCA record and link it to the corrective maintenance work order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the RCA and links it to the breakdown event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the RCA and links it to the breakdown event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a '5 Whys' or 'Fishbone Diagram' template to document the investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent populates the chosen RCA methodology template with findings from the team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent populates the chosen RCA methodology template with findings from the team.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify the root cause (e.g., 'Incorrect lubricant used') and propose corrective actions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent documents the final root cause and recommends creating a new PM task to verify correct lubricant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent documents the final root cause and recommends creating a new PM task to verify correct lubricant.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

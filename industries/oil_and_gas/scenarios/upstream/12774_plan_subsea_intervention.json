@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the faulty sensor and the specific ROV tooling required to replace it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct replacement part and ROV tools are identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct replacement part and ROV tools are identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Develop a detailed, step-by-step procedure for the ROV to perform the replacement operation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A safe and efficient work procedure is written."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A safe and efficient work procedure is written.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book a vessel with an ROV and schedule the intervention in the offshore operational plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The vessel and crew are booked, and the job is added to the 90-day plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The vessel and crew are booked, and the job is added to the 90-day plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

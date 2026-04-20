@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the legal implications of joint ownership.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains that both owners have equal access and ownership of the funds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains that both owners have equal access and ownership of the funds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the new owner's personal information and verify their identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers and verifies the spouse's information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers and verifies the spouse's information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the account titling to reflect the new joint ownership.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the spouse as a joint owner on the account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the spouse as a joint owner on the account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

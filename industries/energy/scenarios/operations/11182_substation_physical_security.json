@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the substation's perimeter intrusion detection system and security cameras.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System is continuously monitoring security feeds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System is continuously monitoring security feeds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system detects motion on a camera after hours and flags that the main gate has been breached.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a high-priority security alarm."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a high-priority security alarm.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Immediately notify the company's security operations center and the local police department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends notifications to security and law enforcement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends notifications to security and law enforcement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

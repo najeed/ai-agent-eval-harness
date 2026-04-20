@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'Passenger Capacity Exceeded' alert for 'Bus 101' on 'Route 5'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the overcrowding alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the overcrowding alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find the nearest available, out-of-service bus from the depot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a spare bus ready for deployment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a spare bus ready for deployment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch the spare bus to run the same route, starting a few stops ahead of the overcrowded bus, to alleviate the passenger load.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully dispatches the supplementary bus with a specific mission."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully dispatches the supplementary bus with a specific mission.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

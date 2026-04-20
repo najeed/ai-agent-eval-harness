@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the correct score from the official source (e.g., the stats keeper).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the correct, verified score."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the correct, verified score.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the graphics control system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully connects to the graphics generator."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully connects to the graphics generator.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the score field in the graphics template and push the change to air.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the on-screen graphic, and the correct score is now displayed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the on-screen graphic, and the correct score is now displayed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the new executive who needs to be added to the restricted list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the new employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the new employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the executive to the insider list in the compliance system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the person to the list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the person to the list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a notification to the executive explaining the trading restrictions and blackout periods.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a clear communication to the executive about their new obligations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a clear communication to the executive about their new obligations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the fan and check their current loyalty point balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the fan has enough points for the jersey."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the fan has enough points for the jersey.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the inventory of available signed jerseys.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms there are jerseys in stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms there are jerseys in stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the redemption, deducting the points from the fan's account and creating a shipping order for the jersey.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully completes the redemption and schedules the jersey for shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully completes the redemption and schedules the jersey for shipment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

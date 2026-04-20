@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the counter offer from the listing agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves the counter offer document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves the counter offer document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the changes in the counter offer (e.g., increased price, shortened contingency period).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately identifies all changes from the original offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately identifies all changes from the original offer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Clearly explain the new terms to the buyer client and advise them on how to respond (accept, reject, or counter back).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear communication and strategic advice to the buyer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear communication and strategic advice to the buyer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

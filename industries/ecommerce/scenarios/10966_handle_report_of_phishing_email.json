@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Advise the customer that the email is fraudulent and they should not click any links or provide information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides immediate, clear security advice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides immediate, clear security advice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ask the customer to forward the suspicious email to the company's security department for investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the correct email address (e.g., security@company.com) for reporting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the correct email address (e.g., security@company.com) for reporting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend that the customer change their account password as a precaution.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a link to the legitimate password reset page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a link to the legitimate password reset page.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

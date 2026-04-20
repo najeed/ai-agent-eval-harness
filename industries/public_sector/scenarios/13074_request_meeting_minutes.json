@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the specific meeting and date the citizen is requesting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent understands the request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent understands the request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the public records portal for the requested minutes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent finds the approved minutes for the specified meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent finds the approved minutes for the specified meeting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a copy of the minutes to the citizen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent provides a link to download the PDF of the minutes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent provides a link to download the PDF of the minutes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

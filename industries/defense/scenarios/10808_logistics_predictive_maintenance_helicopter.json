@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the HUMS alert and review the specific sensor data indicating the fault.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer correctly interprets the sensor data (e.g., vibration analysis)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer correctly interprets the sensor data (e.g., vibration analysis).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ground the helicopter immediately to prevent a catastrophic failure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer issues a grounding order for the specific aircraft tail number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer issues a grounding order for the specific aircraft tail number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for the replacement of the gearbox and check spare parts inventory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer generates a work order and confirms a replacement part is available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer generates a work order and confirms a replacement part is available.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

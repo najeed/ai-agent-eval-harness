@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's hourly consumption data for the past 12 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary interval data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary interval data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Simulate the customer's annual electricity bill using their current flat rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the total cost under the current plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the total cost under the current plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Simulate the customer's annual bill again using the same data but applying the TOU rate structure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the total cost under the proposed TOU plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the total cost under the proposed TOU plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Compare the two simulated bills and advise the customer whether they would save money.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent advises the customer they would save an estimated $250 per year by switching."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent advises the customer they would save an estimated $250 per year by switching.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

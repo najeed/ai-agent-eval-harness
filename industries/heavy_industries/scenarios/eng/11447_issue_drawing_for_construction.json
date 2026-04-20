@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the drawing in the document management system and verify its status is 'Approved'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the drawing is ready to be issued."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the drawing is ready to be issued.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Change the drawing's status to 'Issued for Construction'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Transmit the drawing to the construction contractor's document portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent formally transmits the drawing so the field team can begin work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent formally transmits the drawing so the field team can begin work.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

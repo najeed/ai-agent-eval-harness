@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Get the exact location of the broken seat (section, row, seat number).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent records the precise location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent records the precise location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new work order in the facility maintenance system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new maintenance ticket."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new maintenance ticket.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Describe the issue ('broken armrest') and set the priority to 'Low'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds the details and priority to the work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds the details and priority to the work order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Assign the work order to the general maintenance crew's queue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent routes the ticket to the correct team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent routes the ticket to the correct team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

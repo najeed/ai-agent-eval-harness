@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the transaction details, including the client's and escrow officer's contact information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary contact info."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary contact info.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the escrow officer to confirm they are ready and to get available signing times.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates with escrow to get scheduling options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates with escrow to get scheduling options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Coordinate with the client to select a time and confirm the final appointment with all parties.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the closing appointment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the closing appointment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

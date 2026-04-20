@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the move-out inspection report shows no damages.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the report is clean."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the report is clean.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Confirm the tenant's forwarding address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the correct forwarding address for the former tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the correct forwarding address for the former tenant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a check for the full security deposit amount and mail it to the tenant's forwarding address within the legally required timeframe.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A check is cut from the trust account and mailed, and the action is logged in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A check is cut from the trust account and mailed, and the action is logged in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

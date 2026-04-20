@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the purchase order and the supplier's invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up both documents for comparison."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up both documents for comparison.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the line item prices and identify the discrepancy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the supplier charged a higher price for one of the items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the supplier charged a higher price for one of the items.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the supplier with the evidence and request a corrected invoice or a credit memo.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a formal dispute to the supplier with the PO and invoice attached."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a formal dispute to the supplier with the PO and invoice attached.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

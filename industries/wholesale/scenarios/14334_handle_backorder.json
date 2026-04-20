@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The system automatically flags the order line item as backordered.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is placed on hold pending stock arrival."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is placed on hold pending stock arrival.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Notify the customer of the backorder and provide the estimated in-stock date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An automated email is sent to the customer with the backorder information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An automated email is sent to the customer with the backorder information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "When the item arrives from the supplier, automatically release the backorder for fulfillment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system allocates the new stock to the backorder and sends it to the warehouse for picking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system allocates the new stock to the backorder and sends it to the warehouse for picking.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

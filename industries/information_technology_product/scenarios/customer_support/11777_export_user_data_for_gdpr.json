@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the user's identity to ensure the request is legitimate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully authenticates the user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully authenticates the user.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a data export tool to gather all personal data associated with the user's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the GDPR export script for the user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the GDPR export script for the user.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the exported data to the user in a machine-readable format (e.g., JSON).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent delivers the data export, fulfilling the GDPR request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent delivers the data export, fulfilling the GDPR request.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

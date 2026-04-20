@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Interview the patient to get a list of their home medications, dosages, and frequencies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse documents the patient-reported home medication list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse documents the patient-reported home medication list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Open the admission medication reconciliation tool, which displays the home meds side-by-side with new inpatient orders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse views the reconciliation screen."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse views the reconciliation screen.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each home medication, decide whether to 'Continue', 'Discontinue', or 'Modify' it for the inpatient stay, and complete the reconciliation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse and provider complete the reconciliation, ensuring medication safety at a critical transition of care."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse and provider complete the reconciliation, ensuring medication safety at a critical transition of care.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

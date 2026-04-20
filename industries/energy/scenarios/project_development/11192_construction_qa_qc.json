@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Select a random sample of installed solar panel strings for inspection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Inspector uses a tool to randomly select 5% of the strings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Inspector uses a tool to randomly select 5% of the strings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each sampled string, use a torque wrench to verify that the bolts are tightened to the manufacturer's specification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Inspector performs and logs the results of the torque tests."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Inspector performs and logs the results of the torque tests.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform an I-V curve trace on the strings to ensure their electrical performance is as expected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Inspector captures and analyzes the I-V curve, confirming performance is within spec."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Inspector captures and analyzes the I-V curve, confirming performance is within spec.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "If any failures are found, create a punch list item for the construction contractor to correct the issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Inspector finds one string with a loose connection and creates a formal punch list item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Inspector finds one string with a loose connection and creates a formal punch list item.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

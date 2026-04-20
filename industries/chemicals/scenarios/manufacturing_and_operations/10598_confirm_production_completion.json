@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the production order that has just been completed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct production order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct production order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the final quantity of good product produced and the quantity of any scrap generated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the final production numbers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the final production numbers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Close the production order. The system should automatically increase the finished product inventory and consume the raw materials.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent closes the order, and the system inventory levels are updated correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent closes the order, and the system inventory levels are updated correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the packing slip to retrieve the corresponding purchase order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent scans the document and the system displays the correct PO."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent scans the document and the system displays the correct PO.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Count the received items and check for any damage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Clerk physically counts the items and visually inspects them."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Clerk physically counts the items and visually inspects them.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Record the received quantity against the purchase order, noting a partial shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the received quantity, and the PO status is updated to 'Partially Received'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the received quantity, and the PO status is updated to 'Partially Received'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

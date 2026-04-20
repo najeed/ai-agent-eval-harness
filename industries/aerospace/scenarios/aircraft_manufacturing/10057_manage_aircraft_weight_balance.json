@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "For each part installed, retrieve its official weight from the parts database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the correct weight for each component."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the correct weight for each component.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the part's weight and its location (moment arm) to the aircraft's master weight and balance sheet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately updates the master sheet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately updates the master sheet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Continuously recalculate the aircraft's total weight and center of gravity to ensure it remains within the design envelope.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent's calculations show the current center of gravity is within acceptable limits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent's calculations show the current center of gravity is within acceptable limits.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

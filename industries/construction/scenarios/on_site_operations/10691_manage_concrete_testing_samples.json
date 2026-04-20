@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log the ID numbers of the test cylinders taken during the pour.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The cylinder IDs are recorded in the quality log."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The cylinder IDs are recorded in the quality log.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the cylinders are labeled with the pour date, location, and sample ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The labels are confirmed to be correct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The labels are confirmed to be correct.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule a pickup with the testing lab for the next day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The lab confirms they will pick up the samples."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The lab confirms they will pick up the samples.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the remaining balance in the project's contingency budget.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds there is $250,000 remaining in contingency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds there is $250,000 remaining in contingency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a contingency drawdown request for the required amount, with a justification for the expense.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a request for $50,000 to cover the extra costs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a request for $50,000 to cover the extra costs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the request for approval by the project director.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The request is routed to the director, and upon approval, the $50,000 is moved from the contingency budget to the main project budget."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The request is routed to the director, and upon approval, the $50,000 is moved from the contingency budget to the main project budget.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

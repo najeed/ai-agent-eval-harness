@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the multiple reports and perform a quick check on the LMS status page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the system is down."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the system is down.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Escalate the issue to the university's central IT services as a high-priority incident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a P1 ticket for the system administrators."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a P1 ticket for the system administrators.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the help desk's recorded message to inform callers of the known outage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the phone system greeting to manage call volume."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the phone system greeting to manage call volume.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

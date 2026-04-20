@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the information and ask for the name and details of the new primary contact.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The account manager gathers the new contact's information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The account manager gathers the new contact's information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the primary contact information in the PSA tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client record in the PSA is updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client record in the PSA is updated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a welcome email to the new primary contact, introducing themself and the service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A positive relationship is initiated with the new contact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A positive relationship is initiated with the new contact.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

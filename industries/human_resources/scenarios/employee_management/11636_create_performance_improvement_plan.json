@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Consult with the manager to document the specific performance issues and desired improvements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP works with the manager to define clear, measurable goals for the PIP."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP works with the manager to define clear, measurable goals for the PIP.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the PIP document using the company's standard template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP creates the formal PIP document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP creates the formal PIP document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule a meeting with the manager and employee to deliver the PIP and have it signed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP schedules and attends the meeting to ensure it's handled correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP schedules and attends the meeting to ensure it's handled correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

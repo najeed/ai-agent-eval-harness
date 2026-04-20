@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the insured's policy and verify it has Medical Payments coverage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster confirms the policy has the required coverage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster confirms the policy has the required coverage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the medical bills and records from the injured passenger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster receives the bills from the claimant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster receives the bills from the claimant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the bills for reasonableness and relation to the accident, then issue payment up to the coverage limit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster reviews and pays the medical bills according to the policy's coverage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster reviews and pays the medical bills according to the policy's coverage.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

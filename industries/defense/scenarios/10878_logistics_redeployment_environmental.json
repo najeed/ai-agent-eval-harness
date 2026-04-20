@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the environmental compliance and agricultural cleaning requirements for all vehicles returning to the home country.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer understands the specific cleaning standards that must be met."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer understands the specific cleaning standards that must be met.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule all vehicles to go through a designated wash rack facility before being loaded onto transport.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer creates a schedule for all vehicles to be cleaned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer creates a schedule for all vehicles to be cleaned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Track the cleaning and inspection status of each vehicle to ensure 100% compliance before shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer maintains an accurate log and ensures no unclean vehicles are shipped."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer maintains an accurate log and ensures no unclean vehicles are shipped.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

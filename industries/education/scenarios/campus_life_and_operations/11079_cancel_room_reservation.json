@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student group and the specific reservation to be cancelled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct booking in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct booking in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Process the cancellation in the facility scheduling system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully cancels the booking, freeing up the room."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully cancels the booking, freeing up the room.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a cancellation confirmation to the event organizer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a confirmation email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a confirmation email.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

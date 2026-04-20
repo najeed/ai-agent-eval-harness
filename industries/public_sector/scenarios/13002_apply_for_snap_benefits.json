@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather applicant's household information, income, and expenses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately collects all data needed for eligibility determination."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately collects all data needed for eligibility determination.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine initial eligibility based on the provided information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system provides a preliminary determination that the applicant is likely eligible."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system provides a preliminary determination that the applicant is likely eligible.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the application and schedule a follow-up interview with a caseworker.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the application and schedules the required interview."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the application and schedules the required interview.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

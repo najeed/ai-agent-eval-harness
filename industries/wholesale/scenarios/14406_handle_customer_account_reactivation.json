@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the customer's old, inactive account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the customer's information and check if a new credit check is needed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer's details and determines a new credit check is required due to the time elapsed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer's details and determines a new credit check is required due to the time elapsed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reactivate the customer's account in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully marks the account as 'active'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully marks the account as 'active'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

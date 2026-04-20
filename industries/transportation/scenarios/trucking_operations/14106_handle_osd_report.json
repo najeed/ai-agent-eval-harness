@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The driver calls to report an overage of one pallet at the delivery.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dispatcher is aware of the discrepancy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dispatcher is aware of the discrepancy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The dispatcher creates an OS&D report in the system, detailing the issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal record of the discrepancy is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal record of the discrepancy is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The dispatcher instructs the driver to have the receiver sign for what they received and to note the overage on the POD.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver gets the proper documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver gets the proper documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The OS&D team investigates the source of the extra pallet and arranges for its return or proper disposition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The discrepancy is investigated and resolved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The discrepancy is investigated and resolved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

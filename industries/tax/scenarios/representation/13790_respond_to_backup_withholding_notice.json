@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the notice to identify the contractor with the mismatched information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the specific contractor in question."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the specific contractor in question.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the contractor to request a new Form W-9 to obtain the correct information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reaches out to the contractor to resolve the discrepancy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reaches out to the contractor to resolve the discrepancy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the business's records with the corrected information and advise on whether backup withholding is now required.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the vendor file and confirms that backup withholding is not necessary once the information is corrected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the vendor file and confirms that backup withholding is not necessary once the information is corrected.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

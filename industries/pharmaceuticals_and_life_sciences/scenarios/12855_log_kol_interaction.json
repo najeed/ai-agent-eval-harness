@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new interaction record in the CRM for the specific KOL.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new record linked to the KOL's profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new record linked to the KOL's profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Summarize the key discussion points and any scientific insights gathered from the KOL.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a concise summary, noting the KOL's interest in a particular off-label research area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a concise summary, noting the KOL's interest in a particular off-label research area.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log any follow-up actions required.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a follow-up task to send the KOL a specific research paper that was discussed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a follow-up task to send the KOL a specific research paper that was discussed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

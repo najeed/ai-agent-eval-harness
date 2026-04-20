@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Plot the desired route for the carrier strike group.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner accurately inputs the intended path."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner accurately inputs the intended path.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Overlay commercial shipping lane data and intelligence data on submarine threat areas.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner creates a comprehensive map showing all constraints."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner creates a comprehensive map showing all constraints.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Adjust the strike group's route to avoid the highest-density shipping lanes and the submarine threat area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner creates a safer, deconflicted route for the naval force."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner creates a safer, deconflicted route for the naval force.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

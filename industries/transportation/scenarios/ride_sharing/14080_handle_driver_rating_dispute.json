@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Find the specific trip and the low rating in the driver's history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the 1-star rating and the associated trip."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the 1-star rating and the associated trip.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the rider's comment associated with the rating.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The rider's comment is retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The rider's comment is retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the company's policy on rating removal (e.g., ratings are only removed for comments that violate community guidelines).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the applicable policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the applicable policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The rider's comment does not violate policy. Inform the driver that the rating cannot be removed, but that one low rating will not significantly impact their overall average.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent correctly applies the policy and communicates it clearly to the driver."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent correctly applies the policy and communicates it clearly to the driver.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Send a formal 'Demand for Payment' letter to the delinquent tenant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal demand letter is sent and documented."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal demand letter is sent and documented.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attempt to contact the tenant by phone to discuss a payment plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes and logs attempts to reach the tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes and logs attempts to reach the tenant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If no payment is received, escalate the account to a collections agency or an attorney to begin formal eviction proceedings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The account is forwarded to the appropriate third party for further action."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The account is forwarded to the appropriate third party for further action.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

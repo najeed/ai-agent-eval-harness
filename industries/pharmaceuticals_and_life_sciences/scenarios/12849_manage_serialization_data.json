@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a file of serialized product identifiers for a newly packaged batch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully ingests the file of unique serial numbers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully ingests the file of unique serial numbers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Commission the serial numbers in the central repository, associating them with the product code and lot number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the status of the serial numbers to 'Commissioned'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the status of the serial numbers to 'Commissioned'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate an EPCIS (Electronic Product Code Information Services) event to record the shipment of the batch to a wholesale distributor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a valid EPCIS file detailing the shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a valid EPCIS file detailing the shipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Transmit the EPCIS file to the trading partner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the file and receives a confirmation of receipt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the file and receives a confirmation of receipt.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

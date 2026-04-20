@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Decrement the inventory count for the product by 50 at the West Coast warehouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reduces the stock level at the source."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reduces the stock level at the source.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create an 'in-transit' inventory record for the 50 units.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the stock as in-transit, so it's not available for sale."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the stock as in-transit, so it's not available for sale.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upon arrival, receive the stock and increment the inventory count by 50 at the East Coast warehouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent increases the stock level at the destination and removes the in-transit record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent increases the stock level at the destination and removes the in-transit record.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Develop an audit plan based on the type of supplier and relevant regulations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an audit plan covering key areas like quality systems, manufacturing processes, and documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an audit plan covering key areas like quality systems, manufacturing processes, and documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a pre-audit questionnaire and document request to the vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a formal request for key documents ahead of the on-site audit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a formal request for key documents ahead of the on-site audit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Conduct the audit (remotely or on-site) and document any findings or observations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies two minor findings related to documentation practices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies two minor findings related to documentation practices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Issue an audit report to the vendor and request a response with a CAPA plan for any findings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts and sends the formal audit report, and tracks the vendor's response."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts and sends the formal audit report, and tracks the vendor's response.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

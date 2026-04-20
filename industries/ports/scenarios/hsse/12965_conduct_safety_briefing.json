@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review any safety alerts or incidents from the past 24 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Supervisor checks the safety system for any new alerts or lessons learned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Supervisor checks the safety system for any new alerts or lessons learned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Prepare a short talk covering a specific safety topic (e.g., proper use of PPE, awareness of moving vehicles).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Supervisor prepares notes for the day's topic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Supervisor prepares notes for the day's topic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Gather the crew, deliver the briefing, and have all attendees sign a log sheet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The briefing is completed, and attendance is documented for compliance records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The briefing is completed, and attendance is documented for compliance records.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Create a new entry in the safety meeting log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new log entry is created for today's date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new log entry is created for today's date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set the topic to 'Ladder Safety' and list the 12 attendees by name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The log entry is updated with the topic and a list of all attendees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The log entry is updated with the topic and a list of all attendees.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

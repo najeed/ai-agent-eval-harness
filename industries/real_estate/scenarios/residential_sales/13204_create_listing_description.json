@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the property's key features, such as number of bedrooms, bathrooms, square footage, and recent upgrades.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all relevant details about the property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all relevant details about the property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a captivating and descriptive property description highlighting its best features and location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes an engaging, grammatically correct description suitable for the MLS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes an engaging, grammatically correct description suitable for the MLS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Format the description for the MLS, ensuring it meets character limits and compliance standards.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly formats the text for the specific MLS platform."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly formats the text for the specific MLS platform.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

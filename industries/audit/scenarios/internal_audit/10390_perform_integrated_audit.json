@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The financial auditor tests a sample of sales invoices to ensure they were recorded correctly in the general ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The financial controls are tested."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The financial controls are tested.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The IT auditor tests the application controls in the billing system to ensure that all sales are billed completely and accurately.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The IT application controls are tested."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The IT application controls are tested.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The IT auditor tests the IT general controls over the billing system, such as access and change management.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The IT general controls are tested."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The IT general controls are tested.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The audit team combines their results into a single, integrated report that provides a holistic view of the risks in the revenue cycle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A single, comprehensive report is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A single, comprehensive report is created.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

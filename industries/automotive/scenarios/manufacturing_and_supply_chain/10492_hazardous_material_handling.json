@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "An employee reports the leak to the plant safety officer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The safety officer is notified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The safety officer is notified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The safety officer consults the Material Safety Data Sheet (MSDS) for the solvent to determine the proper handling and cleanup procedure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the MSDS for the specific chemical."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the MSDS for the specific chemical.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch the on-site hazardous materials team to contain and clean up the spill.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The hazmat team is dispatched to the location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The hazmat team is dispatched to the location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

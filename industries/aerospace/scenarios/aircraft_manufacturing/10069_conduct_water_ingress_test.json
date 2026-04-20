@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Position the aircraft in a water test booth.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent moves the aircraft into the test facility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent moves the aircraft into the test facility.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Spray the aircraft with water at specified pressures and angles to simulate heavy rain.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent operates the water spray system according to the test procedure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent operates the water spray system according to the test procedure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inspect the interior of the aircraft for any signs of water leaks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs a thorough internal inspection and finds no leaks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs a thorough internal inspection and finds no leaks.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

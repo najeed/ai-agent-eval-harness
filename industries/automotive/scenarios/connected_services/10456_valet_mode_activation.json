@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Guide the customer to the 'Valet Mode' option in the vehicle's settings screen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions to find the feature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions to find the feature.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Instruct the customer on how to set a temporary PIN for the mode.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Customer successfully sets a 4-digit PIN."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Customer successfully sets a 4-digit PIN.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain what Valet Mode does (e.g., locks the trunk and glove box, limits speed, hides personal data from the infotainment system).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the features and limitations of Valet Mode."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the features and limitations of Valet Mode.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

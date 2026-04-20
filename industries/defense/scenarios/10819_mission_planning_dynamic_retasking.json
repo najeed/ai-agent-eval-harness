@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the new time-sensitive target information and verify its location and priority.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator correctly processes the new target information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator correctly processes the new target information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the patrol aircraft's current fuel and weapons status to confirm it can execute the new task.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator confirms the aircraft has sufficient resources for the new mission."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator confirms the aircraft has sufficient resources for the new mission.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate and transmit a new mission plan to the pilot, including the new target, route, and ROE.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator successfully re-tasks the pilot with a valid and complete mission update."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator successfully re-tasks the pilot with a valid and complete mission update.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

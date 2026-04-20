@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the park (Disneyland) and the date (upcoming Saturday).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the visitor's query."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the visitor's query.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the park's operating hours for that specific date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the park is open from 8 AM to 11 PM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the park is open from 8 AM to 11 PM.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Communicate the opening and closing times to the visitor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly provides the correct hours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly provides the correct hours.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

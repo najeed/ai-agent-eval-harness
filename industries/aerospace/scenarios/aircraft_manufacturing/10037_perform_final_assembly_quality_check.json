@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Follow a detailed checklist to inspect the aircraft's exterior for any cosmetic defects, such as scratches or dents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the exterior inspection checklist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the exterior inspection checklist.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that all required placards and markings are correctly installed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all placards are present and legible."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all placards are present and legible.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document any findings and create a snag list of items to be rectified before the official rollout.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a minor paint defect and adds it to the snag list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a minor paint defect and adds it to the snag list.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the concept of a backup offer to the new buyer and their agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The buyer understands their offer will only become primary if the current contract is terminated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The buyer understands their offer will only become primary if the current contract is terminated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Prepare the offer using a backup offer addendum.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A legally sound backup offer is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A legally sound backup offer is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Present the backup offer to the seller for their signature and place it in the transaction file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The backup offer is executed by the seller and properly filed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The backup offer is executed by the seller and properly filed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

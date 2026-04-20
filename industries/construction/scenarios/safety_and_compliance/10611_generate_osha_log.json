@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all safety incident reports from the last month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of all incidents from the specified period is retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of all incidents from the specified period is retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Filter the reports to include only OSHA-recordable incidents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The list is filtered to only include incidents that meet OSHA recording criteria."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The list is filtered to only include incidents that meet OSHA recording criteria.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the OSHA 300 log in the standard format using the filtered data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A correctly formatted OSHA 300 log is generated as a PDF."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A correctly formatted OSHA 300 log is generated as a PDF.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

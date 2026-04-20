@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the pressure drop alert and identify the specific span and location of the fault.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the fault is in Span 5, near tower 6."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the fault is in Span 5, near tower 6.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically shut down the irrigation system to prevent water waste and further damage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the shutdown command."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the shutdown command.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority work order for a technician, including the precise GPS location of the fault.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed work order with location data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed work order with location data.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

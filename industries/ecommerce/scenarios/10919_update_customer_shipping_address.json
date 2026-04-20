@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer's account and authenticate their identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the customer's identity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the customer's identity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Remove the old shipping address and add the new one provided by the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the address book in the customer's profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the address book in the customer's profile.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

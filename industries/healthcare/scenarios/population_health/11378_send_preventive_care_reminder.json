@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a report to identify all active female patients aged 50+ who have not had a mammogram in the last year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a list of patients who are due for screening."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a list of patients who are due for screening.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a pre-written mammogram reminder message template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent chooses the appropriate communication template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent chooses the appropriate communication template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the reminder to the list of patients via their preferred communication method (e.g., email, text message).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The outreach campaign is successfully launched to improve screening rates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The outreach campaign is successfully launched to improve screening rates.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

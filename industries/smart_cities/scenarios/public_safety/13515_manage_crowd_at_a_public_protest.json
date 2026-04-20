@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use camera analytics to monitor the growing crowd at 'City Hall Plaza'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets real-time estimates of crowd count and density."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets real-time estimates of crowd count and density.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set an alert threshold for when crowd density exceeds a safe limit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent configures an alert to trigger if density becomes dangerous."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent configures an alert to trigger if density becomes dangerous.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Share the live crowd monitoring dashboard with the police command center.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides police with situational awareness."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides police with situational awareness.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft the LOI with the client's desired terms: lease rate, term length, tenant improvement allowance, and other concessions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed LOI reflecting the client's goals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed LOI reflecting the client's goals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit the LOI to the landlord's broker.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the LOI."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the LOI.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive a counter-offer from the landlord's broker, analyze the changes, and advise the client on the next steps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the counter-offer and provides strategic advice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the counter-offer and provides strategic advice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

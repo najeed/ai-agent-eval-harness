@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the inventory management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully logs into the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully logs into the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the system for the current stock count of 'Bath Towel - Clean'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system reports 500 clean bath towels are in stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system reports 500 clean bath towels are in stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the current stock to the par level and determine if a new laundry order is needed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The par level is 800, so the agent determines a new batch needs to be laundered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The par level is 800, so the agent determines a new batch needs to be laundered.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

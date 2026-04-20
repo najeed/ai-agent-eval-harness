@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Access the log of all significant plays from the first half.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a time-coded list of all major plays."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a time-coded list of all major plays.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the log to automatically generate video clips of the top 5 plays.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent's tool creates five short video clips."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent's tool creates five short video clips.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assemble the clips into a highlight package with transitions and background music.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a complete, ready-to-air highlight video."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a complete, ready-to-air highlight video.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Send the final package to the master control room for broadcast.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent delivers the video file to the broadcast system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent delivers the video file to the broadcast system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

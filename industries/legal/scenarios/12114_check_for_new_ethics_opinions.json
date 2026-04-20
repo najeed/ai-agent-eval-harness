@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Navigate to the state bar association's website and find the 'Ethics Opinions' section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully locates the correct webpage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully locates the correct webpage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Filter the opinions by date to see what has been published in the last 30 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies one new ethics opinion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies one new ethics opinion.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Summarize the new opinion and its potential impact on the firm's practices.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a concise summary for internal distribution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a concise summary for internal distribution.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

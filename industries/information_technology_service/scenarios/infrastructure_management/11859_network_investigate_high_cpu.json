@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Connect to the server and open Task Manager to view running processes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician connects to the server."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician connects to the server.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify a specific user's session and a particular application process that is consuming all the CPU.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A 'runaway' process is identified as the root cause."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A 'runaway' process is identified as the root cause.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "End the runaway process and contact the user to inform them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Server CPU usage returns to normal, and the issue is resolved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Server CPU usage returns to normal, and the issue is resolved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

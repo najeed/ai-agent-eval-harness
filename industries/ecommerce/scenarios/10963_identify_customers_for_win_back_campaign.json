@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query the customer database for all customers whose last purchase date was more than 180 days ago.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a list of 'lapsed' customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a list of 'lapsed' customers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Filter out any customers who have unsubscribed from marketing emails.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System refines the list to only include mailable customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System refines the list to only include mailable customers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Save the final list as a 'Win-Back Campaign' audience segment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent saves the new segment for a marketing campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent saves the new segment for a marketing campaign.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

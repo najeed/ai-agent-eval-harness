@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the course in question (e.g., 'CHEM301').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the target course."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the target course.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the official prerequisite information from the curriculum management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the prerequisite for 'CHEM301' is 'CHEM201 with a grade of C or better'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the prerequisite for 'CHEM301' is 'CHEM201 with a grade of C or better'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the verified prerequisite information to the committee member.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately communicates the findings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately communicates the findings.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

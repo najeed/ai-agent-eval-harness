@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Extract project scope, timeline, team members, and key deliverables from the SOW.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately extracts all key information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately extracts all key information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Populate a standard kick-off presentation template with the extracted information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly fills slides for 'Project Goals', 'Scope', 'Timeline', 'Team', and 'Ways of Working'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly fills slides for 'Project Goals', 'Scope', 'Timeline', 'Team', and 'Ways of Working'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a 'Next Steps' slide outlining the immediate activities for the first two weeks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a clear and actionable next steps slide."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a clear and actionable next steps slide.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain construction bids to estimate the cost of the tenant's desired office build-out.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a clear cost estimate for the build-out."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a clear cost estimate for the build-out.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "In the Letter of Intent (LOI), propose that the landlord provide a TI allowance of a specific amount per square foot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The LOI includes a formal request for a TI allowance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The LOI includes a formal request for a TI allowance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Negotiate with the landlord's agent to reach an agreement on the final TI allowance amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An agreed-upon TI allowance is included in the final lease terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An agreed-upon TI allowance is included in the final lease terms.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

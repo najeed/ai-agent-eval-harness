@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the current active batch on the reactor control screen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the batch being manufactured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the batch being manufactured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the next step in the batch record, which instructs to 'Charge 500 kg of Methanol'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the material and quantity for the next step."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the material and quantity for the next step.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Execute the automated charge, monitor the weight addition, and apply an electronic signature to confirm the step's completion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates the charge, the system adds 500 kg, and the operator signs off on the completed step."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates the charge, the system adds 500 kg, and the operator signs off on the completed step.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

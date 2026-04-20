@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the property using the parcel number or address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully locates the property and the outstanding tax bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully locates the property and the outstanding tax bill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Securely process the payment via credit card or e-check.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the homeowner with a receipt and confirmation of payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a digital receipt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a digital receipt.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

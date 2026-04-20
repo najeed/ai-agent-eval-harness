@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Instruct the user not to click any links and to forward the email as an attachment to the security office.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides immediate, clear security instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides immediate, clear security instructions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The security team analyzes the email and confirms it is a phishing attempt.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Security team identifies the malicious nature of the email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Security team identifies the malicious nature of the email.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The security team implements a block for the sender's domain and sends a campus-wide warning if the campaign is widespread.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Security team takes preventative measures to protect the campus."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Security team takes preventative measures to protect the campus.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "While on assignment, take a photo or short video that shows the reporting process (e.g., a photo of their notebook, a view from the press box).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An interesting behind-the-scenes asset is captured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An interesting behind-the-scenes asset is captured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write a caption that gives a small insight into the process of journalism.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An engaging and informative caption is written."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An engaging and informative caption is written.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post the content to a platform like Instagram or Twitter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The post is published."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The post is published.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the invoice and match it to a purchase order in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The clerk successfully matches the invoice to the correct PO."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The clerk successfully matches the invoice to the correct PO.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the services have been marked as received or completed by the requesting department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The clerk confirms receipt of services has been logged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The clerk confirms receipt of services has been logged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the invoice and schedule it for payment in the next payment run.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The clerk approves the invoice for payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The clerk approves the invoice for payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

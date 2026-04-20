@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the waste stream profile for the material in the drum.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the waste stream code and its characteristics."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the waste stream code and its characteristics.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the required hazardous waste manifest for the shipment, including the EPA waste codes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a compliant waste manifest document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a compliant waste manifest document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule a pickup with an approved hazardous waste transportation company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent books a pickup and records the confirmation number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent books a pickup and records the confirmation number.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

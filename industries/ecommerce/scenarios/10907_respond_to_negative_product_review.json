@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the negative review and the customer who wrote it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the review and the associated customer account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the review and the associated customer account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Post a public reply to the review, apologizing for the issue and offering to make it right.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts a well-worded, empathetic public response."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts a well-worded, empathetic public response.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a support ticket to proactively contact the customer via email and offer a replacement or refund.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a support ticket to resolve the underlying issue privately."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a support ticket to resolve the underlying issue privately.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather details for the vacant unit, including rent price, photos, and amenities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary information for the listing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary information for the listing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write a compelling rental listing description.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates an attractive and accurate description of the unit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates an attractive and accurate description of the unit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Syndicate the listing to Zillow, Apartments.com, and other rental platforms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully posts the rental listing to multiple websites."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully posts the rental listing to multiple websites.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

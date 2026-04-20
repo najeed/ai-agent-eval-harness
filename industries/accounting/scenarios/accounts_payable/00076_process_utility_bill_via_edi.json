@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the EDI 810 invoice transaction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent's system ingests the electronic invoice file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent's system ingests the electronic invoice file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Parse the EDI transaction and map the data to the fields of an AP invoice in the ERP system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully parses the EDI data and creates a draft invoice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully parses the EDI data and creates a draft invoice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Automatically code the invoice to the correct utility expense account based on pre-defined rules and post it for payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system automatically codes and posts the invoice without manual intervention."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system automatically codes and posts the invoice without manual intervention.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

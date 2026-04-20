@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all upcoming tasks assigned to the electrical subcontractor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of all electrical tasks for the next 60 days is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of all electrical tasks for the next 60 days is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log the potential strike in the risk register, classifying it as 'High Impact, Low Probability'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new entry is created in the risk register."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new entry is created in the risk register.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "As a contingency, identify a non-union electrical subcontractor that could be used if the strike occurs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An alternative subcontractor is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An alternative subcontractor is identified.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

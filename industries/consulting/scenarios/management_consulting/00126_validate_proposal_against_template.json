@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load the list of mandatory sections from the standard template (e.g., 'Scope', 'Deliverables', 'Fees', 'Assumptions').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly retrieves the list of required sections."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly retrieves the list of required sections.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the draft proposal to see which of the mandatory sections are present.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the proposal's structure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the proposal's structure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report listing any missing sections.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a report stating that the 'Assumptions' section is missing from the draft."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a report stating that the 'Assumptions' section is missing from the draft.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

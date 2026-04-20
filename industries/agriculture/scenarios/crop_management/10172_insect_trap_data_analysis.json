@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the latest image from the specified insect trap.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the image."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the image.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run an image recognition model to identify and count the number of codling moths in the image.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The model identifies and counts 15 codling moths."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The model identifies and counts 15 codling moths.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the count to the action threshold for codling moths and advise the apple grower if a spray is needed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the count is above the threshold and recommends an insecticide application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the count is above the threshold and recommends an insecticide application.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

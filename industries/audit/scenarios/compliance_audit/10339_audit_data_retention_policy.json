@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the data retention policy to identify the required retention period for customer emails (e.g., 7 years).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor understands the policy requirement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor understands the policy requirement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the email archive system for any customer emails that are older than 7 years.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The query returns a significant number of emails that should have been deleted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The query returns a significant number of emails that should have been deleted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the failure to follow the retention policy as a finding, noting the increased legal discovery and storage costs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A finding is created to address the non-compliance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A finding is created to address the non-compliance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

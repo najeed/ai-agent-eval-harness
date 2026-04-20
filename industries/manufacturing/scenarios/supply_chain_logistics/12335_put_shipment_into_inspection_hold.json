@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log the receipt of the shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent records the receipt of the goods from the supplier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent records the receipt of the goods from the supplier.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Change the inventory status of the received goods to 'Quality Inspection' or 'On Hold'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the status, making the inventory unavailable for production use."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the status, making the inventory unavailable for production use.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the quality assurance department that the shipment is ready for inspection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a notification to the QA team with the PO and part details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a notification to the QA team with the PO and part details.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

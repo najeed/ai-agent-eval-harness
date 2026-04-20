@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the project's material requirements from the MTO.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the required volume of concrete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the required volume of concrete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the project's approved concrete supplier and their contract pricing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the approved supplier and their rates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the approved supplier and their rates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a blanket purchase order to the supplier for the total required quantity, to be drawn down as needed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a blanket PO for the concrete supply."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a blanket PO for the concrete supply.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

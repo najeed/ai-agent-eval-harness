@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new retain sample record for the finished product batch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new sample record linked to the batch number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new sample record linked to the batch number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a unique barcode label for the retain sample container.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prints a label with a unique sample ID."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prints a label with a unique sample ID.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Scan the sample's barcode and the barcode of a location in the retain archive to log its storage position.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the sample's location in the LIMS to 'Archive Shelf C-5'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the sample's location in the LIMS to 'Archive Shelf C-5'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

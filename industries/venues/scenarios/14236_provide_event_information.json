@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Look up the event details for tonight's concert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the event information in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the event information in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the guest that doors open at 7:00 PM.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the correct door time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the correct door time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Retrieve the standard venue bag policy from the knowledge base.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the policy stating only small clear bags are allowed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the policy stating only small clear bags are allowed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Clearly explain the bag policy to the guest.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately communicates the bag size and type restrictions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately communicates the bag size and type restrictions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

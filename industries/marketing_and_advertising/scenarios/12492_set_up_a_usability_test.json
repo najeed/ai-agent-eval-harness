@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the tasks for the user to complete during the test (e.g., 'Find the contact page and send a message').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a clear list of tasks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a clear list of tasks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Recruit 5-7 participants who match the target audience persona.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds suitable participants for the test."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds suitable participants for the test.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set up the test in a remote usability testing platform, including the tasks and any follow-up questions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully configures the test in the software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully configures the test in the software.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

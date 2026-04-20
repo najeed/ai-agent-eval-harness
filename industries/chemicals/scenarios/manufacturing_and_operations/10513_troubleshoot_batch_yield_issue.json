@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the electronic batch record for the low-yield batch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pulls up all recorded process parameters and material additions for the batch."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pulls up all recorded process parameters and material additions for the batch.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the batch's process parameters (e.g., temperature profile, agitation speed, addition times) against the standard recipe and historical successful batches.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that the reaction temperature was held 5 degrees lower than the setpoint for 3 hours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that the reaction temperature was held 5 degrees lower than the setpoint for 3 hours.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the finding in a deviation report and recommend corrective actions for future batches.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a deviation report linking the temperature excursion to the low yield and suggests re-calibrating the temperature probe."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a deviation report linking the temperature excursion to the low yield and suggests re-calibrating the temperature probe.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

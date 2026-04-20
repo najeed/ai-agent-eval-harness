@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the customer has the required underlying liability limits on their auto and home policies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer's underlying policies meet the minimum requirements for an umbrella."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer's underlying policies meet the minimum requirements for an umbrella.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather information about any additional risks (e.g., rental properties, watercraft).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary underwriting information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary underwriting information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a quote for a $1 million umbrella policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates and presents the quote."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates and presents the quote.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Ensure all project deliverables have been completed and signed off on by the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The PM confirms all SOW items are complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The PM confirms all SOW items are complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ensure all project time and expenses have been logged and the final invoice has been sent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The PM confirms the project is financially closed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The PM confirms the project is financially closed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Conduct an internal project post-mortem with the technical team to discuss lessons learned.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team reflects on the project to improve future work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team reflects on the project to improve future work.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Archive the project in the PSA tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project is formally closed in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project is formally closed in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather basic information from the customer, such as estimated credit score, loan amount, and property value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the necessary inputs to provide a rate quote."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the necessary inputs to provide a rate quote.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the rate quoting tool to provide an indicative interest rate and APR.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the current indicative rate for a customer with the specified profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the current indicative rate for a customer with the specified profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the difference between interest rate and APR and outline the next steps to apply.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the financial terms and application process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the financial terms and application process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

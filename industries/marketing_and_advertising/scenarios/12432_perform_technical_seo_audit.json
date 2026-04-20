@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a website crawl using an SEO auditing tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool crawls the entire website and gathers data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool crawls the entire website and gathers data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the audit report to identify critical issues, such as 404 errors (broken links) and pages with slow load times.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a list of technical problems."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a list of technical problems.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a prioritized list of fixes for the development team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces an actionable report for the developers, starting with the most critical issues."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces an actionable report for the developers, starting with the most critical issues.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

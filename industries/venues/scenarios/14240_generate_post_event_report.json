@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Gather final attendance data from the access control system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the final count of scanned tickets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the final count of scanned tickets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather total gross sales data from the food and beverage and merchandise systems.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the final sales figures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the final sales figures.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Gather a summary of all security and medical incidents from their respective logs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the incident counts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the incident counts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Compile all data into a standardized post-event report template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a comprehensive report summarizing all key metrics."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a comprehensive report summarizing all key metrics.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

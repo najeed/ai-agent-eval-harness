@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the booking and identify the name discrepancy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the booking and confirms the name needs correction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the booking and confirms the name needs correction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the airline's policy and any applicable fees for minor name corrections.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that minor corrections are allowed for a small fee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that minor corrections are allowed for a small fee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the name correction, collect the fee, and reissue the ticket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully corrects the name on the ticket and issues an updated confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully corrects the name on the ticket and issues an updated confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a report of the POS failure from the stand manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the issue for the specific terminal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the issue for the specific terminal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attempt to remotely reboot the POS terminal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The remote reboot command fails."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The remote reboot command fails.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch an IT technician to the concession stand with a replacement terminal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches a technician to the location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches a technician to the location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the final league standings to determine the playoff matchups and seedings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the final, verified standings and the first-round matchups."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the final, verified standings and the first-round matchups.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Consult with broadcast partners to select the best dates and time slots for the playoff games.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finalizes the game times with the broadcasters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finalizes the game times with the broadcasters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Publish the official first-round playoff schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent releases the schedule to the public and the teams."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent releases the schedule to the public and the teams.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

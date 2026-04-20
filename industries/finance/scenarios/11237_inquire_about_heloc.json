@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the key features of a HELOC, such as the draw period, repayment period, and variable interest rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly and accurately explains how a HELOC works."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly and accurately explains how a HELOC works.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the current indicative interest rates for the HELOC product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gives the customer the current starting rate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gives the customer the current starting rate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Outline the application process and the documentation required (e.g., proof of income, mortgage statement).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly lists the steps and documents needed to apply."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly lists the steps and documents needed to apply.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

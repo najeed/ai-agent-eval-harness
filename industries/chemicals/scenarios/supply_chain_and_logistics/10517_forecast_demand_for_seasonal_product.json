@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the sales history for the product for the past three years.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pulls historical sales data, showing peaks in the spring."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pulls historical sales data, showing peaks in the spring.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apply a seasonal forecasting model to the historical data to predict demand for the upcoming season.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a demand forecast of 500 metric tons for the next quarter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a demand forecast of 500 metric tons for the next quarter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Share the forecast with the production planning team to be used as input for the master production schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully transmits the forecast data to the production planning module."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully transmits the forecast data to the production planning module.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

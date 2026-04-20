@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the vehicle's OTA history and identify the failed update version and error code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds 'Update 2.8.1' failed with error 'ERR_CONN_LOST'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds 'Update 2.8.1' failed with error 'ERR_CONN_LOST'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Advise the customer to move the vehicle to an area with better cellular reception, as the error indicates a connection loss during download.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly interprets the error code and provides actionable advice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly interprets the error code and provides actionable advice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Re-trigger the update to be pushed to the vehicle again.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully re-initiates the update download."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully re-initiates the update download.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

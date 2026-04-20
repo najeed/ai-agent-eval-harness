@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the complaint from the retailer and log it in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new complaint case."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new complaint case.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apologize for the experience and assure the customer the issue will be investigated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides good customer service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides good customer service.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Forward the complaint to the logistics manager to address with the third-party freight carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The complaint is sent to the appropriate internal party."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The complaint is sent to the appropriate internal party.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

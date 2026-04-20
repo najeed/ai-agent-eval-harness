@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the patient's current encounter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly locates and opens the patient's chart for their current visit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly locates and opens the patient's chart for their current visit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Navigate to the vitals signs flowsheet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the correct section of the EHR for documenting vitals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the correct section of the EHR for documenting vitals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the values for blood pressure, heart rate, temperature, and respiratory rate, and save the flowsheet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately enters all vital signs, and the data is saved to the patient's chart."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately enters all vital signs, and the data is saved to the patient's chart.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

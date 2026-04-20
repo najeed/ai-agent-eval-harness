@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the current budget and spending data for all production departments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls a complete report of budgeted vs. actual spending."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls a complete report of budgeted vs. actual spending.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to identify any departments that are over budget.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that the 'Special Effects' department is 15% over budget."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that the 'Special Effects' department is 15% over budget.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the line producer and the head of the special effects department of the budget variance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a clear notification about the budget overage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a clear notification about the budget overage.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the bike share system dashboard and identify the stations with 0% and 100% availability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the imbalance in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the imbalance in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a work order for the rebalancing crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a task for the field team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a task for the field team.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the crew a task to pick up bikes from the full stations and drop them off at the empty stations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches the crew with specific instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches the crew with specific instructions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

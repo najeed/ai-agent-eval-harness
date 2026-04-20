@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the item's RMA tag to retrieve its inspection status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the item's disposition is 'Scrap'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the item's disposition is 'Scrap'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Move the item to the designated scrap area in the warehouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent physically moves the item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent physically moves the item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process an inventory adjustment to remove the item from stock, using 'Scrap' as the reason code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adjusts the inventory out of the system, and the quantity on hand is reduced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adjusts the inventory out of the system, and the quantity on hand is reduced.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

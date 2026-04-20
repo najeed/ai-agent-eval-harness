@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Develop a survey questionnaire with questions about ethics, management oversight, and communication.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A well-designed survey is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A well-designed survey is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Distribute the survey to all employees in the department being audited.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The survey is sent out."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The survey is sent out.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the anonymous survey results, noting that a high percentage of respondents feel pressure to meet unrealistic targets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The survey analysis reveals a potential risk area to focus on during the audit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The survey analysis reveals a potential risk area to focus on during the audit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

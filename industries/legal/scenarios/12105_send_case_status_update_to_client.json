@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the case file for recent activity, including recent filings and upcoming deadlines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that a key deposition was recently completed and a response to a motion is due next week."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that a key deposition was recently completed and a response to a motion is due next week.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a concise email to the client summarizing the recent progress and outlining the next immediate steps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a clear, professional email that is easy for a non-lawyer to understand."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a clear, professional email that is easy for a non-lawyer to understand.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the draft email to the partner for review and approval before sending to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the correct internal protocol for client communications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the correct internal protocol for client communications.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

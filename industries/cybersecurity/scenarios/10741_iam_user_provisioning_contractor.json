@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the contractor onboarding request, including their contract end date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly processes the request details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly processes the request details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new user account in Active Directory with an automatic expiration date set to the contract end date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully creates a time-bound user account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully creates a time-bound user account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the contractor to a specific security group that grants them access only to the systems required for their project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst assigns least-privilege access to the contractor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst assigns least-privilege access to the contractor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

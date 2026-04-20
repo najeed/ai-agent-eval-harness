@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "While creating the reservation, inform the guest about the advance deposit policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent clearly explains the deposit requirement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent clearly explains the deposit requirement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the deposit amount (one night's room and tax).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct deposit amount is calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct deposit amount is calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the charge on the guest's provided credit card.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The deposit is successfully charged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The deposit is successfully charged.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

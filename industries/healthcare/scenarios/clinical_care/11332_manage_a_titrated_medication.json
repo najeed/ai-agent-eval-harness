@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the patient's MAR and find the insulin drip order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse locates the continuous infusion order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse locates the continuous infusion order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the titration parameters defined in the order (e.g., 'If blood sugar > 200, increase rate by 1 unit/hr').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse understands the protocol for adjusting the dose."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse understands the protocol for adjusting the dose.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the latest blood sugar reading and adjust the infusion pump rate accordingly. Document the new rate in the MAR.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse safely adjusts the medication dose per protocol and accurately documents the change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse safely adjusts the medication dose per protocol and accurately documents the change.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

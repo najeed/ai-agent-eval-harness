@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check company policy and state law to determine if partial payments can be accepted without waiving eviction rights.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the correct procedure for handling partial payments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the correct procedure for handling partial payments.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Accept and record the partial payment in the tenant's ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The payment is correctly recorded, leaving a remaining balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The payment is correctly recorded, leaving a remaining balance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a formal notice to the tenant acknowledging the partial payment and stating the remaining balance due and the deadline for payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear communication is sent to the tenant regarding their outstanding balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear communication is sent to the tenant regarding their outstanding balance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

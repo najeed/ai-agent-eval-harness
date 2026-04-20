@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the current cash price for corn from the specified ethanol plant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the current price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the current price.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a grain sales contract for 5,000 bushels at the current price for a specific delivery period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a formal sales contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a formal sales contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the contract to the farmer for digital signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the contract.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "An analyst identifies a product with no sales for over a year and a 'Discontinued' status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The obsolete stock is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The obsolete stock is identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Management approves the disposal of the remaining stock.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Authorization is given to write off the inventory."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Authorization is given to write off the inventory.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "An inventory adjustment is created to remove the stock from the system, using 'Obsolete Disposal' as the reason.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inventory is removed from the system records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inventory is removed from the system records.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "A work order is created for the warehouse team to physically remove the product from the shelves and place it in the disposal area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The physical product is handled correctly for disposal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The physical product is handled correctly for disposal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

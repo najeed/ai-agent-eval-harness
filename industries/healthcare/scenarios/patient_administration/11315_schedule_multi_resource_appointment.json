@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the required resources: the provider and the specific equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies all resources needed for the appointment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies all resources needed for the appointment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "View the schedules for both the provider and the equipment simultaneously to find a matching open slot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses the advanced scheduling tool to find a time when both resources are free."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses the advanced scheduling tool to find a time when both resources are free.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the appointment, reserving both the provider and the equipment for that time slot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the complex appointment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the complex appointment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

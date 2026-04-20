@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Using a mobile app, the driver selects the shipment that was just delivered.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Driver correctly identifies the shipment record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Driver correctly identifies the shipment record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The driver takes a picture of the signed BOL.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear image of the signed document is captured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear image of the signed document is captured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The driver uploads the image and captures the name of the signatory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The POD image and signatory name are successfully uploaded to the TMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The POD image and signatory name are successfully uploaded to the TMS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the high-level requirements from the salesperson.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant understands the scope of the potential project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant understands the scope of the potential project.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Break down the requirements into standard implementation tasks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant creates a work breakdown structure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant creates a work breakdown structure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use a standard estimation model to assign hours to each task and provide a total estimate to the salesperson.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant provides an accurate and defensible estimate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant provides an accurate and defensible estimate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the applicable design codes for the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer identifies that ASME B31.3 and API 650 are relevant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer identifies that ASME B31.3 and API 650 are relevant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query an external standards database to find the latest version of each applicable code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent queries the database and finds a new version of ASME B31.3 was released last month."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent queries the database and finds a new version of ASME B31.3 was released last month.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the lead engineer that the project's design basis needs to be updated to reference the new code version.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a notification to the lead engineer about the required update."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a notification to the lead engineer about the required update.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

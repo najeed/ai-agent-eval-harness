@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new shared project folder for the story.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A central repository for all story-related files is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A central repository for all story-related files is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Upload the raw dataset and the data analysis script to the shared folder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Both team members can access the data and the code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Both team members can access the data and the code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a shared document for the story draft, allowing for simultaneous editing and commenting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The reporter and data journalist can write and edit the story together in real time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The reporter and data journalist can write and edit the story together in real time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

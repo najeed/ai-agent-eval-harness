@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all final, signed versions of the deal documents (e.g., Purchase Agreement, Disclosure Schedules, officer certificates).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all the necessary documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all the necessary documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Organize the documents in a logical order and create a table of contents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent structures the binder in a clear and organized way."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent structures the binder in a clear and organized way.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile all documents into a single, indexed PDF to be shared with the client and other parties.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces the final electronic closing binder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces the final electronic closing binder.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

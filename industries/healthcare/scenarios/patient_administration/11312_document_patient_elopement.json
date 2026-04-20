@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Notify hospital security and the attending physician.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse follows hospital protocol for a missing patient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse follows hospital protocol for a missing patient.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Locate the patient's record in the EHR.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct inpatient encounter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct inpatient encounter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process a 'Discharge - Left Against Medical Advice (AMA)' ADT message with a note indicating elopement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly updates the patient's status and documents the circumstances of the departure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly updates the patient's status and documents the circumstances of the departure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the signed bill of sale and power of attorney documents for the vehicle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has all necessary legal documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has all necessary legal documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Complete the official state DMV forms for title application and registration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately fills out all required government forms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately fills out all required government forms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the paperwork and associated fees to the local DMV.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The paperwork is successfully submitted for processing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The paperwork is successfully submitted for processing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

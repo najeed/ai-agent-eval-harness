@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the live FMV feed to locate the convoy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully finds the convoy in the video feed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully finds the convoy in the video feed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare vehicles in the convoy against intelligence descriptions to find the target vehicle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the specific vehicle based on features like make, model, and markings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the specific vehicle based on features like make, model, and markings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Maintain a continuous track on the identified vehicle and report any changes in its status or behavior.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully tracks the vehicle without losing sight."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully tracks the vehicle without losing sight.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

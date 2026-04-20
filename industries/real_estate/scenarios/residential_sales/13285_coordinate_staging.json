@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Provide the seller with a list of recommended home staging companies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a list of approved staging vendors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a list of approved staging vendors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule a consultation between the chosen stager and the seller.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the initial consultation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the initial consultation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Coordinate the staging installation day, ensuring it happens before the photographer is scheduled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent schedules the staging and photography in the correct sequence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent schedules the staging and photography in the correct sequence.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

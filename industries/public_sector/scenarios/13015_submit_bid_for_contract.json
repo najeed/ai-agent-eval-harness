@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the vendor and the specific contract they are bidding on.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the vendor's profile and the open contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the vendor's profile and the open contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that all required bidding documents have been uploaded.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that the bid package is complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that the bid package is complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Accept and timestamp the bid submission before the deadline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully logs the bid as received on time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully logs the bid as received on time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

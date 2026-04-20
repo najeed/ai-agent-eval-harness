@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that all deliverables have been completed and handed over to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all project deliverables are complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all project deliverables are complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Process the final invoices from all subcontractors and vendors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures all suppliers have been paid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures all suppliers have been paid.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the final project cost report and a 'lessons learned' document, then formally close the project in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the final reports, archives the project data, and changes the project status to 'Closed'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the final reports, archives the project data, and changes the project status to 'Closed'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

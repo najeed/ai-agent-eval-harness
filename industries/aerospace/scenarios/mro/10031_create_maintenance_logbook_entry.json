@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the aircraft tail number and the date of the maintenance action.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the aircraft and date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the aircraft and date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write a clear and concise description of the work performed: 'Removed and replaced No. 3 main landing gear tire due to wear'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a description that meets regulatory standards."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a description that meets regulatory standards.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Make the logbook entry, including the part number of the new tire and a reference to the maintenance manual task, and apply a digital signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a complete, compliant, and signed logbook entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a complete, compliant, and signed logbook entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

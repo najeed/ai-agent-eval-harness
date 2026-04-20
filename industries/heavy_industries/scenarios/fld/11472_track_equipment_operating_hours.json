@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the piece of equipment in the asset management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct record for the bulldozer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct record for the bulldozer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Read the hour meter on the machine at the end of the day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supervisor gets the current operating hours from the machine."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supervisor gets the current operating hours from the machine.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the new hour meter reading into the asset's record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the operating hours, which will be used to trigger preventative maintenance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the operating hours, which will be used to trigger preventative maintenance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

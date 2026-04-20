@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "When registration fails, check the student's account for any holds.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a 'Financial Hold' from the library."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a 'Financial Hold' from the library.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Look up the details of the hold, finding it is for a $25 unpaid fine for a lost book.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the source and amount of the hold."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the source and amount of the hold.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Transfer the student to the library services desk to pay the fine and have the hold removed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs a warm transfer to the correct department to resolve the root cause."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs a warm transfer to the correct department to resolve the root cause.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

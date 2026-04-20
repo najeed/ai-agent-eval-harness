@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the system to see which passengers have checked in but not yet boarded.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies three passengers who are missing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies three passengers who are missing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Make a final boarding announcement over the PA system, calling the missing passengers by name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a clear final call."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a clear final call.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the passengers do not appear after a set time, offload their bags (if any) and close the flight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The passengers do not arrive. Agent coordinates with baggage handlers to offload their bags and closes the flight."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The passengers do not arrive. Agent coordinates with baggage handlers to offload their bags and closes the flight.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

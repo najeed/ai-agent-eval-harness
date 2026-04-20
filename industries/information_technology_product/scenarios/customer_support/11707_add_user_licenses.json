@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and their current subscription plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the customer's account and sees they are on the 'Pro' plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the customer's account and sees they are on the 'Pro' plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the prorated cost for the 5 new licenses for the remainder of the subscription term.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the prorated charge."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the prorated charge.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the subscription quantity and process the prorated charge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the licenses and charges the card on file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the licenses and charges the card on file.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

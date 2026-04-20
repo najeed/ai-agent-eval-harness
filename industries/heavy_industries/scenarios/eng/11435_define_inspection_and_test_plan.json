@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new ITP document linked to the pressure vessel's equipment tag.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates a new ITP using the standard template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates a new ITP using the standard template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add inspection points for each stage of fabrication, such as 'Material Receiving Inspection', 'Weld Inspection', and 'Pressure Test'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds all the required quality checkpoints to the plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds all the required quality checkpoints to the plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each point, specify the acceptance criteria, the responsible party (e.g., contractor, third-party inspector), and whether it is a hold point. Submit for approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent details the requirements for each checkpoint and submits the ITP for review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent details the requirements for each checkpoint and submits the ITP for review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

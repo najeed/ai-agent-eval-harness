@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the client and the specific stock they want to enroll in DRIP.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the client's account and the holding."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the client's account and the holding.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the stock is eligible for the dividend reinvestment program.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the stock offers a DRIP option."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the stock offers a DRIP option.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the account settings to enable DRIP for the selected holding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully enrolls the stock in the DRIP program."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully enrolls the stock in the DRIP program.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

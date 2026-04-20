@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the asset's record from the fixed asset register, noting its original cost and accumulated depreciation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the asset had a cost of $20,000 and accumulated depreciation of $18,000."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the asset had a cost of $20,000 and accumulated depreciation of $18,000.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Record the cash received from the sale of the asset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent notes the company received $3,000 from the sale."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent notes the company received $3,000 from the sale.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate and record the gain or loss on the disposal of the asset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates a gain on disposal of $1,000 ($3,000 cash - ($20,000 cost - $18,000 accum. dep.))."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates a gain on disposal of $1,000 ($3,000 cash - ($20,000 cost - $18,000 accum. dep.)).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create and post the journal entry to remove the asset and its accumulated depreciation from the books and record the gain/loss.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts the correct multi-leg journal entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts the correct multi-leg journal entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

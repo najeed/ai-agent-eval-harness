@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all batch records eligible for archiving.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains a list of records older than the retention period."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains a list of records older than the retention period.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a batch record from the list and initiate the archiving process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent starts the archiving workflow for a specific record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent starts the archiving workflow for a specific record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the record has been successfully moved to the archive and is no longer in the active database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the record is now in the archive and is no longer searchable in the main system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the record is now in the archive and is no longer searchable in the main system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

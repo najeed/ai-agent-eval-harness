@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a notification from security that a guest has been ejected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the guest's name and the reason for ejection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the guest's name and the reason for ejection.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new incident report in the guest services database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new record for the incident."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new record for the incident.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document all available details, including the guest's ticket information, the specific violation, and the names of the security staff involved.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a comprehensive report of the event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a comprehensive report of the event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Flag the guest's account in the ticketing system for potential future banning.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds a note to the guest's customer profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds a note to the guest's customer profile.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

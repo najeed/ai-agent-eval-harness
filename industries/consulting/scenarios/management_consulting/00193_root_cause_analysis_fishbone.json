@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "For the 'Manpower' category, brainstorm potential causes (e.g., 'insufficient training', 'low morale').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates relevant potential causes related to people."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates relevant potential causes related to people.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For the 'Method' category, brainstorm potential causes (e.g., 'outdated procedures', 'no quality checks').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates relevant potential causes related to processes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates relevant potential causes related to processes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For the 'Machine' and 'Material' categories, brainstorm other potential causes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates relevant potential causes for the remaining categories."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates relevant potential causes for the remaining categories.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Assemble the brainstormed ideas into a structured Fishbone diagram.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a correctly formatted diagram."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a correctly formatted diagram.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

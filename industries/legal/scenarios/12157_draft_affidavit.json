@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Interview the witness to gather the facts they can attest to under oath.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a clear understanding of the witness's testimony."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a clear understanding of the witness's testimony.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the affidavit, presenting the facts in a series of numbered paragraphs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a clearly written factual statement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a clearly written factual statement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Include a notary block for the witness to sign the affidavit under penalty of perjury.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The draft affidavit is legally formatted and ready for execution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The draft affidavit is legally formatted and ready for execution.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

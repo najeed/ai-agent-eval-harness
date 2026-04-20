@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the policyholder and review their active coverages.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster confirms the homeowner's policy explicitly excludes flood damage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster confirms the homeowner's policy explicitly excludes flood damage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Document the reason for the denial in the claim file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster logs 'No Coverage for Peril' as the denial reason."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster logs 'No Coverage for Peril' as the denial reason.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a formal denial letter to the customer, clearly explaining that flood is an excluded peril and providing information on the National Flood Insurance Program.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster sends a clear, empathetic denial letter with helpful information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster sends a clear, empathetic denial letter with helpful information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

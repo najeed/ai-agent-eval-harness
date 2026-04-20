@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check out the current version of the SOP from the document control system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks out the document, locking it for editing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks out the document, locking it for editing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Upload the new version of the SOP and provide a summary of the changes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uploads the revised file and enters change control notes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uploads the revised file and enters change control notes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the revised document into the approval workflow.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the document, and it is routed to the quality manager for review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the document, and it is routed to the quality manager for review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Authenticate the client and confirm the trade details (buy, 100 shares, AAPL, market order).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the client and accurately confirms all trade parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the client and accurately confirms all trade parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the client's account for sufficient buying power.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the account has enough cash to cover the estimated cost of the trade."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the account has enough cash to cover the estimated cost of the trade.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place the market order and confirm the execution details (price, total cost) back to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully executes the trade and provides a confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully executes the trade and provides a confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

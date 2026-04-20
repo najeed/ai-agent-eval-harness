@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the top available free agent and a realistic trade target for the desired position.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies one free agent and one trade target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies one free agent and one trade target.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the projected salary cost of the free agent against the cost of the players and assets required for the trade.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines that signing the free agent is the more cost-effective option."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines that signing the free agent is the more cost-effective option.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report for the GM recommending they pursue the free agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a report with a clear, financially-driven recommendation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a report with a clear, financially-driven recommendation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

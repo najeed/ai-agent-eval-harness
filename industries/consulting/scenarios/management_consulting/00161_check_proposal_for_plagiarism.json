@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Scan the draft proposal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ingests the document text."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ingests the document text.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare text sections against a database of past proposals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies sections with high similarity to previous work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies sections with high similarity to previous work.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare text sections against public web sources.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies any text that matches public sources."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies any text that matches public sources.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a report highlighting all sections with potential plagiarism issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a clear report for a human to review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a clear report for a human to review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

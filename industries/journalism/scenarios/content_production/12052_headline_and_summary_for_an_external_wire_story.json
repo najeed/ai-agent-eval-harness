@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Read the wire story to understand its key points.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent comprehends the story."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent comprehends the story.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write a new, original headline that fits the publication's tone and style.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A suitable headline is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A suitable headline is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Write a brief summary to be used as a teaser on the homepage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A concise and engaging summary is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A concise and engaging summary is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Publish the wire story with the new headline and summary to the CMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The story is published on the site."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The story is published on the site.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

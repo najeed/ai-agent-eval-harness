@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Randomly select a sample of items from the newly arrived shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A worker pulls a sample of 10 units for inspection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A worker pulls a sample of 10 units for inspection.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inspect the sample against the product's quality specifications.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspection reveals minor cosmetic defects that are outside the acceptable tolerance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspection reveals minor cosmetic defects that are outside the acceptable tolerance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reject the shipment and notify the supplier of the quality issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent formally rejects the shipment and communicates the reason to the supplier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent formally rejects the shipment and communicates the reason to the supplier.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

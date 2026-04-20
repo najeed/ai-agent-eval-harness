@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Draft an interchange agreement document that specifies the location, liability terms, and data exchange protocols.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A legal agreement is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A legal agreement is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send the draft to the partner railroad for their review and approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The document is sent for review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The document is sent for review.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once both parties agree, configure the system to allow for the electronic exchange of interchange reports (EDI 418) with the partner railroad.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system is set up for data exchange."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system is set up for data exchange.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Activate the agreement. Now, when cars are exchanged, the system will automatically send and receive electronic interchange records.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The interchange process is now automated and governed by the agreement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The interchange process is now automated and governed by the agreement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

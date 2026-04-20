@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Generate a report of all tap-on/tap-off data from the fare card system for the last month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully exports the raw ridership data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully exports the raw ridership data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Aggregate the data to determine the total number of boardings per route.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The data is processed to show total ridership for each route."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The data is processed to show total ridership for each route.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify the top 5 busiest routes and the top 10 busiest individual bus stops.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis correctly identifies the most heavily used parts of the network."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis correctly identifies the most heavily used parts of the network.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a visualization (e.g., a heatmap) of the busiest stops and include it in a planning report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear, data-driven report is created to aid in decision-making."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear, data-driven report is created to aid in decision-making.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

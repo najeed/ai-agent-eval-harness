@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve MLS data for the last quarter for a specific zip code (e.g., median sales price, days on market, inventory levels).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pulls the key market statistics from the MLS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pulls the key market statistics from the MLS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the data to the previous quarter and the same quarter last year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the percentage change for key metrics to identify trends."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the percentage change for key metrics to identify trends.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate charts and write a brief summary of the market trends for the newsletter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A summary with data visualizations is created, ready for inclusion in marketing materials."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A summary with data visualizations is created, ready for inclusion in marketing materials.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

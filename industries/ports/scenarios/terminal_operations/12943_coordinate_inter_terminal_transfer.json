@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a request to move a container from Terminal A to Terminal B.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner receives the work order with the container ID and destination."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner receives the work order with the container ID and destination.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a job for a terminal tractor to pick up the container from its location in Terminal A.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is created for a tractor to move the container."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is created for a tractor to move the container.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the driver to exit Terminal A's gate and enter Terminal B's gate, and assign a destination yard slot in Terminal B.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates the necessary gate passes and a new yard location for the container, and the driver is given clear instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates the necessary gate passes and a new yard location for the container, and the driver is given clear instructions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule the interview with the player and a reporter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a suitable time and books the interview."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a suitable time and books the interview.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "After the interview is filmed, ingest the raw footage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent loads the footage into the editing system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent loads the footage into the editing system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Edit the interview down to a 3-minute segment, adding graphics and background music.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces the final, ready-to-air video segment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces the final, ready-to-air video segment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

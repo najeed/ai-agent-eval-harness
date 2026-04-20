@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Forecast the total gas demand for all customers for the next day based on weather and historical data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates an hourly gas demand forecast."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates an hourly gas demand forecast.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit a nomination to the pipeline operator's electronic bulletin board for the forecasted volume.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully submits the gas nomination."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully submits the gas nomination.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive confirmation from the pipeline that the nomination has been scheduled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System receives and logs the confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System receives and logs the confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

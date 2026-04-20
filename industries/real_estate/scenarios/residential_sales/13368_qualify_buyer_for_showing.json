@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "When a showing is requested, ask the buyer's agent if their client is pre-approved for a mortgage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent inquires about the buyer's qualification status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent inquires about the buyer's qualification status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request a copy of the buyer's pre-approval letter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The listing agent receives the pre-approval letter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The listing agent receives the pre-approval letter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the pre-approval is verified, approve the showing request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The showing is confirmed after the buyer's financial ability is verified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The showing is confirmed after the buyer's financial ability is verified.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

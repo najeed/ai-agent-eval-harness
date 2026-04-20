@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the pending time-off requests in the HRIS manager self-service portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager successfully navigates to the approval queue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager successfully navigates to the approval queue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the employee's request and check the team calendar for potential conflicts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager sees no conflicts with other team members' time off."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager sees no conflicts with other team members' time off.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the time-off request in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager clicks 'Approve', which notifies the employee and updates their leave balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager clicks 'Approve', which notifies the employee and updates their leave balance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

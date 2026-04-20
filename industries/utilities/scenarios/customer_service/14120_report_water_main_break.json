@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the exact location of the suspected break.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately records the address and cross-streets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately records the address and cross-streets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the network management system for any pressure alarms in that area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms low-pressure alarms on the corresponding water main."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms low-pressure alarms on the corresponding water main.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch an emergency water crew to the location to assess the situation and begin repairs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a high-priority work order for the water department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a high-priority work order for the water department.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

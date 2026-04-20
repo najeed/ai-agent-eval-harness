@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the farmer's active crop insurance policy details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves the correct policy information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves the correct policy information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather information about the hail event, including date, time, and estimated percentage of crop loss.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly documents the details of the loss event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly documents the details of the loss event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a First Notice of Loss (FNOL) and submit it to the insurance provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates and submits the FNOL document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates and submits the FNOL document.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer's trial account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct trial account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct trial account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Present the available paid plans and help the customer choose the right one.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent helps the customer select the 'Business' plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent helps the customer select the 'Business' plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Convert the trial account to a paid account, preserving all the user's data and settings, and process the first payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully upgrades the account without data loss."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully upgrades the account without data loss.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

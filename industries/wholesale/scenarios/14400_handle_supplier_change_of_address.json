@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Receive the change of address notification from the supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the new address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the new address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the supplier's record in the procurement system with the new address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the supplier's information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the supplier's information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

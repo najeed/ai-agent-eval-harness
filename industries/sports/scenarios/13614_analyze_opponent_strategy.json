@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather video footage and statistical data from the opponent's last five games.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a complete dataset for the opponent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a complete dataset for the opponent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to identify common formations, set-piece strategies, and key player tendencies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that the opponent frequently uses a high-press defense and targets their star striker on counter-attacks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that the opponent frequently uses a high-press defense and targets their star striker on counter-attacks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a pre-game report for the coaching staff highlighting the opponent's key strategies and potential weaknesses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a concise, actionable report for the coaches."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a concise, actionable report for the coaches.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

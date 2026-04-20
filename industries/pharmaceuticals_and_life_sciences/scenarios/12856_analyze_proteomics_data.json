@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Process the raw mass spectrometry data to identify and quantify peptides.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully runs the data through a processing pipeline like MaxQuant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully runs the data through a processing pipeline like MaxQuant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform statistical analysis on the quantified protein data to find significant changes between sample groups.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs a t-test and identifies a list of proteins with statistically significant expression changes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs a t-test and identifies a list of proteins with statistically significant expression changes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform a pathway analysis on the list of significant proteins.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses a tool like GSEA or DAVID to find that the changed proteins are predominantly involved in the 'inflammatory response' pathway."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses a tool like GSEA or DAVID to find that the changed proteins are predominantly involved in the 'inflammatory response' pathway.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a volcano plot to visualize the results.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a plot showing the statistical significance versus the magnitude of change for all proteins."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a plot showing the statistical significance versus the magnitude of change for all proteins.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the current software version of the target router.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the router is running an outdated version."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the router is running an outdated version.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Push the new software image to the router's storage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully transfers the new software file to the router."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully transfers the new software file to the router.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule a reboot for the router during the approved maintenance window to apply the upgrade.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the reboot for 2 AM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the reboot for 2 AM.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

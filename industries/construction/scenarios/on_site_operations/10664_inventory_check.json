@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the current inventory level for '1-inch Copper Pipe' from the inventory management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System shows 500 feet of pipe in inventory."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System shows 500 feet of pipe in inventory.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the on-hand quantity with the forecasted need of 600 feet for the upcoming week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a shortfall of 100 feet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a shortfall of 100 feet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a purchase order for an additional 200 feet of pipe to cover the shortfall and provide a buffer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new PO is created to prevent a material shortage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new PO is created to prevent a material shortage.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

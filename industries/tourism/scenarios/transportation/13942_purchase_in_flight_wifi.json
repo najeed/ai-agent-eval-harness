@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the passenger's flight details (flight number, seat number).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the passenger's identity and location on the aircraft."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the passenger's identity and location on the aircraft.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Present the available Wi-Fi pass options and their prices.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent offers a '1-Hour Pass' and a 'Full Flight Pass'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent offers a '1-Hour Pass' and a 'Full Flight Pass'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the payment for the selected 'Full Flight Pass' and provide access instructions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sells the pass and guides the user on how to connect."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sells the pass and guides the user on how to connect.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

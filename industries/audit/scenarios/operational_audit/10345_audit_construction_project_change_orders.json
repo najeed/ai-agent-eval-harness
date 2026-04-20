@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the log of all change orders submitted for the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor has a complete list of project change orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor has a complete list of project change orders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a sample of 10 high-value change orders for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A risk-based sample is selected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A risk-based sample is selected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each sampled change order, verify that it was reviewed and approved by the project manager and a company executive, as required by the project governance policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms all sampled change orders had the required levels of approval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms all sampled change orders had the required levels of approval.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

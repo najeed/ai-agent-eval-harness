@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the checkout funnel and identify the step with the highest drop-off rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the 'shipping information' step has the highest exit rate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the 'shipping information' step has the highest exit rate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Formulate a hypothesis in the 'If we..., then..., because...' format.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a clear hypothesis: 'If we change the CTA button color from blue to orange, then the conversion rate will increase, because orange has higher contrast and will draw more attention.'"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a clear hypothesis: 'If we change the CTA button color from blue to orange, then the conversion rate will increase, because orange has higher contrast and will draw more attention.'",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a mock-up of the proposed change (the 'B' version).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent designs a visual representation of the test variant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent designs a visual representation of the test variant.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

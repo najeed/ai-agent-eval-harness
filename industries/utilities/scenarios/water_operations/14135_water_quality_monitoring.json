@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive and acknowledge the high turbidity alarm from the plant's SCADA system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System logs the critical water quality alarm."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System logs the critical water quality alarm.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check upstream sensors and weather data to identify a potential cause, such as a heavy rainfall event causing runoff.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System correlates the turbidity spike with a recent thunderstorm in the watershed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System correlates the turbidity spike with a recent thunderstorm in the watershed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Automatically adjust the coagulant dosage in the treatment process to handle the increased turbidity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System sends a new setpoint to the chemical dosing pumps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System sends a new setpoint to the chemical dosing pumps.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

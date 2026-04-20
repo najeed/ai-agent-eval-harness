@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the company's executive employment agreement template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Incorporate the specific terms from the offer letter, such as salary, bonus potential, and start date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent customizes the template with the executive's specific deal terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent customizes the template with the executive's specific deal terms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Ensure the non-compete and confidentiality clauses are compliant with state law.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the restrictive covenants are enforceable in the relevant jurisdiction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the restrictive covenants are enforceable in the relevant jurisdiction.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

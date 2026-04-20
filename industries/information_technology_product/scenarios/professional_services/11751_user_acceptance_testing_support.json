@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the bug report from the UAT tester.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant understands the reported issue and the expected behavior."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant understands the reported issue and the expected behavior.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the workflow's configuration settings in the admin panel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant finds a misconfigured rule in the workflow logic (e.g., a condition is 'AND' instead of 'OR')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant finds a misconfigured rule in the workflow logic (e.g., a condition is 'AND' instead of 'OR').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Correct the configuration and ask the UAT tester to re-test the scenario.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant fixes the issue, and the tester confirms the workflow now functions correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant fixes the issue, and the tester confirms the workflow now functions correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

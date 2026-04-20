@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the first condition: users who triggered a 'product_view' event for a specific SKU.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets up the first rule in the CDP's segmentation tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets up the first rule in the CDP's segmentation tool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Define the second condition: users who have NOT triggered a 'purchase' event for that same SKU.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds an exclusion rule to the segment definition."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds an exclusion rule to the segment definition.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Save the segment as 'Product Viewers - No Purchase' for use in retargeting campaigns.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates and saves the new audience segment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates and saves the new audience segment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

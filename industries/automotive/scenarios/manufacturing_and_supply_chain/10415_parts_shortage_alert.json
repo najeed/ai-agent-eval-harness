@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the part number and the supplier for the component.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the part and the supplier 'DisplayTech Inc'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the part and the supplier 'DisplayTech Inc'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of any in-transit shipments of that part from the supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the next shipment is delayed and now scheduled for tomorrow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the next shipment is delayed and now scheduled for tomorrow.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the supplier to request an expedited, emergency shipment and search for alternative, certified suppliers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent contacts the supplier to arrange an emergency air freight shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent contacts the supplier to arrange an emergency air freight shipment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

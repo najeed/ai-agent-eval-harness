@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that the rock surface has been properly scaled (cleared of loose rock) and prepared for shotcreting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The surface is confirmed to be ready."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The surface is confirmed to be ready.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Operate the robotic shotcrete sprayer to apply a layer of the required thickness (e.g., 100mm) to the rock surface.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The shotcrete is applied evenly and to the correct thickness."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The shotcrete is applied evenly and to the correct thickness.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Take samples of the shotcrete during application to be tested for compressive strength to ensure it meets the design specification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "QA/QC samples are taken and sent for testing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "QA/QC samples are taken and sent for testing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the case to determine if the owner was a 'responsible person' and if the failure to pay was 'willful'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent analyzes the facts against the legal standards for the penalty."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent analyzes the facts against the legal standards for the penalty.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather evidence to support the owner's defense (e.g., they had no control over finances).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles relevant documents and testimony."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles relevant documents and testimony.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare a formal protest to appeal the proposed penalty.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts and files an appeal to dispute the penalty assessment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts and files an appeal to dispute the penalty assessment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

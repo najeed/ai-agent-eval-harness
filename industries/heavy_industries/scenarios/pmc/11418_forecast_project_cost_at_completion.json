@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the current budget, the actual costs to date, and the earned value for the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully gathers all necessary financial data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully gathers all necessary financial data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the Cost Performance Index (CPI) for the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the CPI to be 0.95, indicating the project is slightly over budget."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the CPI to be 0.95, indicating the project is slightly over budget.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use the CPI to calculate the new EAC, and update the project's financial forecast.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the new EAC and updates the official project forecast."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the new EAC and updates the official project forecast.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

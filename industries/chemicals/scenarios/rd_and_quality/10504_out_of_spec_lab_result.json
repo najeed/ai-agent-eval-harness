@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Record the OOS result in the LIMS, which should automatically place a hold on the batch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly enters the result, and the LIMS status for the batch changes to 'On Hold'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly enters the result, and the LIMS status for the batch changes to 'On Hold'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the calibration records for the instrument used for the test to rule out equipment error.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the instrument was within its calibration period."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the instrument was within its calibration period.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate a formal lab investigation, which includes scheduling a re-test on a new sample.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new OOS investigation record and requests a new sample from the warehouse."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new OOS investigation record and requests a new sample from the warehouse.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

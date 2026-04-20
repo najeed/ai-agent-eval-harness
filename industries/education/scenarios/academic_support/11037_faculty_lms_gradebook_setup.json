@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the faculty member and the course.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the faculty member's identity and course shell."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the faculty member's identity and course shell.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the LMS as a support user to view the course.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully gains view-only access to the course's LMS page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully gains view-only access to the course's LMS page.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Walk the faculty member through the steps to create weighted grade categories (e.g., Assignments 40%, Midterm 30%, Final 30%).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear, step-by-step guidance, resulting in a correctly configured gradebook."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear, step-by-step guidance, resulting in a correctly configured gradebook.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and verify their registration eligibility for the semester.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student has no holds and their registration window is open."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student has no holds and their registration window is open.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the availability of the requested course (e.g., 'CS101').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that the course has open seats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that the course has open seats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the course registration and confirm the updated schedule with the student.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the course to the student's schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the course to the student's schedule.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

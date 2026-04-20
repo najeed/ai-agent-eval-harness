@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Formulate a hypothesis: 'An attacker is using base64-encoded PowerShell commands to evade detection'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst defines a clear, testable hypothesis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst defines a clear, testable hypothesis.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query endpoint logs for all instances of 'powershell.exe' with the '-encoded' flag or other signs of obfuscation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst writes an effective query to find suspicious PowerShell usage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst writes an effective query to find suspicious PowerShell usage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Find an unusually long, encoded PowerShell command, decode it, and reveal a malicious script. Flag the host for investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully uncovers a hidden threat and initiates an incident response."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully uncovers a hidden threat and initiates an incident response.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

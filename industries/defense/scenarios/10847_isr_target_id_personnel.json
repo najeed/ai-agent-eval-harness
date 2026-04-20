@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the drone video feed for individuals matching the general description of the HVI.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst isolates several potential candidates from the video."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst isolates several potential candidates from the video.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Extract high-quality still images of the candidates' faces from the video.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully extracts clear facial images."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully extracts clear facial images.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the extracted images through a facial recognition database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system returns a high-confidence match, positively identifying the HVI."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system returns a high-confidence match, positively identifying the HVI.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

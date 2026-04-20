@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the alert from the self-checkout kiosk.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate is notified that a customer needs assistance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate is notified that a customer needs assistance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attempt to scan the item. If it fails, look up the item manually by name or department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate finds the item in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate finds the item in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the item to the customer's transaction manually and clear the error so the customer can continue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The item is added, and the customer is able to complete their purchase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The item is added, and the customer is able to complete their purchase.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a system alert that a carrier's insurance expires in 30 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is notified of the pending expiration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is notified of the pending expiration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send an automated request to the carrier for their updated insurance certificate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An email is sent to the carrier's compliance contact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An email is sent to the carrier's compliance contact.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive the new certificate from the carrier and upload it to their profile in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully uploads the new document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully uploads the new document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the expiration date in the carrier's profile, which removes the compliance alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The carrier's profile is updated, and they remain in good standing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The carrier's profile is updated, and they remain in good standing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

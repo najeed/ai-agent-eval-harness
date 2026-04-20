@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the student's admission status and eligibility for housing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student has been admitted and is eligible."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student has been admitted and is eligible.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the student to the online housing application portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the correct URL and explains the application steps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the correct URL and explains the application steps.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the different housing options (e.g., dorm styles, meal plans) and the lottery process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the housing options and how assignments are made."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the housing options and how assignments are made.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

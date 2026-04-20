@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the details of the completed trade, including the final volume, price, and counterparty.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The final deal ticket is retrieved from the trade capture system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The final deal ticket is retrieved from the trade capture system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate an invoice and send it to the counterparty.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A correct invoice is created and sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A correct invoice is created and sent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the payment has been received and then issue a confirmation of title transfer to the buyer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The payment is confirmed, title transfer is complete, and the trade is marked as 'Settled'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The payment is confirmed, title transfer is complete, and the trade is marked as 'Settled'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

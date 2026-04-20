@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the citizen using their SSN, filing status, and exact refund amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely identifies the citizen's tax return."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely identifies the citizen's tax return.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the tax refund in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the refund was approved and is scheduled for direct deposit next week."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the refund was approved and is scheduled for direct deposit next week.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the status update, including the scheduled payment date, to the citizen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the refund status and date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the refund status and date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

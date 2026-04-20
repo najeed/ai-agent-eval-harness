@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Disassemble the turbine section according to the engine overhaul manual.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the manual to safely disassemble the section."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the manual to safely disassemble the section.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a detailed visual and boroscopic inspection of each turbine blade, looking for cracks, erosion, or heat damage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent inspects all blades and identifies three that need to be replaced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent inspects all blades and identifies three that need to be replaced.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Replace the damaged blades, reassemble the section, and perform a balance check.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent replaces the blades and confirms the reassembled turbine is correctly balanced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent replaces the blades and confirms the reassembled turbine is correctly balanced.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

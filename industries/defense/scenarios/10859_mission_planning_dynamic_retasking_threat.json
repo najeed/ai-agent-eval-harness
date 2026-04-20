@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a real-time threat warning about the new SAM system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator acknowledges the pop-up threat alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator acknowledges the pop-up threat alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately generate a new, safer route for the aircraft that avoids the SAM system's engagement envelope.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator quickly creates a new route that reduces risk to the aircraft."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator quickly creates a new route that reduces risk to the aircraft.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Transmit the new route to the aircraft and recommend they engage their own defensive systems.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator successfully re-routes the aircraft and provides a tactical recommendation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator successfully re-routes the aircraft and provides a tactical recommendation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

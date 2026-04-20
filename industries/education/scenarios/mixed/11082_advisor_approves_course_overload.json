@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and their request to take 21 credits (max is 18).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student's request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student's request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the student's academic record, noting their high GPA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Advisor confirms the student is in good academic standing and capable of the extra workload."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Advisor confirms the student is in good academic standing and capable of the extra workload.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process a credit limit override in the SIS, allowing the student to register for the additional course.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Advisor successfully grants the override, enabling the student to complete their registration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Advisor successfully grants the override, enabling the student to complete their registration.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

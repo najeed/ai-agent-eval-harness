@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the admission order from the ED physician and identify the patient's record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the patient's existing ED encounter in the EHR."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the patient's existing ED encounter in the EHR.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find an available bed on the designated medical-surgical unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses the bed management tool to locate and assign an available bed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses the bed management tool to locate and assign an available bed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the ADT message in the system to change the patient's status from 'outpatient' to 'inpatient' and assign them to the new unit and bed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the admission, and the patient's location is updated throughout the hospital's systems."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the admission, and the patient's location is updated throughout the hospital's systems.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

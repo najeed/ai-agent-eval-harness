@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the population health analytics platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst accesses the main dashboard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst accesses the main dashboard.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a cohort of all patients with a diagnosis of diabetes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a list of all diabetic patients in the population."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a list of all diabetic patients in the population.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply a risk stratification model to the cohort to identify patients with the highest readmission risk scores.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system produces a prioritized list of high-risk patients who should be targeted for care management interventions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system produces a prioritized list of high-risk patients who should be targeted for care management interventions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

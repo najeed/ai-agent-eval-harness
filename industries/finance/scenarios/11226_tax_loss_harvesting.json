@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the client's portfolio for positions with unrealized losses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies three holdings that are currently valued below their purchase price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies three holdings that are currently valued below their purchase price.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for any wash sale rule violations if these positions were sold.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that selling these positions would not violate the wash sale rule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that selling these positions would not violate the wash sale rule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Present the list of potential tax-loss harvesting trades to the advisor for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear, actionable list of securities to sell for tax purposes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear, actionable list of securities to sell for tax purposes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

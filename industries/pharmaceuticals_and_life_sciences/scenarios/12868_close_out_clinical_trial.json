@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Ensure all clinical sites have had a final close-out visit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies in the CTMS that all close-out visits are marked as complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies in the CTMS that all close-out visits are marked as complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a final reconciliation of the Trial Master File (TMF) to ensure all required documents are present and filed correctly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs a TMF completeness report and finds it is 100% complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs a TMF completeness report and finds it is 100% complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Ensure all outstanding payments to vendors and sites have been made.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms with the finance department that all study-related invoices are paid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms with the finance department that all study-related invoices are paid.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Formally archive the study records and update the study status to 'Completed' in the CTMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent archives the TMF and updates the system status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent archives the TMF and updates the system status.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

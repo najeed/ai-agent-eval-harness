@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the customer's current contract details and renewal date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the customer has 6 months left on their contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the customer has 6 months left on their contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a prorated quote for the 20 new seats for the remaining 6 months of the contract.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an accurate prorated quote."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an accurate prorated quote.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the order and co-term the new seats so they will renew along with the original seats.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the new seats and aligns the contract terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the new seats and aligns the contract terms.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

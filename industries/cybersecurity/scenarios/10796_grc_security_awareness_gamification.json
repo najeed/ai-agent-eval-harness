@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Design a points system where employees earn points for completing training, reporting real phishing emails, and passing phishing simulations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager designs a clear and motivating points system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager designs a clear and motivating points system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a public leaderboard that shows the top-scoring employees and departments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager successfully implements the leaderboard to foster competition."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager successfully implements the leaderboard to foster competition.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for small prizes or recognition for the quarterly winners.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager successfully adds an incentive layer to the program, increasing participation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager successfully adds an incentive layer to the program, increasing participation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

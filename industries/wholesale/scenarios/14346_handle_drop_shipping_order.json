@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an order with a 'ship-to' address that is different from the retailer's 'bill-to' address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the order as a drop-shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the order as a drop-shipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a packing slip that shows the retailer's name and logo, not the wholesaler's.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a customized, private-label packing slip."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a customized, private-label packing slip.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process and ship the order directly to the end customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is fulfilled and shipped to the correct address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is fulfilled and shipped to the correct address.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'High Methane Level' alert from the landfill monitoring system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the environmental safety alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the environmental safety alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the readings from multiple sensors to confirm the high methane levels are widespread.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the validity of the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the validity of the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Remotely activate the landfill's gas flare system to safely burn off the excess methane.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully activates the flare system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully activates the flare system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

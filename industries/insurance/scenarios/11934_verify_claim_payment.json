@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the beneficiary and the associated claim.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct claim file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct claim file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the payment system for the status of the claim check.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the check was printed and mailed two days ago."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the check was printed and mailed two days ago.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the beneficiary that the check has been sent and provide the check number and mailing date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear update and supporting details to the beneficiary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear update and supporting details to the beneficiary.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

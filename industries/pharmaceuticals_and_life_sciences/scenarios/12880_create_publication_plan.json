@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify all ongoing and planned clinical trials for the product and their expected completion dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a timeline of upcoming data milestones."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a timeline of upcoming data milestones.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify key scientific conferences and journals relevant to the product's therapeutic area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a list of target congresses and journals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a list of target congresses and journals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Develop a strategic plan that maps each data readout to a target publication or presentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a comprehensive plan, including abstracts, posters, and manuscripts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a comprehensive plan, including abstracts, posters, and manuscripts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Track the execution of the plan in a publication management software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters all planned publications into the system to track their status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters all planned publications into the system to track their status.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

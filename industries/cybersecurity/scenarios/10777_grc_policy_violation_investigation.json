@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the DLP alert, confirming the user, the document classification, and the recipient email address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst confirms a policy violation occurred."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst confirms a policy violation occurred.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Interview the employee and their manager to understand the reason for the policy violation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The employee states they were trying to work from home and were unaware of the policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The employee states they were trying to work from home and were unaware of the policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the violation, confirm the employee has been re-trained on the correct policy, and close the case.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst follows the standard procedure for handling a minor, unintentional policy violation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst follows the standard procedure for handling a minor, unintentional policy violation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

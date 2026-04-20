@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather evidence that definitively proves the rumor is false (e.g., official statements, documents, primary source confirmation).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Irrefutable evidence is collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Irrefutable evidence is collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write a clear, concise article with a direct headline like 'No, [Public Figure] Did Not Do [False Claim]'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A direct and unambiguous debunking article is written."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A direct and unambiguous debunking article is written.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Share the article widely on all social media platforms, especially in replies to influential accounts that are spreading the misinformation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correction is proactively distributed to counter the rumor's spread."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correction is proactively distributed to counter the rumor's spread.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

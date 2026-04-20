@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all core brand assets: logo files, color palette (hex codes), and font families.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all the necessary brand assets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all the necessary brand assets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a document that specifies rules for logo usage (e.g., clear space, minimum size).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly defines how the logo should and should not be used."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly defines how the logo should and should not be used.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add sections for the primary and secondary color palettes and typography rules (e.g., font sizes for headlines vs. body text).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a complete visual style guide."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a complete visual style guide.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

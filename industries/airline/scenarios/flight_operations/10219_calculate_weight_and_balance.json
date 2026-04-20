@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the final passenger count, baggage weight, and cargo weight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles all the final weight data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles all the final weight data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Input the data into a weight and balance calculator to determine the aircraft's takeoff weight and center of gravity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the final weight and balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the final weight and balance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the takeoff weight and center of gravity are within the aircraft's operational limits and send the final load sheet to the flight crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the aircraft is safe for departure and transmits the load sheet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the aircraft is safe for departure and transmits the load sheet.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

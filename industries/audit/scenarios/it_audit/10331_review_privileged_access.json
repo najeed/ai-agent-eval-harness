@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain a list of all users with 'root' or 'administrator' access on all Tier 1 production servers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor receives the list of privileged users."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor receives the list of privileged users.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the access list against the job titles and roles of the users to determine if the access is appropriate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor identifies two users in the marketing department who have administrator access to a financial server."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor identifies two users in the marketing department who have administrator access to a financial server.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend that the inappropriate access be revoked immediately.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A high-priority finding is issued to the IT team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A high-priority finding is issued to the IT team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

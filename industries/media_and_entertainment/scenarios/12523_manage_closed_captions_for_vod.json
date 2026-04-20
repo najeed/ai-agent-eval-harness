@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the movie and retrieve its associated closed caption file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the specific movie asset and its caption file (e.g., an SRT file)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the specific movie asset and its caption file (e.g., an SRT file).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the caption file's timestamps against the video file's timecode.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms a consistent 2-second delay in the caption timestamps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms a consistent 2-second delay in the caption timestamps.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply a global timestamp offset to the caption file to correct the sync issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adjusts all timestamps in the caption file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adjusts all timestamps in the caption file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Replace the faulty caption file on the streaming server with the corrected version.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the file on the server."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the file on the server.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

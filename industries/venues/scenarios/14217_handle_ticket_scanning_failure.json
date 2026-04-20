@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Ask the guest for their name or email address to look up their order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the guest's information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the guest's information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the ticketing system for the customer's order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the order and confirms it is valid for today's event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the order and confirms it is valid for today's event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Re-issue a new QR code to the guest's email.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends a new digital ticket to the guest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends a new digital ticket to the guest.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Instruct the guest to refresh their email and try scanning the new ticket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new ticket scans successfully, and the guest is admitted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new ticket scans successfully, and the guest is admitted.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

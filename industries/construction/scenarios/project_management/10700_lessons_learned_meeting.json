@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule a lessons learned meeting with the key project team members.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A meeting is scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A meeting is scheduled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the meeting, document what went well and what could be improved.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of successes and areas for improvement is documented."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of successes and areas for improvement is documented.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Archive the lessons learned document in the company's knowledge base for future reference.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The document is successfully archived and tagged for future projects."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The document is successfully archived and tagged for future projects.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

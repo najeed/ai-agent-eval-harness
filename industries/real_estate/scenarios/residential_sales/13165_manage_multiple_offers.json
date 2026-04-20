@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge receipt of all offers to the respective buyers' agents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Confirmation emails are sent for all three offers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Confirmation emails are sent for all three offers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a spreadsheet or summary sheet comparing the key terms of each offer (price, contingencies, closing date, financing).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear, side-by-side comparison of the offers is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear, side-by-side comparison of the offers is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule a meeting with the seller to present the offer summary and advise on next steps (accept, counter, or ask for highest and best).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A meeting is scheduled, and the seller is sent the summary sheet in advance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A meeting is scheduled, and the seller is sent the summary sheet in advance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

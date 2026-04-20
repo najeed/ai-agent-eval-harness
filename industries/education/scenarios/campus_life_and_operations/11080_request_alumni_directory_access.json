@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the alumnus and verify their identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely identifies the alumnus."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely identifies the alumnus.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the alumnus to the login page for the alumni portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the correct URL."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the correct URL.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the privacy policies of the directory and how to use the search function.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the rules and functionality of the directory."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the rules and functionality of the directory.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

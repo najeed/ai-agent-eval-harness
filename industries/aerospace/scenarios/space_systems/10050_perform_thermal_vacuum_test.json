@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Place the satellite inside the TVAC chamber and connect all test umbilicals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly installs the satellite in the chamber."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly installs the satellite in the chamber.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Evacuate the air from the chamber to create a vacuum and cycle the temperature between its hot and cold operational limits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent operates the chamber to simulate the space environment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent operates the chamber to simulate the space environment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "During the temperature cycles, operate the satellite and monitor its telemetry to verify all systems function correctly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs functional tests and confirms the satellite operates nominally at both temperature extremes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs functional tests and confirms the satellite operates nominally at both temperature extremes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

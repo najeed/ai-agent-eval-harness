@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the unit's details (beds, baths, sqft, amenities).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the key features of the unit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the key features of the unit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a rental market analysis to find what similar units in the area are currently renting for.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds at least 5 comparable rental listings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds at least 5 comparable rental listings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set the new asking rent for the unit based on the market analysis and notify the property owner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the asking rent in the system and communicates the data-backed price to the owner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the asking rent in the system and communicates the data-backed price to the owner.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Navigate to the performance management module in the HRIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager logs into the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager logs into the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the employee and choose the option to add 'anytime feedback'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager finds the correct feature in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager finds the correct feature in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the positive feedback and save it to the employee's record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager successfully logs the feedback, which will be visible during the next formal review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager successfully logs the feedback, which will be visible during the next formal review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

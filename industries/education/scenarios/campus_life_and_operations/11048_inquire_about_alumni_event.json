@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the alumnus and the event they are interested in (e.g., 'Alumni Tailgate Party').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the alumnus's identity and the event details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the alumnus's identity and the event details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the event details, including cost, time, location, and registration deadline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides all relevant event information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides all relevant event information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assist the alumnus with completing the event registration over the phone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully registers the alumnus and processes their payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully registers the alumnus and processes their payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

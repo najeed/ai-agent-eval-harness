@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Listen to the customer's full complaint without interruption and express empathy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent allows the customer to voice their concerns fully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent allows the customer to voice their concerns fully.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather details about the incident, including the date of the visit and the salesperson's name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all relevant details of the incident."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all relevant details of the incident.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apologize on behalf of the dealership, log the complaint, and assure the customer that the sales manager will investigate and contact them directly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully de-escalates the situation and creates a formal complaint ticket for the manager."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully de-escalates the situation and creates a formal complaint ticket for the manager.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

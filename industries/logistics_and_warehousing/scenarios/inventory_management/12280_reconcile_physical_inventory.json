@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Upload the final physical count file into the inventory system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The physical counts are loaded into the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The physical counts are loaded into the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a variance report comparing the system's on-hand quantities to the physical counts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is generated showing all items with discrepancies (shrinkage or overages)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is generated showing all items with discrepancies (shrinkage or overages).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the total financial value of the net variance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The total value of the inventory adjustment is calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The total value of the inventory adjustment is calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Post the inventory adjustments to update the system quantities and send the financial entry to the general ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system inventory is updated to match the physical count, and the financial impact is recorded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system inventory is updated to match the physical count, and the financial impact is recorded.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

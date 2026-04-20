@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The driver arrives at the pickup location at the scheduled time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver is on time at the correct location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver is on time at the correct location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The driver waits for the required period (e.g., 5 minutes).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver follows the waiting policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver follows the waiting policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The driver contacts dispatch to report that the passenger is a no-show.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dispatch is notified of the no-show."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dispatch is notified of the no-show.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Dispatch logs the no-show event on the passenger's account (as excessive no-shows can lead to suspension) and instructs the driver to proceed to their next pickup.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The no-show is recorded, and the driver continues their route."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The no-show is recorded, and the driver continues their route.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain multiple bids for the roof replacement and present them to the owner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The owner is presented with several quotes to choose from."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The owner is presented with several quotes to choose from.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Formally request the necessary funds from the owner to cover the cost of the selected bid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal request for an owner contribution is sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal request for an owner contribution is sent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive the funds from the owner and record the contribution in the property's accounting ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The owner contribution is received and correctly recorded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The owner contribution is received and correctly recorded.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the availability of the proposed company name with the Delaware Secretary of State.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the name is available for use."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the name is available for use.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the Certificate of Formation with the required information (company name, registered agent).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares the necessary formation document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares the necessary formation document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "File the Certificate of Formation with the Delaware Secretary of State and pay the filing fee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The LLC is successfully formed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The LLC is successfully formed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the applicant's personal and contact information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately collects the applicant's basic details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately collects the applicant's basic details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ask a series of health and lifestyle questions (e.g., smoking status, major health conditions).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent captures all required underwriting questions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent captures all required underwriting questions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the application to underwriting and schedule a required paramedical exam.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the application and schedules the exam for the applicant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the application and schedules the exam for the applicant.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

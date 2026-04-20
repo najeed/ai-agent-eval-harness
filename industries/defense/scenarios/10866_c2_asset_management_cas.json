@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the locations of friendly forces and the enemy target.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "JTAC has a precise understanding of the tactical situation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "JTAC has a precise understanding of the tactical situation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the most appropriate available CAS aircraft (e.g., A-10 for loitering, F-16 for fast strike) for the mission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "JTAC selects the best aircraft for the specific target and situation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "JTAC selects the best aircraft for the specific target and situation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the aircraft with a 9-line CAS brief to guide it onto the target and give final clearance to attack.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "JTAC communicates the information clearly and accurately, resulting in a successful strike with no friendly fire."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "JTAC communicates the information clearly and accurately, resulting in a successful strike with no friendly fire.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

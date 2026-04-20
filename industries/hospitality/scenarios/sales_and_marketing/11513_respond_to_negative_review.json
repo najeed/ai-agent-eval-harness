@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the guest's stay details from the information in the review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager successfully finds the guest's past reservation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager successfully finds the guest's past reservation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a public response that is empathetic, apologizes for the specific issue, and avoids being defensive.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A well-written, professional response is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A well-written, professional response is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post the response to the review website and offer to connect with the guest offline to resolve the matter further.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The response is posted, and it includes contact information for follow-up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The response is posted, and it includes contact information for follow-up.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

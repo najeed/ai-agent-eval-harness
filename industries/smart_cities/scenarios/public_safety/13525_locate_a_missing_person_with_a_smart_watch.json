@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a missing person report and the ID of their registered smart watch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the critical device ID."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the critical device ID.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the real-time location of the smart watch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system returns the current GPS coordinates of the watch."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system returns the current GPS coordinates of the watch.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a police unit to the reported coordinates to find the missing person.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends police to the exact location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends police to the exact location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

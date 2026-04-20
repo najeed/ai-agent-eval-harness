@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Assess the passenger's condition and provide first aid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Cabin crew provides immediate medical assistance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Cabin crew provides immediate medical assistance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Make a PA announcement asking if there is a doctor or other medical professional on board.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A doctor on board volunteers to assist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A doctor on board volunteers to assist.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the airline's ground-based medical advisory service via satellite phone for expert advice and inform the captain of the situation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Crew communicates with medical experts and the captain to decide if a diversion is necessary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Crew communicates with medical experts and the captain to decide if a diversion is necessary.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the client's rejection of the change order, noting the reason 'Cost too high'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The rejection is logged in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The rejection is logged in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the status of the change order to 'Rejected' in the project management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The change order status is updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The change order status is updated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the project team that the added scope will not be proceeding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project team is informed not to perform the work in the rejected change order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project team is informed not to perform the work in the rejected change order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

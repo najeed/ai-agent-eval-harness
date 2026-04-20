@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the customer's identity and their roadside assistance plan status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the customer has an active roadside assistance plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the customer has an active roadside assistance plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain the customer's precise location using their phone's GPS or by asking for an address/cross-streets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully captures the customer's location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully captures the customer's location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a local service provider to change the tire and provide the customer with an estimated time of arrival.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches a tow truck and gives the customer a 45-minute ETA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches a tow truck and gives the customer a 45-minute ETA.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

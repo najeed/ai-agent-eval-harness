@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Inventory all equipment to be redeployed, noting its current condition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner creates a complete inventory with maintenance status for each item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner creates a complete inventory with maintenance status for each item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule strategic transport (e.g., cargo ships) for the return journey.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner books the necessary transport to move all equipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner books the necessary transport to move all equipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Coordinate with the home base depot to schedule the maintenance and repair for the returning equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner successfully schedules the 'reset' phase for the unit's equipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner successfully schedules the 'reset' phase for the unit's equipment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

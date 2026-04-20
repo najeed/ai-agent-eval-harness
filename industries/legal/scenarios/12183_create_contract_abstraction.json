@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "For each lease, identify and extract key data points like Landlord, Tenant, Rent, Commencement Date, Expiration Date, and Renewal Options.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent extracts all the defined data points from the lease."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent extracts all the defined data points from the lease.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Populate a new row in a master spreadsheet with the extracted data for each lease.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the data to the summary spreadsheet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the data to the summary spreadsheet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Repeat the process for all leases in the portfolio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete contract abstraction spreadsheet is created for the entire portfolio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete contract abstraction spreadsheet is created for the entire portfolio.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

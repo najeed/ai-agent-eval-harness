@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Take high-resolution photos of the rock face using photogrammetry.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A 3D model of the rock face is created from the photos."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A 3D model of the rock face is created from the photos.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "On the 3D model, identify and trace the major structural features.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All significant geological structures are digitized."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All significant geological structures are digitized.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the orientation of the structures to assess the risk of rockfalls or wedge failures and update the ground support design if needed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The stability of the rock face is assessed, and the support plan is confirmed or updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The stability of the rock face is assessed, and the support plan is confirmed or updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Model the entire logistics chain, including the mine, rail system, and port, with their respective capacities and constraints.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete model of the supply chain is built."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete model of the supply chain is built.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a simulation of the model to see how the different components interact.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The simulation shows that the rail system has sufficient capacity, but the ship loader at the port is the bottleneck."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The simulation shows that the rail system has sufficient capacity, but the ship loader at the port is the bottleneck.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend a project to upgrade the ship loader to increase its capacity and debottleneck the entire system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A capital project proposal is created to address the system's main constraint."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A capital project proposal is created to address the system's main constraint.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

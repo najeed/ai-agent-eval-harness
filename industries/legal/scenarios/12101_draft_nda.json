@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Select the firm's standard one-way NDA template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Populate the template with the names and addresses of the disclosing and receiving parties.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly fills in the party information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly fills in the party information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Define the 'Confidential Information' to be protected and set the term of the agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent customizes the key terms of the NDA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent customizes the key terms of the NDA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Prepare the draft NDA for attorney review and sending to the other party.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete draft NDA is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete draft NDA is generated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

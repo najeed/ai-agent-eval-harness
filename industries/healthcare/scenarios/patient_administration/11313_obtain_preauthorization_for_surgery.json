@@ -12,38 +12,46 @@
       {
         "id": "task-0",
         "task_description": "Verify clinician access and patient identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Identity verified/authorized"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Identity verified/authorized",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-1",
         "task_description": "Identify the patient, their insurance, and the CPT code for the planned surgery.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary information for the authorization request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary information for the authorization request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit the preauthorization request to the payer through their provider portal, attaching relevant clinical documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the request with supporting documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the request with supporting documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive and document the authorization number in the patient's record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives an approval and enters the authorization number into the EHR, clearing the procedure for billing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives an approval and enters the authorization number into the EHR, clearing the procedure for billing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

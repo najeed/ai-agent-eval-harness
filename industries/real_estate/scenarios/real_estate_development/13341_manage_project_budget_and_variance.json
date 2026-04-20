@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Input all contractor invoices and change orders into the project accounting system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All project costs are accurately recorded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All project costs are accurately recorded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a monthly budget variance report that compares actual costs to the budgeted amounts for each line item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report highlighting any cost overruns or savings is produced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report highlighting any cost overruns or savings is produced.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the variances to identify the root cause of any significant overruns and present the findings to the project stakeholders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides an explanation for budget variances and suggests corrective actions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides an explanation for budget variances and suggests corrective actions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

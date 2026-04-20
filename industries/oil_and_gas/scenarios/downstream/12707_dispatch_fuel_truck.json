@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the low inventory alert for unleaded gasoline at station #5432.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The alert is acknowledged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The alert is acknowledged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find the nearest available truck and check that it has enough of the required fuel grade.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An available and suitable truck is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An available and suitable truck is identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a delivery order and dispatch the truck to the retail station.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The truck is dispatched with the correct order details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The truck is dispatched with the correct order details.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the internal product specification sheet for 'Jet A-1' fuel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The product spec sheet is displayed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The product spec sheet is displayed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the internal specification against the requirements of ASTM D1655, paying close attention to flash point and freeze point.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The comparison confirms that the company's product meets all requirements of the ASTM standard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The comparison confirms that the company's product meets all requirements of the ASTM standard.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a Certificate of Quality (COQ) to send to the customer confirming compliance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal COQ document is created and ready to be sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal COQ document is created and ready to be sent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

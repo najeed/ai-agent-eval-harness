@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Billing agent receives complaint and delegates technical investigation to network specialist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Delegation is recorded in the coordination namespace."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Delegation is recorded in the coordination namespace.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Network specialist performs diagnostics and writes findings to the network namespace.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Findings reveal a ghost-data bug."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Findings reveal a ghost-data bug.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Billing agent reads network findings and applies credit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Credit applied based on technical evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Credit applied based on technical evidence.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

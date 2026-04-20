@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Draft the new text to be added to the 'Warnings and Precautions' section of the label.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts clear and accurate text describing the new safety risk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts clear and accurate text describing the new safety risk.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Route the proposed labeling change for internal review and approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent circulates the draft to all relevant internal stakeholders for approval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent circulates the draft to all relevant internal stakeholders for approval.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare a labeling supplement for submission to the appropriate health authority (e.g., FDA).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles the necessary submission package."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles the necessary submission package.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Submit the supplement and track it until approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the labeling update and monitors for health authority feedback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the labeling update and monitors for health authority feedback.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

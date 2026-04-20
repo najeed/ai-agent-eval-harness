@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "A scheduled job runs to find all loyalty members with a birthday in the current month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates the target audience list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates the target audience list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system sends each of these customers a 'Happy Birthday!' email containing a special discount coupon.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A personalized and timely offer is sent to drive engagement and sales."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A personalized and timely offer is sent to drive engagement and sales.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system logs the campaign send for tracking purposes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The marketing activity is recorded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The marketing activity is recorded.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

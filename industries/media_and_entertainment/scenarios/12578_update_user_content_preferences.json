@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Guide the user to the content preference settings in their account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions for the user to find the settings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions for the user to find the settings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Allow the user to select their favorite genres and rate several movies and shows.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user updates their preferences in the UI."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user updates their preferences in the UI.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Trigger a refresh of the user's recommendation profile based on their new preferences.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates a profile refresh, and the user's homepage is updated with new recommendations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates a profile refresh, and the user's homepage is updated with new recommendations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the company's financial statements and application details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all required documentation for underwriting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all required documentation for underwriting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform credit analysis and underwriting on the company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The credit risk department analyzes the company's financials and approves a credit line."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The credit risk department analyzes the company's financials and approves a credit line.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate loan documents and open the line of credit for the approved amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the legal agreements and officially opens the credit facility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the legal agreements and officially opens the credit facility.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

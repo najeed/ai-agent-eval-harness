@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Connect to the new cell site using its management IP address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent establishes a successful connection to the new hardware."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent establishes a successful connection to the new hardware.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Load the standard 5G configuration template onto the device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the configuration template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the configuration template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run post-configuration diagnostics to ensure the site is ready for activation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs diagnostics and receives a 'pass' status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs diagnostics and receives a 'pass' status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Activate the site, making it live on the public network.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent executes the activation command and the site appears as 'active' on the network map."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent executes the activation command and the site appears as 'active' on the network map.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

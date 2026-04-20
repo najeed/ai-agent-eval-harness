@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's entire package booking, including flight and tour details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the full itinerary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the full itinerary.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the flight delay and confirm it was the cause of the missed tour.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the flight's arrival time was after the tour's start time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the flight's arrival time was after the tour's start time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Even though the tour was non-refundable, override the policy and issue a refund for the tour portion of the package as a gesture of goodwill due to the airline disruption.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes a partial refund for the missed activity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes a partial refund for the missed activity.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

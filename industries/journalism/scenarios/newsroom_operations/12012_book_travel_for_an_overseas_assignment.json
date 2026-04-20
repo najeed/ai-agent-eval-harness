@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search for and book a round-trip flight to the destination country.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A flight is successfully booked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A flight is successfully booked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Book a room at a hotel that is pre-vetted for security by the news organization.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A secure hotel is booked for the duration of the assignment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A secure hotel is booked for the duration of the assignment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact a pre-approved local fixer/translator from the organization's contact list and arrange their services.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A local fixer is hired for the assignment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A local fixer is hired for the assignment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

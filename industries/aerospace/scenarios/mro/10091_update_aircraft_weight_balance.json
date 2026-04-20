@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the weight and location (moment arm) of all components that were added or removed during the modification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a list of all weight changes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a list of all weight changes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the aircraft's master weight and balance sheet with these changes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately updates the master record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately updates the master record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recalculate the aircraft's new empty weight and center of gravity and issue a revised weight and balance report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the new values and generates the official revised report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the new values and generates the official revised report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

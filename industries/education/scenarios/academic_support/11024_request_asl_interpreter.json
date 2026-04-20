@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and confirm their approved accommodation for ASL interpretation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the student's record includes 'ASL Interpreter for lectures'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the student's record includes 'ASL Interpreter for lectures'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the details of the course requiring the interpreter (course name, schedule, location).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary logistical information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary logistical information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit a request to the interpreter scheduling coordinator with the course details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a service request in the scheduling system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a service request in the scheduling system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

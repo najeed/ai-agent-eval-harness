@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the aircraft type for the new flight to determine the required crew qualifications and number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the flight requires 2 pilots and 4 cabin crew qualified on the A320."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the flight requires 2 pilots and 4 cabin crew qualified on the A320.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find available and legal crew members based at the flight's origin city.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of available crew members."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of available crew members.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the crew members to the flight and publish the updated roster.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully builds a crew for the flight and updates the schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully builds a crew for the flight and updates the schedule.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

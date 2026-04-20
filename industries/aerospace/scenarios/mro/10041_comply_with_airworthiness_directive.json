@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all aircraft in the fleet that are affected by the new AD.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a list of affected tail numbers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a list of affected tail numbers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new maintenance task card for the inspection required by the AD.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed task card for the technicians."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed task card for the technicians.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule this new task to be completed on all affected aircraft before the AD's compliance deadline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the work for the entire affected fleet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the work for the entire affected fleet.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

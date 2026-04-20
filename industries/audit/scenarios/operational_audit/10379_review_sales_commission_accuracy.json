@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the commission payment data for the last quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor has the payment data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor has the payment data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a sample of 20 commission payments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A sample is selected for testing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A sample is selected for testing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each payment, obtain the underlying sales data and manually recalculate the commission based on the official commission plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor finds two payments that were miscalculated due to using the wrong commission rate, resulting in overpayments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor finds two payments that were miscalculated due to using the wrong commission rate, resulting in overpayments.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

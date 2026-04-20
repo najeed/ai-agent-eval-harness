@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the 'oversold' order and inform the customer about the error, offering an apology and a refund.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates with the customer and processes a refund."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates with the customer and processes a refund.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the inventory logs for the oversold product to find the source of the discrepancy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that a recent return was incorrectly added back to sellable stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that a recent return was incorrectly added back to sellable stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Adjust the inventory count for the product to its correct value (zero).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent corrects the stock level in the system to prevent further overselling."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent corrects the stock level in the system to prevent further overselling.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

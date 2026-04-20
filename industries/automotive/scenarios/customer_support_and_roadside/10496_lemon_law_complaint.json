@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the vehicle's complete service history, confirming the repeated repairs for the same issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the vehicle has had the same repair performed three times."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the vehicle has had the same repair performed three times.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Acknowledge the customer's frustration and the validity of their concern. Do not admit fault.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses empathetic language to de-escalate the situation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses empathetic language to de-escalate the situation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Escalate the case immediately to the specialized corporate team that handles Lemon Law and vehicle buyback cases.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a high-priority escalation ticket with all relevant history for the legal/buyback team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a high-priority escalation ticket with all relevant history for the legal/buyback team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

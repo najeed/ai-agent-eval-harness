@@ -12,11 +12,13 @@
       {
         "id": "test-1",
         "task_description": "User asks a basic question about...",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear, accurate answer..."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear, accurate answer...",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": []

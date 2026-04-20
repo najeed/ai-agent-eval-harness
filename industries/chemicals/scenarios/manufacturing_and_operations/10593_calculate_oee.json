@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the production data for the line, including total units produced and scrap.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the quality data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the quality data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the downtime logs for the line to calculate availability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the availability data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the availability data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use the system tool to calculate the OEE score from the quality, availability, and performance data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully calculates the OEE as 75%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully calculates the OEE as 75%.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

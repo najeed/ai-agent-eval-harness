@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all subscribers who have watched at least three sci-fi movies in the past year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a target audience list of 50,000 subscribers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a target audience list of 50,000 subscribers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft an email template for the campaign, including dynamic fields for the subscriber's name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the email content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the email content.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the email campaign to be sent to the target audience list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the email blast."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the email blast.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

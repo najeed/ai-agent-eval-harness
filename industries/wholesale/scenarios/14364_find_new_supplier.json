@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Search a supplier database for companies that manufacture the required product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds three potential new suppliers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds three potential new suppliers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request quotes and product samples from the potential suppliers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent contacts the suppliers to gather more information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent contacts the suppliers to gather more information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Evaluate the quotes and samples to select the best new supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects a new supplier based on price and quality."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects a new supplier based on price and quality.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Onboard the chosen company as a new supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets up the new supplier in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets up the new supplier in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

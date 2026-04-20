@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the caller and locate the denied claim file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the claim file associated with the caller."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the claim file associated with the caller.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the claim notes to find the specific reason for denial.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the claim was denied due to a material misrepresentation on the original application (undeclared health condition)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the claim was denied due to a material misrepresentation on the original application (undeclared health condition).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Clearly and empathetically explain the reason for the denial and outline the process for an appeal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the difficult information clearly and provides instructions on how to appeal the decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the difficult information clearly and provides instructions on how to appeal the decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

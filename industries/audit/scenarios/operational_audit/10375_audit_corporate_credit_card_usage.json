@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the transaction data for all corporate credit cards for the last 6 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor has the complete dataset."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor has the complete dataset.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to identify high-risk transactions, such as cash advances, weekend purchases, or payments to suspicious merchants.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis flags several cash advances, which are explicitly forbidden by policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis flags several cash advances, which are explicitly forbidden by policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Investigate the flagged transactions by reviewing the submitted expense reports and contacting the cardholders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms the policy violations and recommends disciplinary action and improved monitoring controls."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms the policy violations and recommends disciplinary action and improved monitoring controls.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

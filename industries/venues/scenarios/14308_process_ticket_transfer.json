@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Guide the customer to the 'Transfer Tickets' option in their online account or mobile app.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Instruct the customer to select the tickets they wish to transfer and enter their friend's email address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer performs the action in the app."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer performs the action in the app.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system sends an email to the friend to accept the ticket transfer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The transfer email is sent automatically."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The transfer email is sent automatically.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Once the friend accepts, the system voids the original tickets and issues new ones to the recipient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The transfer is completed, and the tickets are moved to the new account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The transfer is completed, and the tickets are moved to the new account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

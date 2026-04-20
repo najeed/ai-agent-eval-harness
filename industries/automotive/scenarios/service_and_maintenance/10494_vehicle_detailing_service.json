@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Present the available detailing packages and their prices (e.g., Basic Wash, Interior Detail, Full Detail).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The customer selects the 'Full Detail' package.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent notes the customer's selection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent notes the customer's selection.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the detailing appointment, noting that it will take approximately 4 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the appointment and informs the customer of the duration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the appointment and informs the customer of the duration.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

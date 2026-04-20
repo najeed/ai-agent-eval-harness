@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The system alerts the dispatcher that the headway between two buses on a route has fallen below the 3-minute minimum.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dispatcher is alerted to the bus bunching issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dispatcher is alerted to the bus bunching issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The dispatcher contacts the driver of the first bus via radio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Communication is established with the lead bus."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Communication is established with the lead bus.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the driver of the first bus to not pick up passengers at the next two stops to create space behind them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver receives and acknowledges the instruction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver receives and acknowledges the instruction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Monitor the route's headway in real-time until the spacing returns to the desired level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dispatcher confirms that the intervention was successful and the headway is restored."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dispatcher confirms that the intervention was successful and the headway is restored.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

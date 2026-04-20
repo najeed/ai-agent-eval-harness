@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The operator scans the barcode on the BOL or pallet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system finds the matching ASN from the supplier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system finds the matching ASN from the supplier.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system displays the expected contents of the shipment based on the ASN data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator sees what they are supposed to receive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator sees what they are supposed to receive.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The operator simply verifies the pallet count and confirms the receipt, without needing to count individual items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The receipt is processed quickly and efficiently."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The receipt is processed quickly and efficiently.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The inventory is updated in the system based on the quantities in the ASN.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inventory is now available in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inventory is now available in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

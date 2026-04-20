@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a new order and analyze it against fraud detection rules.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system calculates a high fraud score for the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system calculates a high fraud score for the order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Change the order status to 'Pending Manual Review' instead of 'Processing'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the order status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the order status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a ticket in the fraud review queue for a human agent to investigate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed ticket for the fraud team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed ticket for the fraud team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

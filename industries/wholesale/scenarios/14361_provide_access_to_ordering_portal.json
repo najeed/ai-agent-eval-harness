@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a request from a retailer to add a new user to their online account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the new user's name and email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the new user's name and email.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new user account under the retailer's main account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new user.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the appropriate permissions to the user (e.g., can place orders but not view billing).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets the correct user roles and permissions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets the correct user roles and permissions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Send a welcome email to the new user with instructions on how to log in and set their password.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new user receives their login instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new user receives their login instructions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the transaction file for the financing contingency deadline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the deadline is in 2 days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the deadline is in 2 days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the buyer's loan officer to request the status and a copy of the loan commitment letter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a request email to the loan officer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a request email to the loan officer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upon receipt, upload the commitment letter to the transaction file and mark the contingency as satisfied.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The letter is saved, and the transaction checklist is updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The letter is saved, and the transaction checklist is updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

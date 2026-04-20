@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a list of SKUs and the tag to be added ('eco-friendly').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ingests the data correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ingests the data correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each SKU in the list, retrieve its current tags.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the current list of tags for each product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the current list of tags for each product.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Append the new tag to the existing tags for each product and save the changes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully performs the bulk update without removing existing tags."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully performs the bulk update without removing existing tags.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

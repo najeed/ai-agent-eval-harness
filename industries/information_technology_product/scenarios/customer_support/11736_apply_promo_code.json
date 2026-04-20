@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer's account and the promotional code they want to use.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the account and promo code details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the account and promo code details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the promotional code is still valid and applicable to the customer's plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the code is valid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the code is valid.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the promotion to the customer's subscription, which will take effect on the next billing cycle, and issue a credit for the first month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the discount for future bills and credits the first one."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the discount for future bills and credits the first one.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

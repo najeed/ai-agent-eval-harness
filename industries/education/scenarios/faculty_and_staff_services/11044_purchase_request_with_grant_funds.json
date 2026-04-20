@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the PI, the grant account, and the details of the purchase (item, cost, vendor).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary purchasing information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary purchasing information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the purchase is allowable under the terms of the grant and that sufficient funds are available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the equipment is an allowable expense and the grant has enough funds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the equipment is an allowable expense and the grant has enough funds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit a purchase requisition through the university's procurement system, charging it to the grant account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the purchase order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the purchase order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

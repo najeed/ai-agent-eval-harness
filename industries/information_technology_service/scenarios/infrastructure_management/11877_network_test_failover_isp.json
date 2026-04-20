@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Notify the client of the planned brief outage for the test.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client is aware of the test."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client is aware of the test.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Simulate a failure of the primary ISP connection by disconnecting its cable from the firewall.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The primary connection goes down."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The primary connection goes down.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the firewall automatically fails over to the secondary ISP connection and that internet access is restored within moments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The test is successful, proving the failover configuration works as expected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The test is successful, proving the failover configuration works as expected.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

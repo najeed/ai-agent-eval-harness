@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the technical issue from the PoC user.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the technical blocker (e.g., firewall issue)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the technical blocker (e.g., firewall issue).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Engage a pre-sales Solutions Engineer to join a call with the customer to troubleshoot the issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully escalates to the correct technical resource."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully escalates to the correct technical resource.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the issue is resolved, document the solution and confirm with the customer that the PoC can proceed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures the PoC is back on track and the customer is satisfied."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures the PoC is back on track and the customer is satisfied.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

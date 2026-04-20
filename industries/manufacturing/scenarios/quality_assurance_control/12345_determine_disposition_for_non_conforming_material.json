@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the details of the Non-Conformance Report (NCR), including the defect description and quantity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "MRB team reviews the NCR information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "MRB team reviews the NCR information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the potential impact of the defect and decide on a disposition (e.g., 'Scrap', 'Rework', 'Use-As-Is').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team decides the parts can be reworked to bring them into specification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team decides the parts can be reworked to bring them into specification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Record the disposition in the NCR, provide instructions for the rework, and close the report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the NCR with the 'Rework' disposition and adds a link to the rework instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the NCR with the 'Rework' disposition and adds a link to the rework instructions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

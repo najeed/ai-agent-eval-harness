@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the trucking company in the port's system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Gate admin finds the record for 'Speedy Logistics'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Gate admin finds the record for 'Speedy Logistics'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive the new certificate of insurance from the company via email.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The admin receives the new document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The admin receives the new document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload the new certificate to their profile and update the policy expiration date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new document is saved in the system, and the company's profile is updated, ensuring their access to the port remains active."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new document is saved in the system, and the company's profile is updated, ensuring their access to the port remains active.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

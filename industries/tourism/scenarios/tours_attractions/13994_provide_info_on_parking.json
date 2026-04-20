@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the attraction (botanical garden) and the query (parking).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the user's request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the user's request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve parking information from the attraction's knowledge base.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that there is an on-site parking garage that costs $15 per day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that there is an on-site parking garage that costs $15 per day.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Communicate the parking details, including location and cost, to the visitor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly provides the correct parking information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly provides the correct parking information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

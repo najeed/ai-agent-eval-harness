@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the correct department and expense accounts for the report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly selects the 'Sales' department and 'Travel & Entertainment' accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly selects the 'Sales' department and 'Travel & Entertainment' accounts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the report comparing budgeted amounts to actual spending for the specified period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the report showing a 15% overage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the report showing a 15% overage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Export the report in a format suitable for analysis (e.g., CSV).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a downloadable CSV file of the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a downloadable CSV file of the report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

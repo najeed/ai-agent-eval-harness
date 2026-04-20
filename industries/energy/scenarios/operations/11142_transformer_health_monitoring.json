@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the latest DGA sensor readings (e.g., hydrogen, acetylene, ethylene) from the transformer's monitoring system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent fetches the current gas concentration levels."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent fetches the current gas concentration levels.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the trends of key gases over the past 6 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a rising trend in acetylene levels."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a rising trend in acetylene levels.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use the Duval Triangle method to diagnose the potential fault type based on the gas ratios.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent diagnoses the issue as a high-energy electrical discharge (arcing)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent diagnoses the issue as a high-energy electrical discharge (arcing).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Issue a high-priority alert and recommend taking the transformer offline for internal inspection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a critical maintenance alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a critical maintenance alert.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

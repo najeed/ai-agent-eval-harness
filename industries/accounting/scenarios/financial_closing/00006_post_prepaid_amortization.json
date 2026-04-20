@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the prepaid expenses sub-ledger, specifically for the annual insurance policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the policy with a starting balance of $12,000 and a 12-month term."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the policy with a starting balance of $12,000 and a 12-month term.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the monthly amortization amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the monthly expense of $1,000."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the monthly expense of $1,000.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create and post the recurring journal entry to debit Insurance Expense and credit Prepaid Insurance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates and posts the correct journal entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates and posts the correct journal entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

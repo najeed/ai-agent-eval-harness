@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the purchase order associated with the shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct PO is located in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct PO is located in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Count the items in the shipment and verify that the quantity matches the purchase order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The physical count matches the PO."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The physical count matches the PO.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the inventory management system to reflect the receipt of the new stock.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The stock levels for towels are increased in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The stock levels for towels are increased in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

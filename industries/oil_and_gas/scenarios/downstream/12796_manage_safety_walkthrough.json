@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the 'Safety Walkthrough' form on a tablet, which includes conversation prompts and observation categories.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct digital form for the walkthrough is loaded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct digital form for the walkthrough is loaded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the walkthrough, log observations, both positive (e.g., good housekeeping) and negative (e.g., a small, contained oil leak).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Several observations are logged in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Several observations are logged in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For the oil leak, create an immediate work order for maintenance to clean it up and repair the source.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A high-priority work order is created and dispatched to the maintenance team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A high-priority work order is created and dispatched to the maintenance team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

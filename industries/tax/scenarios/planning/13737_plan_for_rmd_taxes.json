@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Calculate the RMD amount based on the prior year-end IRA balance and the retiree's age.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the required withdrawal amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the required withdrawal amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Estimate the retiree's total income for the year, including the RMD.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent projects the retiree's annual income."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent projects the retiree's annual income.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the client on having federal income tax withheld from the RMD to cover the tax liability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends a specific percentage or dollar amount to withhold."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends a specific percentage or dollar amount to withhold.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

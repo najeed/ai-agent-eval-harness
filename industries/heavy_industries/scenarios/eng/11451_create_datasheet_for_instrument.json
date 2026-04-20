@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open a new instrument datasheet from a template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent starts with a blank, standard datasheet template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent starts with a blank, standard datasheet template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Fill in the process data, such as the required pressure range, operating temperature, and the fluid it will be measuring.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly populates all the process requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly populates all the process requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Specify the required material of construction and type of electrical connection, then issue the datasheet to procurement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the datasheet and sends it to the procurement team to get quotes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the datasheet and sends it to the procurement team to get quotes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

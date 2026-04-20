@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The customer clicks the 'Unsubscribe' link at the bottom of a marketing email.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer is taken to the email preference center page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer is taken to the email preference center page.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "On the preference page, the customer unchecks the box for 'Marketing & Promotions'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer indicates their preference to opt out of marketing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer indicates their preference to opt out of marketing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system saves the preferences, removing the customer from marketing lists but keeping them on transactional email lists.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer's preferences are honored, maintaining a positive relationship."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer's preferences are honored, maintaining a positive relationship.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

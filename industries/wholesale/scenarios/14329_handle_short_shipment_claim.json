@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the short shipment claim from the retailer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the claim."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the claim.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the original pick list and the packing video for the order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the evidence and confirms that the item was indeed short-packed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the evidence and confirms that the item was indeed short-packed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a credit to the retailer for the missing item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent credits the retailer's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent credits the retailer's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Provide feedback to the warehouse team to prevent future errors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a report to the warehouse manager about the picking error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a report to the warehouse manager about the picking error.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

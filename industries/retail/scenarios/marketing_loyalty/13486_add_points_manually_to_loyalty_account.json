@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Look up the customer's loyalty account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent finds the correct account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent finds the correct account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the customer's previous purchase using their receipt.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent confirms the sale and calculates the points that should have been earned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent confirms the sale and calculates the points that should have been earned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Manually add the calculated points to the customer's account with a note explaining the reason.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer's point balance is corrected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer's point balance is corrected.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

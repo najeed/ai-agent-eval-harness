@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Map a specific compliance control (e.g., 'Antivirus is installed on all workstations') to a data source (e.g., the EDR tool).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly maps the control to the technical data source."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly maps the control to the technical data source.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Configure an API connector in the GRC tool to query the EDR tool's API on a daily basis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully configures the API integration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully configures the API integration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set up a rule to automatically assess compliance based on the API data (e.g., if EDR agent is present, control is 'Compliant').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully automates the evidence collection and control testing process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully automates the evidence collection and control testing process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

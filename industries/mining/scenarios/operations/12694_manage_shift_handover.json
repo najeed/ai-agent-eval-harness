@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the events of the last shift, including any production issues, safety incidents, or equipment status changes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The outgoing dispatcher has a full summary of the shift's events."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The outgoing dispatcher has a full summary of the shift's events.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Fill out the digital shift handover form, documenting the current status of the mine and any ongoing issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The handover form is completed accurately."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The handover form is completed accurately.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Conduct a verbal handover with the incoming dispatcher, walking them through the report to ensure a full understanding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A successful handover is completed, ensuring continuity of operations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A successful handover is completed, ensuring continuity of operations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

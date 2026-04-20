@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer account to be deactivated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that there are no outstanding orders or invoices on the account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the account has a zero balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the account has a zero balance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deactivate the customer account in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully marks the account as inactive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully marks the account as inactive.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search the team's official photo archive for approved images of the player.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves all available photos of the player."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves all available photos of the player.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Filter the photos to find high-resolution images suitable for press use.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent narrows down the selection to a handful of high-quality photos."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent narrows down the selection to a handful of high-quality photos.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the best photo and attach it to the press release.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent chooses the final photo and includes it with the press release distribution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent chooses the final photo and includes it with the press release distribution.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

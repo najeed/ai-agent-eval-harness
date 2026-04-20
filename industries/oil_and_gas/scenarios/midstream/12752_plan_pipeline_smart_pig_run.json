@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the pipeline's characteristics (diameter, length, known bends) to select the appropriate ILI tool technology (e.g., MFL, UT).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer selects a high-resolution MFL tool as the most suitable technology."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer selects a high-resolution MFL tool as the most suitable technology.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Develop an operational plan for the pig run, including flow rate adjustments needed to run the tool at its optimal speed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A detailed plan is created, specifying the required operational changes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A detailed plan is created, specifying the required operational changes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the ILI vendor and schedule the run in the operational calendar.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The vendor and the run date are confirmed and scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The vendor and the run date are confirmed and scheduled.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

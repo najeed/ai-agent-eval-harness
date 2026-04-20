@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the full text of the new legislation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the text of the new law."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the text of the new law.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Read the legislation and identify the key provisions that will impact the client's business operations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent extracts the most relevant sections."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent extracts the most relevant sections.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a client alert memo that summarizes the new law in plain English and provides actionable advice on what the client needs to do to comply.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a helpful and informative client alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a helpful and informative client alert.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

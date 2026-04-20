@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the guest's reservation and confirm their pre-check-in status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the guest is checked in and a room has been assigned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the guest is checked in and a room has been assigned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the guest's identity by checking their ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully verifies the guest's identity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully verifies the guest's identity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Activate and issue the mobile key to the guest's smartphone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pushes the encrypted mobile key to the guest's app."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pushes the encrypted mobile key to the guest's app.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

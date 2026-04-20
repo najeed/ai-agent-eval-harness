@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the Adobe Admin Console to ensure the user has been assigned an Adobe CC license.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician confirms a license is assigned to the user's email address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician confirms a license is assigned to the user's email address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine the user is logged into the Creative Cloud app with their personal Adobe ID instead of their corporate one.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician correctly identifies the root cause of the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician correctly identifies the root cause of the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the user to sign out of the Creative Cloud desktop app and sign back in using the 'Sign in with Company or School Account' option.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user successfully activates their license."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user successfully activates their license.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the employee and authenticate their identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely verifies the employee's identity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely verifies the employee's identity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the employee to the self-service section of the HR portal to update their address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions for the employee to make the change themselves."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions for the employee to make the change themselves.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm with the employee that the change was saved successfully.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the employee check that the new address is reflected in the portal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the employee check that the new address is reflected in the portal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

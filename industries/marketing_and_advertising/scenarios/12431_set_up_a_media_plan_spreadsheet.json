@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new spreadsheet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a blank spreadsheet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a blank spreadsheet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create columns for 'Channel', 'Campaign', 'Budget', 'Flight Dates', 'Target Audience', 'KPIs', and 'Forecasted Results'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets up a well-structured template for the media plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets up a well-structured template for the media plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Populate the sheet with the initial list of planned channels and campaigns.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds the first few rows of data to the plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds the first few rows of data to the plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

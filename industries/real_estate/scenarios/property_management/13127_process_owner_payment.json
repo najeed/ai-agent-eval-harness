@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Reconcile the property's income and expenses for the month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies all rents have been recorded and all vendor invoices have been paid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies all rents have been recorded and all vendor invoices have been paid.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the net operating income and subtract the management fee to determine the owner distribution amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the final payment amount due to the owner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the final payment amount due to the owner.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate an ACH transfer for the distribution amount to the owner's bank account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The payment is successfully processed through the payment system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The payment is successfully processed through the payment system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

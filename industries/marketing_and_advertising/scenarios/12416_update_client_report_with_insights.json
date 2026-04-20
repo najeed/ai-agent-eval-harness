@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Open the auto-generated weekly performance report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the key metrics and trends in the report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the week's performance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the week's performance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Write a concise executive summary (2-3 sentences) highlighting the main results.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds a clear summary to the top of the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds a clear summary to the top of the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Add 2-3 bullet points under 'Key Insights & Next Steps' explaining the 'why' behind the numbers and recommending actions for the upcoming week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds actionable insights to the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds actionable insights to the report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

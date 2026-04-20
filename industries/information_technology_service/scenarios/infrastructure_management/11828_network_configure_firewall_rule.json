@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the vendor's public IP address, the internal server's IP address, and the required port number from the client's request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician has all the necessary information to create the firewall rule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician has all the necessary information to create the firewall rule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log in to the client's firewall and create a new rule that allows traffic from the source IP to the destination IP on the specified port.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new, specific, and secure firewall rule is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new, specific, and secure firewall rule is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify the rule is working and have the client confirm the vendor can now access the server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The vendor confirms successful access, and the ticket is resolved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The vendor confirms successful access, and the ticket is resolved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Authenticate the client and retrieve their account details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely identifies the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely identifies the client.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the new beneficiary's information (name, date of birth, relationship).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately captures the details for the new beneficiary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately captures the details for the new beneficiary.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the beneficiary designations on the client's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the new beneficiary to the account records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the new beneficiary to the account records.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The gate system flags the container with a 'Damage Exception' based on the OCR/camera inspection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Clerk receives an alert with photos showing a large hole in the container wall."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Clerk receives an alert with photos showing a large hole in the container wall.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Deny entry to the container and inform the driver of the damage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The clerk explains that the container cannot be accepted in its current condition."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The clerk explains that the container cannot be accepted in its current condition.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the incident and instruct the driver to move to a holding area to await instructions from the cargo owner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The event is logged, and the driver is directed out of the main traffic flow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The event is logged, and the driver is directed out of the main traffic flow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

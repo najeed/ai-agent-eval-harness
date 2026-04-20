@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load a dataset of all shipment destinations (as lat/long coordinates) for the past year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads the location data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads the location data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the geographic center of all shipment destinations (center of gravity analysis).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the optimal coordinates for a new distribution center."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the optimal coordinates for a new distribution center.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend the city closest to the calculated geographic center as the ideal location for the new distribution center.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear and data-driven location recommendation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear and data-driven location recommendation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

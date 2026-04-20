@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Retrieve and map data from Public Sector legacy schema to Manufacturing standards using the global_mapping_table.json.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Data is normalized across both domains."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Data is normalized across both domains.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Resolve a policy conflict where Public Sector privacy rules clash with Manufacturing disclosure mandates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a compliant middle-ground or escalates correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a compliant middle-ground or escalates correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

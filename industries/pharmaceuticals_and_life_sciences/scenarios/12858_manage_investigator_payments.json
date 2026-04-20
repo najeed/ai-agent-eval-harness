@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve data from the EDC system on the number of completed patient visits for a specific site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the site has completed 10 'Visit 3' procedures in the last month."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the site has completed 10 'Visit 3' procedures in the last month.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Cross-reference the site's clinical trial agreement (CTA) to find the payment amount per visit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the CTA specifies a payment of $500 per 'Visit 3'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the CTA specifies a payment of $500 per 'Visit 3'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the total payment due to the site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the total payment as 10 * $500 = $5,000."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the total payment as 10 * $500 = $5,000.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate an invoice and submit it to the accounts payable system for processing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the invoice and initiates the payment process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the invoice and initiates the payment process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

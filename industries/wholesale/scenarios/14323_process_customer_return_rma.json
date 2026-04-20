@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The retailer requests a Return Merchandise Authorization (RMA).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an RMA in the system and provides the RMA number to the retailer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an RMA in the system and provides the RMA number to the retailer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "When the returned goods arrive, inspect them to ensure they are in sellable condition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A warehouse worker inspects the items and confirms they are undamaged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A warehouse worker inspects the items and confirms they are undamaged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the returned items back into inventory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the inventory levels for the returned items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the inventory levels for the returned items.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Issue a credit memo to the retailer's account for the value of the returned goods.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully credits the retailer's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully credits the retailer's account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

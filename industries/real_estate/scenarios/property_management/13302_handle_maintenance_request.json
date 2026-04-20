@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the maintenance request from the tenant via the online portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new work order is created in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new work order is created in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assess the urgency of the request and assign it to a qualified plumber from the vendor list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The work order is assigned to the appropriate vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The work order is assigned to the appropriate vendor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Coordinate a service appointment time between the tenant and the plumber.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A service appointment is successfully scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A service appointment is successfully scheduled.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

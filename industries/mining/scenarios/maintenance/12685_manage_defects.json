@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "During a pre-start inspection, a cracked weld is found on a loader bucket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The defect is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The defect is identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new defect notification in the CMMS, describing the problem and attaching a photo.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new notification is created in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new notification is created in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The planner converts the notification into a work order for a welder to repair the crack.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is created to ensure the defect is repaired before it leads to a failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is created to ensure the defect is repaired before it leads to a failure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

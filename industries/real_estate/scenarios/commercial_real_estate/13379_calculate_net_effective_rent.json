@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the terms for each proposal, including the base rent, term length, free rent period, and tenant improvement allowance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has all the necessary variables for the calculation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has all the necessary variables for the calculation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each proposal, calculate the total value of all concessions (free rent + TI allowance).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The total value of concessions is accurately calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The total value of concessions is accurately calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the Net Effective Rent per square foot, which represents the true economic value of the lease, and advise the tenant on which proposal is financially better.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear, apples-to-apples comparison of the two proposals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear, apples-to-apples comparison of the two proposals.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

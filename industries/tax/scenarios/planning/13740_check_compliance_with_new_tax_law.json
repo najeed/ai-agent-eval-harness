@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Research the specifics of the new tax legislation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reads and understands the new law's provisions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reads and understands the new law's provisions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the business's current operations to see how they are impacted by the new law.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies specific areas of the business affected by the changes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies specific areas of the business affected by the changes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the client with a summary of the impacts and a list of recommended actions to ensure compliance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent delivers a clear, actionable report to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent delivers a clear, actionable report to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

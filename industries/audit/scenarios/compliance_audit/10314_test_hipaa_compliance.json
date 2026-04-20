@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review system access logs to ensure that only authorized clinical staff are accessing patient records.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor identifies several instances where administrative staff accessed patient records without a documented medical reason."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor identifies several instances where administrative staff accessed patient records without a documented medical reason.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inspect a sample of workstations in patient areas to ensure they are configured to auto-lock after a short period of inactivity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor finds 5 workstations that do not have screen-lock enabled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor finds 5 workstations that do not have screen-lock enabled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that all laptops containing patient data are encrypted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms that disk encryption is deployed on all company-issued laptops."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms that disk encryption is deployed on all company-issued laptops.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

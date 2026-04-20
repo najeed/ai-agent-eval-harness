@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Query the customer database for all customers whose shipping address is in 'California'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a list of all customers in California."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a list of all customers in California.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Save the result as a new audience segment named 'California Customers'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully saves the new segment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully saves the new segment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

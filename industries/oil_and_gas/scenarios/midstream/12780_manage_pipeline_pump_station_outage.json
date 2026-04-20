@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the 'Pump Station Offline' alarm for PS-04.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The alarm is acknowledged, and the operator is aware of the situation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The alarm is acknowledged, and the operator is aware of the situation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a hydraulic simulation model to determine the impact of the outage on the pipeline's throughput.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The model predicts a 20% reduction in flow rate if no action is taken."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The model predicts a 20% reduction in flow rate if no action is taken.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Adjust the operating pressures of the upstream and downstream pump stations (PS-03 and PS-05) to compensate and recover as much flow as possible.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjustments are made, and the model shows the flow rate is restored to 95% of the original rate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjustments are made, and the model shows the flow rate is restored to 95% of the original rate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

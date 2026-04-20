@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the maintenance alert and verify the machine's current operating hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the machine has exceeded 200 hours since its last service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the machine has exceeded 200 hours since its last service.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the standard maintenance checklist for the 200-hour service for that specific combine model.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct maintenance checklist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct maintenance checklist.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order in the maintenance system and assign it to the lead mechanic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates and assigns the work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates and assigns the work order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

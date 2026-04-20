@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Authenticate the customer's identity using security questions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully verifies the customer's identity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully verifies the customer's identity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the requested new service address is within the company's coverage area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the new address is serviceable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the new address is serviceable.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the billing and service addresses on the customer's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the addresses in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the addresses in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Schedule a service transfer appointment for the move-in date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules a technician visit for the new address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules a technician visit for the new address.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

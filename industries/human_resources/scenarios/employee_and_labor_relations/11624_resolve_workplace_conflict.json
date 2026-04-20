@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule a mediation session with both employees and the HR business partner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP successfully schedules the meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP successfully schedules the meeting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Facilitate a conversation where both employees can voice their perspectives in a structured manner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP guides the conversation to ensure it remains productive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP guides the conversation to ensure it remains productive.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Help the employees agree on a set of actions to improve their working relationship and document this agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP helps draft a written agreement which both employees sign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP helps draft a written agreement which both employees sign.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

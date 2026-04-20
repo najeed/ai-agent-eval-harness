@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a shareable link for the report from the reporting tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a link to the dashboard or report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a link to the dashboard or report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ensure the sharing settings are set to 'view only' to prevent the client from making edits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly configures the permissions for the link."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly configures the permissions for the link.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft an email to the client, including the link to the report and a brief summary of the results.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes and sends a clear, professional email to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes and sends a clear, professional email to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

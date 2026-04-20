@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Note the start time of the de-icing procedure and the type of fluid used.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot records the critical information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot records the critical information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Consult the holdover time chart for the specific fluid type and current weather conditions (e.g., light snow, freezing rain).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot determines the maximum time they can wait before takeoff."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot determines the maximum time they can wait before takeoff.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the ground delay exceeds the holdover time, coordinate with ATC and ground crew to return to the gate for re-application of de-icing fluid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The delay is long, and the pilot makes the decision to return for re-treatment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The delay is long, and the pilot makes the decision to return for re-treatment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

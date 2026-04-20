@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the pending RFI regarding the wall dimension in Room 101.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct RFI is opened."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct RFI is opened.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the official answer: 'The correct dimension for the west wall of Room 101 is 12.5 feet as shown on the structural drawings (S-5). Please disregard the dimension on A-2.'",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear and definitive answer is provided for the RFI."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear and definitive answer is provided for the RFI.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the RFI status to 'Closed' and notify the project team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The RFI is closed and the project team is notified of the clarification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The RFI is closed and the project team is notified of the clarification.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

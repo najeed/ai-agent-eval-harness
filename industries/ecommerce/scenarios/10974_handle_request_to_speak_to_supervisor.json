@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the customer's frustration and their request for a supervisor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent responds empathetically and agrees to the escalation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent responds empathetically and agrees to the escalation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the availability of a supervisor or team lead.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees that a supervisor is available for a warm transfer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees that a supervisor is available for a warm transfer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Summarize the issue in a note and initiate a transfer to the available supervisor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a concise summary for the supervisor and successfully transfers the call."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a concise summary for the supervisor and successfully transfers the call.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

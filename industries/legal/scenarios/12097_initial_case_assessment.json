@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the client intake form and all initial documents provided by the potential client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent summarizes the key facts, parties, and nature of the dispute."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent summarizes the key facts, parties, and nature of the dispute.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a preliminary legal research to identify the relevant causes of action and statutes of limitations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies 2-3 potential legal claims and confirms the filing deadline has not passed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies 2-3 potential legal claims and confirms the filing deadline has not passed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a preliminary case assessment memo outlining the facts, potential claims, risks, and recommended next steps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a structured memo for the partner's review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a structured memo for the partner's review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

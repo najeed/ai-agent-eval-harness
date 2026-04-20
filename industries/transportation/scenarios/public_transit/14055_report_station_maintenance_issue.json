@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a passenger report via social media about a broken escalator at a specific station.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent captures the location and nature of the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent captures the location and nature of the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new maintenance work order in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new work order is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new work order is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the work order to the station maintenance team with a high priority.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct team is assigned to fix the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct team is assigned to fix the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Post a reply on social media thanking the passenger for the report and informing them that a crew has been dispatched.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent provides good customer service by closing the loop."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent provides good customer service by closing the loop.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

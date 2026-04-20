@@ -12,11 +12,13 @@
       {
         "id": "reschedule_task_1",
         "task_description": "Reschedule appointment for Patient-ID-4822 to 2026-04-15 at 10:00 AM.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms rescheduling success in the hospital database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms rescheduling success in the hospital database.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": []

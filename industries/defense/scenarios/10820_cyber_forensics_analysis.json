@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Safely extract the malware sample from the compromised system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully obtains the malware in a secure, isolated environment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully obtains the malware in a secure, isolated environment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform static and dynamic analysis of the malware to identify its functions (e.g., keylogging, data exfiltration).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies all of the malware's capabilities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies all of the malware's capabilities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the malware's code and behavior to a database of known threat actors to make a preliminary attribution.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst finds a match and attributes the attack to a known nation-state adversary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst finds a match and attributes the attack to a known nation-state adversary.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

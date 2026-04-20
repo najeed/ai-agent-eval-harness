@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and their outstanding tuition balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student's identity and the amount due."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student's identity and the amount due.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the available payment plan options, including the number of installments and any service fees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly presents the payment plan terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly presents the payment plan terms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enroll the student in their chosen payment plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully enrolls the student in the 4-month payment plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully enrolls the student in the 4-month payment plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

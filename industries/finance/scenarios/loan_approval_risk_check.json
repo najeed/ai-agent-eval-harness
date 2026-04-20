@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve customer financial data and credit history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully collects detailed financial profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully collects detailed financial profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Call the risk scoring API for an automated assessment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains a risk score of 0.70."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains a risk score of 0.70.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Evaluate the risk score against the current policy threshold (0.85 for approval).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the loan as high-risk and rejects it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the loan as high-risk and rejects it.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

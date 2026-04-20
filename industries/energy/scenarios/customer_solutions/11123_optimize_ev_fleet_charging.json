@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the electricity tariff for the depot, which has cheaper rates between 11 PM and 5 AM.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the off-peak and peak charging rates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the off-peak and peak charging rates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Get the current state of charge (SoC) and required departure time for each of the 50 vehicles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a list of all vehicles and their charging needs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a list of all vehicles and their charging needs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate an optimized, staggered charging schedule that prioritizes charging during off-peak hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a schedule that ensures all vehicles are ready on time at the lowest possible cost."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a schedule that ensures all vehicles are ready on time at the lowest possible cost.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

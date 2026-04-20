@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the property details from the existing policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter has all the known details about the home (square footage, year built, etc.)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter has all the known details about the home (square footage, year built, etc.).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a new replacement cost estimate using a third-party valuation tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter gets a new, higher replacement cost due to increased construction costs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter gets a new, higher replacement cost due to increased construction costs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the Coverage A (Dwelling) limit on the renewal offer to reflect the new valuation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter increases the coverage on the renewal to ensure the customer is adequately insured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter increases the coverage on the renewal to ensure the customer is adequately insured.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

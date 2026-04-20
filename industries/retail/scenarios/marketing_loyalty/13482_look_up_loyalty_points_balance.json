@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ask the customer for their name or phone number to find their loyalty account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent gets the information needed to find the account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent gets the information needed to find the account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Look up the customer's account in the customer relationship management (CRM) system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent finds the customer's loyalty profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent finds the customer's loyalty profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the customer of their current points balance and any available rewards.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer receives an accurate answer to their question."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer receives an accurate answer to their question.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

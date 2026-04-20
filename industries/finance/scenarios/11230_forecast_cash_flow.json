@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather data on expected cash inflows (e.g., accounts receivable) and outflows (e.g., accounts payable, payroll).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pulls all required data from various financial systems."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pulls all required data from various financial systems.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Input the data into the cash flow forecasting model.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately populates the forecasting template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately populates the forecasting template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the 13-week forecast and identify any potential future cash shortfalls.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the forecast and highlights a potential liquidity issue in week 9."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the forecast and highlights a potential liquidity issue in week 9.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

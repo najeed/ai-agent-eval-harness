@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Document the administered portion of the medication in the MAR.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse correctly documents the dose that was given to the patient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse correctly documents the dose that was given to the patient.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate the 'waste' workflow for the remaining portion of the medication.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse accesses the controlled substance waste documentation module."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse accesses the controlled substance waste documentation module.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Have a second nurse log in, verify the amount of waste, and electronically co-sign the waste documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The waste is successfully documented and co-signed, meeting legal and safety requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The waste is successfully documented and co-signed, meeting legal and safety requirements.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

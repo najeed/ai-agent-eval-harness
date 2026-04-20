@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new vendor profile for the logistics provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new vendor record with their address and contact information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new vendor record with their address and contact information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Upload the carrier's insurance certificate and their DOT hazardous material transportation license.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent attaches the required compliance documents to the vendor profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent attaches the required compliance documents to the vendor profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Activate the vendor in the system, making them available for selection on future shipments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent changes the vendor status to 'Approved'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent changes the vendor status to 'Approved'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

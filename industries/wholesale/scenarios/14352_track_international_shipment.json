@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the purchase order and get the container number or bill of lading.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the necessary tracking information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the necessary tracking information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Track the ocean freight to see the vessel's location and estimated arrival at port.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the vessel is scheduled to arrive at the port in 3 days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the vessel is scheduled to arrive at the port in 3 days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the status of the customs clearance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that all customs paperwork has been pre-filed and is in good order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that all customs paperwork has been pre-filed and is in good order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

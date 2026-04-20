@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a report from an usher about a broken seat, including the seat location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the details of the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the details of the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find the best available comparable seats to relocate the fan to.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds two empty seats in a nearby section."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds two empty seats in a nearby section.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reissue the fan's ticket for the new seat location and dispatch an usher to guide them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully relocates the fan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully relocates the fan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a work order for the maintenance team to repair the broken seat after the game.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the issue for the facility team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the issue for the facility team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

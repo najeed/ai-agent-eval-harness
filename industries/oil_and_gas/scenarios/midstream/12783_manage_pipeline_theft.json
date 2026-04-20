@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a detailed volume balance on the suspect pipeline segment over the last 30 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis confirms a small but consistent daily loss that cannot be explained by measurement error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis confirms a small but consistent daily loss that cannot be explained by measurement error.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch a helicopter or drone to fly the pipeline right-of-way, looking for suspicious activity or ground disturbances.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The aerial surveillance identifies an unauthorized track leading to the pipeline in a remote area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The aerial surveillance identifies an unauthorized track leading to the pipeline in a remote area.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify corporate security and local law enforcement of the suspected illegal tap location for further investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The relevant authorities are engaged to handle the criminal investigation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The relevant authorities are engaged to handle the criminal investigation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

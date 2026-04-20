@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a pre-trade check request for a new crude oil futures purchase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The details of the proposed trade are logged for checking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The details of the proposed trade are logged for checking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the trader's current open positions and their established risk limits (e.g., volumetric limit, VaR limit).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The trader's current risk profile and limits are retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The trader's current risk profile and limits are retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Simulate the impact of the new trade on the trader's positions and check if any limits would be breached.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The simulation shows the new trade would not breach any limits. The trade is approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The simulation shows the new trade would not breach any limits. The trade is approved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

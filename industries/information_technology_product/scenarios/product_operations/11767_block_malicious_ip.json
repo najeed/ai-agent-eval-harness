@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the malicious IP address from the threat feed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the IP to be blocked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the IP to be blocked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the IP address to the firewall's blocklist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies a firewall rule to block the IP."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies a firewall rule to block the IP.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify in the logs that traffic from the blocked IP is no longer reaching the application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the block is effective."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the block is effective.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

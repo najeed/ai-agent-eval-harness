@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the latest environmental monitoring results (air and surface samples) for the Grade A cleanroom.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls the data from the LIMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls the data from the LIMS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the results against the established alert and action limits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that one surface sample result is above the action limit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that one surface sample result is above the action limit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate a quality investigation for the out-of-limit result.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new investigation record in the quality system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new investigation record in the quality system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Recommend corrective actions, such as enhanced cleaning of the area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds a recommendation to the investigation for a triple-clean of the affected area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds a recommendation to the investigation for a triple-clean of the affected area.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

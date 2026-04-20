@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the original sales order and the shipping documents generated for the shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the sales order, packing list, and bill of lading."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the sales order, packing list, and bill of lading.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the documents to the batch record to identify the source of the typo.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the correct batch number from the manufacturing record and finds the typo was on the bill of lading."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the correct batch number from the manufacturing record and finds the typo was on the bill of lading.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the freight forwarder, provide the correct information, and request an amended bill of lading to release the shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully communicates with the carrier and gets the documentation corrected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully communicates with the carrier and gets the documentation corrected.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

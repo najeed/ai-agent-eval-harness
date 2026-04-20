@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the last month of milking data, including milking duration per cow, milk flow rates, and equipment cleaning times.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the complete dataset."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the complete dataset.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to identify cows that are consistently slow to milk and any delays in the process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies 5 specific cows as 'slow milkers' and notes that the cleaning cycle between groups is longer than the target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies 5 specific cows as 'slow milkers' and notes that the cleaning cycle between groups is longer than the target.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report with recommendations, such as grouping slow-milking cows together and reviewing the cleaning protocol.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a report with actionable insights."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a report with actionable insights.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

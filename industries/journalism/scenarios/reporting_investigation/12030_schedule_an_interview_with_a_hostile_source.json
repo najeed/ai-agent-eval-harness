@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the contact information for the person's official press secretary or communications director.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the correct contact info for the gatekeeper."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the correct contact info for the gatekeeper.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a very professional and carefully worded interview request that clearly states the topic of discussion and why the person's perspective is important.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a persuasive and non-confrontational request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a persuasive and non-confrontational request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Persistently but politely follow up on the request if no response is received.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows up via email and phone until a 'yes' or 'no' is received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows up via email and phone until a 'yes' or 'no' is received.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

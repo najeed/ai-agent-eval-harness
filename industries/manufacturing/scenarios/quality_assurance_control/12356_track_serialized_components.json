@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the serial number of the main assembly unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates the 'as-built' record for the main unit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates the 'as-built' record for the main unit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the serial number of each critical component as it is installed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent scans three different component serial numbers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent scans three different component serial numbers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Finalize the genealogy record, confirming that all required serialized components have been associated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent saves the completed record, creating a full traceability link between the main unit and its components."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent saves the completed record, creating a full traceability link between the main unit and its components.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

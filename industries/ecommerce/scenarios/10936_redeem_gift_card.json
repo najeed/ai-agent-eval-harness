@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Take the gift card code from the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the gift card code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the gift card code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Validate the gift card code and check its balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the gift card is valid and has a balance of $50."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the gift card is valid and has a balance of $50.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the gift card balance to the order total.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully discounts the order total by $50."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully discounts the order total by $50.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

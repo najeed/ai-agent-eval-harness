@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Request all existing teams to submit their list of 'protected' players who are ineligible for the expansion draft.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the protected lists from all teams."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the protected lists from all teams.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compile a list of all available, unprotected players for the new team to choose from.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the official list of players available in the expansion draft."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the official list of players available in the expansion draft.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Facilitate the expansion draft, allowing the new team to select players from the list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the new team's selections in real time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the new team's selections in real time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

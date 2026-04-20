@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log in to the content management system (CMS) for the project website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager successfully logs in."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager successfully logs in.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a new post summarizing the week's progress, any new milestones, and upcoming traffic changes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager writes a clear and informative update for the public."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager writes a clear and informative update for the public.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Publish the new post to the website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager successfully publishes the update."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager successfully publishes the update.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

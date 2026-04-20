@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the LNG carrier's ETA and schedule the required resources, including pilots and tugboats.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All necessary support vessels and personnel are scheduled for the ship's arrival."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All necessary support vessels and personnel are scheduled for the ship's arrival.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the terminal's safety and security exclusion zones are established prior to the vessel's arrival.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms that all safety protocols for LNG ship arrival are active."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms that all safety protocols for LNG ship arrival are active.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the berthing operation in real-time, tracking the vessel's approach speed and position relative to the jetty.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The vessel is monitored and berths safely without incident."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The vessel is monitored and berths safely without incident.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

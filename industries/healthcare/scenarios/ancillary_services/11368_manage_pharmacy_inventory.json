@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the current on-hand quantity of the antibiotic in the pharmacy system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician confirms the stock is below the designated par level."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician confirms the stock is below the designated par level.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a purchase order for the medication from the primary wholesaler.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system creates a purchase order for the standard reorder quantity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system creates a purchase order for the standard reorder quantity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Transmit the purchase order to the wholesaler.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is successfully sent, and an electronic confirmation is received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is successfully sent, and an electronic confirmation is received.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

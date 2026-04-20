@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Configure the benefits administration system for the new plan year, including updated rates and plan options.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist successfully sets up the system for open enrollment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist successfully sets up the system for open enrollment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a series of communications to employees announcing open enrollment and explaining the changes for the new year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist drafts and schedules all employee communications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist drafts and schedules all employee communications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Track employee enrollment progress and send reminders to those who have not yet completed their elections.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist monitors the completion dashboard and sends targeted reminders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist monitors the completion dashboard and sends targeted reminders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

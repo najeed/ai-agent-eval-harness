@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the new vendor request form, which includes the vendor's name, address, and banking information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives all necessary vendor details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives all necessary vendor details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the vendor's tax ID against the IRS database to ensure legitimacy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the vendor's tax ID is valid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the vendor's tax ID is valid.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create the new vendor record in the ERP system's vendor master file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new vendor record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new vendor record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Notify the requesting department that the vendor has been set up and they can now request a purchase order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a confirmation email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a confirmation email.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

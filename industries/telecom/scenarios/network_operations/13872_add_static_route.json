@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the destination network and next-hop IP address from the service request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the required routing parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the required routing parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apply the static route configuration to the appropriate edge router.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the static route."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the static route.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify the route is present in the router's routing table.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the routing table and confirms the new route is active."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the routing table and confirms the new route is active.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

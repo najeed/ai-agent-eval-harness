@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the customer's order and verify its current status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the order status is 'Processing' and not yet 'Shipped'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the order status is 'Processing' and not yet 'Shipped'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the shipping address on the order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully enters the new shipping address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully enters the new shipping address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recalculate shipping costs for the new address and inform the customer if there is a difference.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs the customer of a small increase in shipping cost due to the new address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs the customer of a small increase in shipping cost due to the new address.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

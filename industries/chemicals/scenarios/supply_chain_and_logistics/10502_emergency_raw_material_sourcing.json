@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify current inventory of the critical raw material and calculate the run-out time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly determines the number of production days remaining."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly determines the number of production days remaining.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the vendor management system for all approved, secondary suppliers for the material.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a list of at least two alternative suppliers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a list of at least two alternative suppliers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the top alternative supplier, confirm available stock and lead time, and issue an emergency purchase order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully places a purchase order to cover the production gap."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully places a purchase order to cover the production gap.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

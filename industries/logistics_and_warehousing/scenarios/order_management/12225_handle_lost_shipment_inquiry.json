@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the shipment's tracking history from the carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the tracking has not updated in 5 days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the tracking has not updated in 5 days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate a 'tracer' request with the carrier to have them search for the package in their network.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully files a tracer request with the carrier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully files a tracer request with the carrier.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After 48 hours, the carrier confirms the package is lost. File a 'lost in transit' claim with the carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent files a claim for the value of the goods."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent files a claim for the value of the goods.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Ship a replacement order to the customer free of charge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent resolves the issue for the customer by sending a new shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent resolves the issue for the customer by sending a new shipment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

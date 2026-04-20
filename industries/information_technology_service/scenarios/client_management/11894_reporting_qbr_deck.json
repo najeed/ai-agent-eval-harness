@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate reports for all key metrics for the last quarter: ticket counts, SLA performance, backup status, and patch compliance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager gathers all the necessary performance data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager gathers all the necessary performance data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Summarize the data into clear, easy-to-understand charts and graphs for the presentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The data is visualized effectively."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The data is visualized effectively.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add strategic recommendations for the next quarter based on the data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The QBR deck is complete and ready to be presented to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The QBR deck is complete and ready to be presented to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

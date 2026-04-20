@@ -12,11 +12,13 @@
       {
         "id": "update_plan",
         "task_description": "Update the plan for customer cust_123 to 'Premium'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer plan is updated to Premium."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer plan is updated to Premium.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": []

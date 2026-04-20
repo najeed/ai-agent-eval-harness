@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve a confirmed sales order that is ready for fulfillment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects a confirmed order from the queue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects a confirmed order from the queue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Allocate the required inventory to the sales order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reserves the stock for this order, reducing the available-to-sell quantity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reserves the stock for this order, reducing the available-to-sell quantity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a pick list for the warehouse staff, optimized for the most efficient picking path.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a list that tells warehouse workers which items to pick from which locations in an optimal sequence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a list that tells warehouse workers which items to pick from which locations in an optimal sequence.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

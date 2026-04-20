@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the transaction and the contact information for the buyer's loan officer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct lender contact info."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct lender contact info.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the loan officer to request confirmation of the 'Clear to Close' status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a clear request to the lender."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a clear request to the lender.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive confirmation from the lender and notify all parties (seller's agent, escrow) that the loan is ready.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the confirmation and disseminates the information to the relevant parties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the confirmation and disseminates the information to the relevant parties.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

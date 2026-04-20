@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that the drill rig has accurately drilled the holes according to the designed pattern using GPS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms all holes are drilled within the specified tolerance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms all holes are drilled within the specified tolerance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Supervise the charging of each hole with the correct amount and type of explosive as per the loading sheet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All holes are safely charged according to the plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All holes are safely charged according to the plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Clear the blast area of all personnel and equipment and then fire the blast at the scheduled time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The blast is executed safely and successfully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The blast is executed safely and successfully.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

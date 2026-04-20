@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The utility company submits a track access request via a public portal, specifying the location, date, and time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The request is received by the railroad."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The request is received by the railroad.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "A railroad agent reviews the request and the location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent understands the scope of the work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent understands the scope of the work.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The agent determines that a railroad flagman must be present to protect the work crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A safety requirement is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A safety requirement is identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The agent approves the request, conditional on the utility company paying for the flagman, and schedules a flagman for the job.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The work is approved with the necessary safety measures in place."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The work is approved with the necessary safety measures in place.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

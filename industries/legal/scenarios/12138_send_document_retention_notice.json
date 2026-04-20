@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the employees and departments likely to have relevant documents for the new matter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of custodians (e.g., key engineers, sales team)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of custodians (e.g., key engineers, sales team).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a litigation hold notice that clearly explains the subject of the litigation and the employees' obligation to preserve all related documents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a clear and comprehensive legal hold memo."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a clear and comprehensive legal hold memo.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Distribute the notice to all identified custodians and track their acknowledgements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the notice and monitors who has acknowledged receipt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the notice and monitors who has acknowledged receipt.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

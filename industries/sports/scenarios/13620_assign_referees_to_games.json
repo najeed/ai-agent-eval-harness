@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the list of all games for the upcoming week and the list of all available referees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the schedule and the list of officials."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the schedule and the list of officials.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically assign referees to games based on their experience level, location, and avoiding any conflicts of interest (e.g., assigning a referee to their hometown team's game).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a full, conflict-free assignment list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a full, conflict-free assignment list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Publish the assignments and notify each referee of their schedule for the week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finalizes the assignments and sends out notifications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finalizes the assignments and sends out notifications.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

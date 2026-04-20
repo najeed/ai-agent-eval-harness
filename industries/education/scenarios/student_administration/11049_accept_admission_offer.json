@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and verify their acceptance status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student has a pending admission offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student has a pending admission offer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the student to the online portal to formally accept the offer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the URL to the admissions portal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the URL to the admissions portal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the student's enrollment deposit via credit card.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully takes the deposit payment, which changes the student's status to 'Committed'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully takes the deposit payment, which changes the student's status to 'Committed'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

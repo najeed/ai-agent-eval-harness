@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the two conflicting permissions ('create_vendor' and 'approve_payment') that constitute a toxic combination.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the permissions that violate SoD."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the permissions that violate SoD.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new SoD rule in the IGA tool that flags any user who is assigned both permissions simultaneously.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully creates the preventative rule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully creates the preventative rule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the new rule against the current user base and identify three users who are currently in violation of the new policy for remediation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully detects and reports existing policy violations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully detects and reports existing policy violations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

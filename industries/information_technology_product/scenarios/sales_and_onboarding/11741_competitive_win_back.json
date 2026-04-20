@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the customer's frustration and ask about the specific pain points with the competitor's product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers competitive intelligence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers competitive intelligence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a competitive battlecard to highlight the product's advantages that directly address the customer's pain points.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a compelling, targeted pitch against the competitor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a compelling, targeted pitch against the competitor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Offer a free trial and assistance with data migration to make switching easy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent lowers the barrier to entry for the customer to switch providers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent lowers the barrier to entry for the customer to switch providers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

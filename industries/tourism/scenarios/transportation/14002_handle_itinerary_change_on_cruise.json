@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Broadcast an announcement to all passengers onboard about the itinerary change and the reason.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends a notification to all passenger cabins and the cruise line's mobile app."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends a notification to all passenger cabins and the cruise line's mobile app.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify all passengers who had pre-booked shore excursions for the cancelled port.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of all affected excursion bookings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of all affected excursion bookings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Automatically refund all charges for the cancelled shore excursions to the passengers' onboard accounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes a bulk refund for all cancelled tours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes a bulk refund for all cancelled tours.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

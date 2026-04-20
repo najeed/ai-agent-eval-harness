@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Model the wind farm's expected generation profile for the next 12 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces an hourly generation forecast."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces an hourly generation forecast.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Simulate potential revenue under three different hedging strategies: 1) no hedging, 2) 50% fixed-price PPA, 3) 80% collar (cap and floor).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs simulations and provides a distribution of revenue outcomes for each strategy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs simulations and provides a distribution of revenue outcomes for each strategy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the strategies based on expected revenue, risk (standard deviation), and worst-case outcome.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a summary table and a recommendation for the most suitable strategy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a summary table and a recommendation for the most suitable strategy.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

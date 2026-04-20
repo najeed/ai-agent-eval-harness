@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Mount the scale model in the wind tunnel test section and connect all data sensors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures the model is securely mounted and all sensors are online."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures the model is securely mounted and all sensors are online.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run the wind tunnel through a series of predefined airspeeds and angles of attack.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the test plan, setting the correct tunnel conditions for each test point."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the test plan, setting the correct tunnel conditions for each test point.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Record the sensor data (lift, drag, pressure) for each test point and compile the results for analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects and archives all test data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects and archives all test data.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

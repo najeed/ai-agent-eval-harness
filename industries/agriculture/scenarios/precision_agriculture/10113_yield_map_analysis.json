@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Process and clean the raw yield map data, removing errors and outliers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a clean, accurate yield map."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a clean, accurate yield map.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify statistically significant low-yielding zones within the field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent outlines specific polygons on the map indicating problem areas."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent outlines specific polygons on the map indicating problem areas.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Correlate the low-yield zones with other data layers like soil type and topography to suggest a probable cause.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the low-yield areas correspond with a sandy, low-lying part of the field, suggesting poor drainage was the cause."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the low-yield areas correspond with a sandy, low-lying part of the field, suggesting poor drainage was the cause.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

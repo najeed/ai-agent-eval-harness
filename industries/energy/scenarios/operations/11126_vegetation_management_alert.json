@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the latest satellite imagery of the transmission corridor for vegetation encroachment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies several points where vegetation is within the minimum clearance distance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies several points where vegetation is within the minimum clearance distance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Cross-reference the locations with the maintenance schedule to see when the area was last cleared.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the area is overdue for its biannual clearing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the area is overdue for its biannual clearing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority work order for a vegetation management crew, including GPS coordinates and images of the encroachment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches a work order with all necessary details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches a work order with all necessary details.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

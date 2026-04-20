@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the real-time pressure downstream of the PRV.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System gathers live pressure readings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System gathers live pressure readings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "As demand decreases overnight, the downstream pressure begins to rise.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System detects the rising pressure trend."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System detects the rising pressure trend.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a command to the PRV's actuator to modulate it towards the closed position, maintaining the target downstream pressure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully adjusts the PRV to lower the pressure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully adjusts the PRV to lower the pressure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the current budget and actual costs for both the civil and mechanical WBS elements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that civil has a positive cost variance and mechanical has a negative one."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that civil has a positive cost variance and mechanical has a negative one.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a budget transfer request in the cost management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates a new budget transfer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates a new budget transfer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the amount to transfer, the 'from' WBS (civil), and the 'to' WBS (mechanical), then submit for approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the transfer, which reallocates the budget between the two cost centers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the transfer, which reallocates the budget between the two cost centers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

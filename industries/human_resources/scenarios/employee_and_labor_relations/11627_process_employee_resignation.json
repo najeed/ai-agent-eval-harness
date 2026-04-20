@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the resignation letter and acknowledge it in writing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR specialist receives the resignation and sends a confirmation email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR specialist receives the resignation and sends a confirmation email.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the termination date into the HRIS to trigger the offboarding workflow.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist correctly enters the employee's last day in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist correctly enters the employee's last day in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare the final paycheck and benefits paperwork for the employee's last day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist calculates and prepares all final separation documents and pay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist calculates and prepares all final separation documents and pay.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

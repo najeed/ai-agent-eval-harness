@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft a clear notice explaining the reason, date, and time of the water shut-off.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear, concise notice is written."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear, concise notice is written.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a list of all current tenants in the specified building.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls a complete list of resident emails and phone numbers for the building."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls a complete list of resident emails and phone numbers for the building.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the notice to all residents via a bulk email and SMS blast.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The notice is successfully delivered to all residents through multiple channels."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The notice is successfully delivered to all residents through multiple channels.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

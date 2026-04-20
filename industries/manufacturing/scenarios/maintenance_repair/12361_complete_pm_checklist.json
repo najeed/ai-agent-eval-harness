@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the maintenance work order to access the digital PM checklist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent opens the work order on their mobile device and sees the list of PM tasks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent opens the work order on their mobile device and sees the list of PM tasks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform each task on the list (e.g., 'Check fluid levels', 'Lubricate bearings') and mark it as complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician completes all physical tasks and checks them off in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician completes all physical tasks and checks them off in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Sign off on the completed PM work order and log the time spent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully closes the PM work order, and the asset's maintenance history is updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully closes the PM work order, and the asset's maintenance history is updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

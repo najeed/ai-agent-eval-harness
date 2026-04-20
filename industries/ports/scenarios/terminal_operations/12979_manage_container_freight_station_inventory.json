@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the customer's Bill of Lading to identify the cargo.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Clerk identifies the cargo details from the customer's paperwork."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Clerk identifies the cargo details from the customer's paperwork.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the Warehouse Management System (WMS) to find the cargo's storage location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The WMS shows the cargo is in Rack 1, Bay 5."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The WMS shows the cargo is in Rack 1, Bay 5.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for a forklift operator to retrieve the cargo and bring it to the loading dock for the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is generated, and the forklift operator retrieves the correct cargo."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is generated, and the forklift operator retrieves the correct cargo.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

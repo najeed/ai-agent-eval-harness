@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the inquiry, noting the prospect's name and the property they are interested in.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the prospect and property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the prospect and property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the availability of the unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the unit is still available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the unit is still available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a templated response that answers any questions, provides a link to the online application, and invites them to schedule a showing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a prompt, informative, and helpful response."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a prompt, informative, and helpful response.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

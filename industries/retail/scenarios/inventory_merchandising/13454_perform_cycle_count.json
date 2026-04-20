@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the cycle count task on a handheld device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The device displays a list of items in the men's denim category and their expected quantities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The device displays a list of items in the men's denim category and their expected quantities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the barcode of the first item and physically count the quantity on the shelf and in the back room.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate performs a physical count of the item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate performs a physical count of the item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the counted quantity into the device. Repeat for all items. Any discrepancies are automatically flagged for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The physical counts are entered, and the system's inventory record is updated or a recount is triggered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The physical counts are entered, and the system's inventory record is updated or a recount is triggered.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

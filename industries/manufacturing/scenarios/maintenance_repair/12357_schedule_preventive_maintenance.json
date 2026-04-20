@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the PM schedule for the specified CNC machine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the quarterly PM task and sees it is due next month."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the quarterly PM task and sees it is due next month.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Coordinate with production to find a downtime window to perform the maintenance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an available 4-hour window on a Saturday."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an available 4-hour window on a Saturday.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a maintenance work order for the PM, assign a technician, and schedule it for the agreed-upon time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates and schedules the PM work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates and schedules the PM work order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

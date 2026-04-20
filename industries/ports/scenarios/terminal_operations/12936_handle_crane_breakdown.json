@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an alert that a crane has broken down and is no longer operational.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager is notified that QC-02 has a 'Spreader Fault' and is stopped."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager is notified that QC-02 has a 'Spreader Fault' and is stopped.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately create a high-priority maintenance work order and dispatch the on-duty engineering team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A priority 1 work order is sent to the maintenance crew."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A priority 1 work order is sent to the maintenance crew.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Re-assign the broken crane's remaining work instructions to other operating cranes on the vessel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The work queue for QC-02 is redistributed to QC-01 and QC-03 to continue operations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The work queue for QC-02 is redistributed to QC-01 and QC-03 to continue operations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

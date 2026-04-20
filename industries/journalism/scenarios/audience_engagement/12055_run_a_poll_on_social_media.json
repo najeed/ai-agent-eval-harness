@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Formulate a simple, clear question related to a current news story.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A relevant poll question is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A relevant poll question is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide 2-4 distinct and balanced answer options.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A set of clear poll options is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A set of clear poll options is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post the poll to Twitter or another suitable platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The poll is live and collecting responses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The poll is live and collecting responses.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "After the poll closes, share the results and a link to a related article.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engagement loop is closed by sharing the results."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engagement loop is closed by sharing the results.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

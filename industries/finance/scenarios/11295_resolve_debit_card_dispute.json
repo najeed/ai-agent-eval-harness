@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log the customer's dispute for a $200 charge they don't recognize.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully files the dispute in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully files the dispute in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Based on regulations (Reg E), issue a provisional credit for the disputed amount to the customer's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent applies a temporary credit of $200 to the customer's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent applies a temporary credit of $200 to the customer's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a letter to the customer explaining the provisional credit and the next steps in the investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a formal communication to the customer about the status of their dispute."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a formal communication to the customer about the status of their dispute.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

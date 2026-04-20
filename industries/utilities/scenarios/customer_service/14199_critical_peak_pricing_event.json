@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all customers enrolled in the CPP rate plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a list of all CPP customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a list of all CPP customers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a day-ahead notification to these customers via their preferred method (email, text, phone call) about the event timing and prices.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully sends the CPP event notifications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully sends the CPP event notifications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Include tips on how to reduce energy use during the event to save money.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The notification includes actionable conservation advice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The notification includes actionable conservation advice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

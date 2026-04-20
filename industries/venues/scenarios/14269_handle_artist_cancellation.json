@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the official cancellation notice from the artist's promoter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the cancellation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the cancellation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Work with the promoter to find a potential rescheduled date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the venue calendar and proposes several open dates to the promoter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the venue calendar and proposes several open dates to the promoter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Coordinate with the ticketing department to communicate the cancellation/reschedule options to all ticket holders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the ticketing team with the official message to send to customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the ticketing team with the official message to send to customers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Cancel all associated internal work orders and vendor services for the original date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent cancels all work orders for staffing, catering, and security."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent cancels all work orders for staffing, catering, and security.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

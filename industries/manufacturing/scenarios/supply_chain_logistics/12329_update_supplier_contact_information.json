@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the supplier's profile in the SRM system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves the correct supplier profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves the correct supplier profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Navigate to the contacts section and add the new contact's details (name, email, phone).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the new contact information accurately."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the new contact information accurately.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set the new contact as the 'Primary' for purchase orders and archive the old contact.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the contact roles."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the contact roles.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

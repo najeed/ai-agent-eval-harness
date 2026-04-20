@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Determine the true cost of the generator being available (Cost of New Entry - CONE) to inform the bid floor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst calculates the minimum acceptable price for the capacity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst calculates the minimum acceptable price for the capacity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze past capacity auction clearing prices and the supply/demand balance for the upcoming auction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst forecasts the likely clearing price for the auction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst forecasts the likely clearing price for the auction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Formulate and submit a bid into the capacity auction platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the capacity offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the capacity offer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

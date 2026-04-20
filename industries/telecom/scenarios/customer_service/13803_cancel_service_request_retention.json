@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Authenticate the customer and understand the reason for cancellation (price).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the customer's identity and logs 'Price' as the cancellation reason."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the customer's identity and logs 'Price' as the cancellation reason.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the system for any available retention offers for this customer's profile.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a '20% off for 12 months' retention offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a '20% off for 12 months' retention offer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Present the retention offer to the customer. If accepted, apply it. If declined, proceed with cancellation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly presents the offer. Customer accepts. Agent applies the promotional discount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly presents the offer. Customer accepts. Agent applies the promotional discount.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

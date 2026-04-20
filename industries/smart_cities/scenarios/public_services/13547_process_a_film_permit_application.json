@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve a new 'Film Permit' application from the queue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent opens the application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent opens the application.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the requested street closures and filming times.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the impact of the request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the impact of the request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Automatically notify the police, fire, and transportation departments to review and approve the request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent forwards the application to all relevant departments for their sign-off."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent forwards the application to all relevant departments for their sign-off.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

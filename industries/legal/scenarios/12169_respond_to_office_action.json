@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the Office Action to understand the legal basis for the refusal (e.g., 'likelihood of confusion' with a prior mark).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the examiner's argument."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the examiner's argument.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Research case law and prepare legal arguments to overcome the refusal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds legal support for why the marks are not confusingly similar."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds legal support for why the marks are not confusingly similar.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a formal response to the Office Action, presenting the legal arguments and any supporting evidence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a persuasive response to send to the USPTO."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a persuasive response to send to the USPTO.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

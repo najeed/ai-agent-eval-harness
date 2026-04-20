@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the original test result in the LIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Supervisor finds the result that needs to be re-tested."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Supervisor finds the result that needs to be re-tested.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add a new order for the same test on the existing specimen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new order is created to track the rerun."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new order is created to track the rerun.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the specimen again and enter the new result, which will be marked as a corrected result.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The test is rerun, and the new, accurate result replaces the old one, with a full audit trail."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The test is rerun, and the new, accurate result replaces the old one, with a full audit trail.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

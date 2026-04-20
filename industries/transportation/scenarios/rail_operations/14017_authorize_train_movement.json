@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a request from a train crew to occupy the main line from milepost 56 to 78.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives and understands the crew's request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives and understands the crew's request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the track diagram to ensure the requested section of track is clear of other trains.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system shows the track block is clear."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system shows the track block is clear.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a track warrant (authority) to the train for the specified track limits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal authority is issued and logged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal authority is issued and logged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Remotely align the switch to allow the train to move from the siding to the main line.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The switch is correctly aligned, and the signal displays 'Proceed'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The switch is correctly aligned, and the signal displays 'Proceed'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

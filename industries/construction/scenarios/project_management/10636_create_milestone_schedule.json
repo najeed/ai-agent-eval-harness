@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Filter the main project schedule to display only tasks marked as 'milestones'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A filtered list of milestones like 'Foundation Complete', 'Structure Topped Out', and 'Substantial Completion' is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A filtered list of milestones like 'Foundation Complete', 'Structure Topped Out', and 'Substantial Completion' is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a summary timeline view based on the filtered milestones.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A simplified, high-level timeline is created suitable for a client presentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A simplified, high-level timeline is created suitable for a client presentation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

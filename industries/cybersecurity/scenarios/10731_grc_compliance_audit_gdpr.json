@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select a random sample of recent data deletion requests from the ticketing system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst selects a representative sample of requests."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst selects a representative sample of requests.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each request, trace the process to ensure the user's data was deleted from all relevant systems (e.g., CRM, marketing database, backups).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst follows the data trail to verify deletion across multiple systems."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst follows the data trail to verify deletion across multiple systems.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document any findings where data was not properly deleted and create a corrective action plan to fix the process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst identifies a gap in the process (backups were not wiped) and creates a plan to fix it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst identifies a gap in the process (backups were not wiped) and creates a plan to fix it.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the correct key for the unit from the key inventory system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the key labeled for Unit 101."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the key labeled for Unit 101.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log the key as 'checked out' to the specific vendor and work order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The key's status is updated in the system, showing it is with 'Pro Plumbers' for work order #12345."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The key's status is updated in the system, showing it is with 'Pro Plumbers' for work order #12345.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a reminder to follow up in 24 hours to ensure the key is returned.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A task is created in the system to check for the key's return."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A task is created in the system to check for the key's return.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Display the real-time gamma ray log from the LWD tool on a cross-section view with the planned well path.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A live view shows the well's current position relative to the target reservoir."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A live view shows the well's current position relative to the target reservoir.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The gamma ray reading indicates the well is drilling too close to the upper shale layer. Interpret the new position of the reservoir.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The geologist determines the well needs to be steered downwards."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The geologist determines the well needs to be steered downwards.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a new directional drilling target (inclination and azimuth) to the directional driller to steer the well back into the center of the reservoir.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "New drilling targets are sent and acknowledged by the driller."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "New drilling targets are sent and acknowledged by the driller.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

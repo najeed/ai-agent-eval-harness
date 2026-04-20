@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A technician takes ownership."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A technician takes ownership.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a script via the RMM tool to identify the largest files and folders on the drive.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The script reveals that old application log files are taking up most of the space."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The script reveals that old application log files are taking up most of the space.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run another script to safely delete log files older than 90 days, freeing up space and resolving the alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Disk space is reclaimed, and the alert clears."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Disk space is reclaimed, and the alert clears.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

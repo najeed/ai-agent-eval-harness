@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify several yard blocks with low utilization (e.g., less than 30% full).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner generates a report showing three under-utilized blocks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner generates a report showing three under-utilized blocks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a plan to move all containers from two of the blocks into the third block.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A consolidation plan is created, listing all the required container moves."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A consolidation plan is created, listing all the required container moves.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the re-stow work orders in the TOS to be executed by yard cranes during a quiet period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A series of housekeeping work orders is created in the system to be performed overnight."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A series of housekeeping work orders is created in the system to be performed overnight.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

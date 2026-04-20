@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a weather alert indicating conditions at the primary target are below minimums for strike.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator acknowledges the weather alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator acknowledges the weather alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the pre-planned secondary target information and check weather conditions at that location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator confirms the secondary target and finds clear weather conditions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator confirms the secondary target and finds clear weather conditions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Transmit a re-tasking order to the strike package leader, directing them to proceed to the secondary target.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator successfully re-tasks the mission, preventing a wasted sortie."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator successfully re-tasks the mission, preventing a wasted sortie.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the asset in the CMMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent scans the asset's barcode or enters its ID to pull up its record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent scans the asset's barcode or enters its ID to pull up its record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve a list of all past maintenance work orders for that asset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a complete history of all PMs and repairs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a complete history of all PMs and repairs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Filter the history to show only corrective maintenance for 'motor faults' in the last year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the same motor fault has been reported three times in the past six months."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the same motor fault has been reported three times in the past six months.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

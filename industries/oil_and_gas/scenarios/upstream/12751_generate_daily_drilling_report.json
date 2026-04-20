@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all operational data from the last 24 hours, including depth drilled, activities performed, and materials used.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All necessary data points for the report are collected from various rig systems."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All necessary data points for the report are collected from various rig systems.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Populate the standard daily drilling report template with the collected data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report template is correctly filled out."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report template is correctly filled out.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the completed report for approval by the company man and distribute it to the project team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report is approved and emailed to the distribution list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report is approved and emailed to the distribution list.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Provide information on the basic requirements to become a foster parent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the eligibility criteria (e.g., age, background check)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the eligibility criteria (e.g., age, background check).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the application and training process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent outlines the steps involved, from application to certification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent outlines the steps involved, from application to certification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Sign the caller up for an upcoming information session.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully registers the caller for an info session."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully registers the caller for an info session.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

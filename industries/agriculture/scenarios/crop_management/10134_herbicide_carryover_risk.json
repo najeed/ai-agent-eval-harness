@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the application history for the field to identify the specific herbicide used last year and the date it was applied.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that Atrazine was applied last May."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that Atrazine was applied last May.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the herbicide label for plant-back restrictions for soybeans.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the label specifies a 12-month waiting period before planting soybeans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the label specifies a 12-month waiting period before planting soybeans.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the farmer that planting soybeans is not recommended due to the high risk of crop injury from herbicide carryover.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear and correct recommendation based on the label."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear and correct recommendation based on the label.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

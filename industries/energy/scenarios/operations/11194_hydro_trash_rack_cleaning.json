@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the pressure differential across the trash racks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System is monitoring the head loss across the racks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System is monitoring the head loss across the racks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system detects an increase in the pressure drop, indicating a blockage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates an alert for a clogged trash rack."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates an alert for a clogged trash rack.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a crew to operate the automated trash rake to clean the racks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator sends a command to start the cleaning cycle."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator sends a command to start the cleaning cycle.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

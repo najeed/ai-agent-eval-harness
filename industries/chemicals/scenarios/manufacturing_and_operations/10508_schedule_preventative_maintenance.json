@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the next due date for the pump's PM task from the maintenance system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the PM is due within the next 30 days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the PM is due within the next 30 days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Consult the production schedule to find a planned downtime window for the associated process unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a 2-day planned shutdown for a product changeover in three weeks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a 2-day planned shutdown for a product changeover in three weeks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for the PM task and schedule it during the identified downtime window.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the work order, assigns resources, and links it to the production downtime."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the work order, assigns resources, and links it to the production downtime.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Monitor network logs and firewall activity in real-time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent's monitoring tool flags an unusual number of failed login attempts from an unrecognized IP address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent's monitoring tool flags an unusual number of failed login attempts from an unrecognized IP address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Cross-reference the suspicious IP address with a threat intelligence database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the IP address is associated with known malicious actors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the IP address is associated with known malicious actors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Immediately block the malicious IP address at the firewall.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the firewall rule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the firewall rule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Initiate a security incident response protocol and document the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a formal incident report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a formal incident report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

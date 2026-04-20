@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the faulted line segment that needs to be isolated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System confirms the target segment from the fault location analysis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System confirms the target segment from the fault location analysis.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify available backfeed sources from adjacent feeders that can power the unfaulted sections.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System finds an adjacent feeder with 2 MVA of available capacity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System finds an adjacent feeder with 2 MVA of available capacity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a sequence of switching operations (open/close) to isolate the fault and reroute power.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System produces a valid, no-violation switching plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System produces a valid, no-violation switching plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Execute the switching plan by sending commands to the automated switches in the field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully operates the field devices to restore power to 90% of the affected customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully operates the field devices to restore power to 90% of the affected customers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

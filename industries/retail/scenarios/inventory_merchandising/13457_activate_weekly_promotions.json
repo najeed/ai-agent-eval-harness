@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log into the store management portal and navigate to the promotions module.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager accesses the tool for managing promotions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager accesses the tool for managing promotions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the list of promotions scheduled to start today.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager sees the list of upcoming sales (e.g., 'BOGO on soda', '20% off all chips')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager sees the list of upcoming sales (e.g., 'BOGO on soda', '20% off all chips').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Activate the promotions, which pushes the new pricing rules to all POS terminals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new sales are now live and will be applied automatically when eligible items are scanned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new sales are now live and will be applied automatically when eligible items are scanned.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

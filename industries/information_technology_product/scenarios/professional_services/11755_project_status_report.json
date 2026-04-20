@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather updates on completed tasks, upcoming milestones, and any blockers from the project team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Project manager collects all necessary status updates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Project manager collects all necessary status updates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the project's RAG status (Red, Amber, Green) and write a concise executive summary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Project manager accurately reflects the project's health."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Project manager accurately reflects the project's health.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the status report from a template and email it to the customer stakeholders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Project manager sends a clear and professional status report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Project manager sends a clear and professional status report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

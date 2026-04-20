@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a gunshot detection alert from 'Washington Park'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the high-priority acoustic alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the high-priority acoustic alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically pivot the nearest PTZ camera to the alert's location to get visual confirmation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses the tool to direct a camera to the location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses the tool to direct a camera to the location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After visually confirming a potential active shooter situation, dispatch all available police units to the location with high priority.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches police with critical information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches police with critical information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all active plant employees who require the training.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a list of all employees assigned to the 'Plant Operations' department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a list of all employees assigned to the 'Plant Operations' department.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new training session in the learning management system for the 'Hazard Communication' course.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new session."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new session.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enroll all the identified employees in the session and send them a calendar invitation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully enrolls all employees and notifications are sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully enrolls all employees and notifications are sent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

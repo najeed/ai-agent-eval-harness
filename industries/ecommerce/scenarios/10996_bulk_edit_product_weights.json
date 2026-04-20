@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all products within a specific category or brand.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves all products from 'Brand Y'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves all products from 'Brand Y'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Export the product list with SKUs and current weights to a CSV file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the CSV file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the CSV file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the manager corrects the weights in the CSV, import the file to bulk update the product information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully imports the corrected data, updating the weights for all products in the list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully imports the corrected data, updating the weights for all products in the list.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

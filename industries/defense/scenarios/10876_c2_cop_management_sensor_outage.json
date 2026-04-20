@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the radar outage alert and identify the resulting coverage gap on the COP.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator correctly identifies the location and size of the sensor gap."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator correctly identifies the location and size of the sensor gap.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query for any available assets (e.g., naval ship, AWACS aircraft) that can be moved to cover the gap.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator identifies a nearby AWACS aircraft that can be re-tasked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator identifies a nearby AWACS aircraft that can be re-tasked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Request the AWACS aircraft to move into a new orbit to provide radar coverage of the gap and feed its data into the COP.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator successfully mitigates the sensor gap, restoring the integrity of the COP."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator successfully mitigates the sensor gap, restoring the integrity of the COP.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

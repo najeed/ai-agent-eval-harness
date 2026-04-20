@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the results of the access review, which flags the user for having excessive permissions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst has the list of the user's current, excessive permissions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst has the list of the user's current, excessive permissions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the user's current permissions against the standard permissions for their current role.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst identifies a specific list of permissions that should be revoked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst identifies a specific list of permissions that should be revoked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Revoke all unnecessary permissions, bringing the user's access in line with the principle of least privilege.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully cleans up the user's permissions, reducing risk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully cleans up the user's permissions, reducing risk.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

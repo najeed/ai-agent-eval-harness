@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the inspection and cleaning history for tank TK-105 to confirm it is due for service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms the tank is due for its 10-year inspection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms the tank is due for its 10-year inspection.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Coordinate with schedulers to empty the tank and plan for the inventory to be rerouted to other tanks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A plan is in place to manage inventory during the tank outage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A plan is in place to manage inventory during the tank outage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for the tank cleaning and inspection and schedule a specialized contractor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is created, and the contractor is officially scheduled for the job."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is created, and the contractor is officially scheduled for the job.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

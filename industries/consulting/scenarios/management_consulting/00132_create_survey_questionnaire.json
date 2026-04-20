@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Based on the project goal ('understand drivers of customer churn'), define key areas for the survey (e.g., 'Product Quality', 'Customer Service', 'Price').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies relevant survey categories."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies relevant survey categories.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each area, draft 3-5 questions using a mix of question types (e.g., multiple choice, Likert scale, open-ended).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of well-formed and relevant survey questions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of well-formed and relevant survey questions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assemble the questions into a logical survey flow, starting with simple questions and ending with open-ended ones.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a well-structured questionnaire."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a well-structured questionnaire.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

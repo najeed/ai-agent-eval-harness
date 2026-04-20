@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze historical carbon allowance prices and their correlation with economic activity and energy prices.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies key drivers of carbon prices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies key drivers of carbon prices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review upcoming regulatory changes that could affect the supply or demand for allowances.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent notes a planned tightening of the emissions cap next year."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent notes a planned tightening of the emissions cap next year.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a 3-year forecast for carbon prices, including a base case, high case, and low case.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a forecast with a clear range of potential price outcomes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a forecast with a clear range of potential price outcomes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

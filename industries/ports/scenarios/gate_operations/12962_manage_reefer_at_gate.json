@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Process the truck's entry normally, identifying the container as a reefer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system identifies the container type as 'Reefer'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system identifies the container type as 'Reefer'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the temperature setting on the reefer's control panel and enter it into the gate system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Clerk physically checks the reefer and logs the temperature setting (-18\u00b0C) in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Clerk physically checks the reefer and logs the temperature setting (-18\u00b0C) in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the reefer to a yard location in a powered reefer rack and issue the ticket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system assigns a slot with a power outlet, and the truck is allowed to proceed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system assigns a slot with a power outlet, and the truck is allowed to proceed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

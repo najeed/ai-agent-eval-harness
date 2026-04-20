@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the key metrics for the program, such as phishing simulation click rates, training completion rates, and user-reported phishing numbers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager selects a good set of Key Performance Indicators (KPIs)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager selects a good set of Key Performance Indicators (KPIs).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather the data for these metrics from the relevant systems (phishing platform, LMS, email security gateway).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager successfully collects all the necessary data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager successfully collects all the necessary data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a dashboard that visualizes the trends for these metrics over time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager creates a clear and informative dashboard that effectively communicates the program's performance to leadership."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager creates a clear and informative dashboard that effectively communicates the program's performance to leadership.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

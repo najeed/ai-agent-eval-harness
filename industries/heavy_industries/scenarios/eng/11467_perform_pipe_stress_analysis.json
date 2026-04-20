@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Model the pipeline's geometry in the stress analysis software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the model of the pipeline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the model of the pipeline.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apply the operating temperature, pressure, and fluid weight to the model.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly defines the load cases for the analysis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly defines the load cases for the analysis.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the analysis and check the calculated stresses and pipe support loads against the allowable limits in the piping code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the analysis and confirms that all stresses and loads are within the code's allowable limits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the analysis and confirms that all stresses and loads are within the code's allowable limits.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

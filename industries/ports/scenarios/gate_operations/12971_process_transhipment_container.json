@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The TOS identifies a container on a discharge list as 'Transhipment' based on its documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system automatically flags the container as a transhipment move."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system automatically flags the container as a transhipment move.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assign the container to a specific transhipment block in the yard to keep it separate from local imports.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The yard plan assigns the container to a location in the transhipment zone."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The yard plan assigns the container to a location in the transhipment zone.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Ensure the container is not made available for truck pickup and is automatically added to the load list for the connecting vessel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system correctly manages the container's status, preventing an erroneous gate move and ensuring it's planned for the next vessel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system correctly manages the container's status, preventing an erroneous gate move and ensuring it's planned for the next vessel.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

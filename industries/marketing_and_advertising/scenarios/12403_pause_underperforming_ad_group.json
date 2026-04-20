@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the performance of all ad groups in the campaign for the last 14 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the performance data for all ad groups."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the performance data for all ad groups.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the ad group with a cost-per-conversion that is 50% higher than the campaign average.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the underperforming ad group."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the underperforming ad group.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Pause the identified ad group to prevent further inefficient spending.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pauses the correct ad group."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pauses the correct ad group.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

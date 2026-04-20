@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the list of pending training or document acknowledgements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees the new safety procedure in their to-do list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees the new safety procedure in their to-do list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Open and review the new document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reads the updated safety procedure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reads the updated safety procedure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Electronically sign to acknowledge understanding of the new procedure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent signs off on the document, and it is removed from their pending list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent signs off on the document, and it is removed from their pending list.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

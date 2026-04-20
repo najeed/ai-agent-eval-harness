@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all agents affiliated with the brokerage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a complete roster of licensed agents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a complete roster of licensed agents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each agent, search the state's real estate commission license lookup portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager checks each agent's license status on the official state website."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager checks each agent's license status on the official state website.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify any agents with expired licenses or upcoming renewal dates and send them a reminder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager finds one agent whose license expires next month and sends them a reminder notice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager finds one agent whose license expires next month and sends them a reminder notice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

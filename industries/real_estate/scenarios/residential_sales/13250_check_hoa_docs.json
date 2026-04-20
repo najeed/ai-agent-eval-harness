@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Request and receive the complete HOA document package from the listing agent or HOA management company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains all HOA docs, including budget, bylaws, and meeting minutes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains all HOA docs, including budget, bylaws, and meeting minutes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the HOA's financial health by reviewing the budget and reserve study.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies if the HOA is well-funded or if a special assessment is likely."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies if the HOA is well-funded or if a special assessment is likely.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Summarize key findings for the buyer, including any rental restrictions, pending litigation, or major upcoming projects.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear and concise summary to help the buyer make an informed decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear and concise summary to help the buyer make an informed decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the event (music festival) and the specific request (main stage schedule for today).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the visitor's query."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the visitor's query.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the event schedule from the information system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the list of bands and their set times for the main stage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the list of bands and their set times for the main stage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Communicate the schedule to the visitor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly lists the bands and their performance times."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly lists the bands and their performance times.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

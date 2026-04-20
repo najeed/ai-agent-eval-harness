@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the original order and verify the item the customer wants to exchange.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the original order for the 'Blue T-Shirt, Size M'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the original order for the 'Blue T-Shirt, Size M'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check inventory for the requested new size ('Blue T-Shirt, Size L').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the new size is in stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the new size is in stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a return authorization for the original item and a new, no-charge order for the replacement item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the exchange in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the exchange in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

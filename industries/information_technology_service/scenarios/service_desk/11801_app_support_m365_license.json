@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the user's license status in the Microsoft 365 admin center.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that a Microsoft 365 E3 license is correctly assigned to the user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that a Microsoft 365 E3 license is correctly assigned to the user.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Diagnose the issue as a local activation problem and guide the user to sign out and sign back into their Office applications.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions to resolve the activation issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions to resolve the activation issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the issue persists, run a script to reset the local Office activation state.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The script resolves the issue, and the user's applications are now licensed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The script resolves the issue, and the user's applications are now licensed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

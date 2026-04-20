@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the user's account and the devices currently streaming.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees that three devices are active, and the user's plan only allows for two concurrent streams."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees that three devices are active, and the user's plan only allows for two concurrent streams.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the device limit and list the devices currently in use.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the reason for the error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the reason for the error.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Offer the user the option to either remotely stop one of the other streams or upgrade to a plan with more streams.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent presents clear options to resolve the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent presents clear options to resolve the issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

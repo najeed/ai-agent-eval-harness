@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Select the train that needs a crew assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dispatcher identifies the correct train."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dispatcher identifies the correct train.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "View the list of available crews, showing their qualifications and rest status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of rested and available crews is displayed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of rested and available crews is displayed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select a crew that is qualified for the specific route and has sufficient rest.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dispatcher makes a compliant crew choice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dispatcher makes a compliant crew choice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Assign the selected crew to the train and notify them of their assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The crew is assigned, and they receive a notification with the report time and location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The crew is assigned, and they receive a notification with the report time and location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

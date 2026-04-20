@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The system identifies a container that has exceeded its free time (e.g., 5 days).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A daily report is generated showing all containers that have entered demurrage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A daily report is generated showing all containers that have entered demurrage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically begins calculating daily storage charges based on the port tariff.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A charge is automatically added to the container's record each day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A charge is automatically added to the container's record each day.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "When the container is finally picked up, the total accumulated demurrage charge is added to the invoice for the shipping line.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The final bill includes the total storage charges for the container."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The final bill includes the total storage charges for the container.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

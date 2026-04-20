@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the outdated article based on the customer's feedback.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct article."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct article.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Take new screenshots of the current UI and update the step-by-step instructions in the article.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the article to be accurate and current."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the article to be accurate and current.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Publish the updated article and thank the customer for their feedback.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The documentation is corrected, and the customer feels valued."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The documentation is corrected, and the customer feels valued.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

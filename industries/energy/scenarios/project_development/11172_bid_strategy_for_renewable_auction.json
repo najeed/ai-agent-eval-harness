@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Analyze the results of previous renewable energy auctions in the same market, noting the clearing prices and bid competition levels.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent summarizes historical auction outcomes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent summarizes historical auction outcomes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the minimum bid price (the project's LCOE) required for the project to be financially viable.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the floor price for the bid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the floor price for the bid.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Develop a bid strategy that maximizes the chance of winning while maintaining an acceptable profit margin.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends a specific bid price that is slightly above the calculated LCOE but below historical clearing prices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends a specific bid price that is slightly above the calculated LCOE but below historical clearing prices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Submit the final bid to the auction platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the bid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the bid.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

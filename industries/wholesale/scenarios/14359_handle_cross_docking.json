@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The system identifies that an incoming shipment is for a backordered item on a specific sales order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system flags the incoming PO for cross-docking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system flags the incoming PO for cross-docking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "When the shipment arrives, the worker is instructed to move the goods directly to a specific shipping lane instead of a storage location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker receives cross-docking instructions on their handheld device."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker receives cross-docking instructions on their handheld device.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The goods are packed and shipped as part of the customer's order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is fulfilled quickly without the goods ever being put away in storage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is fulfilled quickly without the goods ever being put away in storage.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

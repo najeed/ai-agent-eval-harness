@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Analyze the thermal energy demand of the customer's current gas-fired heaters.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent quantifies the heating requirements in MMBtu/hour."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent quantifies the heating requirements in MMBtu/hour.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify and evaluate potential electric heating technologies (e.g., induction, infrared, heat pumps) that could meet the process requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a comparison of suitable electric technologies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a comparison of suitable electric technologies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the total cost of the project, including the new equipment and any required electrical infrastructure upgrades.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a comprehensive project cost estimate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a comprehensive project cost estimate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Analyze the change in operational costs, comparing the price of electricity to natural gas, and calculate the project's payback period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a full financial analysis of the fuel-switching project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a full financial analysis of the fuel-switching project.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a request for the nearest available handicapped parking space, using the user's current GPS location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system receives the request and the user's location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system receives the request and the user's location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the parking management system for all spaces designated as 'Handicapped' and filter for those with a status of 'Vacant'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system retrieves a list of available handicapped spaces."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system retrieves a list of available handicapped spaces.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Return the location of the nearest available space to the user's app and provide navigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user's app displays a map and directions to the open spot."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user's app displays a map and directions to the open spot.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

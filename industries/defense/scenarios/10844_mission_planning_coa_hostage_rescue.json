@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Develop detailed plans for both the stealth and daylight assault COAs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner creates two distinct and complete mission plans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner creates two distinct and complete mission plans.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the risks for each COA, focusing on the risk to the hostages and the rescue force.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner accurately assesses that the daylight assault is faster but carries higher risk to the hostages."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner accurately assesses that the daylight assault is faster but carries higher risk to the hostages.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend the stealthy nighttime COA as it maximizes the element of surprise and hostage safety.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner makes a well-reasoned recommendation based on the primary goal of hostage safety."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner makes a well-reasoned recommendation based on the primary goal of hostage safety.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the location of the complaint and the nature of the noise.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately documents the address and details of the party."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately documents the address and details of the party.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine the correct department to handle the complaint (non-emergency police).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that this type of call should be routed to the police non-emergency line."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that this type of call should be routed to the police non-emergency line.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the complaint and forward it to the police department for dispatch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a record of the complaint and transfers it to the police queue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a record of the complaint and transfers it to the police queue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Contact the FSBO seller to introduce yourself and confirm they are willing to cooperate with a buyer's agent and pay a commission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent establishes communication and confirms commission agreement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent establishes communication and confirms commission agreement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Advise the buyer on the risks and nuances of dealing with an unrepresented seller.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The buyer is well-informed about the process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The buyer is well-informed about the process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft and submit the purchase offer directly to the seller, explaining the terms clearly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The offer is submitted and explained to the unrepresented seller."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The offer is submitted and explained to the unrepresented seller.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

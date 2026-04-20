@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve satellite images of the field from before and after the suspected tillage date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the two images."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the two images.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a change detection analysis on the two images.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis highlights the areas of the field where the soil has been disturbed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis highlights the areas of the field where the soil has been disturbed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a map showing only the areas that have changed (i.e., the tilled portions).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a map that clearly visualizes the tilled area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a map that clearly visualizes the tilled area.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

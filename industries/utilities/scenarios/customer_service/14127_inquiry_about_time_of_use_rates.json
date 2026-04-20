@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the concept of TOU rates, including the different peak, off-peak, and shoulder periods and prices.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the structure of TOU rates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the structure of TOU rates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the customer's hourly usage data to show them what percentage of their energy is used during peak times.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a personalized analysis of the customer's usage patterns."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a personalized analysis of the customer's usage patterns.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Simulate their last bill on the TOU rate to estimate potential savings or costs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a bill comparison to help the customer make an informed decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a bill comparison to help the customer make an informed decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Develop the key elements of both the air assault COA and the ground assault COA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner creates two distinct, viable plans with objectives and timelines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner creates two distinct, viable plans with objectives and timelines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run simulations (wargames) for both COAs against known enemy dispositions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner successfully executes simulations for both plans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner successfully executes simulations for both plans.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze simulation results to compare projected casualties, probability of success, and resource expenditure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner correctly analyzes the trade-offs of each COA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner correctly analyzes the trade-offs of each COA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Recommend the preferred COA with a detailed justification based on the analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner produces a clear recommendation supported by the simulation data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner produces a clear recommendation supported by the simulation data.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

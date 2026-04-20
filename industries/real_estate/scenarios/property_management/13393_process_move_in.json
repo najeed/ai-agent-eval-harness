@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Collect the first month's rent and the full security deposit from the new tenant before handing over the keys.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All move-in funds are collected and recorded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All move-in funds are collected and recorded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Conduct a move-in inspection with the tenant, documenting the condition of the unit on a move-in checklist which both parties sign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The property's initial condition is formally documented to avoid security deposit disputes later."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The property's initial condition is formally documented to avoid security deposit disputes later.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the tenant with keys and a welcome packet containing important information like emergency contacts and community rules.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tenant is successfully moved in and has all necessary information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tenant is successfully moved in and has all necessary information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the spreadsheet to identify the most important data points or trends to visualize.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the key message that the infographic should convey."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the key message that the infographic should convey.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Choose the best type of chart or visual representation for the data (e.g., bar chart, map, pie chart).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects a chart type that accurately and clearly represents the data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects a chart type that accurately and clearly represents the data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use an infographic creation tool to design the visual, applying the publication's branding and style.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a professional and informative infographic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a professional and informative infographic.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

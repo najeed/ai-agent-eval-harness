@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the denied claim from the denial work queue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Biller retrieves the claim and the associated denial reason code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Biller retrieves the claim and the associated denial reason code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the patient's record to find the prior authorization number that was obtained before the service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Biller finds the correct authorization number that was mistakenly omitted from the claim."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Biller finds the correct authorization number that was mistakenly omitted from the claim.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit a corrected claim with the prior authorization number included.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Biller resubmits the claim for payment, resolving the denial."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Biller resubmits the claim for payment, resolving the denial.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

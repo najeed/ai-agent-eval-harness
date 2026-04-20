@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the client's case file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker locates the correct file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker locates the correct file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the 'Log Interaction' activity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker initiates the correct process in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker initiates the correct process in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the details of the phone call, including the topics discussed and any follow-up actions, and save the note.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker successfully documents the interaction in the case file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker successfully documents the interaction in the case file.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

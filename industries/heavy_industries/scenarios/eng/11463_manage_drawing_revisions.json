@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the updated drawing file from the engineer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The document controller has the new file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The document controller has the new file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the drawing out of the system to apply the new revision number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks out the drawing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks out the drawing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the revision block on the drawing from 'A' to 'B', add a description of the change, and check it back into the system for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly updates the revision information and checks the new version into the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly updates the revision information and checks the new version into the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

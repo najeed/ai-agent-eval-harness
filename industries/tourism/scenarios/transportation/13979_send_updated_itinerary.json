@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the booking affected by the schedule change from a system alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the booking that needs to be updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the booking that needs to be updated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the passenger has accepted the schedule change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the passenger has acknowledged and accepted the new flight time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the passenger has acknowledged and accepted the new flight time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate and email the new, updated itinerary to the passenger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the updated travel documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the updated travel documents.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

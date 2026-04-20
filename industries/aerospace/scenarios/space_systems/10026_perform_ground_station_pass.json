@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Predict the exact time of the satellite's upcoming pass and configure the ground station antenna to track it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the pass schedule and pre-positions the antenna."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the pass schedule and pre-positions the antenna.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Once the link is established, upload the new command file to the satellite.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully uploads the file and receives a confirmation checksum."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully uploads the file and receives a confirmation checksum.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Command the satellite to transmit its stored scientific data and monitor the download progress.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates the download and verifies that all data packets are received without error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates the download and verifies that all data packets are received without error.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

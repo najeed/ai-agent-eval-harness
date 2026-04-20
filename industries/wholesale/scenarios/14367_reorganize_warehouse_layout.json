@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze sales data to identify the fastest-moving products (ABC analysis).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a report identifying the 'A' items (highest velocity)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a report identifying the 'A' items (highest velocity).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a new warehouse layout plan that moves the 'A' items to the most accessible locations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new slotting plan for the warehouse."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new slotting plan for the warehouse.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create work orders for the warehouse staff to move the inventory to the new locations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the tasks for the physical reorganization."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the tasks for the physical reorganization.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

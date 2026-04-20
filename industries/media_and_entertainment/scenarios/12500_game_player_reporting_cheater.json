@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the player report, including the reported player's ID and the attached video evidence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully accesses all details of the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully accesses all details of the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the reported player's match history and performance stats for anomalies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the player's headshot accuracy stat is unnaturally high (95%)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the player's headshot accuracy stat is unnaturally high (95%).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the evidence and stat analysis, issue a permanent ban to the cheating player.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies a permanent ban to the player's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies a permanent ban to the player's account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

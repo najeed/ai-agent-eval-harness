@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Download the latest vibration data from the online sensor attached to the conveyor gearbox.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The vibration waveform and spectrum data are downloaded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The vibration waveform and spectrum data are downloaded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the vibration spectrum and identify specific frequencies that correspond to a bearing defect.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis reveals a clear spike in the spectrum at the characteristic frequency for an outer race bearing fault."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis reveals a clear spike in the spectrum at the characteristic frequency for an outer race bearing fault.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority work order to replace the gearbox bearing during the next planned maintenance shutdown.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is created to proactively replace the failing component before it causes a catastrophic failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is created to proactively replace the failing component before it causes a catastrophic failure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

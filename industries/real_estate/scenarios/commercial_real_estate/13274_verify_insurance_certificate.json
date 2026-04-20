@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the Certificate of Insurance (COI) from the new tenant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains the COI document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains the COI document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the coverage amounts and named insured parties on the COI against the insurance requirements specified in the lease.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that the liability coverage meets the $2M requirement and the landlord is listed as additionally insured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that the liability coverage meets the $2M requirement and the landlord is listed as additionally insured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the COI or notify the tenant of any deficiencies that need to be corrected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the COI is compliant and marks the task as complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the COI is compliant and marks the task as complete.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

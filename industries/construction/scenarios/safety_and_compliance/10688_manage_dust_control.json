@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the need for dust control due to high winds.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The superintendent recognizes the compliance risk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The superintendent recognizes the compliance risk.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch the water truck to spray down all haul roads and exposed soil areas on the site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The water truck is deployed to mitigate the dust."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The water truck is deployed to mitigate the dust.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the dust control measures taken in the daily site log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The proactive compliance measure is documented."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The proactive compliance measure is documented.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Enter the data from Form 1099-DIV, distinguishing between ordinary and qualified dividends.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly inputs the dividend amounts into the tax software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly inputs the dividend amounts into the tax software.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the tax on qualified dividends at the preferential capital gains rates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures the qualified dividends are taxed correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures the qualified dividends are taxed correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Ensure the total dividend income is correctly reported on the final return.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the accuracy of the final tax calculation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the accuracy of the final tax calculation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

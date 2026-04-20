@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "During the game, post immediate updates of key plays, scores, and incidents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The Twitter feed provides a real-time account of the game."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The Twitter feed provides a real-time account of the game.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Intersperse the play-by-play updates with insightful commentary, statistics, and analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The feed offers more than just scores, adding value for the audience."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The feed offers more than just scores, adding value for the audience.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Engage with followers by replying to their questions and retweeting interesting observations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The reporter builds a community around their live coverage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The reporter builds a community around their live coverage.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and the course they need help with.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student's identity and the course is 'MATH150 - Calculus I'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student's identity and the course is 'MATH150 - Calculus I'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the tutoring center's schedule for available 'Calculus I' tutors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds available time slots with a qualified math tutor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds available time slots with a qualified math tutor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book a 1-hour tutoring session for the student and send them a confirmation email.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the appointment and confirms with the student."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the appointment and confirms with the student.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

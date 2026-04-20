@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the referral order in the patient's chart.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The coordinator locates the original referral."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The coordinator locates the original referral.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the referral.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system shows the referral status is still 'Sent', not 'Scheduled' or 'Completed'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system shows the referral status is still 'Sent', not 'Scheduled' or 'Completed'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a task to call the patient to help them schedule the specialist appointment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The coordinator identifies a gap in care and takes action to close it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The coordinator identifies a gap in care and takes action to close it.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

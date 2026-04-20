@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Use a portable gas chromatograph to take a sample of the gas.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician successfully obtains a gas sample."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician successfully obtains a gas sample.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the sample to determine its composition and heating value (BTU content).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis provides the exact composition of the gas."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis provides the exact composition of the gas.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the results to the specifications in the gas tariff.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician confirms the gas quality is within the acceptable range."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician confirms the gas quality is within the acceptable range.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Log the results in the gas management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician successfully logs the quality test results."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician successfully logs the quality test results.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

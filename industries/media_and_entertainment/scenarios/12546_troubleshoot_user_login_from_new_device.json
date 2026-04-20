@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the security alert for the user's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the details of the suspicious login attempt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the details of the suspicious login attempt.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a verification code to the user's registered email address or phone number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the verification code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the verification code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the user provides the correct code, remove the temporary lock from their account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the code and successfully unlocks the account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the code and successfully unlocks the account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

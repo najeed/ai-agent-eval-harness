@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Look up the customer's order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent finds the customer's order in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent finds the customer's order in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the payment transaction history for that order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent sees two payment authorization attempts but confirms that only one was actually captured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent sees two payment authorization attempts but confirms that only one was actually captured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain to the customer that one charge is a temporary authorization that will drop off their statement, and that they were only truly charged once. Offer to send a copy of the payment receipt.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent clarifies the situation and resolves the customer's concern."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent clarifies the situation and resolves the customer's concern.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

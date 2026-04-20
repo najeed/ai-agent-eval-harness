@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and verify their identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely identifies the student."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely identifies the student.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately deactivate the lost ID card in the campus security system to prevent misuse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully deactivates the card."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully deactivates the card.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the student about the process and fee for obtaining a replacement card at the campus card office.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions for getting a new card."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions for getting a new card.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

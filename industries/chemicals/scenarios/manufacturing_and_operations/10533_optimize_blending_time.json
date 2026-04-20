@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve historical data for the last 20 batches of the product, including blending time and final QC results for homogeneity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully gathers the required historical data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully gathers the required historical data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to see if there is a correlation between blending time and homogeneity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent's analysis shows that homogeneity is achieved well before the standard 60-minute blend time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent's analysis shows that homogeneity is achieved well before the standard 60-minute blend time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit a change request to reduce the standard blending time in the recipe from 60 minutes to 45 minutes for a trial period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a change control request to update the master recipe."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a change control request to update the master recipe.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

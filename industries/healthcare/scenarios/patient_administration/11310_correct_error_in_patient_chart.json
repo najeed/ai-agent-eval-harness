@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the incorrect document in the first patient's chart.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the document that needs to be moved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the document that needs to be moved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Remove the document from the incorrect chart, noting the reason as 'Chart correction'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully detaches the document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully detaches the document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Locate the correct patient's chart and upload the document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent files the document in the correct patient's record, resolving the error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent files the document in the correct patient's record, resolving the error.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the new wall port the printer is plugged into and its corresponding switch port.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician knows which switch port to reconfigure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician knows which switch port to reconfigure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the configuration of the switch port and find it's on the default 'Data' VLAN.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician confirms the current VLAN assignment is incorrect for a printer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician confirms the current VLAN assignment is incorrect for a printer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Change the VLAN on the switch port to the 'Printers' VLAN.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The printer gets a correct IP address and is now accessible on the network."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The printer gets a correct IP address and is now accessible on the network.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

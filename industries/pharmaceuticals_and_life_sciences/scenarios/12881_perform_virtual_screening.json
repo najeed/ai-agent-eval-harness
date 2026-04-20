@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Prepare the 3D structure of the target protein for docking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent loads the protein structure and prepares it by adding hydrogens and assigning charges."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent loads the protein structure and prepares it by adding hydrogens and assigning charges.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Prepare the library of millions of compounds for screening.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes the compound library to generate 3D conformations for each molecule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes the compound library to generate 3D conformations for each molecule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the virtual screening (docking) simulation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the docking program, which calculates a binding score for each compound."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the docking program, which calculates a binding score for each compound.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Analyze the results and select the top-scoring compounds for purchase and in vitro testing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sorts the results by score and selects the top 1000 compounds for follow-up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sorts the results by score and selects the top 1000 compounds for follow-up.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

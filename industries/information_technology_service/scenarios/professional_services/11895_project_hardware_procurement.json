@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the project quote to get the exact make and model of the hardware to be ordered.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The PM has the correct hardware specifications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The PM has the correct hardware specifications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Place the order with the preferred hardware distributor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is successfully placed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is successfully placed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Track the order and update the project plan with the estimated delivery date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project plan is updated with the hardware delivery timeline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project plan is updated with the hardware delivery timeline.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

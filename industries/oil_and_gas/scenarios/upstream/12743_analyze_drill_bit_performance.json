@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the drilling data for the section, including rate of penetration (ROP), weight on bit (WOB), and hours on the bit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All relevant performance data for the bit run is compiled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All relevant performance data for the bit run is compiled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Input the dull grading code from the visual inspection of the bit after it was pulled out of the hole.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The bit's condition is logged in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The bit's condition is logged in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the bit's performance and condition against benchmarks to make a run/pull/repair decision.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A recommendation is made to 'pull' the bit and replace it for the next section."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A recommendation is made to 'pull' the bit and replace it for the next section.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

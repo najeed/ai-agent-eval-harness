@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Launch the survey using a third-party survey tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR team sends a unique survey link to all employees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR team sends a unique survey link to all employees.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Monitor the survey response rate throughout the survey period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR team tracks the response rate on the survey platform's dashboard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR team tracks the response rate on the survey platform's dashboard.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the survey closes, analyze the results and prepare a presentation for leadership on the key findings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR team analyzes the data and creates a report highlighting areas of strength and opportunities for improvement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR team analyzes the data and creates a report highlighting areas of strength and opportunities for improvement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

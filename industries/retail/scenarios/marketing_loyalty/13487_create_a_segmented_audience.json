@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the customer segmentation tool in the marketing platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The marketer accesses the audience builder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The marketer accesses the audience builder.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new segment with the rules: (Is a loyalty member) AND (Total spend in last 12 months > $1000).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The marketer defines the criteria for the high-value segment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The marketer defines the criteria for the high-value segment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Save the segment. The system generates a list of all customers who meet the criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new target audience is created and can be used for future marketing campaigns."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new target audience is created and can be used for future marketing campaigns.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

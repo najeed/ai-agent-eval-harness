@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new lead account for the potential customer in the CRM.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new lead record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new lead record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new sample request order in the system for the requested product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a no-charge order for a 1kg sample."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a no-charge order for a 1kg sample.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the request to the sample lab for fulfillment and shipping.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The sample lab receives the request and prepares the sample for shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The sample lab receives the request and prepares the sample for shipment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

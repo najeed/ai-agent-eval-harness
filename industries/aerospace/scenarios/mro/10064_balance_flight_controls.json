@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Mount the aileron on a balancing rig.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly sets up the aileron for balancing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly sets up the aileron for balancing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the balance of the aileron and compare it to the specifications in the maintenance manual.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the aileron is out of balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the aileron is out of balance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add or remove balance weights at specified locations until the aileron is balanced within the required tolerance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully balances the aileron and documents the final weight configuration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully balances the aileron and documents the final weight configuration.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

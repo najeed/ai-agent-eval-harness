@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the different types of agency (e.g., seller's agent, buyer's agent, dual agent) in simple terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly articulates their role as a buyer's agent and their fiduciary duties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly articulates their role as a buyer's agent and their fiduciary duties.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the state-mandated 'Agency Disclosure' form to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent presents the correct legal form to the new client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent presents the correct legal form to the new client.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Obtain the client's signature on the form acknowledging they have received the information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client signs the disclosure form, and it is saved to their file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client signs the disclosure form, and it is saved to their file.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

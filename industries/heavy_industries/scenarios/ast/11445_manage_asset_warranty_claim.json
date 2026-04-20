@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the asset record and verify its purchase date and warranty period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the asset is still under its 1-year warranty."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the asset is still under its 1-year warranty.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the work order that details the failure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the maintenance record showing the cause of failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the maintenance record showing the cause of failure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the equipment vendor, initiate a warranty claim, and provide the purchase and failure details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully logs a warranty claim with the vendor and receives a claim number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully logs a warranty claim with the vendor and receives a claim number.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

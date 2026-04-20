@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Upload the draft sales aid to the promotional review system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully uploads the document and initiates a new review cycle."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully uploads the document and initiates a new review cycle.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Route the document to the predefined list of reviewers (Medical, Legal, Regulatory).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly assigns the review task to all required stakeholders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly assigns the review task to all required stakeholders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Collate the feedback from all reviewers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent consolidates comments, noting that Legal requires a change to a claim and Medical requests a new reference."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent consolidates comments, noting that Legal requires a change to a claim and Medical requests a new reference.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Return the document to the marketing team with the consolidated feedback for revision.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the document back for edits with clear instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the document back for edits with clear instructions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The manager logs the employee's absence in the scheduling system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The absence is recorded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The absence is recorded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The manager uses the system to find available employees who are not scheduled and can cover the shift.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a list of available staff."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a list of available staff.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The manager contacts an available employee who agrees to take the shift, and updates the schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The shift is covered, and the schedule is updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The shift is covered, and the schedule is updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

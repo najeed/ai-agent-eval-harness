@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Assemble the core value dossier for the product, including all clinical efficacy and safety data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all the relevant clinical study reports."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all the relevant clinical study reports.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Incorporate economic models showing the cost-effectiveness of the drug compared to competitors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent embeds the approved economic models and their outputs into the dossier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent embeds the approved economic models and their outputs into the dossier.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Tailor the dossier to the specific payer's format and requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reformats the dossier to match the payer's template (e.g., AMCP format)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reformats the dossier to match the payer's template (e.g., AMCP format).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Submit the final dossier to the payer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the dossier via the payer's portal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the dossier via the payer's portal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

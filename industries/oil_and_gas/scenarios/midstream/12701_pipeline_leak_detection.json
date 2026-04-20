@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the high-priority leak alarm for pipeline segment PL-789.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The alarm is acknowledged in the SCADA system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The alarm is acknowledged in the SCADA system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze real-time and historical pressure and flow rate data upstream and downstream of the alarm location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator identifies a pressure drop and flow mismatch indicative of a real leak."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator identifies a pressure drop and flow mismatch indicative of a real leak.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate the emergency shutdown procedure for the affected pipeline segment and dispatch a field crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pipeline segment is safely isolated, and a crew is dispatched to the location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pipeline segment is safely isolated, and a crew is dispatched to the location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

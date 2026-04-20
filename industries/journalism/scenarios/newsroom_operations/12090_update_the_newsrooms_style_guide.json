@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Research how other major publications and style guides (like AP, Chicago) are treating the new term.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers information on the prevailing industry standard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers information on the prevailing industry standard.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Make a decision on the official house style for the term.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear rule is established."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear rule is established.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the new entry to the internal style guide document and notify all editorial staff of the update.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The style guide is updated and the change is communicated to the team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The style guide is updated and the change is communicated to the team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

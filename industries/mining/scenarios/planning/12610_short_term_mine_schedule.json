@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Import the latest grade control model, which has the most up-to-date block grades.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The current grade control model is loaded into the scheduling software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The current grade control model is loaded into the scheduling software.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Define the production targets for the week, including total tons and average copper grade to be delivered to the crusher.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The weekly production goals are set."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The weekly production goals are set.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a schedule that sequences the mining of specific blocks to blend high- and low-grade ore, meeting the weekly targets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A detailed block-by-block schedule for the week is created and published for operations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A detailed block-by-block schedule for the week is created and published for operations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

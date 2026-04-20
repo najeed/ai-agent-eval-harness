@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate the final invoice for the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the final invoice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the final invoice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Mark the project as 'Completed' in the project management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the project status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the project status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Archive all project documents to the long-term storage server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates the archival process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates the archival process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

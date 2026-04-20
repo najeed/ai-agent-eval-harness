@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the amount of unapplied cash or credit on the customer's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer has a $250 credit on account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer has a $250 credit on account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the open invoice that the customer wants to apply the credit to.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the specified open invoice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the specified open invoice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the on-account credit to the invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the credit, reducing the invoice balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the credit, reducing the invoice balance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

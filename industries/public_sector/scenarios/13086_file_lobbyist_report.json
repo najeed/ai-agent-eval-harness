@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the lobbyist and the correct reporting period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The lobbyist logs in and selects the correct month for their report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The lobbyist logs in and selects the correct month for their report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter details of all lobbying contacts and any related expenditures.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The lobbyist accurately fills out the disclosure form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The lobbyist accurately fills out the disclosure form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Certify and submit the report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The lobbyist successfully files their monthly disclosure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The lobbyist successfully files their monthly disclosure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

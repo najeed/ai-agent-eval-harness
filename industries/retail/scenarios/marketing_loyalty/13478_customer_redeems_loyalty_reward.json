@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "At checkout, the associate looks up the customer's loyalty account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The loyalty account is linked to the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The loyalty account is linked to the transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The POS displays the customer's available rewards, including a '$5 Off' coupon.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate sees the reward the customer is eligible for."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate sees the reward the customer is eligible for.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The associate applies the $5 reward to the transaction, which deducts the points from the customer's account and reduces the sale total.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer successfully redeems their reward, and their points balance is updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer successfully redeems their reward, and their points balance is updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

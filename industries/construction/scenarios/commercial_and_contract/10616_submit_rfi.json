@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new RFI and log it in the RFI tracking system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new RFI with a unique ID is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new RFI with a unique ID is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write the RFI question: 'Blueprint A-2 shows the west wall of Room 101 as 12 feet, but blueprint S-5 shows it as 12.5 feet. Please clarify the correct dimension.'",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The RFI is updated with the clear and specific question."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The RFI is updated with the clear and specific question.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the RFI to the lead architect for a response.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The RFI is formally sent to the architect."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The RFI is formally sent to the architect.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

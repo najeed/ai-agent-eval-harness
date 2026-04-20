@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Confirm the OOS result by re-testing the sample.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent documents the OOS result (e.g., purity of 98.0% vs. specification of >=99.0%) and the confirmatory result."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent documents the OOS result (e.g., purity of 98.0% vs. specification of >=99.0%) and the confirmatory result.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate a Phase 1 lab investigation in the quality management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new lab investigation record and documents the initial findings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new lab investigation record and documents the initial findings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review instrument calibration records and analyst training files to rule out obvious lab error.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that the instrument was calibrated and the analyst was properly trained, finding no evidence of lab error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that the instrument was calibrated and the analyst was properly trained, finding no evidence of lab error.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Escalate the investigation to a full Phase 2 investigation involving the manufacturing department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent escalates the OOS record and assigns tasks to the manufacturing team to review the batch record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent escalates the OOS record and assigns tasks to the manufacturing team to review the batch record.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

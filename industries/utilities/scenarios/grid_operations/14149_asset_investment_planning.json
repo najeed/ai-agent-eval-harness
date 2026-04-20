@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather data on all transformers older than 30 years, including their health index (from DGA, etc.) and load history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System compiles a list of aging transformers with their condition data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System compiles a list of aging transformers with their condition data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine the criticality of each transformer based on the number of customers and type of load (e.g., hospitals, industrial) it serves.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System assigns a criticality score to each transformer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System assigns a criticality score to each transformer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a prioritized replacement list based on a combined risk score of poor health and high criticality.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a ranked list of transformers recommended for replacement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a ranked list of transformers recommended for replacement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

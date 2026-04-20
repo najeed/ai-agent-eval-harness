@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an 'Over-Height Vehicle' alert from the 'Old Mill Bridge' sensor system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the immediate traffic hazard alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the immediate traffic hazard alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately activate the flashing warning lights and the 'Turn Back Now' dynamic message sign on the approach to the bridge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent activates the warning systems to stop the truck."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent activates the warning systems to stop the truck.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a police unit to the location to assist the truck in turning around safely.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends police to manage the traffic situation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends police to manage the traffic situation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

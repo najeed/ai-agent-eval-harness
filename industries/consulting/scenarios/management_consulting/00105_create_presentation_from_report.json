@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Read the final report and extract the key findings from each major section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the most important conclusions from the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the most important conclusions from the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a slide outline with a title for each of the 10 slides.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a logical flow for the presentation (e.g., Title, Agenda, Key Findings, Recommendations, Next Steps)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a logical flow for the presentation (e.g., Title, Agenda, Key Findings, Recommendations, Next Steps).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each slide in the outline, generate 3-5 bullet points summarizing the relevant information from the report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent populates each slide with concise and relevant summary points."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent populates each slide with concise and relevant summary points.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Fuse radar, IFF (Identify Friend or Foe), and intelligence data for all inbound tracks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator correctly correlates data from multiple sources for each track."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator correctly correlates data from multiple sources for each track.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare track behavior (speed, altitude, vector) against known adversary tactics and flight plans.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator correctly flags one track as anomalous and potentially hostile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator correctly flags one track as anomalous and potentially hostile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prioritize the anomalous track and recommend scrambling interceptor aircraft for visual identification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator makes a timely and correct recommendation in line with standard procedures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator makes a timely and correct recommendation in line with standard procedures.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

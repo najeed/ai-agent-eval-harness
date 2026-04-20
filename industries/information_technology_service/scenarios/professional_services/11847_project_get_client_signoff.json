@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Prepare a milestone completion report demonstrating that all deliverables for the phase are complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear, detailed report is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear, detailed report is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send the report and a formal sign-off form to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client receives the necessary documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client receives the necessary documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive the signed form from the client and update the project plan to mark the milestone as complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The milestone is officially completed, and the next phase can begin."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The milestone is officially completed, and the next phase can begin.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Immediately dispatch an emergency HVAC contractor to diagnose the problem.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A technician is on-site to assess the failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A technician is on-site to assess the failure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a mass notification to all tenants, acknowledging the problem and providing an initial estimate for repair time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All tenants are informed of the situation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All tenants are informed of the situation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide regular updates to tenants as more information becomes available and, if necessary, arrange for temporary solutions like providing portable AC units for vulnerable residents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The situation is managed effectively with clear communication and proactive problem-solving."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The situation is managed effectively with clear communication and proactive problem-solving.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

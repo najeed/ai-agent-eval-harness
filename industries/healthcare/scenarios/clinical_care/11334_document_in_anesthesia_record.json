@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that real-time data from the patient monitor (e.g., heart rate, SpO2) is flowing correctly into the anesthesia record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Anesthesiologist confirms the interface is working and data is populating automatically."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Anesthesiologist confirms the interface is working and data is populating automatically.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Manually document the administration of an anesthetic gas and a bolus of medication.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Anesthesiologist accurately records the manually administered drugs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Anesthesiologist accurately records the manually administered drugs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document a key surgical event, such as 'Incision'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Anesthesiologist timestamps a critical event in the case, which provides context for any physiological changes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Anesthesiologist timestamps a critical event in the case, which provides context for any physiological changes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

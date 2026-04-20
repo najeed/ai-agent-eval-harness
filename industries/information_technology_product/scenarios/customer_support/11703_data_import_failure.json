@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Request the CSV file from the customer to examine it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains the problematic file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains the problematic file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the file and discover it contains incorrect character encoding (UTF-16 instead of UTF-8).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the root cause."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the root cause.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the customer on how to re-save the file with the correct UTF-8 encoding and try the import again.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear solution that resolves the customer's issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear solution that resolves the customer's issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

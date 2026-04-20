@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the taxpayer's basic information (Name, SSN, Address).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the required personal information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the required personal information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Estimate the taxpayer's tax liability and determine if a payment should be made with the extension.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent estimates the tax due and advises the taxpayer to make a payment to avoid penalties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent estimates the tax due and advises the taxpayer to make a payment to avoid penalties.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare and e-file Form 4868, Application for Automatic Extension of Time To File.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the extension form to the IRS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the extension form to the IRS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

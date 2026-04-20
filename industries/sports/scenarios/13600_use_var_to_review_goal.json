@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all camera angles of the play leading up to the goal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses and syncs feeds from all broadcast cameras."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses and syncs feeds from all broadcast cameras.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use virtual line technology to determine the player's position at the exact moment the ball was passed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technology shows the attacking player was in an offside position."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technology shows the attacking player was in an offside position.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Communicate the finding to the on-field referee, recommending they disallow the goal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a clear and concise recommendation to the referee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a clear and concise recommendation to the referee.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

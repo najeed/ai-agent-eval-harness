@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the details of a new load, including origin, destination, and required equipment (e.g., refrigerated trailer).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dispatcher understands the requirements of the load."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dispatcher understands the requirements of the load.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find available drivers who are near the load's origin, have sufficient available HOS, and have the correct equipment qualification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System returns a list of 3 eligible drivers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System returns a list of 3 eligible drivers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the load to the best-fit driver and send them the dispatch information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The load is assigned, and the driver receives all necessary pickup details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The load is assigned, and the driver receives all necessary pickup details.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

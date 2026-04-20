@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and locate the specific transaction in their history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer and the $75.00 charge from 'ShopMart Online'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer and the $75.00 charge from 'ShopMart Online'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Temporarily block the customer's debit card to prevent further fraudulent charges.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully places a temporary lock on the debit card."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully places a temporary lock on the debit card.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate a chargeback for the disputed transaction and order a new card for the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent files the dispute and successfully orders a replacement card."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent files the dispute and successfully orders a replacement card.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

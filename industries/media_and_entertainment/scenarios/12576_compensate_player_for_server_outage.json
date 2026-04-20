@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all players who attempted to log in during the outage period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of all affected player accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of all affected player accounts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a script to grant a specified amount of in-game currency to all players on the list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully executes the script to distribute the compensation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully executes the script to distribute the compensation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post a message in the game and on social media apologizing for the outage and announcing the gift.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the apology and compensation to the player base."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the apology and compensation to the player base.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

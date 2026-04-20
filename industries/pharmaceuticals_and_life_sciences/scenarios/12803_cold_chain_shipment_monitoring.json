@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the details for a specific vaccine shipment, including its route and temperature requirements (2-8\u00b0C).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the shipment and its required temperature range."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the shipment and its required temperature range.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the real-time data from the temperature logger attached to the shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully connects to the IoT sensor data stream."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully connects to the IoT sensor data stream.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Detect a temperature excursion alert indicating the temperature has risen to 9.5\u00b0C.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the alert and the deviation details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the alert and the deviation details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Initiate a quality investigation and notify the recipient to quarantine the shipment upon arrival.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a quality event and sends a notification to the destination site."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a quality event and sends a notification to the destination site.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

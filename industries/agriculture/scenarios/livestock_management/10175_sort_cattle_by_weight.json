@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Connect to the smart scale and automated sorting gate system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent establishes a connection with the hardware."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent establishes a connection with the hardware.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set the sorting parameter to 'weight > 1300 lbs'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly configures the sorting logic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly configures the sorting logic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "As each animal is weighed, send a command to the gate to either sort it to the 'market' pen or the 'keep' pen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully controls the sorting gate in real-time for each animal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully controls the sorting gate in real-time for each animal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Thoroughly review the RFP document to understand all submission requirements, evaluation criteria, and deadlines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a checklist of all required components for the RFP response."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a checklist of all required components for the RFP response.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assemble a project team (architect, engineer, financial analyst) to develop a concept and proposal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A project team is formed and a project plan is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A project team is formed and a project plan is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile the final RFP response, including conceptual drawings, financial pro-forma, and team qualifications, and submit it by the deadline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete and compliant RFP response is submitted on time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete and compliant RFP response is submitted on time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

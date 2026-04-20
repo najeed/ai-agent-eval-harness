@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the employee's reimbursement request, including their grades and receipts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "L&D specialist receives the completed request packet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "L&D specialist receives the completed request packet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the employee met the policy requirements (e.g., passed with a 'B' or better).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist confirms the employee is eligible for reimbursement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist confirms the employee is eligible for reimbursement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the reimbursement request to payroll for processing in the next pay cycle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist approves the request and forwards it to the payroll department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist approves the request and forwards it to the payroll department.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and the specific bill payment in question.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the payment and confirms the details with the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the payment and confirms the details with the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate a payment trace to determine the status of the funds.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent starts a trace and finds the payment was rejected by the utility company's bank."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent starts a trace and finds the payment was rejected by the utility company's bank.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once funds are returned, credit the customer's account and advise them to resubmit the payment with the correct account number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent returns the money to the customer's account and provides clear instructions for resubmission."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent returns the money to the customer's account and provides clear instructions for resubmission.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the fan's needs (e.g., wheelchair accessible seating).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the specific seating requirement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the specific seating requirement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the availability of accessible seating for the desired game.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds available wheelchair accessible seats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds available wheelchair accessible seats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the sale of the accessible seats and provide information about accessible entrances and amenities at the stadium.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the sale and provides helpful information to the fan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the sale and provides helpful information to the fan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

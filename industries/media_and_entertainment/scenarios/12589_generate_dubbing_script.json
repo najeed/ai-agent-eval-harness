@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the original English dialogue script and the final video file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the source materials."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the source materials.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Translate the English script into German.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a German translation of the dialogue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a German translation of the dialogue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use the video file to add precise time-codes to the German script, indicating when each line should be spoken.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a final, time-coded dubbing script ready for the recording studio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a final, time-coded dubbing script ready for the recording studio.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

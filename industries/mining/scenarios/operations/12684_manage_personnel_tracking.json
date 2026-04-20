@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "An emergency alarm is activated. Immediately bring up the personnel tracking system dashboard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A map showing the last known location of all personnel underground is displayed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A map showing the last known location of all personnel underground is displayed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a list of all personnel currently underground and their assigned refuge station.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete muster list is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete muster list is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "As personnel arrive at the refuge stations, check them off the list to quickly identify anyone who is missing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system provides a real-time view of who is safe and who is still unaccounted for, guiding the search and rescue team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system provides a real-time view of who is safe and who is still unaccounted for, guiding the search and rescue team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

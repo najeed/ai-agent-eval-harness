@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the policyholder and verify their policy includes an accelerated death benefit rider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the policy has the required rider."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the policy has the required rider.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request medical documentation from a physician confirming the terminal diagnosis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent explains the documentation needed to support the claim."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent explains the documentation needed to support the claim.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once documentation is received, calculate and process the allowable benefit payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates and disburses the accelerated payment to the policyholder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates and disburses the accelerated payment to the policyholder.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

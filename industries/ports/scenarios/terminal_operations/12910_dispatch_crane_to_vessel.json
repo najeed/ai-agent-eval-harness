@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the vessel is 'all fast' (securely moored) and the gangway is down.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dispatcher receives confirmation from the mooring gang and vessel agent that operations can begin."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dispatcher receives confirmation from the mooring gang and vessel agent that operations can begin.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Based on the vessel size and required productivity, assign two available quay cranes (QCs) to the vessel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dispatcher assigns QC-02 and QC-03 to the 'MSC London'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dispatcher assigns QC-02 and QC-03 to the 'MSC London'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the first sequence of container moves from the stowage plan to the assigned crane operators.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The first set of discharge instructions appears on the crane operators' cabin terminals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The first set of discharge instructions appears on the crane operators' cabin terminals.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

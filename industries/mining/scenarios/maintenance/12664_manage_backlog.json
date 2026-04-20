@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a report of all open and unassigned work orders from the CMMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of all backlogged work is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of all backlogged work is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review each work order and assign it a priority based on its safety and production criticality.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All work orders in the backlog are prioritized."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All work orders in the backlog are prioritized.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Develop the maintenance schedule for the upcoming week, ensuring that the highest priority work from the backlog is included.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The weekly schedule is created, effectively managing the backlog and focusing resources on the most important jobs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The weekly schedule is created, effectively managing the backlog and focusing resources on the most important jobs.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

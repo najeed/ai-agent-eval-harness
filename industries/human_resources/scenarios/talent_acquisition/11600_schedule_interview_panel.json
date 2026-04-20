@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the candidate and the required interviewers for the panel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coordinator identifies the candidate and the three required interviewers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coordinator identifies the candidate and the three required interviewers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the calendars of all interviewers and the candidate to find mutual availability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coordinator finds a 2-hour slot where all four individuals are free."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coordinator finds a 2-hour slot where all four individuals are free.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send calendar invitations to all participants, including the interview schedule and a link to the candidate's resume.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coordinator successfully sends out all necessary invitations and materials."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coordinator successfully sends out all necessary invitations and materials.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

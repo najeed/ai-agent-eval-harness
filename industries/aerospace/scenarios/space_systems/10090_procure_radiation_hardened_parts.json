@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the specific part number and radiation tolerance requirements (e.g., 100 krad) from the bill of materials.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the required component specifications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the required component specifications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find a supplier that specializes in space-grade, radiation-hardened electronics.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a qualified supplier from the approved vendor list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a qualified supplier from the approved vendor list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place a purchase order for the components and ensure it includes requirements for full traceability and certification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a purchase order with all necessary flow-down requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a purchase order with all necessary flow-down requirements.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and their mortgage account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer's mortgage loan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer's mortgage loan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run an escrow analysis with the new, higher property tax amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the analysis, which shows a shortage in the escrow account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the analysis, which shows a shortage in the escrow account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the escrow shortage and the resulting increase in the customer's monthly payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains why the payment is increasing and what the new payment amount will be."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains why the payment is increasing and what the new payment amount will be.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

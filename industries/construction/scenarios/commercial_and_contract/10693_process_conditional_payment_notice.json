@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log the receipt of the conditional payment notice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The notice is formally logged in the project's legal correspondence file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The notice is formally logged in the project's legal correspondence file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Place a temporary hold on future payments to the subcontractor in question.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A payment hold is successfully placed in the accounting system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A payment hold is successfully placed in the accounting system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the subcontractor to demand proof of payment to their sub-subcontractor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal communication is sent to the subcontractor to resolve the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal communication is sent to the subcontractor to resolve the issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

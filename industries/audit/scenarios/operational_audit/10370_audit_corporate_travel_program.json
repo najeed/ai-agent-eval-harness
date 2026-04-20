@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze travel data to determine the company's top travel routes and hotel chains.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor identifies the top 10 most frequent city pairs and hotel brands."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor identifies the top 10 most frequent city pairs and hotel brands.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the company's current contracts with airlines and hotels.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor finds that the company does not have negotiated corporate rates with its most-used airline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor finds that the company does not have negotiated corporate rates with its most-used airline.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend that the procurement department enter into negotiations with the top airline and hotel chain to secure discounted corporate rates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A specific, data-driven recommendation for cost savings is made."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A specific, data-driven recommendation for cost savings is made.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

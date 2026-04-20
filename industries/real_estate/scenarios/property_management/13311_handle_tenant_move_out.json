@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Conduct a move-out inspection of the property, documenting any damages beyond normal wear and tear with photos.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A detailed move-out inspection report is completed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A detailed move-out inspection report is completed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain cost estimates for repairing the documented damages.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets quotes from vendors for the necessary repairs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets quotes from vendors for the necessary repairs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the amount of the security deposit to be returned, deducting for damages, and send the final accounting and any refund to the former tenant within the legally required timeframe.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The security deposit is reconciled and returned according to state law."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The security deposit is reconciled and returned according to state law.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

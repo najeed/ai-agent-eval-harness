@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use LinkedIn Sales Navigator or a similar tool to identify the demographics and firmographics of the target role.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers data on company size, industry, and seniority of the target audience."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers data on company size, industry, and seniority of the target audience.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for industry reports, articles, and forum discussions where this audience discusses their professional challenges.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds common themes like 'employee retention', 'recruitment costs', and 'compliance'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds common themes like 'employee retention', 'recruitment costs', and 'compliance'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a summary of the top 3-5 pain points to inform marketing messaging.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a concise list of challenges that the product can solve."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a concise list of challenges that the product can solve.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the project plan for the library construction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager opens the correct project file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager opens the correct project file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Locate the 'Foundation Pour' milestone in the project plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager finds the relevant task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager finds the relevant task.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Mark the milestone as 'Complete' and enter the completion date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager successfully updates the project plan, which may automatically trigger notifications to other stakeholders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager successfully updates the project plan, which may automatically trigger notifications to other stakeholders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

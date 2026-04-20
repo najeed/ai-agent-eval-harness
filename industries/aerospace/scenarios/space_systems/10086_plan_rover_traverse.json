@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the latest 3D terrain maps from the rover's cameras to identify a safe path to the target.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent plots a path that avoids large rocks, steep slopes, and sand traps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent plots a path that avoids large rocks, steep slopes, and sand traps.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a sequence of drive commands (e.g., 'drive forward 5 meters, turn right 15 degrees').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the full command sequence for the traverse."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the full command sequence for the traverse.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Simulate the traverse using a digital twin of the rover to verify the path is safe and the rover will not get stuck.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the simulation and confirms the traverse is safe and will complete successfully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the simulation and confirms the traverse is safe and will complete successfully.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

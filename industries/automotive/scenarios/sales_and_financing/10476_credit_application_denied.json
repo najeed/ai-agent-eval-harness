@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the credit application decision and the reason for the denial (e.g., low credit score, high debt-to-income ratio).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the application was denied due to 'Insufficient Credit History'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the application was denied due to 'Insufficient Credit History'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the customer and sensitively inform them of the denial.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the decision in a polite and professional manner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the decision in a polite and professional manner.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain that they will receive an adverse action notice in the mail with details, and suggest options like adding a cosigner or providing a larger down payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides compliant information and helpful suggestions for how the customer might still be able to purchase a vehicle."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides compliant information and helpful suggestions for how the customer might still be able to purchase a vehicle.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

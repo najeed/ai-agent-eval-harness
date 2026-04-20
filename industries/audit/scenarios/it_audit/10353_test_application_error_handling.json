@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Attempt to import a data file with incorrect formatting into the application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The application should reject the entire file and create a log of the formatting errors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The application should reject the entire file and create a log of the formatting errors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Simulate a network interruption during a large transaction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The application should roll back the incomplete transaction, leaving no partial data in the database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The application should roll back the incomplete transaction, leaving no partial data in the database.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the error logs to ensure that all failed transactions are properly logged for investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms that the error logs are detailed and accurate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms that the error logs are detailed and accurate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

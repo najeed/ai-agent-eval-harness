@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Display the current power output (in MW) for each wind farm, solar farm, and battery system in the portfolio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dashboard shows live generation data for all assets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dashboard shows live generation data for all assets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Highlight any assets that are currently offline or operating under a fault condition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dashboard clearly flags two assets with active, non-critical faults."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dashboard clearly flags two assets with active, non-critical faults.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Show the current market price of electricity in the regions where the assets are located.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dashboard displays live LMP data next to the relevant assets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dashboard displays live LMP data next to the relevant assets.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

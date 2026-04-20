@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run the low, medium, and high QC samples on the analyzer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician physically runs the QC materials."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician physically runs the QC materials.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the QC results in the LIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The results from the QC samples are displayed for review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The results from the QC samples are displayed for review.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm that all QC results are within the acceptable range and approve the QC run.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The QC is documented as passed, and the analyzer is cleared to run patient samples."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The QC is documented as passed, and the analyzer is cleared to run patient samples.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

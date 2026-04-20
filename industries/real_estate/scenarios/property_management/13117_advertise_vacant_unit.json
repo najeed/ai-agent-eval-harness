@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather details and photos of the unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the unit's specs (beds, baths, sqft, rent amount) and at least 5 high-quality photos."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the unit's specs (beds, baths, sqft, rent amount) and at least 5 high-quality photos.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write a compelling rental advertisement description.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a marketing description highlighting key features and amenities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a marketing description highlighting key features and amenities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Syndicate the advertisement to multiple rental listing websites (e.g., Zillow, Apartments.com).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The advertisement is successfully posted to at least three major rental sites."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The advertisement is successfully posted to at least three major rental sites.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search professional networks (like LinkedIn) and academic databases for experts on the specified topic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs targeted searches."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs targeted searches.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify three individuals who have published articles or have extensive experience in the field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a list of three relevant experts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a list of three relevant experts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each expert, provide their name, current role, and a link to their profile or a relevant publication.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a brief profile for each potential interviewee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a brief profile for each potential interviewee.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

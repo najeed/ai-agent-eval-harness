@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query the pilot training records database for all pilots in the squadron.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Commander retrieves the complete training history for every pilot."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Commander retrieves the complete training history for every pilot.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify any pilots whose certifications are expired or close to expiring (e.g., night flying, aerial refueling).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Commander generates an accurate list of pilots with training deficiencies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Commander generates an accurate list of pilots with training deficiencies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the necessary simulator sessions or training flights to get all pilots fully certified.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Commander creates a schedule to resolve all training issues before the exercise."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Commander creates a schedule to resolve all training issues before the exercise.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

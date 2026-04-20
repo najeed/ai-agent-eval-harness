@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The driver submits a cleaning fee request for a specific trip, including photos of the mess.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The request and photos are received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The request and photos are received.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "An agent reviews the photos to verify that the mess requires professional cleaning.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent confirms the mess is significant enough to warrant a fee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent confirms the mess is significant enough to warrant a fee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply a standard cleaning fee to the rider's account for that trip.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The rider is charged the cleaning fee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The rider is charged the cleaning fee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Notify both the driver and the rider of the fee assessment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Both parties are informed of the outcome."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Both parties are informed of the outcome.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

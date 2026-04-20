@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the campaign to be updated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the correct campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the correct campaign.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "In the location targeting settings, select 'radius targeting'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent navigates to the correct setting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent navigates to the correct setting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the store's address and set the radius to 10 miles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully defines the geographic target area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully defines the geographic target area.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

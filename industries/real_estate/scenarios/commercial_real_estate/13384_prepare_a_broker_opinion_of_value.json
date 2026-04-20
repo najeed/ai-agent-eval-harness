@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Gather information on the subject property, including its size, income, and expenses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has all necessary data on the property being valued."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has all necessary data on the property being valued.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Research and select at least three recent, relevant sales comparables.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of strong comparable sales is compiled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of strong comparable sales is compiled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the property using both the income approach (cap rate) and the sales comparison approach to arrive at a final value estimate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent uses multiple valuation methods to determine a credible value."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent uses multiple valuation methods to determine a credible value.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a professional BOV report detailing the analysis and present it to the owner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The owner receives a comprehensive report explaining the property's estimated value."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The owner receives a comprehensive report explaining the property's estimated value.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the backup policy to understand the required frequency and retention period for backups.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor understands the backup requirements (e.g., daily backups, retained for 30 days)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor understands the backup requirements (e.g., daily backups, retained for 30 days).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the backup job logs for the last month to verify that backups of critical servers completed successfully every day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor finds that the backup job for a critical database server has been failing intermittently."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor finds that the backup job for a critical database server has been failing intermittently.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Request that the IT team perform a test restore of a specific file from a recent backup to ensure the backups are viable.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The IT team successfully restores the requested file, confirming the backups are working."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The IT team successfully restores the requested file, confirming the backups are working.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

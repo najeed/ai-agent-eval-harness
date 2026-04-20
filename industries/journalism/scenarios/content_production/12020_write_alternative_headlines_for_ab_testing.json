@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Read the article to fully understand its content and main angle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a deep understanding of the story."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a deep understanding of the story.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write five different headlines for the article, varying the tone and focus (e.g., a straightforward headline, a question-based headline, a controversial headline).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces five distinct and viable headline options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces five distinct and viable headline options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the headlines into the CMS's A/B testing tool to begin the test.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The A/B test is configured and running."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The A/B test is configured and running.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

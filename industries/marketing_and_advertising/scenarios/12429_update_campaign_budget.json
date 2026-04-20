@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the correct campaign in the advertising platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the 'Q3 Lead Gen' campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the 'Q3 Lead Gen' campaign.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Increase the campaign's daily budget from $100 to $150.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the budget setting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the budget setting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the change has been saved and is active.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the new budget is reflected in the campaign settings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the new budget is reflected in the campaign settings.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

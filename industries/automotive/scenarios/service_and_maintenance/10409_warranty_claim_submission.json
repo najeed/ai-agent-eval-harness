@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the closed repair order, noting the part number of the failed sensor and the labor hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has all necessary details from the repair order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has all necessary details from the repair order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the vehicle's warranty status and confirm the repair is covered.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the vehicle's powertrain warranty is active and covers the specific part."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the vehicle's powertrain warranty is active and covers the specific part.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create and submit a warranty claim to the manufacturer with all required documentation (repair order, diagnostic codes, technician notes).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the claim through the manufacturer's portal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the claim through the manufacturer's portal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

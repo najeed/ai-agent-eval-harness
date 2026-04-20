@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the cement slurry has been mixed to the correct density and volume as per the design.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer confirms the slurry properties are on-spec before pumping."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer confirms the slurry properties are on-spec before pumping.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Monitor the pumping pressure in real-time as the cement is pumped down the casing and up the annulus.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pressure is monitored to ensure it stays within safe limits and indicates good displacement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pressure is monitored to ensure it stays within safe limits and indicates good displacement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the job, run a cement bond log (CBL) to evaluate the quality of the cement seal behind the casing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The CBL is run and analyzed, confirming a good bond across the zone of interest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The CBL is run and analyzed, confirming a good bond across the zone of interest.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

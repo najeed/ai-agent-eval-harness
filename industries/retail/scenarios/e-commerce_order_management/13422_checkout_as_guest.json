@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Add items to the cart and proceed to checkout.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer is ready to pay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer is ready to pay.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the 'Checkout as Guest' option.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer bypasses the account creation/login step."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer bypasses the account creation/login step.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter shipping, billing, and email information and complete the purchase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is successfully placed without requiring the customer to create a password-protected account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is successfully placed without requiring the customer to create a password-protected account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

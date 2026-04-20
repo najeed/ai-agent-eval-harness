@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'Preventive Maintenance Recommended' alert for the 'Riverfront Bridge'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the predictive maintenance alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the predictive maintenance alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the asset's maintenance history and the data leading to the recommendation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the recommendation is valid based on wear-and-tear analytics."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the recommendation is valid based on wear-and-tear analytics.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for the bridge maintenance crew and schedule it for a low-traffic period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the preventive maintenance work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the preventive maintenance work.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

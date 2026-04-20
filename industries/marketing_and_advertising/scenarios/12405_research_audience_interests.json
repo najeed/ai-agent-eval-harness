@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the core target audience based on demographics (e.g., women aged 25-34 in the US).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a clear definition of the target persona."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a clear definition of the target persona.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a tool like Facebook Audience Insights or a third-party analytics tool to find the top interests, hobbies, and followed pages for this demographic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of relevant interests (e.g., 'yoga', 'healthy eating', 'skincare')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of relevant interests (e.g., 'yoga', 'healthy eating', 'skincare').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Group the interests into logical themes to be used for creating different ad sets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates 3-5 distinct interest-based audience themes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates 3-5 distinct interest-based audience themes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

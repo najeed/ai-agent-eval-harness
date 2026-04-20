@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a request in the system for an oil sample to be taken from truck HT-51's engine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order for the sample collection is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order for the sample collection is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive the analysis results from the lab.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The lab report is received electronically and attached to the equipment record in the CMMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The lab report is received electronically and attached to the equipment record in the CMMS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the results, which show high levels of iron and copper. Flag the engine for an internal inspection at the next service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The abnormal result is identified, and a follow-up inspection is planned to investigate the source of the wear."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The abnormal result is identified, and a follow-up inspection is planned to investigate the source of the wear.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

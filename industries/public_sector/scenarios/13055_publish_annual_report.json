@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Compile the final, approved annual report document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The communications director has the final PDF of the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The communications director has the final PDF of the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ensure the document is in a web-accessible format (e.g., tagged PDF).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The director confirms the PDF meets accessibility standards."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The director confirms the PDF meets accessibility standards.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload and publish the report to the agency's public website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The director successfully posts the report online."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The director successfully posts the report online.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

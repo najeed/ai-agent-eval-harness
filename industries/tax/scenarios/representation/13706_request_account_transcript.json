@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain a signed Form 2848, Power of Attorney, from the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent secures the necessary authorization to represent the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent secures the necessary authorization to represent the client.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the IRS Practitioner Priority Service to request the client's account transcript.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully uses the professional service to request the transcript."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully uses the professional service to request the transcript.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive and save the transcript for analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent downloads and securely stores the client's transcript."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent downloads and securely stores the client's transcript.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

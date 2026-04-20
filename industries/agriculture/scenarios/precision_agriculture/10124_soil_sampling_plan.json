@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the boundary map for the specified field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves the field boundary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves the field boundary.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a set of GPS coordinates for soil sampling points based on a 2.5-acre grid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a list of sampling points with latitudes and longitudes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a list of sampling points with latitudes and longitudes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a map file of the points that can be loaded into a GPS device for navigation in the field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a downloadable KML or SHP file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a downloadable KML or SHP file.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

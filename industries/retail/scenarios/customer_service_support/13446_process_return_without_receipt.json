@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Attempt to look up the original transaction using the customer's credit card or loyalty account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent successfully finds the original sale in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent successfully finds the original sale in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "If the transaction is found, process the return normally.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The return is processed against the original transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The return is processed against the original transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If not found, process a 'no-receipt' return, issuing store credit for the item's current selling price, per store policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer receives store credit for the return, and the transaction is logged for fraud monitoring."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer receives store credit for the return, and the transaction is logged for fraud monitoring.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Monitor the incoming trade submissions from teams.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees a high volume of trades being submitted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees a high volume of trades being submitted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each trade, verify that it is compliant with all league rules (e.g., salary cap, roster limits).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews each trade and flags one that is non-compliant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews each trade and flags one that is non-compliant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve all compliant trades and notify the non-compliant team of the issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent approves valid trades and informs the other team why their trade was rejected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent approves valid trades and informs the other team why their trade was rejected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "At the deadline, officially close the trade window.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent closes the system to any new trade submissions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent closes the system to any new trade submissions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

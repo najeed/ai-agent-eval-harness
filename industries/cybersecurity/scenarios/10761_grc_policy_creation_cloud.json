@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Research industry best practices and frameworks for cloud security (e.g., CSA Cloud Controls Matrix).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst gathers relevant best practice information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst gathers relevant best practice information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a new policy that covers key cloud security topics like identity management, data protection, and infrastructure configuration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst drafts a comprehensive and well-structured policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst drafts a comprehensive and well-structured policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Circulate the draft policy to key stakeholders (e.g., cloud engineering, legal) for review and feedback before seeking final approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst effectively manages the stakeholder review process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst effectively manages the stakeholder review process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

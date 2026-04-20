@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the citizen and the total amount of taxes owed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the citizen's tax record and the outstanding balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the citizen's tax record and the outstanding balance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine eligibility for a payment plan based on agency criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the citizen is eligible to set up a payment plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the citizen is eligible to set up a payment plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Establish the monthly payment amount and schedule, and get the citizen's agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sets up the installment agreement in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sets up the installment agreement in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

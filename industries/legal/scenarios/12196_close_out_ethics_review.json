@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the open conflicts check record for the matter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a memo to the file summarizing the ethics committee's review and its conclusion that no disqualifying conflict exists.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a formal record of the decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a formal record of the decision.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Attach the memo to the conflicts check record and change its status to 'Cleared'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The conflict has been formally resolved and documented in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The conflict has been formally resolved and documented in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

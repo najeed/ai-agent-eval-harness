@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the cheapest available tickets for the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds several seats marked as 'obstructed view'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds several seats marked as 'obstructed view'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Clearly inform the customer that the seats have an obstructed view before completing the sale.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verbally confirms that the customer understands the view will be partially blocked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verbally confirms that the customer understands the view will be partially blocked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the sale.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the transaction.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

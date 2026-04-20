@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the student's admission and that they have paid their enrollment deposit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student is admitted and has committed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student is admitted and has committed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check that the student has submitted the required financial documentation proving they can cover costs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the financial documents are on file and sufficient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the financial documents are on file and sufficient.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the I-20 form in the SEVIS system and send it to the student.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates and sends the official document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates and sends the official document.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

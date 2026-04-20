@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "For each of the five interview transcripts, generate a one-paragraph summary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a concise summary for each interview."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a concise summary for each interview.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze all five summaries to identify recurring themes mentioned by multiple stakeholders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies common themes like 'communication silos' and 'manual approval processes'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies common themes like 'communication silos' and 'manual approval processes'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a summary report listing the key themes and providing a supporting quote for each from the transcripts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a report with themes and accurate supporting evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a report with themes and accurate supporting evidence.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

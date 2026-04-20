@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate the asset performance report for the last month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains the report showing key metrics like uptime, downtime, and mean time between failures (MTBF)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains the report showing key metrics like uptime, downtime, and mean time between failures (MTBF).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the asset with the lowest uptime for the month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager identifies that a specific haul truck had the lowest uptime at 85%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager identifies that a specific haul truck had the lowest uptime at 85%.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Drill down into the maintenance history for that truck to understand the reasons for its poor performance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager reviews the work orders for the truck and sees it had multiple engine-related failures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager reviews the work orders for the truck and sees it had multiple engine-related failures.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

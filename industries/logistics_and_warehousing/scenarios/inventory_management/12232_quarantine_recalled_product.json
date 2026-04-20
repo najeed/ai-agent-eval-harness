@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the recall notification with the product ID and batch number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the specific recall information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the specific recall information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the WMS for all locations containing the specified product and batch number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of all bins holding the recalled product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of all bins holding the recalled product.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply a 'QA Hold' status to all inventory of that batch, making it unpickable.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully places the inventory on hold."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully places the inventory on hold.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create tasks for operators to move the held inventory to a designated quarantine area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates move tasks to isolate the recalled product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates move tasks to isolate the recalled product.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

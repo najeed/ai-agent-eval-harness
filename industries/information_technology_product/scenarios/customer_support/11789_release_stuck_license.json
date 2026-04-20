@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the user's account and the license key in question.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the license and sees it is currently activated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the license and sees it is currently activated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the license management tool to remotely deactivate the license, releasing it from the old machine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully frees up the license."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully frees up the license.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the user the license has been released and they can now activate it on their new machine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user is able to successfully activate the software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user is able to successfully activate the software.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

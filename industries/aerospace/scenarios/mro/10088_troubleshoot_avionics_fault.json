@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Download the fault codes from the aircraft's central maintenance computer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the fault codes related to the autopilot system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the fault codes related to the autopilot system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the fault isolation manual (FIM) to trace the fault code to a probable cause, such as a faulty sensor or wiring.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the FIM and narrows down the cause to a specific line-replaceable unit (LRU)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the FIM and narrows down the cause to a specific line-replaceable unit (LRU).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Replace the suspected faulty LRU and perform a system test to verify the fault is cleared.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent replaces the component and confirms the autopilot system now passes all tests."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent replaces the component and confirms the autopilot system now passes all tests.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

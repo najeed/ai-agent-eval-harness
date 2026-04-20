@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Prepare the ore sample by crushing and grinding it to the target particle size.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The sample is correctly prepared for the test."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The sample is correctly prepared for the test.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Place the sample in a bottle with a cyanide solution and place it on rollers for a set amount of time (e.g., 24 hours).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The leach test is set up and run according to standard procedure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The leach test is set up and run according to standard procedure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the test, assay the remaining solids and the solution to calculate the final gold extraction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The test results are calculated, showing a 92% gold extraction for this ore type."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The test results are calculated, showing a 92% gold extraction for this ore type.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

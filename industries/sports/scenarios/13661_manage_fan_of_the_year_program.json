@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query the fan database to find the top 10 fans based on games attended, years as a season ticket holder, and loyalty points earned.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a shortlist of the most dedicated fans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a shortlist of the most dedicated fans.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the profiles of the top 10 fans.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the data to select a winner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the data to select a winner.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the winner and notify them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the winner and sends them a congratulatory email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the winner and sends them a congratulatory email.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

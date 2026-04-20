@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft a purchase offer that includes a long due diligence period to allow time for feasibility studies and securing entitlements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The offer includes favorable terms for the developer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The offer includes favorable terms for the developer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Negotiate with the landowner's agent on price and the length of the due diligence/entitlement period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A purchase price and contingency period are agreed upon."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A purchase price and contingency period are agreed upon.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Finalize and execute the purchase and sale agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A binding contract to purchase the land is in place."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A binding contract to purchase the land is in place.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

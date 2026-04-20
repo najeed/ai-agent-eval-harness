@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all outstanding checks that are more than 180 days old.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a list of stale-dated checks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a list of stale-dated checks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform due diligence by attempting to contact the vendors to have them cash the checks or request a reissue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends notification letters to the vendors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends notification letters to the vendors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For checks that remain uncashed after the due diligence period, prepare to remit the funds to the state as unclaimed property, following escheatment laws.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares the necessary report and payment for the state comptroller's office."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares the necessary report and payment for the state comptroller's office.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

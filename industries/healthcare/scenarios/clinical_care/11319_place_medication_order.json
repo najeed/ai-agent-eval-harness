@@ -12,38 +12,46 @@
       {
         "id": "task-0",
         "task_description": "Verify clinician access and patient identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Identity verified/authorized"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Identity verified/authorized",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-1",
         "task_description": "Open the patient's chart and navigate to the 'Orders' section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician accesses the order entry module for the correct patient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician accesses the order entry module for the correct patient.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for the medication, select the correct dosage, route, and frequency.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician correctly selects 'Lisinopril 10 mg tablet, by mouth, once daily'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician correctly selects 'Lisinopril 10 mg tablet, by mouth, once daily'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Sign the order, which sends it electronically to the pharmacy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician successfully signs the order, and it appears in the pharmacy's queue to be verified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician successfully signs the order, and it appears in the pharmacy's queue to be verified.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

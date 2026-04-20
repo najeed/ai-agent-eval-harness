@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule the pig run in the operations system, notifying all affected parties.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pigging operation is officially scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pigging operation is officially scheduled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Monitor the pig's progress through the pipeline by tracking its location via pig signallers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator tracks the pig in real-time as it passes key points."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator tracks the pig in real-time as it passes key points.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the pig has been successfully received at the downstream trap and log the completion of the run.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The run is logged as complete, and the inspection data is ready for download."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The run is logged as complete, and the inspection data is ready for download.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

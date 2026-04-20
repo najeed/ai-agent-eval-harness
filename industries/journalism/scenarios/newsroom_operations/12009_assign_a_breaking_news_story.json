@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the list of on-duty reporters and their current assignments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of available reporters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of available reporters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify a reporter who is not on a deadline and is physically closest to the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the best-positioned reporter for the assignment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the best-positioned reporter for the assignment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the story to the selected reporter in the newsroom management system and send them a notification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The reporter is officially assigned and alerted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The reporter is officially assigned and alerted.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

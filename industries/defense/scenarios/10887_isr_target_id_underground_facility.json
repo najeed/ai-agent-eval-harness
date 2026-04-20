@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze nighttime thermal imagery of a suspect area to find unexplained heat signatures on the ground.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst identifies a thermal anomaly consistent with a ventilation shaft for an underground base."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst identifies a thermal anomaly consistent with a ventilation shaft for an underground base.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze MASINT data (e.g., seismic, magnetic) of the same area to detect vibrations or magnetic deviations caused by underground activity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst finds corroborating evidence of underground machinery from the MASINT data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst finds corroborating evidence of underground machinery from the MASINT data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Fuse the thermal and MASINT data to confirm the location and approximate size of the underground facility.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst produces a high-confidence report on the location of the hidden facility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst produces a high-confidence report on the location of the hidden facility.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

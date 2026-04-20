@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Provide the client with a list of light fixtures from approved vendors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of options is sent to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of options is sent to the client.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "As the client makes selections, track the total cost against the $20,000 allowance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A running total of the selected fixtures' cost is maintained."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A running total of the selected fixtures' cost is maintained.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the client when their selections have reached 90% of the allowance to prevent overspending.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A timely notification is sent to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A timely notification is sent to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Scan the subcontract document and compare its clauses against the company's standard subcontract template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent scans the document and identifies that the 'Indemnification' clause is missing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent scans the document and identifies that the 'Indemnification' clause is missing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Flag the missing clause and send a revision request to the subcontractor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A notification is sent to the subcontractor requesting the addition of the missing clause."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A notification is sent to the subcontractor requesting the addition of the missing clause.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

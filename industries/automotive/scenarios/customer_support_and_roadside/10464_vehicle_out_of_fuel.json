@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the customer's plan includes fuel delivery service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the plan covers delivery of up to 2 gallons of fuel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the plan covers delivery of up to 2 gallons of fuel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain the customer's location and confirm the fuel type needed (e.g., regular unleaded, diesel).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the location and confirms the vehicle needs regular unleaded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the location and confirms the vehicle needs regular unleaded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a service provider to deliver fuel and provide an ETA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches a provider and gives a 40-minute ETA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches a provider and gives a 40-minute ETA.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

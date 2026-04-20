@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the notification of the change in banking details from the vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the new banking information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the new banking information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a callback to a known contact at the vendor to verbally confirm the change request and prevent payment fraud.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully contacts the vendor and confirms the change is legitimate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully contacts the vendor and confirms the change is legitimate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the banking information in the vendor master file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the vendor's payment details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the vendor's payment details.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

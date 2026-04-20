@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Create a new shipment record with the origin, destination, weight, and required pickup/delivery dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately enters all shipment details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately enters all shipment details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request spot quotes from a list of approved FTL carriers for the shipment's lane.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends out quote requests to multiple carriers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends out quote requests to multiple carriers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the returned quotes and select the carrier with the best rate and service level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes an optimal decision based on the provided quotes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes an optimal decision based on the provided quotes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Tender the load to the selected carrier, sending them all necessary pickup information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully tenders the load and receives a confirmation from the carrier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully tenders the load and receives a confirmation from the carrier.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

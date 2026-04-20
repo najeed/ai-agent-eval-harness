@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Analyze the framing task to determine if adding labor will decrease its duration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that the task is labor-intensive and can be accelerated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that the task is labor-intensive and can be accelerated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit a request to the resource manager for two additional carpenters for a specific one-week period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal resource request is sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal resource request is sent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

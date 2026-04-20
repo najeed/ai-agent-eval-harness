@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify a list of clients due for their annual review this month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs a report and gets a list of clients to contact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs a report and gets a list of clients to contact.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact a client to schedule a meeting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reaches a client and proposes a meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reaches a client and proposes a meeting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the review in the agent's calendar and send a confirmation to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent books the meeting and sends a calendar invite."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent books the meeting and sends a calendar invite.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

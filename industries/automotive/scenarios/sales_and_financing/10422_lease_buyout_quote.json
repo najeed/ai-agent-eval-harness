@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and their active lease agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the customer's lease contract details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the customer's lease contract details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the lease buyout amount based on the residual value, remaining payments, and any applicable fees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the precise buyout amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the precise buyout amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the buyout quote to the customer and explain the steps to complete the purchase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the quote and the process for titling and registration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the quote and the process for titling and registration.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

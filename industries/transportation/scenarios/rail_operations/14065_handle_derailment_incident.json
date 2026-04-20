@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive an emergency call from a crew reporting a derailment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A critical incident case is opened."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A critical incident case is opened.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Notify external emergency services (fire, police) and internal company leadership.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All relevant parties are notified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All relevant parties are notified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Stop all other train traffic in the vicinity of the derailment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The area is secured from other train movements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The area is secured from other train movements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Dispatch a hazardous materials team if the derailed cars contain dangerous goods.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A specialized team is dispatched if required."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A specialized team is dispatched if required.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

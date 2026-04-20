@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the supplier's invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the invoice details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the invoice details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the farm's corresponding purchase order and delivery receipts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the farm's internal records for the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the farm's internal records for the transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the documents and identify the discrepancy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the invoice incorrectly charged for 100 gallons, while the delivery receipt shows only 90 gallons were delivered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the invoice incorrectly charged for 100 gallons, while the delivery receipt shows only 90 gallons were delivered.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Draft an email to the supplier outlining the discrepancy and requesting a corrected invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a professional email with all the relevant details and attachments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a professional email with all the relevant details and attachments.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

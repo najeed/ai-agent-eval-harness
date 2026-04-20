@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the high-priority order in the order management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check current inventory levels for the items on the order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that there is enough stock available to fulfill the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that there is enough stock available to fulfill the order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Allocate the required quantity of inventory to the sales order, reserving it from the available pool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully allocates the stock, and the system shows it as reserved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully allocates the stock, and the system shows it as reserved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

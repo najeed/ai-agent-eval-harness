@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the vehicle's model year and infotainment system version.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a 2020 model with the SYNC 3 system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a 2020 model with the SYNC 3 system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine if the update is delivered via OTA or requires a manual download to a USB drive.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent's search reveals this system requires a manual USB update."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent's search reveals this system requires a manual USB update.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Guide the customer to the official website where they can download the map update, and explain the process of loading it onto a USB and installing it in the car.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a link to the download portal and clear instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a link to the download portal and clear instructions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

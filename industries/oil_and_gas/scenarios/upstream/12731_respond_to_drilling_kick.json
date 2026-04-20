@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Detect the kick and activate the emergency shutdown (ESD) to stop the rig floor equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The rig is secured, and ESD is activated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The rig is secured, and ESD is activated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Shut in the well by closing the Blowout Preventer (BOP) to contain the pressure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The BOP is closed, and the well is successfully shut in."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The BOP is closed, and the well is successfully shut in.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Read and record the shut-in drill pipe pressure and shut-in casing pressure to prepare for circulating the kick out of the well.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The critical pressures are recorded to plan the well kill procedure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The critical pressures are recorded to plan the well kill procedure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

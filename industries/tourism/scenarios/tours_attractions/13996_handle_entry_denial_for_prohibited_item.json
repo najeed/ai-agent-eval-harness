@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Politely inform the visitor that their backpack exceeds the size limit allowed in the stadium.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly and calmly explains the policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly and calmly explains the policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Advise the visitor of their options, such as returning the bag to their vehicle or using a nearby paid locker service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides helpful solutions to the visitor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides helpful solutions to the visitor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reiterate that they can enter once they no longer have the prohibited item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures the visitor understands how they can gain entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures the visitor understands how they can gain entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

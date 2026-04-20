@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the pending purchase request, including the item, cost, and justification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The department head reviews the request for new office chairs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The department head reviews the request for new office chairs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the department's remaining budget for the relevant expense category.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The department head confirms there are sufficient funds in the 'Office Supplies' budget."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The department head confirms there are sufficient funds in the 'Office Supplies' budget.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the purchase request, routing it to the procurement department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The department head approves the request, allowing procurement to make the purchase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The department head approves the request, allowing procurement to make the purchase.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that the drill being used is equipped with a required dust control (e.g., a water delivery system).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the engineering control is in place and functional."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the engineering control is in place and functional.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ensure all workers in the area are wearing appropriate respiratory protection (e.g., N95 masks).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all workers have and are using the correct PPE."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all workers have and are using the correct PPE.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the use of silica dust controls in the daily safety inspection report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The compliance measures are documented."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The compliance measures are documented.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

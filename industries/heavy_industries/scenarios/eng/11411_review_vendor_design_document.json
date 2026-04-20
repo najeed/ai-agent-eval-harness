@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the vendor's submitted drawing and the project's technical specification for the equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up both the vendor drawing and the internal specification document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up both the vendor drawing and the internal specification document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the vendor's design against the specification requirements (e.g., material of construction, dimensions, power requirements).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer reviews the documents and finds a discrepancy in the specified motor size."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer reviews the documents and finds a discrepancy in the specified motor size.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reject the drawing, add a comment detailing the discrepancy, and return it to the vendor for revision.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent formally rejects the document in the system, providing clear feedback to the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent formally rejects the document in the system, providing clear feedback to the vendor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

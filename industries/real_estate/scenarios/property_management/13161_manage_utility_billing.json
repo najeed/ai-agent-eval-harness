@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the monthly water bill for the entire property.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the total amount of the water bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the total amount of the water bill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate each tenant's share based on the formula in their lease (e.g., per occupant or per sqft).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system correctly calculates the prorated water charge for each tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system correctly calculates the prorated water charge for each tenant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post the utility charge to each tenant's ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The calculated water charge is added as a line item to each tenant's upcoming rent statement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The calculated water charge is added as a line item to each tenant's upcoming rent statement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

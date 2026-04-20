@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the company's official registration details, address, and list of directors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves correct corporate information from official registries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves correct corporate information from official registries.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for any recent negative news or litigation involving the company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds and summarizes any relevant negative news."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds and summarizes any relevant negative news.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile the information into a structured background report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a clean report with all the gathered information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a clean report with all the gathered information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

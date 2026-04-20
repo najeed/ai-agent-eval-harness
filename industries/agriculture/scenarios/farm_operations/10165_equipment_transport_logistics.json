@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the dimensions (height, width, weight) of the combine harvester.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the machine's specifications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the machine's specifications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Plan a route between the two farm locations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the shortest driving route."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the shortest driving route.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the planned route for any low bridges, weight-restricted roads, or other transport hazards.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a low bridge on the planned route and suggests an alternative."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a low bridge on the planned route and suggests an alternative.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the customer's phone model is eSIM compatible.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the device supports eSIM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the device supports eSIM.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate an eSIM QR code and send it to the customer's email.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates and emails the QR code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates and emails the QR code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Guide the customer on how to scan the QR code in their phone's settings to complete activation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions for eSIM activation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions for eSIM activation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select a sample of 50 expense reports that included airfare.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A sample is selected for testing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A sample is selected for testing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each sampled report, verify that employees booked economy class tickets, as required by policy for domestic travel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor finds 4 instances of business class travel that were not pre-approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor finds 4 instances of business class travel that were not pre-approved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that all meal expenses claimed are within the per diem limit set by the policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms all sampled meal expenses are compliant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms all sampled meal expenses are compliant.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

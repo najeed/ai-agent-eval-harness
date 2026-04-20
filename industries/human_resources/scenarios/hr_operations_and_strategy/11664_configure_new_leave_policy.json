@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the specifications for the new leave policy (e.g., accrual rate, annual limit).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin receives the policy details: 8 hours granted annually."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin receives the policy details: 8 hours granted annually.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Configure the new leave type and its accrual rules in the time and attendance module.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin successfully sets up the new leave plan in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin successfully sets up the new leave plan in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the new leave plan to all eligible employees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin successfully grants the new leave benefit to all employees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin successfully grants the new leave benefit to all employees.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

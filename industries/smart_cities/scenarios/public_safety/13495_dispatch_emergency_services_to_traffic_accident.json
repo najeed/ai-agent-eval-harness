@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an automated alert of a vehicle collision detected by roadside cameras at 'Highway 101 and Exit 4B'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the alert and its location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the alert and its location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the live camera feed to assess the severity of the accident and identify the number of vehicles involved.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms a three-car accident with heavy damage, requiring medical and fire response."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms a three-car accident with heavy damage, requiring medical and fire response.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch the nearest available police, fire, and ambulance units to the location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully dispatches the three required emergency service units."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully dispatches the three required emergency service units.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

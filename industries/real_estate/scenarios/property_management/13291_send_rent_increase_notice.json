@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the legally required notice period for a rent increase in the property's jurisdiction (e.g., 60 days).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the correct notice period."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the correct notice period.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a formal rent increase notice stating the new rent amount and the date it becomes effective.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a compliant legal notice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a compliant legal notice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deliver the notice to the tenant according to legal requirements and log the delivery.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent serves the notice correctly and documents the action."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent serves the notice correctly and documents the action.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

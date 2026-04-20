@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and confirm their academic probation status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the student's status in the SIS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the student's status in the SIS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain what academic probation means and the requirements to return to good standing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the university's policy and the GPA requirement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the university's policy and the GPA requirement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule a mandatory meeting for the student with their academic advisor to create an academic improvement plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the required meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the required meeting.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

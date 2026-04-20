@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the time and attendance system as a manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager successfully logs in."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager successfully logs in.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the employee and the pay period that needs correction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager navigates to the correct employee timesheet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager navigates to the correct employee timesheet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the incorrect time entry and re-approve the timesheet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager corrects the hours and submits the timesheet for payroll processing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager corrects the hours and submits the timesheet for payroll processing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

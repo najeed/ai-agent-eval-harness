@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get an updated ETA for the inbound crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the crew will arrive 20 minutes late."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the crew will arrive 20 minutes late.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the departure time for the outbound flight, creating a 20-minute delay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the flight status with the new departure time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the flight status with the new departure time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Make an announcement to the waiting passengers, informing them of the delay due to a late-arriving crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the reason for the delay to passengers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the reason for the delay to passengers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

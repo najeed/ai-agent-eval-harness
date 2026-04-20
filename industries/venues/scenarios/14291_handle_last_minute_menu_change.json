@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive notification of the delivery failure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the chicken wings are not available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the chicken wings are not available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the menu management system and mark 'chicken wings' as 'sold out' for the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the item's availability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the item's availability.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Push the update to all POS terminals and digital menus.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The item is removed from sale across the venue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The item is removed from sale across the venue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Notify all concession stand managers of the menu change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a broadcast message to all F&B staff."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a broadcast message to all F&B staff.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

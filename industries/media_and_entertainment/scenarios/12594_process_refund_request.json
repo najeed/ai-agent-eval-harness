@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the user and the recent movie purchase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the playback history for the movie to ensure it has not been watched.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the user has not started watching the movie."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the user has not started watching the movie.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the policy for unwatched content, process a full refund for the purchase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully issues a refund to the user's payment method."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully issues a refund to the user's payment method.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

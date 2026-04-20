@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the patient's upcoming appointment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct appointment for the patient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct appointment for the patient.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Cancel the appointment and select a reason for cancellation (e.g., 'Patient request').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully cancels the appointment in the scheduling system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully cancels the appointment in the scheduling system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Offer to reschedule the appointment for a future date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent asks the patient if they would like to find a new time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent asks the patient if they would like to find a new time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

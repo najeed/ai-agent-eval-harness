@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and their vehicle using their phone number or VIN.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer and their 2021 Ford F-150."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer and their 2021 Ford F-150.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the vehicle's service history to confirm recommended services and identify any open recalls.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the vehicle is due for an oil change and finds no open recalls."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the vehicle is due for an oil change and finds no open recalls.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Offer available appointment slots and book the customer's preferred time, asking if they need a courtesy vehicle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent books the appointment and notes the customer does not need a courtesy car."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent books the appointment and notes the customer does not need a courtesy car.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

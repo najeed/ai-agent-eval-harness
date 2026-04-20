@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the list of competitor email addresses to be suppressed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the list of emails to block."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the list of emails to block.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "In the email marketing platform, create a new suppression list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an empty suppression list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an empty suppression list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload the list of competitor emails to the suppression list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the emails to the list, which will prevent them from receiving any future marketing emails."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the emails to the list, which will prevent them from receiving any future marketing emails.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

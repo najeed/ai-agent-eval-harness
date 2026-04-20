@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Power up the aircraft's hydraulic and flight control systems in a ground test rig.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully powers on both systems."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully powers on both systems.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a test script that sends commands from the flight control computer to the hydraulic actuators for the control surfaces (e.g., ailerons, rudder).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the script and observes the control surfaces moving as commanded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the script and observes the control surfaces moving as commanded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the sensor data from the actuators to ensure their response time and range of motion meet the design specifications.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent analyzes the data and confirms the system performance is within spec."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent analyzes the data and confirms the system performance is within spec.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

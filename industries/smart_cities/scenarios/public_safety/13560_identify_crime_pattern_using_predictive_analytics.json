@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Filter all crime reports from the last 30 days for the type 'commercial burglary'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a list of the relevant crime reports."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a list of the relevant crime reports.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Plot the locations and times of the burglaries on a map.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent visualizes the data geographically and temporally."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent visualizes the data geographically and temporally.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system's pattern detection algorithm identifies that all burglaries occurred on Tuesday nights between 1 AM and 3 AM in a specific industrial park.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully identifies a clear crime pattern."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully identifies a clear crime pattern.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a bulletin for the police department detailing the identified pattern.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the intelligence to patrol officers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the intelligence to patrol officers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

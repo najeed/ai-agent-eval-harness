@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Weigh the bag and inform the passenger that it is overweight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the options: they can either remove items to reduce the weight or pay an overweight baggage fee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly presents the passenger's options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly presents the passenger's options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The passenger chooses to pay the fee. Process the payment and check the bag.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent takes payment for the fee and accepts the bag for travel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent takes payment for the fee and accepts the bag for travel.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

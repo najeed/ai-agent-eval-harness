@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the draft settlement statement from the escrow or title company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves the document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves the document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify key financial figures: sales price, commission amount, seller concessions, and prorated taxes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent cross-references the statement with the purchase agreement and identifies all figures are correct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent cross-references the statement with the purchase agreement and identifies all figures are correct.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the statement or send a list of required corrections back to the escrow officer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the statement is accurate and notifies escrow to proceed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the statement is accurate and notifies escrow to proceed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

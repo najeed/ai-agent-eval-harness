@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the employee and their scheduled return-to-work date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR specialist confirms the employee's return date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR specialist confirms the employee's return date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the employee's status from 'On Leave' to 'Active' in the HRIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist successfully updates the employee's record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist successfully updates the employee's record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Coordinate with IT to reactivate the employee's system access.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist creates an IT ticket to re-enable all system access for the employee's return date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist creates an IT ticket to re-enable all system access for the employee's return date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Duplicate an existing ad.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a copy of the ad to be modified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a copy of the ad to be modified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "In the new ad, replace the landscape image with a vertical (9:16) image that is better suited for mobile screens.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uploads a mobile-friendly creative."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uploads a mobile-friendly creative.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Shorten the ad copy to be more concise and easier to read on a small screen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent edits the copy for mobile-first consumption."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent edits the copy for mobile-first consumption.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

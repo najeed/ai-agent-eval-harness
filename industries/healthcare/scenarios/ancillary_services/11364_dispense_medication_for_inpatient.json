@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve a verified medication order from the pharmacy queue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician selects an order that has already been approved by a pharmacist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician selects an order that has already been approved by a pharmacist.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Pick the correct medication and strength from the pharmacy shelves.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician physically retrieves the correct drug."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician physically retrieves the correct drug.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare the dose, label it for the correct patient, and have it checked by a pharmacist before sending it to the nursing unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The medication is correctly prepared and labeled for administration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The medication is correctly prepared and labeled for administration.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

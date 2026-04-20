@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the QR code for each of the family member's tickets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully scans all tickets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully scans all tickets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Validate the tickets to ensure they are for the correct date and have not been used.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms all tickets are valid for entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms all tickets are valid for entry.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Allow the family to enter the park.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the family can proceed into the park."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the family can proceed into the park.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

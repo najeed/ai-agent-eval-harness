@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather information on the taxpayer's HSA contributions from Form 5498-SA and W-2.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all relevant HSA data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all relevant HSA data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the total contributions do not exceed the annual limit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the contributions are within the legal limits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the contributions are within the legal limits.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare Form 8889 to report the HSA activity and calculate the deduction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the HSA deduction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the HSA deduction.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

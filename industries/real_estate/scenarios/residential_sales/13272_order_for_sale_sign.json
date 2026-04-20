@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the listing address and the agent's name and contact info to be displayed on the sign rider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary information for the sign order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary information for the sign order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the preferred sign installation company with the order details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully places the order with the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully places the order with the vendor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm with the vendor that the sign has been installed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives confirmation and logs it in the transaction file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives confirmation and logs it in the transaction file.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the prior year's audit workpapers to understand previous findings and risks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor identifies recurring issues like inventory count discrepancies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor identifies recurring issues like inventory count discrepancies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft an audit planning memo outlining the scope (including specific locations to be cycle counted), objectives, and required resources.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal planning memo is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal planning memo is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule a kick-off meeting with the warehouse management to discuss the audit timeline and logistics.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A meeting is scheduled and confirmed with the auditee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A meeting is scheduled and confirmed with the auditee.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

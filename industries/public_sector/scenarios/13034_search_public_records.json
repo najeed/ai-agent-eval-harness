@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the property address from the citizen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the address of the property in question."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the address of the property in question.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the public property records database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully searches the database using the address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully searches the database using the address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the name of the current owner as listed in the public record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the owner's name to the citizen."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the owner's name to the citizen.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

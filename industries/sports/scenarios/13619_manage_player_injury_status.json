@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log the injury details (e.g., type, severity, date) in the player's medical record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new injury record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new injury record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the player's official status on the team roster to 'Injured'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the player's status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the player's status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the injury type, generate a standard rehabilitation plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a day-by-day recovery and therapy plan for the player."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a day-by-day recovery and therapy plan for the player.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

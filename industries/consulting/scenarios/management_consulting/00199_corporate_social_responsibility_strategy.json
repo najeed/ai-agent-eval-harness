@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the client's brand values statement (e.g., 'Innovation', 'Community', 'Sustainability').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the core brand values."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the core brand values.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Brainstorm CSR initiatives that align with each brand value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent suggests relevant initiatives, such as 'sponsoring a local STEM fair' to align with 'Community' and 'Innovation'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent suggests relevant initiatives, such as 'sponsoring a local STEM fair' to align with 'Community' and 'Innovation'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Structure the initiatives into a formal CSR strategy document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a well-organized strategy document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a well-organized strategy document.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

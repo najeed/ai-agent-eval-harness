@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the citizen's request for information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the citizen is asking for public budget information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the citizen is asking for public budget information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the public-facing financial portal for the city's approved annual budget.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the current fiscal year's budget document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the current fiscal year's budget document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Locate the specific line-item or section for the Parks and Recreation department and provide the total budget amount to the citizen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds and communicates the correct budget figure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds and communicates the correct budget figure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "In the analytics tool, select the date range for the last quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets the correct date range."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets the correct date range.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the 'compare to' feature to select the same date range from the previous year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool is now configured to show a year-over-year comparison."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool is now configured to show a year-over-year comparison.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the results to determine the percentage change in key metrics like users, sessions, and conversion rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a summary of the year-over-year growth or decline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a summary of the year-over-year growth or decline.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

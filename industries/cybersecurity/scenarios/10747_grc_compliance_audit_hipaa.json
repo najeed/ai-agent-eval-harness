@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all access logs for the patient database for the last 90 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully gathers the required audit evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully gathers the required audit evidence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Correlate the access logs with a list of authorized medical personnel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst performs the correlation to check for unauthorized access."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst performs the correlation to check for unauthorized access.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify several instances where IT administrators accessed the database without a valid support ticket and flag this as a HIPAA compliance violation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies and documents a compliance failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies and documents a compliance failure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

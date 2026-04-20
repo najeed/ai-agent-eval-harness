@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the chargeback notification from the credit card processor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the chargeback case."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the chargeback case.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Look up the transaction details using the provided date, time, and amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the original transaction in the POS system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the original transaction in the POS system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Gather evidence for the dispute, such as the signed credit card slip or security footage of the transaction if available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the signed slip for the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the signed slip for the transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Submit the evidence to the credit card processor to fight the chargeback.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the required documentation to dispute the chargeback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the required documentation to dispute the chargeback.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

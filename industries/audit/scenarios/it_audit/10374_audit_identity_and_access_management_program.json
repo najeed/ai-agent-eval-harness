@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that a formal IAM policy exists and has been approved by management.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms the existence of an approved policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms the existence of an approved policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if a centralized IAM solution is in use, or if access is managed manually for each system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor finds that access is managed manually and inconsistently across different applications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor finds that access is managed manually and inconsistently across different applications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend the company invest in a centralized IAM solution to improve efficiency and security.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A strategic recommendation is made to improve the overall IAM posture."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A strategic recommendation is made to improve the overall IAM posture.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

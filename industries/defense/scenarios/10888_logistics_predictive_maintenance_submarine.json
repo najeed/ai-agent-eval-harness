@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the atmosphere monitoring alert and review the trend data for CO2 levels.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineering officer confirms a slow but steady rise in CO2."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineering officer confirms a slow but steady rise in CO2.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Switch to the backup CO2 scrubber system to stabilize the atmosphere.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer successfully engages the backup system, and CO2 levels return to normal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer successfully engages the backup system, and CO2 levels return to normal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the fault and schedule a replacement of the primary scrubber filter material at the next port visit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer ensures the fault is documented and a repair is scheduled to restore full redundancy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer ensures the fault is documented and a repair is scheduled to restore full redundancy.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

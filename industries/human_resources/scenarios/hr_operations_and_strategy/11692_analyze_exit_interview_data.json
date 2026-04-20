@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a report of all exit interview feedback from the last quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst pulls the raw data from the HRIS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst pulls the raw data from the HRIS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Categorize and tally the reasons for leaving (e.g., compensation, management, career growth).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst quantifies the qualitative feedback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst quantifies the qualitative feedback.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a report for leadership summarizing the top reasons for turnover.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst creates a presentation showing that 'lack of career growth' was the top reason for voluntary turnover."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst creates a presentation showing that 'lack of career growth' was the top reason for voluntary turnover.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

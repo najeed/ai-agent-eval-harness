@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a call from the user who is locked out.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the user's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the user's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the user's identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the user is who they say they are."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the user is who they say they are.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Unlock the user's account and trigger a password reset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent unlocks the account and sends a password reset link to the user's email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent unlocks the account and sends a password reset link to the user's email.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

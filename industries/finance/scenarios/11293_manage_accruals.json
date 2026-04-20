@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify services that have been received but for which no invoice has been received (e.g., consulting services).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies $10,000 in consulting services that need to be accrued."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies $10,000 in consulting services that need to be accrued.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create an accrual journal entry to debit the expense account and credit the accrued liabilities account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the correct journal entry for the accrual."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the correct journal entry for the accrual.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set up a reversing entry for the beginning of the next month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent schedules the accrual to automatically reverse on the first day of the next period."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent schedules the accrual to automatically reverse on the first day of the next period.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

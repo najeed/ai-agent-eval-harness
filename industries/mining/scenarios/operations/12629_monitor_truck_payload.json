@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the live feed of payload data from the Fleet Management System.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A dashboard shows the payload for each truck as it is loaded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A dashboard shows the payload for each truck as it is loaded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive an alert that truck HT-61 was overloaded by 10% on its last load from shovel SH-203.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dispatcher acknowledges the overload alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dispatcher acknowledges the overload alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a message to the operator of shovel SH-203 to be more careful with the number of passes per truck.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The shovel operator receives and acknowledges the feedback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The shovel operator receives and acknowledges the feedback.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

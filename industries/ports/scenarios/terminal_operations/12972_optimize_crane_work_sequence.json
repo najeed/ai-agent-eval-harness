@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate the initial, default work queue for a crane.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The planner has the list of container moves for QC-01."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The planner has the list of container moves for QC-01.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the sequence, noting that it involves picking containers from many different, distant yard blocks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The planner identifies that the sequence is inefficient for the yard equipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The planner identifies that the sequence is inefficient for the yard equipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Manually re-sequence the crane's work queue to prioritize loading all containers from one yard block before moving to the next.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The work queue is reordered to improve yard efficiency, and the new sequence is sent to the crane operator."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The work queue is reordered to improve yard efficiency, and the new sequence is sent to the crane operator.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

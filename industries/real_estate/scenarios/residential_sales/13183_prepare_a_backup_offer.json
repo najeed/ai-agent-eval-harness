@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft the standard purchase agreement with the buyer's desired terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The main offer form is filled out correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The main offer form is filled out correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Include a 'Backup Offer Addendum' that specifies the offer is secondary to the one already in place.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct legal addendum for a backup offer is attached to the main contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct legal addendum for a backup offer is attached to the main contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the terms of the backup addendum to the buyer before they sign, ensuring they understand their position.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates that the offer only becomes active if the first contract fails."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates that the offer only becomes active if the first contract fails.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

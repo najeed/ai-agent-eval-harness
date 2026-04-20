@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the asset in the maintenance system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the crane's asset record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the crane's asset record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate an asset transfer request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent starts the transfer workflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent starts the transfer workflow.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the asset's 'home location' from the old site to the new site in the asset master data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the asset's location, which also transfers its maintenance and cost data to the new site."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the asset's location, which also transfers its maintenance and cost data to the new site.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

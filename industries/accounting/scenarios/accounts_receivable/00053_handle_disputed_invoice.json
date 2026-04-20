@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the disputed invoice and any related documents, like the original sales order or statement of work.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the invoice and the signed statement of work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the invoice and the signed statement of work.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the documents to validate the charges against the agreed-upon services.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the services on the invoice match the statement of work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the services on the invoice match the statement of work.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place the invoice in 'dispute' status to pause collections activity while it's being investigated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully flags the invoice as disputed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully flags the invoice as disputed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Communicate with the sales representative or account manager to gather more information and resolve the dispute with the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a notification to the account manager to contact the customer and clarify the services rendered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a notification to the account manager to contact the customer and clarify the services rendered.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

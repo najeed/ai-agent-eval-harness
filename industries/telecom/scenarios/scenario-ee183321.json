@@ -12,11 +12,13 @@
       {
         "id": "dispute_task_1",
         "task_description": "Calculate data overage credit for Account-82736 based on roaming logs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates a $42.50 credit and applies it to the next statement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates a $42.50 credit and applies it to the next statement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": []

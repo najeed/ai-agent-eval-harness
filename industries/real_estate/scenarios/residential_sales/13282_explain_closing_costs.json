@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the Loan Estimate document for the buyer's transaction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the document that lists the estimated closing costs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the document that lists the estimated closing costs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Break down the major categories of closing costs: lender fees, title/escrow fees, and prepaid items (taxes, insurance).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent categorizes the costs for clarity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent categorizes the costs for clarity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the purpose of each major fee in simple, easy-to-understand language.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear and patient explanation to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear and patient explanation to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

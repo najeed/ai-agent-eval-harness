@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Fetch the spill cleanup station and block off the area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate follows safety procedures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate follows safety procedures.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Clean the spill according to store policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The hazard is removed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The hazard is removed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the incident and the cleanup action in the store's daily log or task management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The incident is documented for safety and compliance records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The incident is documented for safety and compliance records.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

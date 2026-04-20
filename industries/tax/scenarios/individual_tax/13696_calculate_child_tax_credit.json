@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Enter the personal and financial information for the couple and their two children.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly inputs all taxpayer and dependent data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly inputs all taxpayer and dependent data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the children meet all the eligibility tests for the Child Tax Credit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms both children are qualifying dependents for the credit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms both children are qualifying dependents for the credit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the total Child Tax Credit amount, including any phase-outs based on income.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the maximum allowable credit for the family."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the maximum allowable credit for the family.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

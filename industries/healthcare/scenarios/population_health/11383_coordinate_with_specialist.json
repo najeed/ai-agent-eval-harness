@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new referral order for Cardiology for the patient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The care manager initiates the referral in the EHR."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The care manager initiates the referral in the EHR.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the relevant documents from the patient's chart to include with the referral (e.g., recent progress notes, EKG results).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The care manager chooses the appropriate clinical information to send."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The care manager chooses the appropriate clinical information to send.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the referral and the attached documents electronically to the specialist's office.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The referral is successfully transmitted, allowing the specialist's office to schedule the patient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The referral is successfully transmitted, allowing the specialist's office to schedule the patient.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

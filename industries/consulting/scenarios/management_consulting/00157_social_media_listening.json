@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search Twitter for recent mentions of the client's brand name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a list of recent tweets mentioning the brand."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a list of recent tweets mentioning the brand.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each tweet, perform sentiment analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent classifies each tweet as 'Positive', 'Negative', or 'Neutral'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent classifies each tweet as 'Positive', 'Negative', or 'Neutral'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report summarizing the sentiment and highlighting any significant negative tweets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a concise social media sentiment report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a concise social media sentiment report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

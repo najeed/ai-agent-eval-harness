@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select a batch from the 'Pending QA Review' queue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the batch record and all associated documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the batch record and all associated documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that all manufacturing steps were completed and signed off, and that all lab results are within specification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the batch record is complete and all quality tests passed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the batch record is complete and all quality tests passed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply an electronic signature to formally release the batch, changing its inventory status from 'Quarantine' to 'Available'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully releases the batch, making it available for sale."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully releases the batch, making it available for sale.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

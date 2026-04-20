@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the taxpayer's information and the specific tax years needed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the required data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the required data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the IRS 'Get Transcript' online tool on behalf of the taxpayer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully logs in to the IRS portal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully logs in to the IRS portal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Download the tax return transcripts for the required years and provide them to the taxpayer to give to their lender.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully obtains and delivers the official IRS documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully obtains and delivers the official IRS documents.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

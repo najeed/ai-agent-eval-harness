@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the account details and review the recent login and profile change history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a recent login from an unrecognized IP address, followed by an email and password change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a recent login from an unrecognized IP address, followed by an email and password change.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the user's identity using personal information and past billing details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the person reporting the issue is the legitimate owner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the person reporting the issue is the legitimate owner.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Revert the fraudulent email and password changes and secure the account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent restores the original account details and forces a password reset for the legitimate user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent restores the original account details and forces a password reset for the legitimate user.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

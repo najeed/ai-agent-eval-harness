@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the total corporate overhead costs for the month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the total amount to be allocated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the total amount to be allocated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the month-end headcount for each business unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the headcount for Sales, Marketing, and R&D."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the headcount for Sales, Marketing, and R&D.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the allocation percentage for each business unit based on its share of the total headcount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the allocation percentages."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the allocation percentages.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create and post the journal entry to allocate the costs from the corporate cost center to the business unit cost centers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts the correct allocation journal entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts the correct allocation journal entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

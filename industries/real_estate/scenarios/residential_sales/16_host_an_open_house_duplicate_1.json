@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Market the open house on the MLS, Zillow, and social media platforms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Marketing posts are created and scheduled for the week leading up to the event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Marketing posts are created and scheduled for the week leading up to the event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the open house, greet visitors and use a digital sign-in sheet to capture their contact information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects contact information from at least 10 potential buyers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects contact information from at least 10 potential buyers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a follow-up email to all attendees thanking them for coming and asking for feedback.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A follow-up campaign is executed the next day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A follow-up campaign is executed the next day.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Extract all legal citations from the draft brief.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of all case and statute citations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of all case and statute citations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each citation, check that it is formatted correctly according to the specified style guide (e.g., Bluebook).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies and corrects any formatting errors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies and corrects any formatting errors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each citation, pull up the cited source and verify that it stands for the legal proposition it is being cited for in the brief.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the accuracy of all legal arguments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the accuracy of all legal arguments.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

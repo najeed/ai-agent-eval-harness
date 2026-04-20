@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the order and confirm one item is in stock and the other is on backorder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the inventory status of the line items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the inventory status of the line items.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Split the order line for the in-stock item into a new sales order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new order is created for the available item, and the original order is updated to only contain the backordered item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new order is created for the available item, and the original order is updated to only contain the backordered item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Release the new order to the warehouse for immediate shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new order is sent to the WMS for fulfillment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new order is sent to the WMS for fulfillment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

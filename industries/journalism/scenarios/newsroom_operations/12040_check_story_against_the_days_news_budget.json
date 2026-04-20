@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the list of all stories scheduled for publication today.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a full overview of the day's planned content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a full overview of the day's planned content.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify if there are too many stories on one topic (e.g., politics) and not enough on another (e.g., arts).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies an imbalance in the coverage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies an imbalance in the coverage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Decide to hold one of the politics stories for the next day and assign a reporter to find a quick arts story to fill the gap.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The news budget is adjusted for better balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The news budget is adjusted for better balance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

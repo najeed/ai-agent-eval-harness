@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the client's case file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The social worker locates the correct case."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The social worker locates the correct case.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the client has met the goals of their service plan (i.e., gained employment).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The social worker confirms the successful outcome with the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The social worker confirms the successful outcome with the client.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Complete the case closure summary, document the outcome, and officially close the case in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The social worker writes a closing summary and updates the case status to 'Closed-Successful'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The social worker writes a closing summary and updates the case status to 'Closed-Successful'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

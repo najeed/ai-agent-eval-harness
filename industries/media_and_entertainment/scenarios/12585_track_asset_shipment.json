@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the tracking number for the shipment from the location manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the correct tracking number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the correct tracking number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the shipment using the courier's tracking service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the shipment is currently in transit and scheduled for delivery tomorrow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the shipment is currently in transit and scheduled for delivery tomorrow.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the post-production supervisor of the estimated delivery time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a clear notification with the tracking details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a clear notification with the tracking details.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

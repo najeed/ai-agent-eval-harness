@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The order management system identifies that items in the order are sourced from different locations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system's logic flags the order for splitting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system's logic flags the order for splitting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically splits the single order into two separate fulfillment orders, one for each warehouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Two new fulfillment requests are created from the original sales order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Two new fulfillment requests are created from the original sales order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Each warehouse picks and packs their part of the order, and the customer receives two separate shipping notifications with two tracking numbers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is fulfilled efficiently from multiple locations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is fulfilled efficiently from multiple locations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

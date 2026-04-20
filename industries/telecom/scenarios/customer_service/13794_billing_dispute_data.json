@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve customer account and current billing cycle details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer and the relevant bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer and the relevant bill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze data usage logs for the billing period to identify the source of the overage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pinpoints specific dates and times of high data consumption."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pinpoints specific dates and times of high data consumption.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the data overage charges and offer a one-time courtesy credit as a goodwill gesture.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the charges and successfully applies a credit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the charges and successfully applies a credit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

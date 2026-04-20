@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Compile the player's college career statistics and any available athletic combine data (e.g., 40-yard dash time).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all available quantitative data on the player."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all available quantitative data on the player.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze game footage to assess their skills against pro-level competition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed report on the player's strengths and weaknesses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed report on the player's strengths and weaknesses.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Conduct a background check and review interviews to assess character and intangibles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers information on the player's character and work ethic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers information on the player's character and work ethic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a final draft profile and assign a draft grade to the player.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a comprehensive profile, grading the player as a 'top 10 pick'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a comprehensive profile, grading the player as a 'top 10 pick'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

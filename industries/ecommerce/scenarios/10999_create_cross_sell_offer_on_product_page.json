@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "When a customer visits the digital camera product page, identify the product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System identifies the primary product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System identifies the primary product.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the list of manually curated or automatically generated cross-sell items for that camera.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System retrieves the SKUs for the appropriate memory card and camera bag."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System retrieves the SKUs for the appropriate memory card and camera bag.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Display these items on the page, allowing the customer to add all three to the cart with one click.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The UI correctly displays the cross-sell items with a bundle-add option."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The UI correctly displays the cross-sell items with a bundle-add option.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

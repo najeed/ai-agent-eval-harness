@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Search the USPTO database for identical and phonetically similar marks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs a federal trademark search."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs a federal trademark search.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search state trademark databases and common law sources (e.g., web search, business directories) for unregistered uses of the mark.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs a more comprehensive search for other uses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs a more comprehensive search for other uses.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the search results to determine the likelihood of confusion with any existing marks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent assesses the risk of a potential infringement claim."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent assesses the risk of a potential infringement claim.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Draft an opinion letter to the client summarizing the search results and providing a risk assessment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear legal advice on whether it is safe to use the proposed name."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear legal advice on whether it is safe to use the proposed name.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

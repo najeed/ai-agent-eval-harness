@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Input the operational tracks and timings for the satellite, aircraft, and ground patrol.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner accurately enters all data for the multi-domain operation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner accurately enters all data for the multi-domain operation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a 4D (space, time) deconfliction analysis to identify any potential conflicts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool identifies that the aircraft's flight path conflicts with the satellite's imaging swath at the required time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool identifies that the aircraft's flight path conflicts with the satellite's imaging swath at the required time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Adjust the timing of the aircraft's flight to ensure it does not enter the satellite's field of view during the imaging pass.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner resolves the conflict by adjusting the timeline, allowing all assets to complete their missions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner resolves the conflict by adjusting the timeline, allowing all assets to complete their missions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the real-time capacity of all stadium parking lots.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets data showing that Lot A and Lot B are full."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets data showing that Lot A and Lot B are full.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the digital signs on the roads leading to the stadium to direct new arrivals to Lot C and Lot D.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the text on the digital signs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the text on the digital signs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a push notification to the team's mobile app with parking updates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the parking update to fans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the parking update to fans.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

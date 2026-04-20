@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "A planner finalizes a new run cut and opens it for bidding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new runs are available for drivers to view."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new runs are available for drivers to view.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system notifies the most senior driver that it is their turn to bid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The top-seniority driver is notified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The top-seniority driver is notified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The driver logs in and selects their preferred run from the list of available runs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver's choice is recorded, and that run is removed from the available list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver's choice is recorded, and that run is removed from the available list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The system then notifies the next most senior driver that it is their turn, repeating the process until all runs are assigned.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The entire bidding process is managed systematically by seniority."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The entire bidding process is managed systematically by seniority.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

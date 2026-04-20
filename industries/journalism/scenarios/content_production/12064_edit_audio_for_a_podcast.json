@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Listen through the raw audio recording, making notes of edits that need to be made.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An edit list is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An edit list is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Cut out any mistakes, stumbles, or long pauses to make the conversation flow better.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The audio is tightened up and flows more smoothly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The audio is tightened up and flows more smoothly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply audio processing like noise reduction and equalization to improve the sound quality.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The final audio is clean and easy to listen to."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The final audio is clean and easy to listen to.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Add intro/outro music and any other sound effects.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The final podcast episode is mixed and produced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The final podcast episode is mixed and produced.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's booking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully finds the booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully finds the booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the change fee and any fare difference for the new requested date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the total cost to make the change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the total cost to make the change.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the customer of the cost. If they agree, process the payment and reissue the ticket for the new date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the cost, takes payment, and successfully changes the flight."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the cost, takes payment, and successfully changes the flight.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

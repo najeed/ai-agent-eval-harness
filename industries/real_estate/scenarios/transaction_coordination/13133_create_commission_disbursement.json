@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the final sales price and commission percentage from the transaction file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the final price and commission structure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the final price and commission structure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the gross commission and subtract any brokerage fees or splits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the net commission payable to the agent and the brokerage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the net commission payable to the agent and the brokerage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the CDA form and send it to the title company and the agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A CDA document is created and distributed to all necessary parties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A CDA document is created and distributed to all necessary parties.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

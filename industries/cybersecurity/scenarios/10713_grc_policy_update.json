@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the new compliance framework to identify the specific password requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the new requirements (e.g., 14-character minimum length)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the new requirements (e.g., 14-character minimum length).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft an updated version of the password policy document reflecting the new requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst creates a clear and accurate updated policy document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst creates a clear and accurate updated policy document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the updated policy for review and approval by the CISO and legal department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst follows the correct procedure for policy approval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst follows the correct procedure for policy approval.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve operational data for the straddle carrier fleet over the last 3 months, including operating hours and downtime.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst pulls a complete dataset of equipment usage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst pulls a complete dataset of equipment usage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the average utilization rate for the fleet (Operating Hours / (Total Hours - Downtime Hours)).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analyst calculates an average utilization rate of 88%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analyst calculates an average utilization rate of 88%.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report concluding that the high utilization rate indicates a need for additional equipment to handle peak demand.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is created with a clear recommendation based on the data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is created with a clear recommendation based on the data.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

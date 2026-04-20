@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The system sends an automated reminder to the driver that their insurance document expires in 15 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver is proactively notified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver is proactively notified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The driver uploads a picture of their new insurance card via the driver app.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new document is received by the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new document is received by the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system uses OCR to read the policy number and expiration date from the image.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The document details are automatically extracted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The document details are automatically extracted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The system validates the new expiration date and updates the driver's profile, clearing the expiration warning.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver's account remains in good standing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver's account remains in good standing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Help the customer select four adjacent seats in a specific section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds four tickets from the selected section to the customer's cart."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds four tickets from the selected section to the customer's cart.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Process the credit card payment for the tickets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully completes the financial transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully completes the financial transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deliver the digital tickets to the customer's email address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends an email containing the QR codes for the four tickets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends an email containing the QR codes for the four tickets.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

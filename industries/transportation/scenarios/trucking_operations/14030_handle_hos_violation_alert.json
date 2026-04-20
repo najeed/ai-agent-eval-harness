@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an alert from the Electronic Logging Device (ELD) system that a driver has 30 minutes of driving time remaining.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dispatcher is notified of the pending HOS issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dispatcher is notified of the pending HOS issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find the nearest safe parking location (e.g., truck stop, rest area) along the driver's current route.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dispatcher identifies a truck stop 15 miles ahead."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dispatcher identifies a truck stop 15 miles ahead.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a message to the driver instructing them to proceed to the identified truck stop and begin their mandatory 10-hour break.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver receives clear instructions to stop in a timely and compliant manner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver receives clear instructions to stop in a timely and compliant manner.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

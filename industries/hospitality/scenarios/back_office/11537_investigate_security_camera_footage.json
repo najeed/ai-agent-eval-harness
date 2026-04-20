@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the time frame and location where the guest's car was parked.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent determines the car was in Lot B between 2 PM and 5 PM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent determines the car was in Lot B between 2 PM and 5 PM.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the security camera system and retrieve the footage from the camera covering that area for the specified time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent successfully pulls the relevant video footage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent successfully pulls the relevant video footage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the footage to see if the incident was captured.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The footage is reviewed, but unfortunately, the incident was not clearly visible. The agent logs the finding."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The footage is reviewed, but unfortunately, the incident was not clearly visible. The agent logs the finding.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

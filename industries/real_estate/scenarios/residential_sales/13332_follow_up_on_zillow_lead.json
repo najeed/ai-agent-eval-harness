@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Immediately respond to the lead via text message to introduce yourself and ask about their availability for a call.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A response is sent within 5 minutes of receiving the lead."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A response is sent within 5 minutes of receiving the lead.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set up the lead on an automated email drip campaign with information about the property and similar listings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The lead is added to the correct CRM workflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The lead is added to the correct CRM workflow.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Call the lead at the agreed-upon time to discuss their needs and schedule a showing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A showing is scheduled or the lead's search criteria are clarified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A showing is scheduled or the lead's search criteria are clarified.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

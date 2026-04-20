@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a query to identify all vessel visit records and container histories older than 7 years.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The admin generates a list of all records due for archiving."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The admin generates a list of all records due for archiving.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Export the identified records from the live production database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The old data is successfully exported into an archive file format."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The old data is successfully exported into an archive file format.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Move the exported files to a long-term, low-cost storage solution and then delete them from the production database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The data is successfully archived, and the production database is purged of the old records, improving performance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The data is successfully archived, and the production database is purged of the old records, improving performance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

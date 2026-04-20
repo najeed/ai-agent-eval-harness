@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Announce the scheduled maintenance on the status page and in-app.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs customers of the upcoming downtime."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs customers of the upcoming downtime.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the maintenance window, run the pre-approved database migration script.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully executes the schema migration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully executes the schema migration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform post-migration data integrity checks to ensure no data was lost or corrupted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs validation queries and confirms data integrity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs validation queries and confirms data integrity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Bring the application back online and remove the maintenance page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The maintenance is completed successfully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The maintenance is completed successfully.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

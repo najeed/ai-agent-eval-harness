@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Input the taxpayer's personal information and the data from their Form W-2.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly enters all information from the W-2 into the tax software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly enters all information from the W-2 into the tax software.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine if the taxpayer should take the standard deduction or itemize.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly determines the standard deduction is higher."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly determines the standard deduction is higher.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Finalize the return and show the taxpayer their calculated refund amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares a complete and accurate return showing the final refund."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares a complete and accurate return showing the final refund.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

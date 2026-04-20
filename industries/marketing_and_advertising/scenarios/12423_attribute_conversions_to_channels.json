@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the multi-channel funnels report in Google Analytics.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent navigates to the correct report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent navigates to the correct report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare different attribution models (e.g., Last Click vs. Linear) to see how credit is distributed across channels.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent analyzes the data using multiple attribution models."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent analyzes the data using multiple attribution models.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a summary insight, such as 'While Organic Search drives the most last-click conversions, Paid Social is a key channel for introducing new users.'",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a nuanced insight based on comparing attribution models."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a nuanced insight based on comparing attribution models.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

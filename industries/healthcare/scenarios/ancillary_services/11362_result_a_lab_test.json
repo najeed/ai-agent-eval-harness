@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the results from the analyzer interface, which have been transmitted to the LIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician views the batch of results pending verification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician views the batch of results pending verification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the quality control results for the batch to ensure they are within acceptable limits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician confirms the QC was successful, validating the patient results."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician confirms the QC was successful, validating the patient results.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify and release the patient results. Any critical values are automatically flagged.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The results are finalized in the LIS and transmitted to the main EHR for the provider to review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The results are finalized in the LIS and transmitted to the main EHR for the provider to review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

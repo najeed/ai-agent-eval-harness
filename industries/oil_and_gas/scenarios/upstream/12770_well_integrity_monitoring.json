@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the last 30 days of pressure readings from the 'A' annulus of well SB-101.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A trend chart of the annulus pressure is displayed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A trend chart of the annulus pressure is displayed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the trend for any sustained pressure increase, which could indicate a leak.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows a slow but steady pressure increase over the last week."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows a slow but steady pressure increase over the last week.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Flag the well for further investigation and schedule a diagnostic test (e.g., an echo test) to find the leak source.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The well is flagged in the integrity management system, and a diagnostic work order is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The well is flagged in the integrity management system, and a diagnostic work order is created.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

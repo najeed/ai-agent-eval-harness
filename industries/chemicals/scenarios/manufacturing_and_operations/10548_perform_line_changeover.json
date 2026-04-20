@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the changeover checklist for switching from Product A to Product B.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct checklist which includes specific cleaning instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct checklist which includes specific cleaning instructions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Execute the cleaning procedures and record their completion in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator completes and signs off on all cleaning steps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator completes and signs off on all cleaning steps.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After cleaning, take a swab sample and send it to QC for release testing to ensure no cross-contamination.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent takes a sample and creates a lab order for cleanliness verification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent takes a sample and creates a lab order for cleanliness verification.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

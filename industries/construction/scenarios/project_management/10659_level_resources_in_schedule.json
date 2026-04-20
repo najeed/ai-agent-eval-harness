@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Run the resource leveling tool on the project schedule, focusing on the 'Carpentry Crew'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool identifies over-allocations and suggests delaying several non-critical tasks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool identifies over-allocations and suggests delaying several non-critical tasks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Accept the suggested changes to delay non-critical tasks and resolve the over-allocations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project schedule is updated, and the resource graph for the crew is now level."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project schedule is updated, and the resource graph for the crew is now level.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

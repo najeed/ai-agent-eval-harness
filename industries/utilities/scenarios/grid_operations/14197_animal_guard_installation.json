@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze historical outage data to identify circuits with the highest frequency of 'animal contact' cause codes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a list of the top 20 worst-performing circuits for animal-related outages."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a list of the top 20 worst-performing circuits for animal-related outages.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a program to install animal guards on all transformers on the identified circuits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a list of all asset locations for the program."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a list of all asset locations for the program.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create and dispatch the work orders to field crews to perform the installations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates a batch of work orders for the mitigation program."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates a batch of work orders for the mitigation program.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

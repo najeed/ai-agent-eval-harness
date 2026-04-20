@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the new hire paperwork, including their W-4 for tax withholding and direct deposit information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives all necessary forms and data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives all necessary forms and data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new employee record in the payroll system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new employee profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new employee profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the employee's salary, federal and state tax withholding information, benefit deductions, and direct deposit details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately enters all required payroll data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately enters all required payroll data.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

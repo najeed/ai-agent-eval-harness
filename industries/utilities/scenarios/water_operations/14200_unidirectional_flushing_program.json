@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Using a hydraulic model, design a flushing sequence (which valves and hydrants to open/close) that will achieve the necessary scouring velocity in the pipes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates an optimized, step-by-step flushing plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates an optimized, step-by-step flushing plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create work orders for the field crews based on the flushing plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates a series of linked work orders for the crews."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates a series of linked work orders for the crews.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate notifications for the affected customers, letting them know about the potential for temporary discolored water.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates a customer notification list and message."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates a customer notification list and message.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the applicant using their personal information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully locates the pending application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully locates the pending application.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the current status from the underwriting system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the application status is 'Pending review of paramedical exam results'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the application status is 'Pending review of paramedical exam results'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the applicant of the status and provide an estimated timeline for the next steps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the status and that a decision is expected within 5-7 business days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the status and that a decision is expected within 5-7 business days.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

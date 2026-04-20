@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the latency alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent takes ownership of the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent takes ownership of the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the application performance monitoring (APM) tool to trace the slow requests.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the slowdown is caused by an external API call to a third-party service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the slowdown is caused by an external API call to a third-party service.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the status page of the third-party service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the third-party service is experiencing a partial outage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the third-party service is experiencing a partial outage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the company's own status page to inform customers about the issue with the third-party dependency.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides transparent communication to customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides transparent communication to customers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

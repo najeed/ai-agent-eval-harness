@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the existing auto policyholder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the multi-policy (bundling) discount and its benefits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains how the customer can save money."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains how the customer can save money.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a quote for a new renters policy that includes the bundling discount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a quote for the renters policy showing the discounted price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a quote for the renters policy showing the discounted price.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

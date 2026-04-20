@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and the course they are trying to register for.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student and the course."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student and the course.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the student's transfer credits and compare them to the course prerequisite.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the transfer evaluation and agrees the credits appear equivalent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the transfer evaluation and agrees the credits appear equivalent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit a prerequisite override request to the academic department for approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits a formal request on the student's behalf to the department chair."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits a formal request on the student's behalf to the department chair.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

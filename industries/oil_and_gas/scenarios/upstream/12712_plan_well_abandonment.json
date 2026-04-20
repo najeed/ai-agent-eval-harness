@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the wellbore diagram and historical records for the target well.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete history and schematic of the well are available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete history and schematic of the well are available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify all zones that require isolation and design the cement plugs needed to create permanent barriers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A P&A plan with correctly placed cement plugs is designed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A P&A plan with correctly placed cement plugs is designed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Estimate the total cost and duration of the P&A operation and submit the plan for regulatory approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A cost estimate and a regulatory submission package are generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A cost estimate and a regulatory submission package are generated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive an alert from the ocean carrier that a container is accruing demurrage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is notified of the charge."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is notified of the charge.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the reason for the delay in picking up the container (e.g., customs hold, no truck capacity).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the delay was due to a customs inspection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the delay was due to a customs inspection.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for a trucking company to pick up the container immediately to stop further charges.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully dispatches a truck to retrieve the container."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully dispatches a truck to retrieve the container.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Approve the demurrage invoice for payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The invoice for the accrued fees is approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The invoice for the accrued fees is approved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

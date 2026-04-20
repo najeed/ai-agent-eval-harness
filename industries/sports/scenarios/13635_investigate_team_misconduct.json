@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Gather any evidence related to the accusation, such as witness statements or social media posts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles all available evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles all available evidence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Formally request a statement from the accused team's management.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a formal request for information to the team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a formal request for information to the team.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the evidence and the team's statement to determine if a violation occurred.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent concludes that the team did violate the rules."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent concludes that the team did violate the rules.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Issue a penalty, such as a fine or a loss of draft picks, to the team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent issues a fine to the team for the violation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent issues a fine to the team for the violation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

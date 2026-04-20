@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The staff member comforts the child and radios guest services with their location and a description of the child.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The staff member escorts the child to the nearest guest services booth.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The child is brought to a safe, designated location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The child is brought to a safe, designated location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Agent at the booth makes a general announcement over the PA system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes an announcement like, 'We have a lost child at the guest services booth at Section 101. If you are missing a child, please report to this location.'"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes an announcement like, 'We have a lost child at the guest services booth at Section 101. If you are missing a child, please report to this location.'",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Wait with the child until the parent or guardian arrives and verify their identity before reuniting them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The parent arrives, and after verification, is reunited with their child."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The parent arrives, and after verification, is reunited with their child.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve data from the 'Weigh-in-Motion' sensors embedded in the 'South Bridge' for the past week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully queries the sensor database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully queries the sensor database.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total tonnage and the number of overweight vehicles that crossed the bridge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system aggregates the weight data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system aggregates the weight data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report of the traffic load data for the engineering department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the engineers with the data they need for their analysis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the engineers with the data they need for their analysis.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

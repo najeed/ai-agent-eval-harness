@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a request for the location of 'Generator #12'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the location request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the location request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the asset management system for the specified asset ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the asset's details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the asset's details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Retrieve the asset's last reported GPS location from its attached IoT tracker.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system displays the generator's current location on a map."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system displays the generator's current location on a map.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

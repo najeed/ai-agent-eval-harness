@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the malicious domain name from the threat intelligence platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder has the IOC that needs to be blocked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder has the IOC that needs to be blocked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the domain to the blocklist on the corporate DNS server, so any internal requests to it will fail.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder successfully blocks the domain at the DNS level."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder successfully blocks the domain at the DNS level.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Search historical DNS logs to see if any internal hosts have already tried to connect to the malicious domain.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder proactively hunts for already-compromised hosts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder proactively hunts for already-compromised hosts.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "A system job identifies BOPIS orders that have been in 'Ready for Pickup' status for more than 72 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a list of orders that need a reminder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a list of orders that need a reminder.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each order, the system automatically sends a reminder email or text to the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A reminder is sent to the customer to collect their order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A reminder is sent to the customer to collect their order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system logs that a reminder was sent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The action is logged in the order history."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The action is logged in the order history.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

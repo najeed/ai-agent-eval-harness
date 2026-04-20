@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a lift plan, specifying the equipment to be lifted, its weight, and the start and end locations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A draft lift plan is created in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A draft lift plan is created in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the weather forecast, specifically wind speed and sea state, to ensure the lift can be performed safely.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The forecast is checked and confirms conditions are within safe limits for the planned time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The forecast is checked and confirms conditions are within safe limits for the planned time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Finalize and issue the lift plan for approval by the offshore installation manager and crane operator.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The plan is submitted for final approval before the operation begins."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The plan is submitted for final approval before the operation begins.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

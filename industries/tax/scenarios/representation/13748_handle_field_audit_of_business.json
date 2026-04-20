@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Act as the primary point of contact for the IRS agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent manages all communication with the auditor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent manages all communication with the auditor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Respond to Information Document Requests (IDRs) from the auditor in a timely manner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the requested documentation promptly and accurately."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the requested documentation promptly and accurately.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Negotiate with the auditor on any proposed adjustments to the tax return.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent advocates for the client's position to minimize any additional tax."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent advocates for the client's position to minimize any additional tax.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

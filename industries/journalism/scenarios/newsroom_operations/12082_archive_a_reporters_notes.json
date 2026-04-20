@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all digital and physical notes, recordings, and documents related to the investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All source material is collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All source material is collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan any physical documents to create digital copies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All materials are in a digital format."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All materials are in a digital format.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload all digital files to a secure, access-controlled archival system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The sensitive source material is securely stored."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The sensitive source material is securely stored.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

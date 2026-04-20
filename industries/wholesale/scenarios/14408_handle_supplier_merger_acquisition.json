@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive notification of the merger/acquisition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is aware of the change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is aware of the change.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the new parent company to get updated contact and remittance information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the new supplier details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the new supplier details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the supplier record in the system with the new information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the supplier's master file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the supplier's master file.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

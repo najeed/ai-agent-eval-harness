@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and verify their room assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student's identity and that they live in the specified room."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student's identity and that they live in the specified room.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the Resident Advisor (RA) on duty for that building to let the student in.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully contacts the RA and provides the student's details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully contacts the RA and provides the student's details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the student that the RA is on their way to assist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the resolution to the student."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the resolution to the student.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify a transaction that closed more than 7 days ago.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a recently closed transaction ready for archiving."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a recently closed transaction ready for archiving.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a compliance check on the transaction file to ensure all required documents (e.g., contract, disclosures, closing statement) are present.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses a checklist to verify the file is complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses a checklist to verify the file is complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Change the status of the transaction file to 'Archived' in the transaction management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully archives the file, making it read-only."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully archives the file, making it read-only.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

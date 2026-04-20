@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the administrator's request to check out the 'DB_Admin' credential, including a justification and ticket number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The PAM system receives the request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The PAM system receives the request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The PAM system automatically releases the password to the administrator for a pre-defined time limit (e.g., 2 hours).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The administrator receives the one-time password."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The administrator receives the one-time password.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the time limit expires, the PAM system automatically checks the credential back in and rotates the password.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The one-time password is automatically invalidated, securing the account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The one-time password is automatically invalidated, securing the account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm with the crane operator and vessel crew that the last container is ready to be loaded.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All parties confirm they are ready for the final move."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All parties confirm they are ready for the final move.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Oversee the loading of the final container.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The container is safely loaded onto the vessel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The container is safely loaded onto the vessel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the crane operator to lift the hatch covers back onto the vessel and then boom up the crane.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Hatch covers are replaced, the crane booms up, and the foreman declares 'operations complete' for that vessel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Hatch covers are replaced, the crane booms up, and the foreman declares 'operations complete' for that vessel.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

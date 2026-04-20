@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the rejection code from the e-file system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the specific code indicating a dependent SSN/name mismatch."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the specific code indicating a dependent SSN/name mismatch.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the dependent's name and SSN with the taxpayer, checking against the Social Security card.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent discovers a typo was made when entering the dependent's last name."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent discovers a typo was made when entering the dependent's last name.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Correct the information in the tax return and re-transmit the e-file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully corrects the error and resubmits the return."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully corrects the error and resubmits the return.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

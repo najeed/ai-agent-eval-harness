@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that all personnel are clear of the hazardous zone around the launch pad.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the area is clear."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the area is clear.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Follow the detailed checklist to operate the valves and pumps of the propellant loading system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the procedure precisely to avoid any safety incidents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the procedure precisely to avoid any safety incidents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the temperature, pressure, and fluid levels in the rocket's tanks to ensure the propellant is loaded to the correct levels.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent monitors the system and confirms the tanks are filled to the target amounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent monitors the system and confirms the tanks are filled to the target amounts.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

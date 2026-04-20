@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve website session data, broken down by 'Default Channel Grouping', for the last 30 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the data showing sessions from Organic Search, Paid Search, Direct, etc."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the data showing sessions from Organic Search, Paid Search, Direct, etc.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "In a reporting or spreadsheet tool, create a pie chart using this data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the pie chart."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the pie chart.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Ensure the chart is properly labeled with the channel names and percentages.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The chart is clear, accurate, and easy to understand."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The chart is clear, accurate, and easy to understand.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

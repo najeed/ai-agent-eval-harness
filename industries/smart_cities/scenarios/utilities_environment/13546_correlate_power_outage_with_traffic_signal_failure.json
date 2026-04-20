@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive multiple alerts for traffic signal failures in the same geographic area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a cluster of signal outages."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a cluster of signal outages.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Overlay the locations of the failed signals with the real-time power grid status map.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent visually correlates the two datasets on a map."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent visually correlates the two datasets on a map.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm that the signal failures perfectly match a known power outage zone, identifying the root cause.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly diagnoses the problem as a power outage, not a traffic system failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly diagnoses the problem as a power outage, not a traffic system failure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

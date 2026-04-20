@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and verify their accommodation for accessible course materials.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student's eligibility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student's eligibility.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the textbook information (title, ISBN) and proof of purchase from the student.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the required documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the required documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Request the accessible format from the publisher or an accessibility clearinghouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits a formal request to the appropriate source for the accessible file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits a formal request to the appropriate source for the accessible file.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

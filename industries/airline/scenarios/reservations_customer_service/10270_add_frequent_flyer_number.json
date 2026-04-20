@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's booking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the reservation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the reservation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Get the customer's frequent flyer number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the frequent flyer number to the booking record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the booking with the number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the booking with the number.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check service coverage at the customer's primary address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms strong 5G coverage at the provided address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms strong 5G coverage at the provided address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ask qualifying questions about data usage and budget to recommend a suitable plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers customer needs and recommends the 'Unlimited Plus' plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers customer needs and recommends the 'Unlimited Plus' plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a new customer account and process the order for the new plan and SIM card.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the account and places the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the account and places the order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

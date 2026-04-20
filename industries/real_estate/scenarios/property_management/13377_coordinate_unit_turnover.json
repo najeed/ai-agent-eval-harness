@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "After the move-out inspection, create a scope of work for the turnover, including painting, cleaning, and any necessary repairs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A detailed turnover checklist is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A detailed turnover checklist is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule multiple vendors (painter, cleaner, handyman) to complete the work in the correct sequence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All vendors are scheduled efficiently to minimize vacancy time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All vendors are scheduled efficiently to minimize vacancy time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Conduct a final 'rent-ready' inspection to ensure all work has been completed to standard before marketing the unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The unit is confirmed to be in rent-ready condition."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The unit is confirmed to be in rent-ready condition.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

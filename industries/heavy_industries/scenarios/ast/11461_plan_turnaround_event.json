@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all maintenance, inspection, and project work to be executed during the turnaround.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a list of all planned activities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a list of all planned activities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a planning tool to schedule all the activities, considering their durations, dependencies, and resource constraints.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The planner creates a detailed, integrated schedule for the entire event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The planner creates a detailed, integrated schedule for the entire event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run a critical path analysis on the turnaround schedule to identify the activities that will drive the overall duration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the critical path, which includes the replacement of a major vessel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the critical path, which includes the replacement of a major vessel.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

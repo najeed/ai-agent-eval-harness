@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the RMA number on the returned product to retrieve its details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the item and its inspection status ('OK for Restock')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the item and its inspection status ('OK for Restock').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a put-away task for the item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The WMS suggests an optimal storage location for the item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The WMS suggests an optimal storage location for the item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Move the item to the suggested location, scan the location and item to confirm, and finalize the task.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully restocks the item, and the system inventory is updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully restocks the item, and the system inventory is updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

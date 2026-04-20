@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the incoming shipment's barcode, and the system identifies it as a cross-dock order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the shipment's cross-dock status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the shipment's cross-dock status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system provides instructions to move the pallets directly to a specific outbound staging lane.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives clear instructions for where to move the freight."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives clear instructions for where to move the freight.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Move the freight to the staging lane and scan the lane's barcode to confirm completion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully moves the freight and the system updates its status to 'Staged for Outbound'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully moves the freight and the system updates its status to 'Staged for Outbound'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

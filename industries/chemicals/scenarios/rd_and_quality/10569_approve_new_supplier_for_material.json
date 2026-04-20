@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the QC test results for the trial lot received from the new supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the lab results for the trial material."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the lab results for the trial material.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the results to the material's specification and to the results from the current supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the new supplier's material meets all specs and is comparable to the incumbent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the new supplier's material meets all specs and is comparable to the incumbent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the approved supplier list (ASL) for the raw material to include the new supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the new supplier to the material's ASL in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the new supplier to the material's ASL in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

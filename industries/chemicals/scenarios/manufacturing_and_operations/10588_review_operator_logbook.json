@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the electronic logbook for the specified production area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the logbook."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the logbook.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Filter the logbook to show all entries from the last 12 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully filters the log entries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully filters the log entries.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the entries and identify a comment about a 'noisy pump' that may require follow-up from maintenance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reads the logs and flags one entry for follow-up by creating a low-priority maintenance request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reads the logs and flags one entry for follow-up by creating a low-priority maintenance request.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

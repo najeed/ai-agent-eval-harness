@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the visitor's current ticket or wristband to retrieve their details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully identifies the visitor's standard entry ticket."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully identifies the visitor's standard entry ticket.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the price difference to upgrade to a Fast Pass.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the correct upgrade cost."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the correct upgrade cost.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the payment and update the visitor's ticket/wristband to Fast Pass status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully completes the upgrade, and the visitor's pass is now enabled for fast lanes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully completes the upgrade, and the visitor's pass is now enabled for fast lanes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

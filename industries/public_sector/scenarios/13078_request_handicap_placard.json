@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Provide the citizen with the application form, which requires a doctor's signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a link to the correct form and explains the requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a link to the correct form and explains the requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive the completed and signed application from the citizen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the application and verifies it has been signed by a physician."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the application and verifies it has been signed by a physician.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the application and issue the handicap parking placard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent approves the application and mails the placard to the citizen."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent approves the application and mails the placard to the citizen.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Develop and schedule an automated script that runs weekly to check for purchase orders that were approved after the invoice was received.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An automated monitoring script is created and scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An automated monitoring script is created and scheduled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the weekly output from the script.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor receives a weekly report of any exceptions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor receives a weekly report of any exceptions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "When the script identifies a significant number of exceptions, launch a full investigation or audit of the process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The continuous monitoring results are used to trigger a targeted audit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The continuous monitoring results are used to trigger a targeted audit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the customer's active subscription.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the recurring subscription for 'Vitamin D'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the recurring subscription for 'Vitamin D'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Process the cancellation of the subscription.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the subscription status to 'Cancelled'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the subscription status to 'Cancelled'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm with the customer that the subscription is cancelled and no future charges will be made.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear confirmation to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear confirmation to the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

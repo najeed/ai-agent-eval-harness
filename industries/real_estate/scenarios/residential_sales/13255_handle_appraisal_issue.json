@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the appraisal report and identify the appraised value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the appraisal is lower than the contract price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the appraisal is lower than the contract price.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the client (buyer or seller) of the low appraisal and explain the implications for the loan and transaction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the problem to their client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the problem to their client.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Outline the options: buyer brings more cash to closing, seller lowers the price, they meet in the middle, or cancel the contract. Then, begin negotiations with the other party's agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides strategic options and initiates negotiations to save the deal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides strategic options and initiates negotiations to save the deal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

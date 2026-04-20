@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and collect the bibliographic information for the requested book (title, author, ISBN).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary details for the book."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary details for the book.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the national interlibrary loan (ILL) database to find a library that has the book.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds three libraries that own the book and can lend it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds three libraries that own the book and can lend it.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the ILL request to the lending library and inform the student of the estimated arrival time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully places the request and communicates the timeline to the student."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully places the request and communicates the timeline to the student.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Find the active shipment and verify it has not yet been delivered.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the shipment is still in transit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the shipment is still in transit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the carrier's dispatch to request a re-consignment to the new address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the new delivery address to the carrier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the new delivery address to the carrier.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The carrier provides the cost for the diversion. The agent gets approval from the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The additional freight charges are calculated and approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The additional freight charges are calculated and approved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the shipment's destination in the TMS and confirm the diversion with the carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The shipment is now routed to the new destination."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The shipment is now routed to the new destination.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

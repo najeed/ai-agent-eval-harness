@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the break request from the staff member.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify an available 'floater' staff member who can cover the stand.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an available floater in the scheduling system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an available floater in the scheduling system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the floater to cover the stand for 30 minutes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the floater's assignment in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the floater's assignment in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Authorize the original staff member to take their break.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs the staff member they are cleared for their break."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs the staff member they are cleared for their break.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

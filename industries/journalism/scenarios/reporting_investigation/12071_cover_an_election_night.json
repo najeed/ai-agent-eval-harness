@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the official election results feed from the state election board.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a reliable, primary source for results."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a reliable, primary source for results.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "As results come in for key races, update a data visualization on the website showing the new totals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The website's graphics are kept up-to-date in real time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The website's graphics are kept up-to-date in real time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "When a major race is called by the decision desk, write a breaking news alert and a short article.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "News about the race outcome is published immediately."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "News about the race outcome is published immediately.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

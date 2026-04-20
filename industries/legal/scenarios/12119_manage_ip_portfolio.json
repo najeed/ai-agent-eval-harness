@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the client's IP portfolio in the management software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the list of all trademarks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the list of all trademarks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Filter the portfolio to show all trademarks with a renewal deadline in the next 6 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of upcoming deadlines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of upcoming deadlines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a report of the upcoming deadlines for the supervising attorney and the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a clear report to ensure no deadlines are missed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a clear report to ensure no deadlines are missed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

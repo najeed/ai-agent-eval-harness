@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Formulate a search query for literature databases (e.g., PubMed) combining the drug's mechanism of action and the disease indication.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a comprehensive search query."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a comprehensive search query.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Execute the search and screen the results for papers discussing biomarkers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent screens the abstracts and identifies several papers that mention potential genetic biomarkers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent screens the abstracts and identifies several papers that mention potential genetic biomarkers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Synthesize the findings from the relevant papers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent summarizes the evidence, noting that a mutation in the 'GENE-Y' is consistently associated with response in similar drugs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent summarizes the evidence, noting that a mutation in the 'GENE-Y' is consistently associated with response in similar drugs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a report recommending that 'GENE-Y' mutation status be explored as a biomarker in the next clinical trial.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a report with a clear recommendation for the clinical team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a report with a clear recommendation for the clinical team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Discuss the client's goals for the inheritance (e.g., pay off debt, invest, donate).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the client's top three priorities for the funds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the client's top three priorities for the funds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the tax implications of the inheritance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines there are no immediate federal inheritance taxes but potential state taxes to consider."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines there are no immediate federal inheritance taxes but potential state taxes to consider.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Develop a strategy that allocates the funds towards the client's goals in a tax-efficient manner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent proposes a clear plan: 30% to pay off mortgage, 60% to invest in a diversified portfolio, 10% to a donor-advised fund."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent proposes a clear plan: 30% to pay off mortgage, 60% to invest in a diversified portfolio, 10% to a donor-advised fund.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

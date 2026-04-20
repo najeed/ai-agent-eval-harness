@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Based on the audit plan, create a detailed list of all documents and data needed from the auditee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive 'Provided by Client' (PBC) list is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive 'Provided by Client' (PBC) list is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send the PBC list to the primary audit contact for the business unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditee receives the formal request list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditee receives the formal request list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Track the status of each requested item in a tracking log, following up on overdue items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor actively manages the collection of evidence against the request list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor actively manages the collection of evidence against the request list.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

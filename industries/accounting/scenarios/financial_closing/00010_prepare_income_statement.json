@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the trial balance from the general ledger after all closing entries have been posted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves the final trial balance for the month."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves the final trial balance for the month.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Map the general ledger accounts to the lines of the income statement (e.g., Revenue, COGS, SG&A).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly maps all P&L accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly maps all P&L accounts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the income statement, showing current month actuals, budget, and variance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a formatted income statement with all required columns."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a formatted income statement with all required columns.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

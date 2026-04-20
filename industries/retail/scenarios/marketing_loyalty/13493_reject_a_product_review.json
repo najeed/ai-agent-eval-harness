@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "An agent reviews a new submission in the moderation queue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent reads the submitted text."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent reads the submitted text.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The agent identifies that the review violates the site's terms of service due to profanity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent correctly applies the content policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent correctly applies the content policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The agent rejects the review, providing 'Inappropriate Language' as the reason, and the review is not published.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Inappropriate content is prevented from appearing on the website."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Inappropriate content is prevented from appearing on the website.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

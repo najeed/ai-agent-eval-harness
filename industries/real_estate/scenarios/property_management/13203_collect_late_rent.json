@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify tenants with outstanding balances past the grace period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the delinquent tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the delinquent tenant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apply the contractual late fee to the tenant's ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the correct late fee amount to the tenant's balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the correct late fee amount to the tenant's balance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a formal late rent notice to the tenant via email and log the action in the tenant's communication history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the notice and properly documents the action."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the notice and properly documents the action.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

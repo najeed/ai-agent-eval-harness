@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the part number for the gasket used.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct part number from the equipment's bill of materials."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct part number from the equipment's bill of materials.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Record the use of one unit of the gasket in the inventory system, which brings the on-hand quantity to zero.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the spare part inventory."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the spare part inventory.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system automatically flags the part for reorder because the quantity is below the minimum level. Confirm and submit the purchase requisition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the auto-generated purchase requisition to restock the part."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the auto-generated purchase requisition to restock the part.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

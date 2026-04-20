@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the program's eligibility requirements and the need for a doctor's certification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the program rules and required documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the program rules and required documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the customer with the official application form for their doctor to complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the correct form to the customer's email address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the correct form to the customer's email address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the completed form is received, update the customer's account to add the medical baseline allocation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the application and applies the new rate structure to the account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the application and applies the new rate structure to the account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

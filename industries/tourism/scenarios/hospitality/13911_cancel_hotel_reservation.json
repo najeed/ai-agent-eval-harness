@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's reservation using their confirmation number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly locates the specified reservation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly locates the specified reservation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the cancellation policy to determine if a refund is applicable.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the reservation is within the free cancellation window."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the reservation is within the free cancellation window.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the cancellation and inform the customer about the refund process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully cancels the booking and provides a cancellation number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully cancels the booking and provides a cancellation number.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

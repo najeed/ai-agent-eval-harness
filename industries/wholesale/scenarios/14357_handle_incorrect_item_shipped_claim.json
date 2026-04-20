@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the claim from the retailer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the claim."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the claim.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the original order and the pick list to verify what should have been shipped.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the retailer ordered item A but was shipped item B."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the retailer ordered item A but was shipped item B.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for the incorrect item to be returned at no cost to the retailer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a pre-paid return shipping label for the retailer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a pre-paid return shipping label for the retailer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a new order to ship the correct item to the retailer immediately.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new order for the correct item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new order for the correct item.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

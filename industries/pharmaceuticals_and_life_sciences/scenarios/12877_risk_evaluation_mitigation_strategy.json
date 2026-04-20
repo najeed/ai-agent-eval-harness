@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a request to authorize a prescription, including the physician's name and NPI number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the required information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the required information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the physician's status in the REMS certification database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent queries the database and confirms the physician is certified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent queries the database and confirms the physician is certified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide an authorization code to the pharmacy to allow them to dispense the drug.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates and provides the authorization code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates and provides the authorization code.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a report of a 'lost' container and its expected yard location from the TOS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator is notified that container YYYY9876543 cannot be found at location A1-02-03."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator is notified that container YYYY9876543 cannot be found at location A1-02-03.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch a yard checker to the location to physically look for the container.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A yard checker is sent to the area to investigate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A yard checker is sent to the area to investigate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The checker finds the container in the adjacent slot (A1-02-04) and reports the correct location to have the TOS updated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The checker reports the correct location, and the operator updates the container's position in the system, resolving the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The checker reports the correct location, and the operator updates the container's position in the system, resolving the issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

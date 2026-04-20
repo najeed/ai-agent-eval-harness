@@ -12,38 +12,46 @@
       {
         "id": "task-0",
         "task_description": "Verify clinician access and patient identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Identity verified/authorized"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Identity verified/authorized",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-1",
         "task_description": "Open the pediatric patient's chart.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pediatrician accesses the correct patient record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pediatrician accesses the correct patient record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Navigate to the growth chart section of the EHR.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system displays the patient's height, weight, and BMI plotted against standard percentile curves."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system displays the patient's height, weight, and BMI plotted against standard percentile curves.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Observe that the patient's weight percentile has crossed two major percentile lines, indicating a potential issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The visual display of the data allows the pediatrician to quickly identify a clinically significant trend."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The visual display of the data allows the pediatrician to quickly identify a clinically significant trend.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

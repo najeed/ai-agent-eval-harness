@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of properties due for their quarterly exterior inspection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of 10 property addresses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of 10 property addresses.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "At each property, check for visible lease violations (e.g., unkempt lawn, unauthorized structures, junk cars).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent documents the condition of each property's exterior using a mobile app."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent documents the condition of each property's exterior using a mobile app.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If a violation is found at a property, issue a lease violation notice to the tenant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies an overgrown lawn at one property and issues the appropriate notice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies an overgrown lawn at one property and issues the appropriate notice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

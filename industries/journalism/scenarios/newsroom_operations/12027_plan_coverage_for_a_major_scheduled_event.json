@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a master planning document or spreadsheet for the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A central planning document is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A central planning document is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "List all the different events that need to be covered and the deadlines for each.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The document contains a comprehensive list of all coverage requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The document contains a comprehensive list of all coverage requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign specific reporters and photographers to each event based on their expertise and availability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All events are assigned to a specific team member."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All events are assigned to a specific team member.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

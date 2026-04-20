@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all transactions coded to the Marketing department for the current year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pulls the detailed transaction data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pulls the detailed transaction data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Categorize the spending by expense type (e.g., advertising, software, events).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly categorizes the spending and identifies the top 3 spending categories."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly categorizes the spending and identifies the top 3 spending categories.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a summary report with charts to present the findings to the manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a clear, visual report summarizing the department's spending."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a clear, visual report summarizing the department's spending.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

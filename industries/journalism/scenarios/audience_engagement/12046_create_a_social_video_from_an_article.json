@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Select 3-4 key facts or quotes from the article.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The most impactful points are identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The most impactful points are identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find relevant stock video clips or photos to serve as the visual background.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Appropriate visual assets are collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Appropriate visual assets are collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use a social video creation tool to combine the text and visuals into a short video (e.g., 60 seconds).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A short video is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A short video is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Add subtitles to the video, as most social media videos are watched with the sound off.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The video is accessible to users watching without sound."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The video is accessible to users watching without sound.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

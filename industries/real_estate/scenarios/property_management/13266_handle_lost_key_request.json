@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the tenant's request for a new key.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the request from the tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the request from the tenant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the lease agreement for the key replacement fee amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct fee in the lease document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct fee in the lease document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Charge the replacement fee to the tenant's ledger and arrange for them to pick up a new key.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent applies the fee and coordinates key pickup."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent applies the fee and coordinates key pickup.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

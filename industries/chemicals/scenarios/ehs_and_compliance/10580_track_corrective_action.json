@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the CAPA record in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the CAPA related to 'machine guarding'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the CAPA related to 'machine guarding'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the CAPA and see that it is still 'In Progress', even though its due date has passed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that the corrective action is overdue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that the corrective action is overdue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send an automated reminder notification to the assigned owner of the CAPA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully triggers a reminder email to the responsible person."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully triggers a reminder email to the responsible person.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

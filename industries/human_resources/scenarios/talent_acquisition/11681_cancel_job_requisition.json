@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the job requisition to be cancelled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter locates the correct requisition in the ATS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter locates the correct requisition in the ATS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the requisition status to 'Cancelled'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter successfully updates the status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter successfully updates the status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify any active candidates that the position is no longer available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter sends a notification to all candidates in an active stage for the role."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter sends a notification to all candidates in an active stage for the role.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

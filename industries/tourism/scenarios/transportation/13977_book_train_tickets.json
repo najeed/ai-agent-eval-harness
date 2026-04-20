@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search for available trains from Paris to Amsterdam on the desired date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds several train options with first-class availability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds several train options with first-class availability.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the desired train and provide the total price for two first-class tickets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the selection and total cost."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the selection and total cost.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the train tickets and issue them to the traveler.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the tickets and provides a booking reference."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the tickets and provides a booking reference.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

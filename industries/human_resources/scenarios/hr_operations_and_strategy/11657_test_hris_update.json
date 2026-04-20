@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Apply the new patch to the HRIS sandbox environment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin successfully installs the patch in the test system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin successfully installs the patch in the test system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Execute a standard test script that covers key HR processes (e.g., hire, terminate, promote).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin runs through the test cases to ensure core functionality is not broken."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin runs through the test cases to ensure core functionality is not broken.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the test results and, if successful, schedule the patch for deployment to the production environment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin confirms the patch is safe and schedules the production deployment for the next maintenance window."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin confirms the patch is safe and schedules the production deployment for the next maintenance window.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

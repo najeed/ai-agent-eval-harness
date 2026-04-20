@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the new product's details, including forecasted sales and supplier lead time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the necessary data inputs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the necessary data inputs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the safety stock level based on demand variability and lead time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A safety stock of 50 units is calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A safety stock of 50 units is calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the reorder point (demand during lead time + safety stock).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A reorder point of 200 units is calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A reorder point of 200 units is calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the product's record in the inventory system with the new reorder point and safety stock values.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The item's replenishment parameters are now set."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The item's replenishment parameters are now set.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

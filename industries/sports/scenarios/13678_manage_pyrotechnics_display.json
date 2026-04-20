@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Hire a licensed pyrotechnics vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects and contracts with an approved vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects and contracts with an approved vendor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Secure all necessary permits from the local fire department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully obtains the required permits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully obtains the required permits.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "On game day, coordinate with the vendor and the fire department to ensure all safety protocols are followed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent oversees the safe execution of the display."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent oversees the safe execution of the display.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

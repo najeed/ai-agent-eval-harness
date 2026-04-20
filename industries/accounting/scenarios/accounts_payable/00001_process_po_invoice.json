@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Capture the invoice data from the received document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly extracts key data like invoice number, date, vendor, and line-item amounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly extracts key data like invoice number, date, vendor, and line-item amounts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a 3-way match by comparing the invoice against the purchase order and the goods receipt note in the ERP system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that quantities, prices, and terms match across all three documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that quantities, prices, and terms match across all three documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post the invoice for payment, as the 3-way match was successful.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully posts the invoice in the ERP system, making it ready for the next payment run."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully posts the invoice in the ERP system, making it ready for the next payment run.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

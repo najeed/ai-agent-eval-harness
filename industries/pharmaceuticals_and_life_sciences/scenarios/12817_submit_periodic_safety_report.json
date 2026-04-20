@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Generate a line listing of all adverse event cases for the product within the reporting period from the safety database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully extracts all relevant case data for the specified time frame."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully extracts all relevant case data for the specified time frame.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the case data to identify any new or changing safety signals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent analyzes the data and notes an increase in reports of 'headache', but determines it does not constitute a new signal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent analyzes the data and notes an increase in reports of 'headache', but determines it does not constitute a new signal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft the various sections of the PSUR using a template, incorporating the data and analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent populates the PSUR template with the required information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent populates the PSUR template with the required information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Submit the final, approved PSUR to the health authority via their electronic gateway.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the report and receives a submission receipt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the report and receives a submission receipt.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

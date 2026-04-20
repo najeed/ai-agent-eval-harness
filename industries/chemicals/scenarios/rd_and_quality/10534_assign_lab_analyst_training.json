@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the new analyst's current training record in the training management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the analyst has not yet been trained on the GC-MS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the analyst has not yet been trained on the GC-MS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assign the 'GC-MS Operation and Maintenance' training module to the analyst.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully assigns the required training course."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully assigns the required training course.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule a hands-on training session with a senior analyst.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent notifies the senior analyst and schedules the practical training session."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent notifies the senior analyst and schedules the practical training session.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ingest the final English report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads the document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads the document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Translate the entire document text to Spanish.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a translated version of the text."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a translated version of the text.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Format the translated text into a new document, preserving the original structure and headings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new, well-formatted document in Spanish."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new, well-formatted document in Spanish.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

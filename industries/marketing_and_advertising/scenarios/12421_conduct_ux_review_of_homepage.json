@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Perform a heuristic evaluation of the homepage against established usability principles (e.g., Nielsen's 10 heuristics).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent systematically reviews the page for common usability issues."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent systematically reviews the page for common usability issues.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review user session recordings or heatmaps to see how real users are interacting with the page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies where users are getting stuck or failing to click."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies where users are getting stuck or failing to click.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile a report with 3-5 prioritized recommendations for improvement (e.g., 'Make the primary CTA button more prominent').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a report with actionable recommendations for A/B testing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a report with actionable recommendations for A/B testing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

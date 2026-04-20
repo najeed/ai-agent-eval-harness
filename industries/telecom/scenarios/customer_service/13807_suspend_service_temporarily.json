@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and explain the terms of a temporary suspension (e.g., reduced fee, duration limits).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the vacation suspension policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the vacation suspension policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Process the suspension request for the specified start and end dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the suspension to the account for the correct date range."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the suspension to the account for the correct date range.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the suspension details and the automatic reactivation date with the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear summary of the action taken."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear summary of the action taken.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

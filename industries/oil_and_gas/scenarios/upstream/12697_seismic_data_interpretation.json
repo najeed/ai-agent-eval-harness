@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load the 3D seismic data volume and associated well log data into the interpretation software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All relevant data is loaded and quality-checked for consistency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All relevant data is loaded and quality-checked for consistency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Interpret and map key geological horizons and faults across the seismic volume.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Geoscientist accurately maps the structural framework of the area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Geoscientist accurately maps the structural framework of the area.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a structural map of a target reservoir and identify potential closures (traps).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A map showing potential hydrocarbon traps is created and high-graded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A map showing potential hydrocarbon traps is created and high-graded.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

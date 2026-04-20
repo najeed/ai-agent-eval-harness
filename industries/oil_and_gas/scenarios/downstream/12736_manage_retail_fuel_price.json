@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the latest street-level prices for key competitors near station #6789.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of competitor prices is retrieved from a price monitoring service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of competitor prices is retrieved from a price monitoring service.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Using the company's pricing model, calculate the new optimal prices for all fuel grades at the station.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pricing algorithm recommends new prices to maintain a target margin while staying competitive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pricing algorithm recommends new prices to maintain a target margin while staying competitive.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Push the new prices to the station's point-of-sale (POS) system and electronic price sign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The prices at the gas station are successfully updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The prices at the gas station are successfully updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

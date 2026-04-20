@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run the raw telemetry data through a processing pipeline to calibrate it and convert it into scientifically useful units (e.g., stellar brightness).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the raw data into a calibrated data set."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the raw data into a calibrated data set.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the light curves of stars in the data set, searching for the characteristic dip in brightness caused by a transiting exoplanet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs a transit detection algorithm and identifies a potential exoplanet candidate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs a transit detection algorithm and identifies a potential exoplanet candidate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform follow-up analysis to validate the candidate and determine the planet's size and orbital period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent validates the candidate and calculates its key characteristics."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent validates the candidate and calculates its key characteristics.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

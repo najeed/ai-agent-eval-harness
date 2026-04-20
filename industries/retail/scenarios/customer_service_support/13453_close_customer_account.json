@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the customer's identity to ensure they are the true owner of the account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent confirms the identity of the person making the request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent confirms the identity of the person making the request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the customer that deleting their account is permanent and will erase their order history and loyalty points.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer understands the consequences and confirms they wish to proceed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer understands the consequences and confirms they wish to proceed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate the account deletion process in the customer management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer's account is flagged for deletion in accordance with data privacy regulations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer's account is flagged for deletion in accordance with data privacy regulations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

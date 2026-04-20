@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a list of sources in various informal formats.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ingests the list of sources."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ingests the list of sources.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each source, identify the author, year, title, and publication information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly extracts the metadata from each source string."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly extracts the metadata from each source string.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Format each source into the APA citation style.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a correctly formatted bibliography in APA style."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a correctly formatted bibliography in APA style.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

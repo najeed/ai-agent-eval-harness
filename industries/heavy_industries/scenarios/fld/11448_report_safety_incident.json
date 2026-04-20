@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new incident report in the safety management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates a new report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates a new report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the details of the incident: person involved, location, date, description of the injury, and initial treatment provided.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly fills in all the required incident details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly fills in all the required incident details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the report, which is then routed to the project EHS manager for investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the report, and it is assigned to the EHS manager."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the report, and it is assigned to the EHS manager.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

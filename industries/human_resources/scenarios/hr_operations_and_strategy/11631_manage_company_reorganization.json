@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the new organizational chart from leadership.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP receives the 'to-be' structure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP receives the 'to-be' structure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Plan the bulk updates needed in the HRIS to reflect the new reporting structures.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP maps out all the required employee record changes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP maps out all the required employee record changes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Execute the bulk updates in the HRIS on the effective date of the reorganization.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP successfully updates all manager and department fields for the affected employees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP successfully updates all manager and department fields for the affected employees.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

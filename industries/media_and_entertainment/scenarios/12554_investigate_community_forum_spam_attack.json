@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the spam posts and the accounts that created them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a pattern of posts with malicious links from accounts created within the last hour."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a pattern of posts with malicious links from accounts created within the last hour.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a script to bulk-delete all posts and ban all accounts originating from the spammer's IP block.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully cleans the forum and bans the spam accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully cleans the forum and bans the spam accounts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Temporarily enable stricter posting requirements for new accounts to prevent a recurrence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the forum settings to require email verification for new posters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the forum settings to require email verification for new posters.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

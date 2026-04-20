@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Determine the required communication windows based on the probe's trajectory and mission events.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the critical timeframes when communication is needed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the critical timeframes when communication is needed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit a request to the DSN scheduling authority for antenna time during those windows.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly fills out and submits the DSN time request form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly fills out and submits the DSN time request form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive the approved schedule from the DSN and update the mission's operational plan accordingly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent incorporates the confirmed DSN passes into the mission plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent incorporates the confirmed DSN passes into the mission plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

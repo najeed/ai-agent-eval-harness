@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the supplier audit checklist for the specific supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent opens the pre-defined audit checklist in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent opens the pre-defined audit checklist in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each item on the checklist, record the finding as 'Conforming', 'Needs Improvement', or 'Non-Conforming'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent goes through the checklist, recording findings for each point."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent goes through the checklist, recording findings for each point.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For any non-conforming findings, create a Supplier Corrective Action Request (SCAR) and assign it to the supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a SCAR for two non-conforming items found during the audit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a SCAR for two non-conforming items found during the audit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

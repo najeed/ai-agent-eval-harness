@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The system receives an EDI 850 file and parses its contents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system successfully translates the EDI data into a structured format."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system successfully translates the EDI data into a structured format.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system validates the data (e.g., item numbers, pricing) against master data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All data is validated successfully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All data is validated successfully.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "A new sales order is automatically created in the OMS from the validated data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A sales order is created without manual intervention."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A sales order is created without manual intervention.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The system sends back an EDI 855 (Purchase Order Acknowledgment) to the partner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An automated acknowledgment is sent, confirming receipt of the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An automated acknowledgment is sent, confirming receipt of the order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

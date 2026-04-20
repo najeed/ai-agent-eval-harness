@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all technical data for the platform, including its weight, number of wells, and water depth.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All necessary input data for the cost model is collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All necessary input data for the cost model is collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a cost estimation model to calculate the costs for well abandonment, topside removal, and jacket removal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The model provides a detailed breakdown of decommissioning costs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The model provides a detailed breakdown of decommissioning costs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate an Asset Retirement Obligation (ARO) report for the finance department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal report detailing the estimated future liability is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal report detailing the estimated future liability is created.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

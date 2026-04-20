@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the soil EC map for the specified field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the EC map data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the EC map data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Interpret the EC map, explaining that high EC values typically correlate with heavier, clay soils, and low EC values with lighter, sandy soils.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a correct interpretation of the EC data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a correct interpretation of the EC data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create management zones based on the EC data that correspond to different soil textures.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a map showing zones of clay, loam, and sand."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a map showing zones of clay, loam, and sand.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a master work order for the crusher overhaul.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the main work order for the shutdown."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the main work order for the shutdown.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a list of all required spare parts from the asset's maintenance plan and check their availability in the warehouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of 50 parts and confirms 48 are in stock, with 2 needing to be ordered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of 50 parts and confirms 48 are in stock, with 2 needing to be ordered.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create purchase orders for the missing parts and schedule the shutdown on the master schedule once all parts are confirmed to be available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent orders the missing parts and tentatively schedules the shutdown pending their arrival."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent orders the missing parts and tentatively schedules the shutdown pending their arrival.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Calculate the daily water requirement for the entire battalion based on personnel count and environmental factors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer accurately calculates the total daily water need."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer accurately calculates the total daily water need.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status and production rate of all available Reverse Osmosis Water Purification Units (ROWPUs).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer determines they have enough production capacity to meet demand."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer determines they have enough production capacity to meet demand.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a distribution schedule to deliver water from the ROWPUs to all company positions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer creates an efficient schedule to ensure all soldiers receive their daily water supply."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer creates an efficient schedule to ensure all soldiers receive their daily water supply.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

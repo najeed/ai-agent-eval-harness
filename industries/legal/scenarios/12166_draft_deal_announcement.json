@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the approved press release for the key messaging.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the public-facing message."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the public-facing message.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft an internal email that announces the transaction, expresses excitement for the future, and provides high-level information about the integration process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a clear and positive internal communication."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a clear and positive internal communication.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Route the draft announcement to HR and senior leadership for review and approval before sending.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the correct internal review process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the correct internal review process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

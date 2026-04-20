@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that both the satellite and the payload adapter have passed all pre-integration checks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the status of all checks is 'complete'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the status of all checks is 'complete'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Oversee the crane operation to lift and position the satellite onto the adapter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent monitors the physical process to ensure it follows the procedure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent monitors the physical process to ensure it follows the procedure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Connect the umbilical cords for data and power between the satellite and the launch vehicle, and perform a final interface check.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all connections are secure and a successful data link is established."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all connections are secure and a successful data link is established.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

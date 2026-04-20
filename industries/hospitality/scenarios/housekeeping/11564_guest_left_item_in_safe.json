@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The housekeeper reports the locked safe to their supervisor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supervisor is notified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supervisor is notified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The supervisor and a security officer go to the room to open the safe with a master key/code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The safe is opened following a two-person integrity policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The safe is opened following a two-person integrity policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "They find a passport inside, log it immediately in the lost and found system, and store it in the main hotel safe.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The high-value item is logged and securely stored."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The high-value item is logged and securely stored.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The agent attempts to contact the guest to inform them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A message is left for the guest about their found passport."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A message is left for the guest about their found passport.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

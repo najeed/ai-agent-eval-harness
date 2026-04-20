@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the client's requirements: 5,000 sqft, Class A/B office, specific submarket, budget of $50/sqft/year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly logs all client requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly logs all client requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search commercial listing services (e.g., CoStar, LoopNet) for available properties matching the criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of at least 5 matching properties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of at least 5 matching properties.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile the search results into a report for the client, including property photos, floor plans, and leasing contact info.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a professional, easy-to-read report for the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a professional, easy-to-read report for the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

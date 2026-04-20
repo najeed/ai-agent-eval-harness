@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Review the source documents and narrative for a serious adverse event case.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the case details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the case details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write a medical narrative summarizing the case in a standard format.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a clear, concise, and medically accurate narrative."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a clear, concise, and medically accurate narrative.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Code the reported events and diagnoses using the MedDRA dictionary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately codes all medical concepts in the case to the appropriate MedDRA terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately codes all medical concepts in the case to the appropriate MedDRA terms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Perform a causality assessment to determine the likelihood that the drug caused the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent assesses the relationship as 'possibly related' and documents the justification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent assesses the relationship as 'possibly related' and documents the justification.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

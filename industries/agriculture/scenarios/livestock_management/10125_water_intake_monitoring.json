@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the low water intake alert and retrieve the last 7 days of consumption data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the data and confirms a sharp decline in the last 24 hours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the data and confirms a sharp decline in the last 24 hours.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the water trough to ensure it is functioning correctly (e.g., no blockages, pump is working).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent's remote diagnostic shows the trough is functioning normally."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent's remote diagnostic shows the trough is functioning normally.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Since the trough is working, generate a high-priority task for the rancher to check the herd for signs of illness and to check for alternative water sources (e.g., a leak in a pond).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an actionable task in the farm management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an actionable task in the farm management system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

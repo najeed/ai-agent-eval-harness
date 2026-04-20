@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open a new Rollover IRA account for the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new IRA account to receive the funds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new IRA account to receive the funds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assist the client in initiating a direct rollover from their old 401(k) provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the client with the necessary forms and account information to give to their old provider."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the client with the necessary forms and account information to give to their old provider.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the funds are received, invest them according to the client's investment strategy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms receipt of the rollover check and invests the funds into the client's model portfolio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms receipt of the rollover check and invests the funds into the client's model portfolio.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

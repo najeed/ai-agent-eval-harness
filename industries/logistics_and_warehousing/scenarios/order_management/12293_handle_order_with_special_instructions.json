@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The customer's note is captured with the order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The special instruction is saved on the order record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The special instruction is saved on the order record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "When the order is released to the warehouse, the special instruction is flagged and displayed prominently on the packer's screen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The packer is clearly alerted to the gift wrap request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The packer is clearly alerted to the gift wrap request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The packer performs the gift wrapping and confirms the special task is complete before generating the shipping label.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The value-added service is performed correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The value-added service is performed correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

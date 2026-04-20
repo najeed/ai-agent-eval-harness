@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the ultimate pit shell or final stope designs from the strategic mine plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The final mineable reserve shape is imported into the scheduling software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The final mineable reserve shape is imported into the scheduling software.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Develop a logical mining sequence by creating pushbacks or phases that respect geotechnical constraints.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A practical, high-level mining sequence is established."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A practical, high-level mining sequence is established.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a LOM schedule that shows the tons and grade of ore and waste to be mined each year, and the resulting mine life.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A year-by-year production schedule is created, showing a 20-year mine life."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A year-by-year production schedule is created, showing a 20-year mine life.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

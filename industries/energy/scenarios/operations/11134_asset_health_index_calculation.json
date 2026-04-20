@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather key performance and condition data for each turbine, including vibration analysis, temperature readings, and fault history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a comprehensive dataset for all turbines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a comprehensive dataset for all turbines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apply a weighted scoring model to the data to calculate a single health index score (0-100) for each turbine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates a health score for every asset."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates a health score for every asset.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a ranked list of turbines from lowest to highest health score and recommend inspections for the bottom 10%.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a prioritized list for the maintenance team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a prioritized list for the maintenance team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

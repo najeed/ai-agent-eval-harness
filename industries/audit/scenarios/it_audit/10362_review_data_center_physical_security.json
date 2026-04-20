@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the data center access logs for the past 3 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor has the logs of all entries into the data center."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor has the logs of all entries into the data center.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the access logs to the list of authorized personnel to identify any unauthorized access.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms all access was by authorized individuals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms all access was by authorized individuals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform a physical inspection to verify that security cameras are operational and fire suppression systems are tested regularly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms that the fire suppression system's last test was over a year ago, which violates the policy to test it semi-annually."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms that the fire suppression system's last test was over a year ago, which violates the policy to test it semi-annually.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

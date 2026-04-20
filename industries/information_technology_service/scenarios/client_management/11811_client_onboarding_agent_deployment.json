@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get a list of all computer hostnames from the client's Active Directory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician has a complete list of target machines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician has a complete list of target machines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a deployment tool to push the RMM agent installation to all computers on the list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent software is deployed across the client's environment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent software is deployed across the client's environment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify in the RMM console that all computers have checked in and are now under management.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician confirms that all devices are now visible and manageable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician confirms that all devices are now visible and manageable.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

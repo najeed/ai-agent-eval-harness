@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify two tasks on the critical path that can be performed in parallel, such as 'Erect Steel - Sector B' and 'Rough-in Electrical - Sector A'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies two tasks that can be fast-tracked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies two tasks that can be fast-tracked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Change the dependency between the two tasks from 'Finish-to-Start' to 'Start-to-Start' with a 5-day lag.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The schedule is updated to reflect the fast-tracking logic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The schedule is updated to reflect the fast-tracking logic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the increased risk associated with fast-tracking in the risk register.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new risk entry is created, noting the potential for trade interference."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new risk entry is created, noting the potential for trade interference.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

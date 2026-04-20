@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Import the relevant data from the completed federal return into the state tax return form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully transfers federal AGI and other necessary data to the state form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully transfers federal AGI and other necessary data to the state form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Make any necessary state-specific adjustments (e.g., for municipal bond interest).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly makes all required state adjustments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly makes all required state adjustments.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Finalize and e-file the state tax return.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the state return and receives an acceptance confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the state return and receives an acceptance confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the attraction (art museum) and the query (flash photography).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the user's question."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the user's question.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the museum's photography policy from its knowledge base.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the policy which states that non-flash photography is allowed, but flash is strictly prohibited."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the policy which states that non-flash photography is allowed, but flash is strictly prohibited.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Clearly communicate the policy to the visitor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately explains that flash photography is not permitted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately explains that flash photography is not permitted.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

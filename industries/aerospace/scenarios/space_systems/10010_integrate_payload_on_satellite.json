@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Follow the integration procedure document to mechanically and electrically connect the payload to the satellite bus.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the checklist and completes all connections."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the checklist and completes all connections.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a series of functional tests to verify that the payload is receiving power and can communicate with the bus.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the tests and confirms all communications are nominal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the tests and confirms all communications are nominal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the completion of the integration and testing steps in the satellite's assembly log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately updates the assembly log."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately updates the assembly log.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

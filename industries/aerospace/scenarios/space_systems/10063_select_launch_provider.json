@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the satellite's requirements for launch, including its mass, volume, and target orbit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent lists all key launch requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent lists all key launch requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the capabilities, cost, and reliability of available launch providers (e.g., SpaceX, Arianespace, ULA).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a trade study comparing the different providers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a trade study comparing the different providers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the best-value provider and begin contract negotiations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a data-driven recommendation and initiates the procurement process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a data-driven recommendation and initiates the procurement process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

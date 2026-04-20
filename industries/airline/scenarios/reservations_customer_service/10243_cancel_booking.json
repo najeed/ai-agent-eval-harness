@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's booking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct reservation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct reservation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the cancellation policy for their non-refundable ticket, including any cancellation fees and the value that will be converted to a future travel credit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the financial outcome of cancelling."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the financial outcome of cancelling.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Cancel the booking and issue a travel credit voucher to the customer for the remaining value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent cancels the flight segments and issues the voucher."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent cancels the flight segments and issues the voucher.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a new MVR for the policyholder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter retrieves the latest driving record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter retrieves the latest driving record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the MVR for any new activity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter finds a new major violation (e.g., a DUI) on the record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter finds a new major violation (e.g., a DUI) on the record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the appropriate surcharge to the renewal premium based on the new violation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter adds a significant surcharge to the policy, increasing the renewal premium."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter adds a significant surcharge to the policy, increasing the renewal premium.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

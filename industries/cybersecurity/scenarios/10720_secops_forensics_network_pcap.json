@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load the PCAP file into a network analysis tool like Wireshark.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Investigator successfully loads the evidence file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Investigator successfully loads the evidence file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Filter the traffic to identify suspicious connections to external IP addresses over non-standard ports.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Investigator isolates a long-running, encrypted connection to an unknown IP address over port 4444."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Investigator isolates a long-running, encrypted connection to an unknown IP address over port 4444.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify the external IP address as the C2 server and extract it to be blocked at the firewall.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Investigator successfully identifies the C2 infrastructure from the network traffic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Investigator successfully identifies the C2 infrastructure from the network traffic.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

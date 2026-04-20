@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all required information from the employee (e.g., passport, educational degrees).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The mobility specialist collects all necessary documents from the employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The mobility specialist collects all necessary documents from the employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the collected documents and job details securely to the external immigration law firm.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist sends the complete packet to the attorneys."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist sends the complete packet to the attorneys.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Track the status of the case with the law firm and provide updates to the employee and their manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist checks in with the law firm and communicates the case status internally."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist checks in with the law firm and communicates the case status internally.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

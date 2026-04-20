@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Document the initial details of the deviation in the quality management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new deviation record, describing the event, time, and batch affected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new deviation record, describing the event, time, and batch affected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform an initial risk assessment to determine the potential impact on product quality.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent assesses the risk as 'High' due to potential product contamination."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent assesses the risk as 'High' due to potential product contamination.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assemble a cross-functional team (Manufacturing, QA, Engineering) to investigate the root cause.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies and assigns investigation tasks to the appropriate team members."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies and assigns investigation tasks to the appropriate team members.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Document the root cause (e.g., 'failed pump seal') and create a CAPA plan to prevent recurrence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the deviation record with the root cause and links it to a new CAPA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the deviation record with the root cause and links it to a new CAPA.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

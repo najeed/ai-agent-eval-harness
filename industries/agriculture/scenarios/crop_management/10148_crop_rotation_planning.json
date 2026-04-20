@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the last 3 years of cropping history for all of the farmer's fields.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the historical data for each field."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the historical data for each field.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the farmer's goals (e.g., maximize corn acres, include a legume, manage soybean cyst nematode).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent documents the planning goals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent documents the planning goals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a 4-year crop rotation plan for each field that meets the farmer's goals and follows best agronomic practices.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed plan, such as Corn -> Soybeans -> Wheat -> Alfalfa for a specific field."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed plan, such as Corn -> Soybeans -> Wheat -> Alfalfa for a specific field.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

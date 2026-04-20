@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a report of all payroll tax liabilities from the latest payroll run.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a report showing the amounts due for federal income tax, FICA, and state income tax."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a report showing the amounts due for federal income tax, FICA, and state income tax.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate electronic payments for the tax liabilities via the Electronic Federal Tax Payment System (EFTPS) and the state's equivalent system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the required tax payments before the deadline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the required tax payments before the deadline.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Record the tax payments in the general ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts the journal entry to clear the tax liability accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts the journal entry to clear the tax liability accounts.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

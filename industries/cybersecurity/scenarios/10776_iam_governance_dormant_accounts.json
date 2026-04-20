@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query Active Directory logs to find all accounts with a 'lastLogonTimestamp' older than 90 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst generates an accurate list of all dormant accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst generates an accurate list of all dormant accounts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the list with business unit managers to confirm the accounts are no longer needed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst verifies that the accounts can be safely disabled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst verifies that the accounts can be safely disabled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Disable all confirmed dormant accounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully disables the accounts, reducing the organization's attack surface."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully disables the accounts, reducing the organization's attack surface.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

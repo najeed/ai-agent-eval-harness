@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a frost alert based on the weather forecast.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the alert for impending sub-zero temperatures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the alert for impending sub-zero temperatures.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a high-priority notification to the orchard manager to prepare frost mitigation measures.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide instructions to activate the overhead sprinkler irrigation system for frost protection, which releases latent heat as water freezes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a checklist and activation commands for the irrigation-based frost protection system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a checklist and activation commands for the irrigation-based frost protection system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather details from the citizen: restaurant name, date they ate there, what they ate, and their symptoms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The public health nurse documents all the key information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The public health nurse documents all the key information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log the report in the communicable disease tracking system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The nurse creates a new case file for the potential foodborne illness."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The nurse creates a new case file for the potential foodborne illness.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the system for other similar reports linked to the same restaurant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The nurse checks for other cases to see if this is part of a larger outbreak."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The nurse checks for other cases to see if this is part of a larger outbreak.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

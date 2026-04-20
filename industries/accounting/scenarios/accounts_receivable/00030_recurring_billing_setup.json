@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the new customer contract with the subscription details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the contract specifying a $500 monthly fee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the contract specifying a $500 monthly fee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a recurring billing plan in the ERP system for the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets up a plan to automatically generate a $500 invoice on the 1st of each month."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets up a plan to automatically generate a $500 invoice on the 1st of each month.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the schedule is active and the first invoice will be generated on the correct date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the setup in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the setup in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

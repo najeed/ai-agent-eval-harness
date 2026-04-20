@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the original lease agreement to see if subletting is permitted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the lease allows subletting with landlord approval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the lease allows subletting with landlord approval.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Require the tenant to have the proposed sub-tenant complete a rental application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The sub-tenant submits an application for screening."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The sub-tenant submits an application for screening.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Screen the sub-tenant's application. If they are approved, draft a sublease agreement for all parties to sign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The sub-tenant is approved and a formal sublease agreement is executed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The sub-tenant is approved and a formal sublease agreement is executed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

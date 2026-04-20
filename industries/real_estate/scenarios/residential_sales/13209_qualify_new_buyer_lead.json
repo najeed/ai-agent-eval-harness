@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the new lead's contact information and property inquiry from the CRM.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the new lead's details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the new lead's details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the lead to introduce themself, understand their needs, and ask about their financing status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes contact and learns the buyer is not yet pre-approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes contact and learns the buyer is not yet pre-approved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Refer the lead to a list of trusted mortgage lenders to begin the pre-approval process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a helpful referral to the lead."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a helpful referral to the lead.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

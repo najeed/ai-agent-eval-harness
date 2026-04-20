@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The system monitoring tools report a critical, platform-wide failure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technical team is alerted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technical team is alerted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The support manager posts a notification on the company's official social media channels acknowledging the outage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A public statement is made."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A public statement is made.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The support team activates a pre-written response template to handle the high volume of incoming support tickets about the outage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Support agents can respond to inquiries efficiently."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Support agents can respond to inquiries efficiently.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Once the service is restored, a final update is posted, and any trips affected by the outage are automatically refunded.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The incident is resolved, and affected users are compensated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The incident is resolved, and affected users are compensated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

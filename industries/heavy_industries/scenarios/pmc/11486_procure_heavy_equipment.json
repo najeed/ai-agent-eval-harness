@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the technical specification for the required haul truck.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the specification, detailing the required capacity and features."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the specification, detailing the required capacity and features.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a request for quotation (RFQ) to several approved heavy equipment manufacturers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the RFQ package to three different vendors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the RFQ package to three different vendors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Evaluate the received quotes and issue a purchase order to the selected vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent evaluates the bids and issues a PO to the vendor with the best offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent evaluates the bids and issues a PO to the vendor with the best offer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

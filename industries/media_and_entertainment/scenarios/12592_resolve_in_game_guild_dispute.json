@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the guild bank transaction logs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a log of all item withdrawals from the guild bank."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a log of all item withdrawals from the guild bank.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the logs to identify the disruptive member and the items they took without permission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms one member withdrew a large number of valuable items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms one member withdrew a large number of valuable items.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a temporary ban to the disruptive member and return the stolen items to the guild bank.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent bans the player and restores the stolen items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent bans the player and restores the stolen items.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

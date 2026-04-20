@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the specific audit finding and the auditor's recommendation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager understands the nature of the finding (e.g., lack of proper documentation)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager understands the nature of the finding (e.g., lack of proper documentation).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Develop a corrective action plan (CAP) to address the finding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager outlines the steps they will take to fix the issue, including new procedures and training."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager outlines the steps they will take to fix the issue, including new procedures and training.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the formal response and CAP to the audit department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager officially submits their response to the audit finding."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager officially submits their response to the audit finding.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the policyholder and retrieve their policy document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the customer's policy contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the customer's policy contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the exclusions section of the policy contract.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the contract and finds the standard suicide clause (typically for the first two years)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the contract and finds the standard suicide clause (typically for the first two years).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Clearly explain the specific exclusions listed in the policy to the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent explains the suicide clause and any other relevant exclusions in simple terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent explains the suicide clause and any other relevant exclusions in simple terms.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

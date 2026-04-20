@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the patient's account and their outstanding balance or expected copay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the patient's account and sees the copay amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the patient's account and sees the copay amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Take the payment from the patient via credit card.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes the credit card transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes the credit card transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post the payment to the patient's account, applying it to their copay balance for the current visit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The payment is successfully posted, and the patient's balance is reduced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The payment is successfully posted, and the patient's balance is reduced.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

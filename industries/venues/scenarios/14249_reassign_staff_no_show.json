@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a notification that a staff member has not checked in for their shift.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the no-show alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the no-show alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify which gate is now understaffed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines Gate C is short one ticket taker."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines Gate C is short one ticket taker.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify a staff member in a less critical role (e.g., a 'greeter') who can be reassigned.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a greeter who is cross-trained as a ticket taker."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a greeter who is cross-trained as a ticket taker.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Reassign the greeter to cover the ticket taking position at Gate C.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the staff member's assignment in the scheduling system and notifies them of the change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the staff member's assignment in the scheduling system and notifies them of the change.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

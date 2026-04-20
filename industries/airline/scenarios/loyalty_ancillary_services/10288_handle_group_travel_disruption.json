@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the cancelled flight and retrieve the group booking associated with it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the group booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the group booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for alternative flights that have enough available seats to accommodate the entire group.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a later flight with enough seats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a later flight with enough seats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Rebook the entire group onto the new flight and ensure they are still seated together.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully rebooks the group and assigns them seats together on the new flight."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully rebooks the group and assigns them seats together on the new flight.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

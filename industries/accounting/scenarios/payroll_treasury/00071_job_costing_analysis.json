@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all costs posted to the specific job number, including labor, materials, and subcontractor costs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a complete list of all costs for the job."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a complete list of all costs for the job.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the total revenue billed for the job.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the total contract revenue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the total contract revenue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the final profit and profit margin for the job.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the job's profitability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the job's profitability.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Compare the actual costs to the original budget and highlight any significant variances.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent's analysis shows that labor costs were 15% over budget."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent's analysis shows that labor costs were 15% over budget.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

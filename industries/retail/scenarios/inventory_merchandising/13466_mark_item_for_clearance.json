@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the item to be put on clearance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager selects the correct product SKU."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager selects the correct product SKU.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "In the pricing system, apply a 'Clearance' price status to the item and set the new, lower price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The item's price is updated in the central system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The item's price is updated in the central system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Print new clearance price labels and have an associate re-ticket all units of the item on the sales floor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The item is correctly priced and signed for quick sale."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The item is correctly priced and signed for quick sale.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

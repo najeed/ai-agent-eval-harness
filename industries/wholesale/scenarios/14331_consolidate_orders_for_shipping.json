@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all unshipped orders for a single customer with the same shipping date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds three separate orders for the same customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds three separate orders for the same customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Merge the three orders into a single consolidated shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully merges the orders in the warehouse management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully merges the orders in the warehouse management system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a single pick list and shipping label for the consolidated order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates one pick list and one shipping label for the entire shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates one pick list and one shipping label for the entire shipment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

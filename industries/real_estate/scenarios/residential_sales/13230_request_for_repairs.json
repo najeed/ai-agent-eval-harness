@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the inspection report and the buyer's formal request for repairs from the buyer's agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the repair request documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the repair request documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Summarize the requested repairs for the seller client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear, concise summary of what the buyer is asking for."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear, concise summary of what the buyer is asking for.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the seller on their options (agree to all, some, or none of the repairs) and draft a response.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides strategic advice and drafts the seller's response."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides strategic advice and drafts the seller's response.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

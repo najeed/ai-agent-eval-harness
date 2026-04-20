@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve high-resolution waveform data from the power quality meter at the customer's service entrance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Engineer obtains detailed voltage and current waveform data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Engineer obtains detailed voltage and current waveform data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data for anomalies such as voltage sags, swells, transients, or harmonic distortion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analysis reveals multiple voltage sags and high levels of harmonic distortion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analysis reveals multiple voltage sags and high levels of harmonic distortion.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Correlate the power quality events with operations on the utility grid or within the customer's facility.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Engineer determines the harmonics are caused by the customer's own variable frequency drives."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Engineer determines the harmonics are caused by the customer's own variable frequency drives.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a report for the customer explaining the findings and recommending solutions, such as installing harmonic filters.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Engineer provides a detailed report and actionable recommendations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Engineer provides a detailed report and actionable recommendations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

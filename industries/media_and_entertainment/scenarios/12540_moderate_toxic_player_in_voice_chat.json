@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the player report and the associated voice chat log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the report and a transcript of the voice chat."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the report and a transcript of the voice chat.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the transcript for violations of the community code of conduct.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the player used language that violates the code of conduct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the player used language that violates the code of conduct.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a 7-day voice chat suspension to the offending player.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the communication ban to the player's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the communication ban to the player's account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

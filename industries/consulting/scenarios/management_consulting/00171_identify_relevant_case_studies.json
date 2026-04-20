@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search the internal knowledge base for case studies tagged with 'pharmaceutical' and 'supply chain'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent executes the search with the correct tags."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent executes the search with the correct tags.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the top 3 most relevant case studies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a list of the 3 best matches."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a list of the 3 best matches.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each of the 3 case studies, generate a one-paragraph summary to be included in the new proposal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates concise summaries suitable for a proposal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates concise summaries suitable for a proposal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

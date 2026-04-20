@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Guide the agronomist on the proper method for scouting soybean aphids (e.g., check 20-30 plants, count aphids per plant).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear, standard scouting instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear, standard scouting instructions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive the aphid counts from the agronomist and calculate the average number of aphids per plant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the average population."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the average population.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the average to the established economic threshold of 250 aphids per plant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the population is below the threshold."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the population is below the threshold.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Recommend not to spray at this time, but to scout again in 5-7 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a financially and environmentally sound recommendation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a financially and environmentally sound recommendation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

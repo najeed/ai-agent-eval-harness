@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Process the original shirt as a return, using the receipt to look up the transaction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The original item is returned into the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The original item is returned into the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the new shirt (the different size) as a new purchase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new item is added to the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new item is added to the transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The POS system calculates an even exchange with a $0 balance. Complete the transaction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The exchange is completed successfully with no money changing hands."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The exchange is completed successfully with no money changing hands.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

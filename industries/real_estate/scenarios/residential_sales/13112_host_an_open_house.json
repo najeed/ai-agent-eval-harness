@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule the open house for Saturday from 1-4 PM in the MLS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The open house event is successfully added to the MLS listing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The open house event is successfully added to the MLS listing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a digital sign-in form for the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A web form to capture visitor names and contact information is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A web form to capture visitor names and contact information is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the event, import the sign-in data into the CRM as new leads.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All open house visitors are added as new contacts in the CRM for follow-up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All open house visitors are added as new contacts in the CRM for follow-up.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

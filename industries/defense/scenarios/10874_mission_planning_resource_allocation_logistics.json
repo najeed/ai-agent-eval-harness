@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Determine the total volume and weight of cargo that needs to be transported.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner accurately calculates the total logistics requirement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner accurately calculates the total logistics requirement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the threat level along the planned route to determine the required level of security.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner assesses the threat and determines a specific number of gun trucks are needed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner assesses the threat and determines a specific number of gun trucks are needed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the optimal mix of cargo trucks and gun trucks from the motor pool to meet the mission requirements efficiently.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner creates a convoy composition that is both effective and efficient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner creates a convoy composition that is both effective and efficient.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

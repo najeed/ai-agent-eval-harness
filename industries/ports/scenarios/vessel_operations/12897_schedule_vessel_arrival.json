@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the vessel nomination, including ETA, vessel size (LOA, beam), and cargo details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator correctly identifies the vessel 'MSC London' and its specifications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator correctly identifies the vessel 'MSC London' and its specifications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the berth schedule for availability based on vessel size and requested ETA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator finds an open slot at Berth 5 that can accommodate the vessel's size."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator finds an open slot at Berth 5 that can accommodate the vessel's size.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Allocate the berth, schedule pilot and tug services, and send confirmation to the agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Berth 5 is allocated, services are booked, and a confirmation is sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Berth 5 is allocated, services are booked, and a confirmation is sent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

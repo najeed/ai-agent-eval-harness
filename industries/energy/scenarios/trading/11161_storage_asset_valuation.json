@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Forecast the asset's potential revenue streams for the next 10 years, including energy arbitrage and ancillary services.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a detailed annual revenue forecast."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a detailed annual revenue forecast.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Model the asset's operational costs, including battery degradation and maintenance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a forecast of annual operational expenditures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a forecast of annual operational expenditures.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform a discounted cash flow (DCF) analysis to calculate the Net Present Value (NPV) of the asset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a final valuation for the battery storage system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a final valuation for the battery storage system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

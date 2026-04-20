@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The tenant's agent submits a Letter of Intent (LOI) with proposed terms (rent, term, tenant improvement allowance).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The landlord's agent receives the initial LOI."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The landlord's agent receives the initial LOI.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The landlord's agent prepares a counter-offer to the LOI, adjusting the proposed rent and tenant improvement allowance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A counter-LOI is drafted and sent back to the tenant's agent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A counter-LOI is drafted and sent back to the tenant's agent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After several rounds of negotiation via email, both parties agree on the final terms in the LOI.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A final, agreed-upon LOI is ready to be sent to the attorneys to draft the lease."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A final, agreed-upon LOI is ready to be sent to the attorneys to draft the lease.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

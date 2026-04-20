@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new client profile in the CRM with the seller's contact information and property details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately enters the new client's data into the CRM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately enters the new client's data into the CRM.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a listing agreement with the agreed-upon commission rate and listing term.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a correct and complete listing agreement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a correct and complete listing agreement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the listing agreement to the seller for electronic signature and provide a welcome packet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the agreement and a welcome packet email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the agreement and a welcome packet email.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

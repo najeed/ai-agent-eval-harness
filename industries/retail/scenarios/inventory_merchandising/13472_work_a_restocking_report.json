@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate or view the daily 'shelf replenishment' report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate gets a prioritized list of items that need restocking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate gets a prioritized list of items that need restocking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Go to the backroom and pick the items and quantities specified on the report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate gathers all the needed stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate gathers all the needed stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Restock the items on the sales floor and mark the tasks as complete on the report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All low-stock items from the report are replenished on the shelves."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All low-stock items from the report are replenished on the shelves.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

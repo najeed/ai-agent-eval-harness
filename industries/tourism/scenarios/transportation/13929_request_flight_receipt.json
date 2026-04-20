@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the traveler's past booking using their name and travel date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct past flight booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct past flight booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a detailed financial receipt for the booking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a receipt showing the fare breakdown, taxes, and fees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a receipt showing the fare breakdown, taxes, and fees.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Email the itinerary and the receipt to the traveler.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the requested documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the requested documents.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Import the monthly bank statement into the accounting software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully imports the bank transaction data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully imports the bank transaction data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run the automated matching process to reconcile transactions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system automatically matches 95% of the transactions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system automatically matches 95% of the transactions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify and investigate any outstanding, unmatched items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies three unmatched items that require manual investigation (e.g., a bank fee, an unrecorded debit)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies three unmatched items that require manual investigation (e.g., a bank fee, an unrecorded debit).",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the QA alert and retrieve the high-resolution image of the defect.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the image and confirms the presence of a paint defect."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the image and confirms the presence of a paint defect.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log the defect against the vehicle's VIN in the quality management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully logs the defect."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully logs the defect.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Route the vehicle to the paint rectification area for rework.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the vehicle's routing in the factory logistics system to send it for rework."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the vehicle's routing in the factory logistics system to send it for rework.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

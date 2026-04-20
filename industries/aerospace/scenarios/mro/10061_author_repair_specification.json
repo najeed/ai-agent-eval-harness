@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the location and extent of the damage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent fully characterizes the structural damage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent fully characterizes the structural damage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a stress analysis to design a repair (e.g., a doubler plate) that restores the original strength of the structure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent designs a repair that meets all safety and certification requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent designs a repair that meets all safety and certification requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Author a formal repair specification document with detailed instructions and drawings for the technicians to follow.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a clear, detailed, and compliant repair document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a clear, detailed, and compliant repair document.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

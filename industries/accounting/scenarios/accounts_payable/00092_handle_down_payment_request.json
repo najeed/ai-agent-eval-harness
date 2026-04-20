@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the down payment request from the vendor, referencing the purchase order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a down payment request in the ERP system linked to the purchase order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the special transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the special transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the payment for the down payment request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent issues the 20% down payment to the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent issues the 20% down payment to the vendor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Ensure the down payment is recorded as a prepaid asset on the balance sheet, to be cleared against the final invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the down payment is correctly posted to 'Prepaid Expenses' or a similar account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the down payment is correctly posted to 'Prepaid Expenses' or a similar account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

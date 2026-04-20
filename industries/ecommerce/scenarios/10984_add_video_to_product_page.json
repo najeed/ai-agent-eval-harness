@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the product to be updated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct product.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the YouTube video embed code to a dedicated 'video' field in the product information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully saves the embed code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully saves the embed code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the video now appears and plays correctly on the live product page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the page and confirms the video is working."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the page and confirms the video is working.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

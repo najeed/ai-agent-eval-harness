@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the nutritional requirements for beef cattle in the finishing stage (e.g., protein, energy, minerals).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct nutritional targets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct nutritional targets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the current prices and nutritional content of available feed ingredients (e.g., corn, soybean meal, hay).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets up-to-date pricing and nutritional data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets up-to-date pricing and nutritional data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run a feed formulation optimization model to find the least-cost ration that meets all nutritional constraints.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a feed recipe with specific percentages of each ingredient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a feed recipe with specific percentages of each ingredient.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

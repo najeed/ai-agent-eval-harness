@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the two teams that are tied in the standings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the two teams have identical records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the two teams have identical records.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the official league tie-breaking rules from the rulebook.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the first tie-breaker is 'head-to-head record'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the first tie-breaker is 'head-to-head record'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the first tie-breaker by checking the head-to-head results between the two teams.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that Team A won the season series against Team B."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that Team A won the season series against Team B.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the final standings, placing Team A ahead of Team B.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent publishes the final, correct standings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent publishes the final, correct standings.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

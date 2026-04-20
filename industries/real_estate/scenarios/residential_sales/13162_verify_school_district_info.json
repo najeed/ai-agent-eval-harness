@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the full address of the property in question.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the property address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the property address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the official school district's address lookup tool to determine the assigned schools.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the address into the district's web tool and gets the assigned elementary, middle, and high schools."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the address into the district's web tool and gets the assigned elementary, middle, and high schools.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a screenshot or link from the official source to the client and advise them to independently verify.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent shares the official information with the client while providing a disclaimer about final verification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent shares the official information with the client while providing a disclaimer about final verification.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

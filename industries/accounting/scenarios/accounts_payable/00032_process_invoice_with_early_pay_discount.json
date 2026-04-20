@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify an approved invoice that has a '2/10, n/30' payment term and is still within the discount period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a suitable invoice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a suitable invoice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule the invoice for immediate payment, calculating the reduced payment amount after the 2% discount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the discounted payment amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the discounted payment amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Execute the payment and ensure the discount is correctly recorded in the general ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes the payment and posts the transaction, crediting 'Purchase Discounts'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes the payment and posts the transaction, crediting 'Purchase Discounts'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

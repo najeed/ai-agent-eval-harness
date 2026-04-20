@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify an order that has passed its expected ship date but has not yet been fulfilled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System flags a late order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System flags a late order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a proactive email to the customer, apologizing for the delay and providing a new estimated shipping date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a clear and apologetic email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a clear and apologetic email.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Offer a small discount on their next purchase as a goodwill gesture.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates and includes a discount code in the email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates and includes a discount code in the email.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

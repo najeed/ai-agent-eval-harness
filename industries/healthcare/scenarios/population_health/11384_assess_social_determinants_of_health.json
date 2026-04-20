@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the SDoH screening questionnaire in the EHR for the patient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The social worker accesses the standardized screening tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The social worker accesses the standardized screening tool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ask the patient the screening questions and document their responses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The patient's answers are accurately recorded in the questionnaire."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The patient's answers are accurately recorded in the questionnaire.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the patient's answers indicating a lack of transportation, generate a referral to a community-based transportation service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A social need is identified, and a referral is made to address it, improving the patient's ability to attend appointments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A social need is identified, and a referral is made to address it, improving the patient's ability to attend appointments.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

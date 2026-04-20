@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the key decision ('Launch' vs. 'Don't Launch') and the key uncertainties ('High Demand' vs. 'Low Demand') with their probabilities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly structures the initial nodes of the decision tree."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly structures the initial nodes of the decision tree.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assign financial outcomes (payoffs) to each final branch of the tree.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly assigns the payoff values."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly assigns the payoff values.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the Expected Monetary Value (EMV) for the 'Launch' decision.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the EMV to help make the optimal decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the EMV to help make the optimal decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

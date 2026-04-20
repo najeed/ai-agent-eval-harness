@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the gate change notification from operations control.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the new gate assignment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the new gate assignment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Make a clear PA announcement at the original gate informing passengers of the new gate number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a timely and clear announcement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a timely and clear announcement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Move all gate equipment and staff to the new gate and update the airport's flight information display systems (FIDS).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent coordinates the physical move and updates the public displays."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent coordinates the physical move and updates the public displays.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

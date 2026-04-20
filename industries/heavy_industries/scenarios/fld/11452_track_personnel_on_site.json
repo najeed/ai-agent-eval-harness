@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the site access control system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent opens the personnel tracking dashboard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent opens the personnel tracking dashboard.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a list of all personnel who badged into the site today.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system shows 250 people are currently on site."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system shows 250 people are currently on site.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use the system to check off personnel as they arrive at the muster points, identifying anyone who is still unaccounted for.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs the roll call and the system shows 248 people are accounted for, with 2 still missing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs the roll call and the system shows 248 people are accounted for, with 2 still missing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

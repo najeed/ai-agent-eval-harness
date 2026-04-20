@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Thoroughly review the patient's entire inpatient record, including the discharge summary, H&P, and physician notes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coder gains a complete understanding of the patient's hospital stay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coder gains a complete understanding of the patient's hospital stay.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the principal diagnosis and all secondary diagnoses (comorbidities and complications).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coder correctly determines the primary reason for admission and all other treated conditions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coder correctly determines the primary reason for admission and all other treated conditions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the appropriate ICD-10-CM and ICD-10-PCS codes for all diagnoses and significant procedures performed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coder accurately assigns all codes, which will determine the Diagnosis-Related Group (DRG) for payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coder accurately assigns all codes, which will determine the Diagnosis-Related Group (DRG) for payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

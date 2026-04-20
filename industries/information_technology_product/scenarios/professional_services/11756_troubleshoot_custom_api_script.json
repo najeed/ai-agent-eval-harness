@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the error logs from the customer's execution of the script.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant obtains the stack trace, which shows a 'field not found' error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant obtains the stack trace, which shows a 'field not found' error.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the product's recent release notes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant finds that a recent product update renamed the API field the script was using."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant finds that a recent product update renamed the API field the script was using.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the script with the new field name and provide the corrected version to the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant provides a timely fix for the breaking change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant provides a timely fix for the breaking change.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Share the event's security plan and post orders with the vendor's management.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely sends the security plan documents to the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely sends the security plan documents to the vendor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain a list of all vendor staff who will be working the event for credentialing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the staff list from the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the staff list from the vendor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange a pre-event briefing between the in-house security manager and the vendor's on-site supervisor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent schedules a meeting to align on protocols and chain of command."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent schedules a meeting to align on protocols and chain of command.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

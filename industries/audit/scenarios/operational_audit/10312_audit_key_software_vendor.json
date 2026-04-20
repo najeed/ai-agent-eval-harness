@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the contract and Service Level Agreement (SLA) with the vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor understands the contractual requirements for uptime and performance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor understands the contractual requirements for uptime and performance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain and review the vendor's latest SOC 2 Type II report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor analyzes the SOC 2 report to assess the vendor's control environment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor analyzes the SOC 2 report to assess the vendor's control environment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify that the SOC 2 report lists several control exceptions related to employee background checks and document this as a potential risk.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor flags a specific third-party risk to be monitored."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor flags a specific third-party risk to be monitored.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

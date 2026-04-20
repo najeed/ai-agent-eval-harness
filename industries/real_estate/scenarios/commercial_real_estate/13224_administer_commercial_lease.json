@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Abstract the key terms from the fully executed lease agreement (e.g., rent amount, start/end dates, CAM charges, renewal options).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately extracts all critical data points from the lease."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately extracts all critical data points from the lease.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set up the new tenant and their lease terms in the property management software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly enters all abstracted lease data into the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly enters all abstracted lease data into the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule future rent escalations and renewal option deadlines in the system calendar.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets up automated reminders for important future dates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets up automated reminders for important future dates.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

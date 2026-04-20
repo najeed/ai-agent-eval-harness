@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Track the flight's position in real-time on a map display.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent observes the flight's progress."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent observes the flight's progress.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive periodic position reports from the flight crew via satellite datalink.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives and acknowledges the reports."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives and acknowledges the reports.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the flight's actual fuel burn to the planned fuel burn and note any significant deviations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the fuel burn is nominal and the flight has enough fuel to reach its destination."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the fuel burn is nominal and the flight has enough fuel to reach its destination.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

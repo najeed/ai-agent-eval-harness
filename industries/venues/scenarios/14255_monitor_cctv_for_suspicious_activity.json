@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the location of the unattended bag on the CCTV feed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent notes the location (e.g., near the main escalator)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent notes the location (e.g., near the main escalator).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Continue to monitor the bag and the surrounding area for the owner to return.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent observes the bag for several minutes, and no one returns."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent observes the bag for several minutes, and no one returns.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a security guard to the location to investigate the package.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a guard to the location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a guard to the location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "If the package is deemed suspicious, the on-site guard will escalate to the bomb squad or local police as per protocol.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the incident and stands by to assist with further emergency protocols if needed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the incident and stands by to assist with further emergency protocols if needed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

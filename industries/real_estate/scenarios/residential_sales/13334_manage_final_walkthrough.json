@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule the final walk-through with the buyer and the listing agent, typically 24 hours before closing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The walk-through is scheduled at an appropriate time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The walk-through is scheduled at an appropriate time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the walk-through, verify that all negotiated repairs have been completed and the property is in the same condition as when the offer was made.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent confirms the property's condition meets contractual requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent confirms the property's condition meets contractual requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If issues are found, immediately contact the listing agent and closing attorney to resolve them before the closing appointment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Any last-minute problems are addressed and resolved prior to closing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Any last-minute problems are addressed and resolved prior to closing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

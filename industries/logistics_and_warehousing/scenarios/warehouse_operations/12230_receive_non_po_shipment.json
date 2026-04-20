@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Attempt to scan the shipment's paperwork, but the system finds no matching purchase order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system correctly identifies that there is no PO for this shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system correctly identifies that there is no PO for this shipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create an 'unidentified receipt' record, capturing the carrier name and BOL number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a record for the mystery shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a record for the mystery shipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Move the shipment to a designated holding area for exceptions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The shipment is moved to a safe place pending investigation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The shipment is moved to a safe place pending investigation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The system sends an alert to the purchasing department to investigate the unidentified receipt.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct department is notified to resolve the PO issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct department is notified to resolve the PO issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

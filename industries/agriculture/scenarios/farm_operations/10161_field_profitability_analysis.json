@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "For a specific field, retrieve the total revenue from the harvested crop (yield x price).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the total revenue for the field."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the total revenue for the field.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve all expenses associated with that field, including seed, fertilizer, chemicals, and machinery costs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a complete list of expenses for the field."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a complete list of expenses for the field.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the net profit or loss for the field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the final profitability for the field."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the final profitability for the field.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a report comparing the profitability of all fields on the farm.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a report that ranks fields by profitability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a report that ranks fields by profitability.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

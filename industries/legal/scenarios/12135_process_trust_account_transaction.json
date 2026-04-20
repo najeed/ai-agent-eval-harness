@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the settlement check and identify the correct client matter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the check and the correct client ID."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the check and the correct client ID.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Record the deposit into the specific client's ledger within the trust accounting system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly records the deposit, ensuring it is not commingled with firm funds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly records the deposit, ensuring it is not commingled with firm funds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the client that the funds have been received and are being held in trust.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a formal notification to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a formal notification to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

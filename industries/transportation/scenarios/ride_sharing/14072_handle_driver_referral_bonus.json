@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The system tracks the number of trips completed by a new, referred driver.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The trip count is monitored."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The trip count is monitored.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "When the new driver completes the required number of trips (e.g., 100), the system flags that the referral bonus is due.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An alert is created to pay the bonus."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An alert is created to pay the bonus.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system identifies the referring driver from the original sign-up code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct referring driver is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct referring driver is identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The system automatically adds the referral bonus amount to the referring driver's next payment cycle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The bonus is successfully processed for payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The bonus is successfully processed for payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

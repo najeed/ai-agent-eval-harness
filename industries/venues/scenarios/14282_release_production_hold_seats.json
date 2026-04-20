@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the request from the production manager to release the hold on a specific block of seats.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the seats to be released (e.g., Section 101, Rows A-E)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the seats to be released (e.g., Section 101, Rows A-E).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the ticketing system and remove the 'Production Hold' status from the seats.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the status of the seats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the status of the seats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the seats are now available for sale on the public website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the website and confirms the seats are listed for sale."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the website and confirms the seats are listed for sale.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

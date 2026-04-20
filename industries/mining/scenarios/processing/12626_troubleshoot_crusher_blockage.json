@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the 'Crusher Stopped' high-priority alarm.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The alarm is acknowledged in the control system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The alarm is acknowledged in the control system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the sequence of events in the alarm log leading up to the stoppage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The log shows a 'motor overload' alarm occurred just before the shutdown, suggesting a blockage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The log shows a 'motor overload' alarm occurred just before the shutdown, suggesting a blockage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a field operator to visually inspect the crusher chamber for a blockage (e.g., a large rock or piece of metal).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A field operator is dispatched to safely inspect the crusher."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A field operator is dispatched to safely inspect the crusher.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

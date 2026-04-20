@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the complete IT asset inventory from the asset management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor has the master list of all recorded IT assets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor has the master list of all recorded IT assets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a sample of 30 assets from the list and perform a physical verification to ensure they exist and are in the correct location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor finds that 3 of the sampled laptops cannot be located."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor finds that 3 of the sampled laptops cannot be located.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend a more frequent cycle of physical inventory counts to improve the accuracy of the asset inventory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A recommendation is made to improve the asset tracking process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A recommendation is made to improve the asset tracking process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

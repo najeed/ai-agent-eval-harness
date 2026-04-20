@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer's account and authenticate their identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully verifies the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully verifies the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the new service address and the dates to stop service at the old address and start service at the new one.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately records the move-out and move-in dates and the new address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately records the move-out and move-in dates and the new address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the transfer request, which involves creating a stop order for the old address and a start order for the new one.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits both linked service orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits both linked service orders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

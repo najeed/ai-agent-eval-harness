@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer's outstanding invoices.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the list of unpaid invoices for the bankrupt customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the list of unpaid invoices for the bankrupt customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the bankruptcy status with supporting documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the bankruptcy notice and confirms the debt is uncollectible."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the bankruptcy notice and confirms the debt is uncollectible.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a journal entry to write off the outstanding balance to the bad debt expense account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts the correct journal entry to remove the receivable and record the expense."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts the correct journal entry to remove the receivable and record the expense.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

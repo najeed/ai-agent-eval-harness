@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the names of the potential new client and all adverse parties.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the list of all entities to be checked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the list of all entities to be checked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the firm's client and matter database for each name provided.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent queries the database for any matches against current or former clients."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent queries the database for any matches against current or former clients.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the results for any direct or positional conflicts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the firm previously represented one of the adverse parties in an unrelated matter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the firm previously represented one of the adverse parties in an unrelated matter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a conflicts report summarizing the findings for the responsible attorney to review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a clear report detailing the potential conflict."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a clear report detailing the potential conflict.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

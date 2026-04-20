@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Read the article to identify the key people, places, organizations, and topics mentioned.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a list of key entities in the story."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a list of key entities in the story.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter these key entities as tags in the archive management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The article is tagged with relevant metadata."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The article is tagged with relevant metadata.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Commit the article and its tags to the permanent archive.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The story is successfully archived and is now searchable by its new tags."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The story is successfully archived and is now searchable by its new tags.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

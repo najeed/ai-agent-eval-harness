@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the safety reporting app and select 'Report Incident'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The incident reporting form is opened on the mobile device."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The incident reporting form is opened on the mobile device.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Fill out the form with the location, time, and a description of what happened (e.g., 'slipped on a small patch of oil near the workshop').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The details of the incident are captured accurately."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The details of the incident are captured accurately.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the report, which automatically notifies the area supervisor and the HSE department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The incident is logged in the safety system, and notifications are sent to the relevant people for follow-up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The incident is logged in the safety system, and notifications are sent to the relevant people for follow-up.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a call from the driver about the breakdown, including their location and the nature of the issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all critical information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all critical information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find the nearest approved service provider using a vendor search tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a qualified repair shop within 20 miles."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a qualified repair shop within 20 miles.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for a tow truck to take the vehicle to the selected repair shop.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A tow is dispatched to the driver's location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A tow is dispatched to the driver's location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a new repair order in the system to track the status and cost of the repair.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new repair order is created and linked to the truck."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new repair order is created and linked to the truck.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

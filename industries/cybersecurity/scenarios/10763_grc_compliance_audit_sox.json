@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select a sample of recent changes made to a financially-significant application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst selects a representative sample of changes from the change management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst selects a representative sample of changes from the change management system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each change, verify that it has documented approval from management and evidence of successful testing before it was deployed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst checks for the required evidence for each change in the sample."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst checks for the required evidence for each change in the sample.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the results of the testing, noting one change that was missing manager approval, and report it as a control deficiency.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies and documents a control failure for remediation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies and documents a control failure for remediation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

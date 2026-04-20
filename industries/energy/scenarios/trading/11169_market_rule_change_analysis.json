@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve and summarize the proposed market rule change documentation from the ISO website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear summary of the key changes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear summary of the key changes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Model the potential revenue for a battery asset under the current market rules.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the baseline revenue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the baseline revenue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Re-run the revenue model under the proposed new rules.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the revenue under the new rule set."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the revenue under the new rule set.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Quantify the financial impact of the rule change and draft a comment to submit to the ISO.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the rule change would decrease revenue by 10% and drafts a formal comment outlining the concern."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the rule change would decrease revenue by 10% and drafts a formal comment outlining the concern.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

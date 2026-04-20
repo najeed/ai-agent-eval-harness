@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new change order document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A blank change order form is generated with a unique ID."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A blank change order form is generated with a unique ID.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Price the new scope, calculating a cost of $8,000 for materials and labor, plus a 15% markup.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The total price for the change order is calculated as $9,200."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The total price for the change order is calculated as $9,200.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the change order to the client for approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The completed change order is sent to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The completed change order is sent to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

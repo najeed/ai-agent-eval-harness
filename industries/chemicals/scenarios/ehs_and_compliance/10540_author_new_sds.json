@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new SDS document linked to the new product code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates a blank, 16-section SDS template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates a blank, 16-section SDS template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the product's formulation and use it to populate Section 3 (Composition).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly lists the product's components and their percentages."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly lists the product's components and their percentages.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use a built-in calculation engine to determine the GHS classification (e.g., pictograms, hazard statements) based on the components and populate Section 2.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the GHS classification tool and populates the hazard information correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the GHS classification tool and populates the hazard information correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

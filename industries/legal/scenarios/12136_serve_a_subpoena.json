@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft the deposition subpoena with the correct witness name, date, time, and location of the deposition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares a legally sufficient subpoena."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares a legally sufficient subpoena.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact a registered process server and provide them with the subpoena and the witness's last known address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully hires and instructs a process server."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully hires and instructs a process server.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the process server serves the subpoena, receive and file the 'Proof of Service' with the court.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the service process by filing the required proof with the court."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the service process by filing the required proof with the court.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

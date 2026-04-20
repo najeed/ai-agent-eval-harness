@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the master list of all approved vendors and the master list of all current employees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor has both the vendor and employee datasets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor has both the vendor and employee datasets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the addresses and bank account numbers in both files to find potential matches.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis identifies two vendors who share a home address with a current employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis identifies two vendors who share a home address with a current employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Investigate the matches to determine if a true conflict of interest exists and if it was properly disclosed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms one of the matches is an undisclosed conflict and documents it as a finding."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms one of the matches is an undisclosed conflict and documents it as a finding.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

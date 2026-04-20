@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a report to identify all torque wrenches that are due for calibration in the next 30 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of tools requiring calibration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of tools requiring calibration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Issue a recall for the due tools from the assembly line.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent notifies the production supervisors to turn in the specified tools."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent notifies the production supervisors to turn in the specified tools.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After a tool is calibrated, update its calibration record and return it to service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the tool's status to 'Calibrated' and logs the new calibration date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the tool's status to 'Calibrated' and logs the new calibration date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

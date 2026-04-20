@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Select a group of orders to be included in the picking wave.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects 20 small orders that are all shipping via the same carrier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects 20 small orders that are all shipping via the same carrier.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system consolidates all items from all orders in the wave into a single, optimized pick list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates one master pick list for the entire wave."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates one master pick list for the entire wave.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "A worker picks all the items in the wave and brings them to a central packing area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker completes the master pick list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker completes the master pick list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "At the packing station, the items are sorted and packed into their individual orders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All 20 orders are packed correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All 20 orders are packed correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

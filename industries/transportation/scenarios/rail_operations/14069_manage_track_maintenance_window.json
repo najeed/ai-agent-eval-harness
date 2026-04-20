@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "A maintenance foreman requests a maintenance window for a specific track segment and time period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dispatcher receives the work request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dispatcher receives the work request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The dispatcher checks the train schedule to ensure no trains are scheduled to run through that segment during the requested time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dispatcher confirms the track will be clear."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dispatcher confirms the track will be clear.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The dispatcher grants the maintenance window, placing a block on the track segment in the control system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The track is marked as out-of-service for the specified time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The track is marked as out-of-service for the specified time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "When the work is complete, the foreman reports the track is clear, and the dispatcher removes the block, returning the track to service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The track is safely returned to service after maintenance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The track is safely returned to service after maintenance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

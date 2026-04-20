@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Formulate a search query for a legal research database like Westlaw or LexisNexis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an effective search query using Boolean operators and relevant keywords."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an effective search query using Boolean operators and relevant keywords.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Execute the search, filtering for cases within the 9th Circuit Court of Appeals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a list of relevant cases."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a list of relevant cases.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the top 5-10 cases to synthesize a rule and identify the key factors the court considers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the legal test and factors used by the court."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the legal test and factors used by the court.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Draft a research memo summarizing the findings, citing the key cases.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a memo that directly answers the partner's question."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a memo that directly answers the partner's question.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

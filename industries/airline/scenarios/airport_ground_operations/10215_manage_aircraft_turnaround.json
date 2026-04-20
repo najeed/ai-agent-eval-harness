@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm that the aircraft has been parked and chocked upon arrival.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the aircraft is secure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the aircraft is secure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Coordinate the fueling, catering, and baggage loading teams to service the aircraft simultaneously.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures all ground servicing tasks are happening in parallel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures all ground servicing tasks are happening in parallel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Authorize the aircraft pushback once all doors are closed and the ground crew is clear.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gives the final clearance for pushback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gives the final clearance for pushback.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

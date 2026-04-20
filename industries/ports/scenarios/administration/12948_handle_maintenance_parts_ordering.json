@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a parts request from the technician for a specific gearbox part number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Supervisor receives the request for the replacement part."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Supervisor receives the request for the replacement part.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the warehouse inventory to see if the part is in stock.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Supervisor finds that there are zero gearboxes of that type in stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Supervisor finds that there are zero gearboxes of that type in stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a purchase order with the approved supplier for the gearbox and request expedited shipping.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A PO is created and sent to the OEM supplier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A PO is created and sent to the OEM supplier.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

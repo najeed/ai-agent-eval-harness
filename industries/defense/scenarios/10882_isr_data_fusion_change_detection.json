@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the new and archival satellite images for the specified area of interest.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully retrieves both images."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully retrieves both images.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run an automated change detection algorithm to highlight differences between the two images.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool highlights several areas of significant change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool highlights several areas of significant change.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Manually inspect the highlighted changes and identify the construction of new missile silos.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly interprets the changes and identifies the new military threat."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly interprets the changes and identifies the new military threat.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

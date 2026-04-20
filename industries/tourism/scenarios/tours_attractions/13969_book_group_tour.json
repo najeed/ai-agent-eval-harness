@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check availability for a group of 25 for a guided tour at the museum.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an available time slot for the school group."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an available time slot for the school group.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the teacher with the special school group pricing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates and communicates the discounted total cost for the group."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates and communicates the discounted total cost for the group.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the group tour and send a confirmation and invoice to the teacher.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reserves the tour for the school group."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reserves the tour for the school group.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

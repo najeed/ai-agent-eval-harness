@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The system automatically places the invoice on hold due to a quantity mismatch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is notified of the hold and the reason."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is notified of the hold and the reason.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the PO, invoice, and goods receipt note to confirm the discrepancy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the PO was for 100 units, 90 were received, but 100 were invoiced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the PO was for 100 units, 90 were received, but 100 were invoiced.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the warehouse to confirm if the remaining 10 units have since been received.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The warehouse confirms the remaining items have not arrived."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The warehouse confirms the remaining items have not arrived.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Inform the vendor of the quantity discrepancy and request a new invoice for the quantity actually received.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent contacts the vendor and asks them to submit a corrected invoice for 90 units."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent contacts the vendor and asks them to submit a corrected invoice for 90 units.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

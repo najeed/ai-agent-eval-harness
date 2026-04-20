@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and retrieve their library account information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the student's library record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the student's library record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the checked-out book to see if it is eligible for renewal (i.e., no other holds on it).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the book can be renewed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the book can be renewed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the renewal and inform the student of the new due date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully renews the book and communicates the new due date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully renews the book and communicates the new due date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

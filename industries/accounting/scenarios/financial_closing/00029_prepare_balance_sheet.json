@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the final month-end balances for all asset, liability, and equity accounts from the trial balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves the required GL balances."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves the required GL balances.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the balance sheet, ensuring that total assets equal total liabilities plus equity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a formatted and balanced balance sheet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a formatted and balanced balance sheet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a comparative balance sheet that shows the current month's balances against the prior month's balances.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the comparative report and calculates the variance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the comparative report and calculates the variance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

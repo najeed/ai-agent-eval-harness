@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log into their account and go to the 'Manage Subscription' page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer accesses their subscription details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer accesses their subscription details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the option to 'Edit' the next box.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer enters the editing mode for their upcoming order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer enters the editing mode for their upcoming order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Remove one item and add a different item, then save the changes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The contents of the next subscription order are successfully updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The contents of the next subscription order are successfully updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

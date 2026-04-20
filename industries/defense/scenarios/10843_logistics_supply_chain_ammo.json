@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an urgent request for specific types of artillery shells from the unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer correctly logs the ammunition request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer correctly logs the ammunition request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the theater-level ammunition supply point (ASP) to check for availability of the requested shells.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer confirms the ASP has the required ammunition in stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer confirms the ASP has the required ammunition in stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for immediate transport of the ammunition to the firing unit via heavy-lift helicopter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer successfully tasks a helicopter to deliver the critical supplies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer successfully tasks a helicopter to deliver the critical supplies.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

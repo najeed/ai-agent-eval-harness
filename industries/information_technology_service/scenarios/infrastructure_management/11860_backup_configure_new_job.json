@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Install the backup agent software on the new server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent is successfully installed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent is successfully installed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "In the backup console, create a new backup job for the new server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new job is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new job is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Configure the job with the correct schedule, retention policy, and encryption settings, then run the first backup.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The server is now being backed up according to the client's policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The server is now being backed up according to the client's policy.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

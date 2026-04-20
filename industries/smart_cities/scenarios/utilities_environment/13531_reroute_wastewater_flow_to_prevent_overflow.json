@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'High Level' alert for the 'Elm Street Interceptor'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the critical wastewater system alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the critical wastewater system alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the current level of the nearby 'Emergency Storage Basin'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the storage basin has sufficient capacity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the storage basin has sufficient capacity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Remotely open a valve to divert a portion of the wastewater flow from the interceptor to the storage basin.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully operates the valve to prevent an overflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully operates the valve to prevent an overflow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

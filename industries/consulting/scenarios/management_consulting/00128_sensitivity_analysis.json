@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load the financial model and identify the key input variables ('Growth Rate', 'Discount Rate') and the key output ('Net Present Value').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the inputs and outputs of the model."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the inputs and outputs of the model.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Re-run the model multiple times, adjusting the 'Growth Rate' by +/- 1% and +/- 2% while holding other variables constant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the NPV for each of the adjusted growth rates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the NPV for each of the adjusted growth rates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a summary table showing how the NPV changes with each adjustment to the 'Growth Rate'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a clear sensitivity table."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a clear sensitivity table.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

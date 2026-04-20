@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of customers who had service completed 3-5 days ago.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a daily call list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a daily call list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Call the customer and ask about their experience and if their vehicle is performing as expected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a courtesy follow-up call."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a courtesy follow-up call.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the customer is satisfied, thank them. If they report an issue, create a ticket for the service manager to address it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer is satisfied. The agent logs the positive outcome."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer is satisfied. The agent logs the positive outcome.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

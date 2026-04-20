@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the user's network activity logs, focusing on file access and data transfers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst identifies large volumes of classified data being accessed and transferred."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst identifies large volumes of classified data being accessed and transferred.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Correlate the network logs with physical security logs to see if the user connected a USB device at the time of the transfer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst finds a log entry showing the user connected a personal USB drive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst finds a log entry showing the user connected a personal USB drive.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile a forensic report with the evidence and escalate to counterintelligence for investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst creates a detailed report to support a formal insider threat investigation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst creates a detailed report to support a formal insider threat investigation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Post a call-out on social media and community forums asking for people willing to speak about their experience with the trend.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a pool of potential sources."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a pool of potential sources.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Vet the responses, looking for articulate individuals whose stories are representative of the broader trend.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the most suitable candidate for the case study."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the most suitable candidate for the case study.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the selected person to schedule an in-depth interview.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An interview is scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An interview is scheduled.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

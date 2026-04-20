@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule a post-mortem meeting with the internal project team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Project manager gets the meeting on the calendar."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Project manager gets the meeting on the calendar.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Lead the meeting, discussing what went well, what didn't go well, and what could be improved for future projects.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team openly discusses the project and identifies key lessons learned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team openly discusses the project and identifies key lessons learned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the lessons learned and add them to the team's knowledge base.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Project manager documents the findings to improve future processes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Project manager documents the findings to improve future processes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

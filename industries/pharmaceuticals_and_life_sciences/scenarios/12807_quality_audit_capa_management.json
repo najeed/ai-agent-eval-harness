@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Log the audit finding into the quality management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new record for the finding: 'Inadequate training records for lab staff'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new record for the finding: 'Inadequate training records for lab staff'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new CAPA plan linked to the finding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts a CAPA plan with steps for corrective action (retrain staff) and preventive action (implement new training tracker)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts a CAPA plan with steps for corrective action (retrain staff) and preventive action (implement new training tracker).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign ownership and due dates for the CAPA tasks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent assigns the retraining task to the Lab Manager and the tracker implementation to the IT department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent assigns the retraining task to the Lab Manager and the tracker implementation to the IT department.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Track the CAPA to completion and link evidence of closure (e.g., training certificates).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent monitors task completion, attaches the required evidence, and formally closes the CAPA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent monitors task completion, attaches the required evidence, and formally closes the CAPA.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

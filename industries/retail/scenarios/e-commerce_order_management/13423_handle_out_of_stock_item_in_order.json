@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "In the fulfillment application, mark the item as 'Out of Stock' or 'Damaged'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate indicates that the item cannot be fulfilled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate indicates that the item cannot be fulfilled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically notifies customer service of the issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A task is created for a customer service agent to contact the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A task is created for a customer service agent to contact the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Pack and ship the rest of the order. The system adjusts the customer's invoice to remove the charge for the unfulfilled item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The remainder of the order is shipped, and the customer is not charged for the missing item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The remainder of the order is shipped, and the customer is not charged for the missing item.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

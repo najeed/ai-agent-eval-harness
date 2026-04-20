@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the past year's spending and service quality with the current vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager has all relevant data on the vendor's performance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager has all relevant data on the vendor's performance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain quotes from two other competing vendors to use as leverage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager has competitive quotes for comparison."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager has competitive quotes for comparison.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Meet with the current vendor to negotiate a lower price for the renewal, using the competitive quotes as leverage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager successfully negotiates a 10% price reduction for the new contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager successfully negotiates a 10% price reduction for the new contract.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

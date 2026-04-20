@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the stadium's event schedule to find a suitable maintenance window during the off-season.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a two-week period with no scheduled events."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a two-week period with no scheduled events.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the approved HVAC vendor to schedule the maintenance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the service with the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the service with the vendor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order in the facility management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the scheduled maintenance in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the scheduled maintenance in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

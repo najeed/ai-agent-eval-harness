@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and gather details of the check: check number, amount, and payee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary information about the lost check."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary information about the lost check.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the check has already been cashed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the check has not yet been presented for payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the check has not yet been presented for payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place a stop payment order on the check and inform the customer of any associated fees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully issues the stop payment and clearly communicates the fee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully issues the stop payment and clearly communicates the fee.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

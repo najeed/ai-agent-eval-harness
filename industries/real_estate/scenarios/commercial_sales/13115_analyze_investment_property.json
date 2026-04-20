@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the property's financial documents: rent roll and trailing 12-months P&L statement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acquires the necessary financial documents from the listing agent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acquires the necessary financial documents from the listing agent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the documents to calculate the Net Operating Income (NOI) and Capitalization Rate (Cap Rate).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the NOI and the asking Cap Rate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the NOI and the asking Cap Rate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a pro-forma analysis and summary report for the investor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report detailing the property's financial metrics and potential ROI is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report detailing the property's financial metrics and potential ROI is created.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

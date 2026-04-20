@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the menu management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs into the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs into the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the price for all beer items by the specified amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully changes the prices for all beer products."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully changes the prices for all beer products.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Push the update to all POS terminals and digital menu boards.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent deploys the price change across the venue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent deploys the price change across the venue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

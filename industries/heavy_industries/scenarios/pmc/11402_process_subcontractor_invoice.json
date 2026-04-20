@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the subcontractor's invoice and the associated contract.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the invoice and the subcontract agreement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the invoice and the subcontract agreement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the progress claimed on the invoice against the daily progress reports submitted by the field engineer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that the claimed work (e.g., '1000 cubic meters of concrete poured') matches the field reports."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that the claimed work (e.g., '1000 cubic meters of concrete poured') matches the field reports.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the invoice for the verified amount and route it to accounts payable for payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent approves the invoice, which is then sent to the AP department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent approves the invoice, which is then sent to the AP department.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Estimate the cost and output of a solar farm required to power a 10 MW electrolyzer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides CAPEX and annual MWh generation for the solar farm."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides CAPEX and annual MWh generation for the solar farm.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the Levelized Cost of Hydrogen (LCOH) based on the cost of solar power, electrolyzer CAPEX, and operational costs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent computes the LCOH in $/kg."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent computes the LCOH in $/kg.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the calculated LCOH to the cost of purchasing hydrogen from the market (grey or blue hydrogen).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines if on-site green hydrogen production is economically competitive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines if on-site green hydrogen production is economically competitive.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

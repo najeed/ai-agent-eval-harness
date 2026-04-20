@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify multiple user profiles that likely belong to the same person (e.g., same email but different device cookies).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The CDP's identity resolution algorithm flags potential matches."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The CDP's identity resolution algorithm flags potential matches.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Merge the duplicate profiles into a single, unified customer view.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent merges the profiles, combining all associated events and attributes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent merges the profiles, combining all associated events and attributes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the unified profile now contains the complete history of the customer's interactions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the new profile and confirms it is complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the new profile and confirms it is complete.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

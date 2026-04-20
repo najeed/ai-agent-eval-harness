@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the malicious IP address from the threat feed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the IP to be blocked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the IP to be blocked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apply a firewall rule on all edge routers to drop traffic from the malicious IP.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully deploys the new firewall rule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully deploys the new firewall rule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the rule is active and traffic from the IP is being dropped.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the firewall logs and confirms traffic from the IP is no longer present."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the firewall logs and confirms traffic from the IP is no longer present.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

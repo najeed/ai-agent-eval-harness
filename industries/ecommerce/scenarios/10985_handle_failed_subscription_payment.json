@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "When a recurring payment fails, identify the reason ('Expired Card').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System correctly logs the payment failure reason."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System correctly logs the payment failure reason.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically send the customer a 'dunning' email, notifying them of the failure and providing a link to update their payment method.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System sends a clear and helpful notification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System sends a clear and helpful notification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Temporarily pause the subscription and schedule a retry of the payment in 3 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System updates the subscription status to 'Past Due' and schedules a future payment attempt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System updates the subscription status to 'Past Due' and schedules a future payment attempt.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

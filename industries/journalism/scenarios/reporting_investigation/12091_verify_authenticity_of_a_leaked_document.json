@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the document for any signs of forgery, such as inconsistencies in formatting, logos, or language compared to known genuine documents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A preliminary analysis of the document's physical characteristics is completed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A preliminary analysis of the document's physical characteristics is completed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the factual claims within the document against known facts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent cross-references details in the document with public information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent cross-references details in the document with public information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Attempt to find a source within the relevant organization who can confirm or deny the document's authenticity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The reporter seeks independent confirmation from a trusted source."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The reporter seeks independent confirmation from a trusted source.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

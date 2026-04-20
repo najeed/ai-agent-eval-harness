@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Ask the user for the gift subscription code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the code from the user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the code from the user.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the gift code in the subscription system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the code is valid but has not yet been redeemed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the code is valid but has not yet been redeemed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Guide the user through the redemption process on the website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides step-by-step instructions to the user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides step-by-step instructions to the user.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Manually apply the gift code to the user's account if they are still unable to redeem it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the subscription credit to the user's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the subscription credit to the user's account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

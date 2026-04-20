@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Apologize for the issue and look up the guest's seat location in the ticketing system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the guest's seat and checks its status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the guest's seat and checks its status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify if the seat is officially marked as 'obstructed view' in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the seat is not marked as obstructed view, validating the guest's complaint."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the seat is not marked as obstructed view, validating the guest's complaint.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Find comparable or better seats in an unobstructed section that are available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds two available seats in a nearby section with a clear view."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds two available seats in a nearby section with a clear view.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Re-seat the guest to the new location at no charge and issue new tickets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully moves the guest to the new seats and provides them with new tickets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully moves the guest to the new seats and provides them with new tickets.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

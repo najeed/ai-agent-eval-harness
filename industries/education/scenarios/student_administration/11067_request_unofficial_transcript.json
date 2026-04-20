@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student's identity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student's identity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the student to the location in the student portal where they can view and print their own unofficial transcript.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions for self-service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions for self-service.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the student is able to access the document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Student confirms they have successfully downloaded their transcript."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Student confirms they have successfully downloaded their transcript.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

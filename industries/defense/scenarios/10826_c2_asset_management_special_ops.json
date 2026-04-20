@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Maintain real-time tracking of the ground team and all supporting assets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator keeps a constant, accurate plot of all friendly forces."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator keeps a constant, accurate plot of all friendly forces.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive a request from the ground team for immediate drone surveillance of a nearby building.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator correctly processes the request for support."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator correctly processes the request for support.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dynamically re-task a nearby ISR drone to provide video of the requested building and stream the feed to the ground team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator successfully re-tasks the drone and provides the requested intelligence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator successfully re-tasks the drone and provides the requested intelligence.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

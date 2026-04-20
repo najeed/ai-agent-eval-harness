@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Import the master schedule of all bus trips for a specific day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All required trips are loaded into the planning tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All required trips are loaded into the planning tool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Define constraints, such as maximum run time, minimum break time, and other labor agreement rules.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All labor constraints are correctly configured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All labor constraints are correctly configured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the optimization engine to automatically group trips into efficient runs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a set of proposed runs that covers all trips."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a set of proposed runs that covers all trips.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Review the proposed runs, make manual adjustments as needed, and finalize the run cut for drivers to bid on.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A final, efficient set of driver work assignments is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A final, efficient set of driver work assignments is created.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

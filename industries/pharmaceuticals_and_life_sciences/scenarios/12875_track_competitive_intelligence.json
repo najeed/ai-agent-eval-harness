@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan news feeds, press releases, and clinical trial registries for mentions of the competitor drug.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a press release announcing the competitor has started a new Phase 2 trial."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a press release announcing the competitor has started a new Phase 2 trial.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Summarize the key findings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a concise summary of the new trial's indication and design."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a concise summary of the new trial's indication and design.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a competitive intelligence alert and distribute it to the relevant internal teams.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts and sends an alert to the product strategy team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts and sends an alert to the product strategy team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

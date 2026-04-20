@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve real-time data from the piezometers within the tailings dam, which measure water pressure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A trend chart of pore water pressure is displayed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A trend chart of pore water pressure is displayed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the current water pressure levels against the design limits and alarm thresholds.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows that pressure in one area is approaching the alarm level."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows that pressure in one area is approaching the alarm level.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a notification for the operations team to increase pumping from the decant pond to lower the phreatic surface within the dam.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An instruction is sent to operations to take action to lower the water level."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An instruction is sent to operations to take action to lower the water level.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

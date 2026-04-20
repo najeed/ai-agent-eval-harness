@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the guest's room number and confirm their request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the guest and their room number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the guest and their room number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a high-priority cleaning task in the housekeeping management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully logs a priority task for the specified room."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully logs a priority task for the specified room.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the task to the housekeeper responsible for that floor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The task is dispatched to the correct staff member's handheld device."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The task is dispatched to the correct staff member's handheld device.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

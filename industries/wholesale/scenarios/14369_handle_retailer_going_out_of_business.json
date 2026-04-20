@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the retailer and their outstanding balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the retailer's account and list of open invoices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the retailer's account and list of open invoices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the retailer to arrange for final payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent attempts to contact the retailer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent attempts to contact the retailer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If payment cannot be secured, write off the bad debt and close the account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes a bad debt write-off and deactivates the customer account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes a bad debt write-off and deactivates the customer account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

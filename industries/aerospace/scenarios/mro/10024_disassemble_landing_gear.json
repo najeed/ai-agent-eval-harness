@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Follow the Component Maintenance Manual (CMM) to safely disassemble the landing gear.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the manual's step-by-step instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the manual's step-by-step instructions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Tag each individual component with its part number and serial number for traceability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly tags all disassembled parts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly tags all disassembled parts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Route the components to their respective specialized shops (e.g., hydraulics, structures, NDT) for inspection and repair.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the status of each component to reflect its new location in the MRO facility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the status of each component to reflect its new location in the MRO facility.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

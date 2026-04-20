@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the mission constraints, including launch window, travel time, and target landing coordinates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent lists all critical mission constraints."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent lists all critical mission constraints.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate a free-return trajectory or a low-energy transfer orbit to minimize fuel consumption.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent designs a trajectory that meets all constraints while using the least amount of propellant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent designs a trajectory that meets all constraints while using the least amount of propellant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Plan all necessary trajectory correction maneuvers (TCMs) to ensure the spacecraft arrives at the correct location for lunar orbit insertion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent schedules a series of small corrective burns in the mission plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent schedules a series of small corrective burns in the mission plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

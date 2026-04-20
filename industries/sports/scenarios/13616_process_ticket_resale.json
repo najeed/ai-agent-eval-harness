@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the fan and the specific tickets they wish to sell.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the fan's tickets for the upcoming game."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the fan's tickets for the upcoming game.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the fan to list their tickets on the resale marketplace, helping them set a price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent assists the fan in creating the ticket listing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent assists the fan in creating the ticket listing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once sold, transfer the ticket barcode to the new buyer and process the payout to the original ticket holder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully facilitates the transfer and payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully facilitates the transfer and payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

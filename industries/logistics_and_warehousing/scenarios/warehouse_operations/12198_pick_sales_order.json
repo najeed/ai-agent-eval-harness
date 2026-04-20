@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the next assigned picking task from the Warehouse Management System (WMS).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly retrieves the picking list for a specific sales order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly retrieves the picking list for a specific sales order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Navigate to the first location, scan the location barcode to confirm, and then scan the item and enter the picked quantity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly confirms the location and records the pick for the first item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly confirms the location and records the pick for the first item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Repeat the picking process for all items on the list and deliver the completed tote to the packing station.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully picks all items and updates the task status to 'Picked'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully picks all items and updates the task status to 'Picked'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

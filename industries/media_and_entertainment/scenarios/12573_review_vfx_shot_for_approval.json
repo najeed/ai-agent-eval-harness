@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the latest version of the VFX shot and the director's notes from the previous version.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the new video file and the director's feedback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the new video file and the director's feedback.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Place the shot in the director's daily review playlist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds the shot to the secure online review platform for the director."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds the shot to the secure online review platform for the director.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the review, update the shot's status to 'Approved' based on the director's feedback.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the approval and updates the shot's status in the tracking system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the approval and updates the shot's status in the tracking system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

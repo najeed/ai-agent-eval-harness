@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the approved flight test plan, including the specific maneuvers, altitudes, and data collection parameters.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the full test plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the full test plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "In real-time during the flight, guide the test pilot through the maneuvers while monitoring aircraft telemetry for safety.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions and monitors telemetry for any limit exceedances."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions and monitors telemetry for any limit exceedances.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the flight, download the flight data recorder information for analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully downloads and archives the flight data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully downloads and archives the flight data.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

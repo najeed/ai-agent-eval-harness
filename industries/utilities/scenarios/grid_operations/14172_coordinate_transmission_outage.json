@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Submit an outage request to the independent system operator (ISO) for the desired date and time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System submits the request to the ISO's outage scheduling system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System submits the request to the ISO's outage scheduling system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a power flow study to analyze the impact of the outage on the rest of the grid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The study shows the outage will cause overloads on two other lines unless a specific generator is redispatched."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The study shows the outage will cause overloads on two other lines unless a specific generator is redispatched.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Develop a mitigation plan, including the required generator redispatch, and submit it to the ISO for approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates and submits the mitigation plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates and submits the mitigation plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

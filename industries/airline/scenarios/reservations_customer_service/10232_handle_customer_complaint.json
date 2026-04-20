@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Listen to the customer's complaint empathetically and gather all relevant details (flight number, date, agent description).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent listens actively and logs the details of the complaint."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent listens actively and logs the details of the complaint.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apologize for the negative experience and assure the customer that their feedback will be passed to the airport management team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a sincere apology and explains the follow-up process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a sincere apology and explains the follow-up process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "As a gesture of goodwill, offer the customer a travel voucher for a future flight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully offers and issues a goodwill voucher."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully offers and issues a goodwill voucher.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

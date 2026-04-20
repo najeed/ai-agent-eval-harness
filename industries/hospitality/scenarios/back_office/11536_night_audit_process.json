@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that all departments (e.g., F&B, gift shop) have closed their shifts and submitted their daily totals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms all departmental reports are in."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms all departmental reports are in.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Post all remaining room and tax charges to guest folios.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All in-house guests have their daily charges posted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All in-house guests have their daily charges posted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the main night audit sequence in the PMS, which closes the current business day and generates summary reports.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The audit process completes successfully, and the system date rolls over."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The audit process completes successfully, and the system date rolls over.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

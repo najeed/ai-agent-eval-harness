@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the current spot prices for diesel in the US Gulf Coast and ARA (Amsterdam-Rotterdam-Antwerp).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Current prices for both locations are retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Current prices for both locations are retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the price spread (arb) between the two markets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The price spread is calculated, showing a positive value for shipping from USGC to ARA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The price spread is calculated, showing a positive value for shipping from USGC to ARA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Estimate the transportation costs (shipping freight) and other logistics costs. Compare with the arb to determine profitability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows the price spread is greater than the costs, indicating a profitable arbitrage opportunity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows the price spread is greater than the costs, indicating a profitable arbitrage opportunity.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

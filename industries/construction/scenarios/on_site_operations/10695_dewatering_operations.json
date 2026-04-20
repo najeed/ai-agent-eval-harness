@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Deploy a pump and filter bag to the excavation to begin dewatering.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Equipment is set up to remove the water."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Equipment is set up to remove the water.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the discharged water is being directed to the correct storm drain inlet as specified in the SWPPP.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the discharge location is compliant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the discharge location is compliant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the dewatering activity, including start and end times, in the daily log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The activity is documented for compliance records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The activity is documented for compliance records.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

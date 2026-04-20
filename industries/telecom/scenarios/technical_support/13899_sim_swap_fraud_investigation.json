@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Immediately place a security freeze on the account to prevent further changes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully freezes the account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully freezes the account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the account's recent activity logs to find evidence of a SIM change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a log entry for a SIM card change processed 2 hours ago via an online channel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a log entry for a SIM card change processed 2 hours ago via an online channel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the fraudulent activity and escalate the case to the fraud department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed fraud report and escalates it correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed fraud report and escalates it correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Inform the customer of the next steps and provide guidance on securing their other online accounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the situation and provides helpful security advice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the situation and provides helpful security advice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

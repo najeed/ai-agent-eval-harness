@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Calculate the total volume of water supplied into the distribution system over the past year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System computes the total volume of water produced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System computes the total volume of water produced.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total volume of water billed to all customers over the same period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System computes the total volume of water sold."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System computes the total volume of water sold.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the non-revenue water percentage by subtracting billed volume from supplied volume.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System determines the water loss is 15%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System determines the water loss is 15%.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Benchmark the result against industry averages and recommend further action if the loss is high.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System notes that 15% is above the industry average and recommends an expanded leak detection program."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System notes that 15% is above the industry average and recommends an expanded leak detection program.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

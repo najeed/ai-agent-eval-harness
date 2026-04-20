@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the order's packing slip to identify the order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System retrieves the correct order details, including the customer's shipping address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System retrieves the correct order details, including the customer's shipping address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Weigh the package and input its dimensions and weight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System captures the package's physical characteristics."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System captures the package's physical characteristics.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Purchase and generate a shipping label from the appropriate carrier based on the selected shipping method.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully generates a printable shipping label."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully generates a printable shipping label.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

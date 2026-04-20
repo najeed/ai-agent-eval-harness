@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the permissions on the database table where the audit trail is stored.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor verifies that business users do not have write or delete permissions on the audit trail table."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor verifies that business users do not have write or delete permissions on the audit trail table.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attempt, in a test environment, to alter an audit log entry using a standard user account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The attempt is blocked by the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The attempt is blocked by the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the audit logs are being backed up regularly to a separate, secure location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms the backup process for the audit logs is working correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms the backup process for the audit logs is working correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

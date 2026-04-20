@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the citizen's identifying information (full name, date of birth, parents' names).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the necessary data to locate the vital record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the necessary data to locate the vital record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the citizen's identity and eligibility to receive the document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully verifies the citizen's identity against provided documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully verifies the citizen's identity against provided documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the request and payment, and inform the citizen of the processing and mailing time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent takes payment and submits the order for the certificate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent takes payment and submits the order for the certificate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

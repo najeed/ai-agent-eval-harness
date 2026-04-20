@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan public databases and industry news for renewable project developers with a portfolio of 50-200 MW in the target region.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a list of 5 potential target companies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a list of 5 potential target companies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each target, compile a profile including their project pipeline, key management personnel, and any available financial data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed profile for each of the 5 companies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed profile for each of the 5 companies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform a preliminary valuation of the most promising target based on their project pipeline and comparable transactions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a rough valuation range for the top target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a rough valuation range for the top target.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

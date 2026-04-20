@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load the raw CSV data and generate a data quality report, identifying columns with missing values and the number of duplicate rows.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a report stating there are 50 duplicate rows and missing values in the 'Region' column."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a report stating there are 50 duplicate rows and missing values in the 'Region' column.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Remove all duplicate rows from the dataset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly removes the duplicate entries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly removes the duplicate entries.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For the column with missing values, fill them with the mode (most frequent value).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly imputes the missing data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly imputes the missing data.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

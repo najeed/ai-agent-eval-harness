@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the list of all taxable vehicles in the fleet, including their Vehicle Identification Numbers (VINs).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a complete list of vehicles."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a complete list of vehicles.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total tax due based on the number and weight of the vehicles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the total tax liability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the total tax liability.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare and e-file Form 2290.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully files the return and receives a stamped Schedule 1 as proof of payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully files the return and receives a stamped Schedule 1 as proof of payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

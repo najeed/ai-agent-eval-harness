@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the requirements: dates, number of rooms, and any meeting space needs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary details for the group inquiry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary details for the group inquiry.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check room and meeting space availability for the requested dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms availability for the room block and a small conference room."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms availability for the room block and a small conference room.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a proposal with a discounted group rate and send it to the travel manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and sends a professional proposal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and sends a professional proposal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

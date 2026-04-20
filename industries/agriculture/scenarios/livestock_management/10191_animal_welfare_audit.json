@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the checklist for the specific animal welfare audit standard (e.g., PQA Plus).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the official audit checklist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the official audit checklist.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each item on the checklist, retrieve the corresponding farm records, such as treatment records, training logs, and SOPs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all the required documentation from the farm's records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all the required documentation from the farm's records.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile all the documents into an organized package for the auditor and flag any areas where documentation is missing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a complete package and identifies one missing training log."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a complete package and identifies one missing training log.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

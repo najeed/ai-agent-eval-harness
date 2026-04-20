@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the discovery documentation to understand all the required firewall rules, VPN tunnels, and network segments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician has a complete list of configuration requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician has a complete list of configuration requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Configure the new firewall with all the required settings in a staging environment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The firewall is fully configured before being deployed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The firewall is fully configured before being deployed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Save the final configuration and prepare for the physical installation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The configuration is backed up and ready for deployment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The configuration is backed up and ready for deployment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

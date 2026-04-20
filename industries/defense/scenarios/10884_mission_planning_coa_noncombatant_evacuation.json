@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Develop plans for both the military and civilian air evacuation COAs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner creates two distinct and viable evacuation plans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner creates two distinct and viable evacuation plans.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assess the risks for each COA, considering the threat to the aircraft and the political sensitivity of using military assets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner accurately assesses that military aircraft are safer but more provocative."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner accurately assesses that military aircraft are safer but more provocative.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend the civilian charter COA as long as the airport remains secure, as it is less likely to cause a diplomatic incident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner makes a well-reasoned recommendation based on the political context."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner makes a well-reasoned recommendation based on the political context.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

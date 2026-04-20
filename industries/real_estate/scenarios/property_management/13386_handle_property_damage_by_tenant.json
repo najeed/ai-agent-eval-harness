@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Document the damage with photos and get a quote for the repair.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has evidence of the damage and its cost."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has evidence of the damage and its cost.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a formal notice to the tenant, demanding payment for the repair cost, citing the relevant clause in their lease.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tenant is formally notified of their financial responsibility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tenant is formally notified of their financial responsibility.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the tenant refuses to pay, file a claim in small claims court or with a collections agency to recover the costs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Formal collection or legal action is initiated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Formal collection or legal action is initiated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the mill's performance, paying close attention to the rock charge level inside the mill.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator has a clear view of the mill's key parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator has a clear view of the mill's key parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Notice that the charge level is too low, which will reduce grinding efficiency.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator identifies the need to add more large rocks to the feed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator identifies the need to add more large rocks to the feed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the mine to prioritize sending a load of coarse, hard ore to the crusher to generate more large rocks for the AG mill feed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A request is sent to the mine, and the AG mill feed is adjusted to restore the optimal charge level."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A request is sent to the mine, and the AG mill feed is adjusted to restore the optimal charge level.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all available public domain data for the basin, including well data, seismic surveys, and geological maps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive dataset for the basin is compiled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive dataset for the basin is compiled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Develop a petroleum systems model for the basin, identifying potential source rocks, reservoirs, and traps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A model illustrating the basin's potential for generating and trapping hydrocarbons is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A model illustrating the basin's potential for generating and trapping hydrocarbons is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report summarizing the basin's prospectivity and recommend whether to proceed with acreage acquisition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A summary report with a clear recommendation is produced for management."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A summary report with a clear recommendation is produced for management.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

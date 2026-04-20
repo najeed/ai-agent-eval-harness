@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the entire submittal log for the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The complete submittal log is retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The complete submittal log is retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Filter the log to find any submittals that are not in a 'Closed' or 'Approved' status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The filter returns zero items, confirming all submittals have been processed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The filter returns zero items, confirming all submittals have been processed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a final submittal log report for the project archive.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A final, complete report is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A final, complete report is generated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the member's account has an available upgrade certificate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the member has a valid certificate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the member has a valid certificate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for flights with confirmable upgrade space available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a flight where the upgrade can be confirmed immediately."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a flight where the upgrade can be confirmed immediately.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the flight, apply the upgrade certificate to move the passenger to Business Class, and reissue the ticket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books and confirms the upgraded travel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books and confirms the upgraded travel.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

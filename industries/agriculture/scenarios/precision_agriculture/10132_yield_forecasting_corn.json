@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the latest satellite imagery and historical yield data for the field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary historical and current data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary historical and current data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the long-range weather forecast for the remainder of the growing season.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the forecast until the typical harvest date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the forecast until the typical harvest date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run a machine learning yield prediction model using the collected data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The model predicts an average yield of 210 bushels per acre for the field."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The model predicts an average yield of 210 bushels per acre for the field.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a yield forecast map showing the predicted yield variation across the field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a map visualizing the yield predictions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a map visualizing the yield predictions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the correct interconnection request form and required technical studies for the project's size and location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides links to the correct forms and a list of required studies (e.g., Feasibility, System Impact)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides links to the correct forms and a list of required studies (e.g., Feasibility, System Impact).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compile all necessary project data, including single-line diagrams, inverter specifications, and site layout.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all required technical documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all required technical documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Complete the interconnection request application and attach all required documents for submission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a completed application package ready for filing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a completed application package ready for filing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

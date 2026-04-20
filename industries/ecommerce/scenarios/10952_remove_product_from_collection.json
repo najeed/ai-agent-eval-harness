@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Identify the product SKU and the collection it needs to be removed from.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the correct product and collection identifiers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the correct product and collection identifiers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Remove the product from the specified collection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the collection's product list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the collection's product list.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

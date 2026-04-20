@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the submitted application and property inspection report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter notes the inspection report mentions an unfenced swimming pool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter notes the inspection report mentions an unfenced swimming pool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine that an unfenced pool is an unacceptable hazard according to underwriting guidelines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter flags the application as requiring action."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter flags the application as requiring action.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Communicate to the agent that the policy can be issued, but only if the applicant provides proof that a fence has been installed around the pool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter clearly documents the conditional approval and the required action."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter clearly documents the conditional approval and the required action.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

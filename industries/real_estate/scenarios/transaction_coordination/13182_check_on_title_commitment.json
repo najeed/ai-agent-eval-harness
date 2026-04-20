@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the transaction timeline for the title review deadline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the deadline is this Friday."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the deadline is this Friday.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the title company to get the status of the title commitment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent learns from the title company that the commitment has been issued and was sent yesterday."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent learns from the title company that the commitment has been issued and was sent yesterday.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the buyer's agent has received and reviewed the title commitment and that there are no issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The buyer's agent confirms they have reviewed the commitment and have no objections."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The buyer's agent confirms they have reviewed the commitment and have no objections.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

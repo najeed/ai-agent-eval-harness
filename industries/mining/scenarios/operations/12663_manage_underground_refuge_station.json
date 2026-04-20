@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the 'Refuge Station Inspection' checklist on a mobile device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct digital checklist is loaded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct digital checklist is loaded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inspect the station, checking the supply of compressed air, water, and first aid supplies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspection is completed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspection is completed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notice that the pressure on an oxygen cylinder is low. Create a work order to have the cylinder replaced immediately.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A high-priority work order is created to ensure the station is fully stocked and ready for an emergency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A high-priority work order is created to ensure the station is fully stocked and ready for an emergency.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

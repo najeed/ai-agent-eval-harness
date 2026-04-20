@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all properties that require quarterly HVAC servicing from the asset management plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of all retail units at the center."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of all retail units at the center.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a master work order for the HVAC vendor for the quarterly service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a comprehensive work order covering all units."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a comprehensive work order covering all units.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Coordinate with tenants to provide the HVAC vendor access to their units over a specific week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully communicates the schedule to all affected tenants."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully communicates the schedule to all affected tenants.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

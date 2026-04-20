@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the 'Asthma' patient registry.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system displays a list of all patients with an asthma diagnosis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system displays a list of all patients with an asthma diagnosis.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Group the patient list by their calculated risk score category.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system displays the patients in groups of low, medium, and high risk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system displays the patients in groups of low, medium, and high risk.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Drill down into the 'high-risk' group to see the individual patients who may need intervention.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analyst can view the specific patients who are most at risk, allowing for targeted outreach."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analyst can view the specific patients who are most at risk, allowing for targeted outreach.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

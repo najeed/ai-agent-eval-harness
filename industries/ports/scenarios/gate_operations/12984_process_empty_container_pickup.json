@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The driver provides a release number for an empty container.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The clerk receives the release number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The clerk receives the release number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system assigns the next available empty container of the correct size and type from the shipping line's inventory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system selects a specific empty 40' container and assigns it to the job."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system selects a specific empty 40' container and assigns it to the job.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "A ticket is issued with the location of the empty container, and the truck is allowed to enter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver gets a ticket with the yard location to pick up the assigned empty container."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver gets a ticket with the yard location to pick up the assigned empty container.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

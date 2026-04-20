@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Research the expert's background, recent publications, and company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a concise background summary of the expert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a concise background summary of the expert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Based on the project's goals, draft a list of 5-7 key questions to ask the expert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of relevant and insightful questions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of relevant and insightful questions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Combine the background summary and the questions into a single, well-structured briefing document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a complete and helpful briefing document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a complete and helpful briefing document.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

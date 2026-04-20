@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and locate the scheduled bill payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the upcoming payment to the utility company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the upcoming payment to the utility company.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the payment has not yet been processed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the payment is still in 'Scheduled' status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the payment is still in 'Scheduled' status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Cancel the scheduled payment and confirm the cancellation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully cancels the payment and informs the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully cancels the payment and informs the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

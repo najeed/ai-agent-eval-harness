@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive notification of the customer's bankruptcy filing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The legal department is alerted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The legal department is alerted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compile a list of all outstanding invoices for the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a report of all money owed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a report of all money owed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "File a proof of claim with the bankruptcy court for the outstanding amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully files the legal claim."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully files the legal claim.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

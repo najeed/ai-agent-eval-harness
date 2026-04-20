@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather details of the complaint, including the restaurant name, address, and the specific nature of the violation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately documents the citizen's complaint."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately documents the citizen's complaint.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log the complaint in the health department's case management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new complaint case."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new complaint case.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the citizen that the complaint has been received and will be assigned to a health inspector for follow-up.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides assurance that the complaint will be investigated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides assurance that the complaint will be investigated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

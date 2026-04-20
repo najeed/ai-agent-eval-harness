@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the part number and the required quantity for the material request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the component and the standard replenishment quantity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the component and the standard replenishment quantity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the availability of the component in the main warehouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that the warehouse has sufficient stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that the warehouse has sufficient stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit a material requisition request to the warehouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the request, and a pick ticket is generated for the warehouse team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the request, and a pick ticket is generated for the warehouse team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

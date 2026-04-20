@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the passenger has a confirmed booking for their pet and all required health and vaccination documents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the pet is booked and all paperwork is in order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the pet is booked and all paperwork is in order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inspect the pet's travel crate to ensure it meets airline safety standards.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the crate is compliant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the crate is compliant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Collect the pet travel fee, tag the crate, and direct the passenger to the special baggage handling area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the check-in process for the pet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the check-in process for the pet.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

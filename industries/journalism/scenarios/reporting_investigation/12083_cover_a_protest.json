@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Interview protesters to understand their motivations and goals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers quotes that represent the protesters' point of view."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers quotes that represent the protesters' point of view.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Interview police or event organizers to get official estimates of the crowd size.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets an official crowd estimate to balance protester claims."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets an official crowd estimate to balance protester claims.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Observe and document the overall atmosphere of the protest (e.g., peaceful, tense) and any notable incidents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent captures the qualitative feel of the event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent captures the qualitative feel of the event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Write a balanced article that includes the perspectives of the protesters and officials, and accurately describes the events.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A fair and comprehensive article is produced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A fair and comprehensive article is produced.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

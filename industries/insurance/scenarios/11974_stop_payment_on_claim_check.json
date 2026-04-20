@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the beneficiary and the claim payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the claim and the specific payment details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the claim and the specific payment details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the original check has been cashed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the check has not yet been cashed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the check has not yet been cashed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place a stop payment on the lost check and reissue a new one.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully stops the old check and issues a new payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully stops the old check and issues a new payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all training load and game data for a specific player for the entire season.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a massive dataset of the player's physical output."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a massive dataset of the player's physical output.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to identify periods of high workload and any correlation with subsequent injuries or dips in performance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows the player was injured after a period of exceptionally high game and training load."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows the player was injured after a period of exceptionally high game and training load.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report with recommendations for managing the player's workload more effectively next season.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a report recommending more scheduled rest days for the player."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a report recommending more scheduled rest days for the player.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

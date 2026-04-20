@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "A system process identifies customers whose annual spending has exceeded the VIP threshold.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system flags the customer for a tier upgrade."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system flags the customer for a tier upgrade.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically updates the customer's loyalty status from 'Standard' to 'VIP'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer's account is upgraded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer's account is upgraded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system sends an email to the customer congratulating them on reaching the VIP tier and explaining their new benefits (e.g., free shipping).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer is notified of their new status and benefits, increasing engagement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer is notified of their new status and benefits, increasing engagement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Follow the airline's priority list to select a passenger for involuntary denied boarding (IDB).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the lowest fare, last to check-in passenger."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the lowest fare, last to check-in passenger.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the passenger of the situation and explain their rights and the compensation they are entitled to under the law.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly and politely explains the situation and the passenger's rights."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly and politely explains the situation and the passenger's rights.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Rebook the passenger on the next available flight and provide them with the required compensation (e.g., cash, check, travel voucher).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent rebooks the passenger and issues their compensation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent rebooks the passenger and issues their compensation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

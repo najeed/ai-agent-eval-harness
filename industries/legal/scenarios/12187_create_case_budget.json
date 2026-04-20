@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Break the litigation into phases (e.g., 'Initial Pleadings', 'Discovery', 'Summary Judgment', 'Trial').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a structured outline of the case lifecycle."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a structured outline of the case lifecycle.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each phase, estimate the number of attorney and paralegal hours required.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent estimates the time commitment for each phase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent estimates the time commitment for each phase.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Using the firm's billing rates, calculate the estimated legal fees for each phase and the total estimated cost.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a detailed budget spreadsheet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a detailed budget spreadsheet.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

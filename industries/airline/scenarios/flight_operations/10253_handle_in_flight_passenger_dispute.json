@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Approach the passengers and calmly ask them to explain the situation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Crew member intervenes professionally."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Crew member intervenes professionally.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attempt to find a mutually agreeable solution.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Crew member mediates the dispute."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Crew member mediates the dispute.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If a solution cannot be found, offer to reseat one of the passengers in a comparable or better seat if one is available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Crew member successfully resolves the conflict by moving one of the passengers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Crew member successfully resolves the conflict by moving one of the passengers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

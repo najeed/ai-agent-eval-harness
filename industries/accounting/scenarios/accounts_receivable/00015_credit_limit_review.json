@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's payment history for the last 24 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the customer's payment history, noting their average days-to-pay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the customer's payment history, noting their average days-to-pay.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a credit report on the customer from a third-party credit agency (e.g., Dun & Bradstreet).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the customer's latest credit score and report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the customer's latest credit score and report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the positive payment history and strong credit score, approve the credit limit increase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent approves the request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent approves the request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the customer's credit limit in the master file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the credit limit in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the credit limit in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

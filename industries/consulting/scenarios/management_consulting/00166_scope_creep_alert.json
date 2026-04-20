@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze an incoming client email.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ingests the email text."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ingests the email text.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the email for keywords and phrases like 'just one more thing', 'while you're at it', 'small addition'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a phrase that indicates potential scope creep."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a phrase that indicates potential scope creep.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Flag the email and send a notification to the project manager for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully flags the email and alerts the project manager."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully flags the email and alerts the project manager.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

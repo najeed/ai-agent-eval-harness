@@ -12,11 +12,13 @@
       {
         "id": "task-1",
         "task_description": "The agent should look up the customer's recent data usage and identify the $40 overage charge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the $40 overage in the conversation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the $40 overage in the conversation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": []

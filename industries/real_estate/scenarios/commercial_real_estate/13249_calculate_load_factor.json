@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the total rentable square footage (RSF) of the building.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the building's total RSF."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the building's total RSF.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find the total usable square footage (USF) by summing the square footage of all tenant-exclusive spaces.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the total USF from the rent roll."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the total USF from the rent roll.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the load factor by dividing the RSF by the USF.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the load factor (e.g., 1.15 for a 15% load factor)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the load factor (e.g., 1.15 for a 15% load factor).",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

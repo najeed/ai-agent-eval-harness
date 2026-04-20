@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "For each PDF in a given folder, identify any pages that contain tables.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly lists the page numbers containing tables for each PDF."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly lists the page numbers containing tables for each PDF.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Extract the identified tables into a structured format (e.g., CSV or JSON).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully extracts all tables into separate CSV files."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully extracts all tables into separate CSV files.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Consolidate the data from all the extracted tables into a single master CSV file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent merges all the individual CSVs into one file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent merges all the individual CSVs into one file.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

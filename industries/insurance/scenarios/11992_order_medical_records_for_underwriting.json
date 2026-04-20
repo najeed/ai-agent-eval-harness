@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the applicant and the disclosed medical condition requiring more information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter identifies the need for more details on the applicant's history of heart disease."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter identifies the need for more details on the applicant's history of heart disease.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that a signed medical authorization (HIPAA) form is on file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter confirms a valid HIPAA authorization is present."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter confirms a valid HIPAA authorization is present.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a request to the applicant's physician for their medical records (APS).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter successfully sends the APS request to the doctor's office."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter successfully sends the APS request to the doctor's office.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

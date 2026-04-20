@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Interpret and pick the fault locations on multiple cross-sections using drillhole and seismic data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The fault traces are identified on 2D sections."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The fault traces are identified on 2D sections.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a 3D wireframe surface for each major fault by stitching together the 2D interpretations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "3D models of the fault surfaces are created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "3D models of the fault surfaces are created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Incorporate the fault models into the main geological block model to constrain the resource estimate and inform the mine design.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The block model and mine plan are updated to honor the major structural controls."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The block model and mine plan are updated to honor the major structural controls.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ingest and process the high-resolution data from the intelligent PIG tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully loads and structures the inspection data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully loads and structures the inspection data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run an analysis algorithm to detect and classify anomalies, such as metal loss (corrosion) or dents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Algorithm identifies three areas of minor metal loss and one small dent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Algorithm identifies three areas of minor metal loss and one small dent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assess the severity of the identified defects against industry standards to determine if immediate repair is needed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System concludes that all identified defects are within acceptable limits and only require monitoring."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System concludes that all identified defects are within acceptable limits and only require monitoring.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

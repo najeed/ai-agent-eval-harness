@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the product by its SKU.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct product.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Change the product's status to 'disabled' or 'archived' so it is no longer visible or searchable on the website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully hides the product from the storefront."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully hides the product from the storefront.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Optionally, set up a redirect from the old product URL to a relevant category page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prevents customers from hitting a 404 error page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prevents customers from hitting a 404 error page.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

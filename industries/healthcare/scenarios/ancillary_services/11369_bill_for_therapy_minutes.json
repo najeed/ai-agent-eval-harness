@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the charge entry screen for the patient's therapy session.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Therapist accesses the billing module."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Therapist accesses the billing module.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the appropriate CPT code for the therapy provided.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Therapist selects the correct billing code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Therapist selects the correct billing code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter '3' as the number of units for the code, corresponding to the 45 minutes of service, and submit the charges.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct number of units is billed, ensuring proper reimbursement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct number of units is billed, ensuring proper reimbursement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

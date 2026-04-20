@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the email text to extract key tasks and their deadlines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies tasks like 'Finish the design by next Friday' and 'Launch the site by the end of the month'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies tasks like 'Finish the design by next Friday' and 'Launch the site by the end of the month'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Format the extracted tasks and dates into a structured list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a clean, structured list of tasks and deadlines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a clean, structured list of tasks and deadlines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a simple timeline visualization based on the list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a visual timeline of the project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a visual timeline of the project.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

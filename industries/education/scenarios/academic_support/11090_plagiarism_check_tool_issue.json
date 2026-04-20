@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the faculty member, course, and assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the context of the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the context of the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the assignment settings in the LMS to ensure the plagiarism tool was enabled correctly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the settings are correct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the settings are correct.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Manually re-sync the assignment with the plagiarism detection service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent forces a refresh of the connection, which successfully generates the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent forces a refresh of the connection, which successfully generates the report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

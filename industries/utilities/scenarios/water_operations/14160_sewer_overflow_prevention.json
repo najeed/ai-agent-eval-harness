@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor real-time sewer levels from sensors in the collection system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System gathers live sewer level data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System gathers live sewer level data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system detects rapidly rising levels in a specific sewer main due to rainfall inflow and infiltration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a high-level alarm and predicts a potential overflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a high-level alarm and predicts a potential overflow.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend actions to mitigate the overflow, such as increasing pumping rates at a downstream lift station or diverting flow to a storage basin.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System suggests increasing pumping rates at a specific lift station."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System suggests increasing pumping rates at a specific lift station.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the flapping link from the network monitoring system alerts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the two switches and the port numbers involved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the two switches and the port numbers involved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the physical layer diagnostics for the ports (e.g., light levels for fiber, cable test for copper).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the fiber optic light levels are marginal, suggesting a dirty connector or failing transceiver."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the fiber optic light levels are marginal, suggesting a dirty connector or failing transceiver.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a ticket for a data center technician to physically inspect and clean the fiber connection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a ticket with specific instructions for the technician."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a ticket with specific instructions for the technician.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

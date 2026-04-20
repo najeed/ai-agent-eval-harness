@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Notify the client that a periodic KYC update is required.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a secure message to the client requesting the updated information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a secure message to the client requesting the updated information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the updated information from the client (e.g., new employer, annual income).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely receives and records the new client information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely receives and records the new client information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the client's profile in the system with the new KYC data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the client's record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the client's record.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

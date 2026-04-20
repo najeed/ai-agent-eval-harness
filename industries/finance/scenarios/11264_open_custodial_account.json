@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the features and rules of a custodial account to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains that the gift is irrevocable and the child gets control at the age of majority."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains that the gift is irrevocable and the child gets control at the age of majority.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the required information for both the custodian (the client) and the minor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately captures all personal details for both individuals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately captures all personal details for both individuals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create the new custodial account in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully opens the new UTMA account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully opens the new UTMA account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

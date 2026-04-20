@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify that the 'Steel Erection Crew' is scheduled for a task that is now blocked.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the crew's current task is blocked by the material delay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the crew's current task is blocked by the material delay.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find an available, non-dependent task that the crew can perform, such as 'Site Safety Improvements'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a suitable task that can be started immediately."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a suitable task that can be started immediately.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reassign the 'Steel Erection Crew' to the 'Site Safety Improvements' task for the next 5 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The crew's schedule is updated in the project plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The crew's schedule is updated in the project plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

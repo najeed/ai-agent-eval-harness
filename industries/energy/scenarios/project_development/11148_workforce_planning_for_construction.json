@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Break down the construction project into major phases (e.g., site prep, racking installation, panel mounting, electrical work).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed project phase list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed project phase list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Estimate the number and type of workers (e.g., laborers, electricians, operators) required for each phase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a detailed staffing requirement table."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a detailed staffing requirement table.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Develop a hiring schedule to ensure the right workers are available at the right time, aligned with the project timeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a Gantt chart for workforce ramp-up and ramp-down."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a Gantt chart for workforce ramp-up and ramp-down.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

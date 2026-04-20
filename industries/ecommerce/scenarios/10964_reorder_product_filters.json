@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the category page to be edited.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the 'Televisions' category."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the 'Televisions' category.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the current order of filters for that page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees the current order is ['Size', 'Color', 'Brand']."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees the current order is ['Size', 'Color', 'Brand'].",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the filter order to the new desired sequence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully changes the order to ['Brand', 'Size', 'Color']."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully changes the order to ['Brand', 'Size', 'Color'].",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

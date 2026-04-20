@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the 'Loss of Signal' alarm on the primary remote feed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent immediately identifies the failed feed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent immediately identifies the failed feed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Instantly switch the live program output to the available backup satellite feed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully executes the feed switch with minimal on-air disruption."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully executes the feed switch with minimal on-air disruption.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a ticket for the engineering team to diagnose the failure of the primary feed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a high-priority ticket for the engineering team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a high-priority ticket for the engineering team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

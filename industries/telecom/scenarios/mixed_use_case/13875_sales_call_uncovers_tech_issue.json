@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "While presenting new phones, acknowledge the battery issue and perform a quick remote diagnostic on the customer's current device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs a diagnostic and finds the battery health is critically low."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs a diagnostic and finds the battery health is critically low.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the diagnostic result to strengthen the case for upgrading to a new phone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent effectively uses the technical data to support the sales pitch."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent effectively uses the technical data to support the sales pitch.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the order for the new phone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the sale."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the sale.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

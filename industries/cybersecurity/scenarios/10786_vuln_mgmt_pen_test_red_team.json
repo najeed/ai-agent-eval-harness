@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gain initial access through a targeted spear-phishing campaign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The red team successfully compromises an initial workstation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The red team successfully compromises an initial workstation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform slow, low-profile lateral movement over several days to escalate privileges and move closer to the target.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The red team successfully moves through the network while evading detection by the SOC."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The red team successfully moves through the network while evading detection by the SOC.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Achieve the objective of accessing the CEO's mailbox and exfiltrating a single, non-sensitive email as proof.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The red team successfully achieves its objective, demonstrating a significant flaw in the company's defense-in-depth."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The red team successfully achieves its objective, demonstrating a significant flaw in the company's defense-in-depth.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

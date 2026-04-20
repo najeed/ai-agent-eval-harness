@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the vacant unit and the local electric utility provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the property address and the correct utility company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the property address and the correct utility company.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the utility company to stop the previous tenant's service and start new service under the property owner's name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates a service transfer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates a service transfer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the utility account information in the property's file for future reference.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent records the new account number for the property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent records the new account number for the property.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the location of the downed tree.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the exact location of the road blockage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the exact location of the road blockage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Recognize the issue as a public safety hazard and escalate it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent flags the request as an emergency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent flags the request as an emergency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create an emergency work order and dispatch a public works crew to clear the road.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent immediately dispatches a crew to the location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent immediately dispatches a crew to the location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

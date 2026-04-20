@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the returned item and the RMA number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The warehouse receives the item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The warehouse receives the item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inspect the item to verify the defect.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A technician confirms the product has a manufacturing defect."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A technician confirms the product has a manufacturing defect.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a full credit to the retailer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent credits the retailer's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent credits the retailer's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Quarantine the defective item and notify the supplier of the quality issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The item is set aside, and a quality report is sent to the original supplier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The item is set aside, and a quality report is sent to the original supplier.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

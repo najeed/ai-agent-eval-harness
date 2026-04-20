@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Immediately get a description of the child (age, clothing, name) and the last known location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calmly gathers all critical information from the parent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calmly gathers all critical information from the parent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate the venue's 'Code Adam' (or similar lost child) protocol.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent activates the protocol, which alerts all staff via radio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent activates the protocol, which alerts all staff via radio.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch security and staff to the last known location and to monitor all exits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent directs all available personnel to begin a coordinated search."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent directs all available personnel to begin a coordinated search.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Stay with the parent and provide reassurance while maintaining communication with the search team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides support to the parent while monitoring radio traffic for updates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides support to the parent while monitoring radio traffic for updates.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

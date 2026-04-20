@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Select the outbound train that needs to be built.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the correct train consist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the correct train consist.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each railcar on the train, find its current location (track and position) in the yard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system provides the current location for all needed railcars."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system provides the current location for all needed railcars.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate an optimized switch list that details the sequence of moves (pulls and spots) required to assemble the train.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An efficient work order for the switch crew is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An efficient work order for the switch crew is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Assign the switch list to an available yard crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The work order is sent to the crew's mobile device."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The work order is sent to the crew's mobile device.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

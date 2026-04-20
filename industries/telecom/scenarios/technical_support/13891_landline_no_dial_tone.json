@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a remote line test to check for faults from the network side.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The line test comes back as 'Clear', indicating the issue is likely inside the home."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The line test comes back as 'Clear', indicating the issue is likely inside the home.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the customer to check if their phone is properly plugged into the wall jack.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides simple, clear instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides simple, clear instructions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the issue persists, schedule a technician to investigate the internal wiring.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent schedules a technician visit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent schedules a technician visit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

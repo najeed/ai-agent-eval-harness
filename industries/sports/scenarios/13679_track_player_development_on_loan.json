@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the player's game statistics from their loan club.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a report of the player's minutes played, goals, and other key stats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a report of the player's minutes played, goals, and other key stats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request and review scouting reports from scouts who have watched the player's games.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews reports on the player's development."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews reports on the player's development.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a summary report on the player's loan spell for the head coach.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a report concluding that the loan has been successful for the player's development."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a report concluding that the loan has been successful for the player's development.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

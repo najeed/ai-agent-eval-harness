@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search the archive for the most significant stories published by the organization over the last 12 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of the year's top stories is compiled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of the year's top stories is compiled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Group the stories by theme (e.g., Politics, Business, Culture) and outline a structure for the article.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A logical structure for the year-in-review piece is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A logical structure for the year-in-review piece is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft the article, weaving the individual stories into a larger narrative about the year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive and engaging summary of the year's events is written."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive and engaging summary of the year's events is written.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a forensic image of the encrypted hard drives to work on a copy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully creates a bit-for-bit copy of the affected drives."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully creates a bit-for-bit copy of the affected drives.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the specific strain of ransomware used in the attack.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the ransomware family (e.g., Conti, REvil)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the ransomware family (e.g., Conti, REvil).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Search for a known public decryptor tool for that ransomware strain. If one exists, use it to attempt to decrypt the files.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst finds a decryptor and successfully recovers a portion of the encrypted files."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst finds a decryptor and successfully recovers a portion of the encrypted files.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

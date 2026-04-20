@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the draft event contract and confirm the final guest count with the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls the contract and confirms a final count of 150 guests."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls the contract and confirms a final count of 150 guests.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the BEO with the final menu selections (chicken or fish) and special dietary needs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the BEO with all food and beverage details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the BEO with all food and beverage details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the final BEO and send it to the client for signature and to the kitchen and operations teams for execution.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates and distributes the final BEO to all stakeholders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates and distributes the final BEO to all stakeholders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

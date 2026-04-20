@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and the course they wish to drop.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student's enrollment in the course."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student's enrollment in the course.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the petition process for a late withdrawal, including the need for supporting documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly outlines the required steps and forms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly outlines the required steps and forms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the student with the official petition form and instructions on where to submit it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent emails the correct form and submission link to the student."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent emails the correct form and submission link to the student.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

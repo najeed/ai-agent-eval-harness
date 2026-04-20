@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the lease to confirm the TI allowance amount and any landlord responsibilities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the scope and budget of the TI project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the scope and budget of the TI project.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the tenant's construction plans to ensure they comply with building rules and regulations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks plans for compliance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks plans for compliance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Track the project's progress and process disbursement requests from the TI allowance for completed work.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent manages the financial aspects of the build-out correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent manages the financial aspects of the build-out correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Using the vessel's name or IMO number, find its current location, speed, and heading via an AIS tracking service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The vessel's current position is displayed on a map."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The vessel's current position is displayed on a map.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the vessel's estimated time of arrival (ETA) at the destination port based on its current speed and route.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An updated ETA is calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An updated ETA is calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the refinery's crude receiving schedule with the new ETA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The terminal's schedule is updated to reflect the vessel's new arrival time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The terminal's schedule is updated to reflect the vessel's new arrival time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

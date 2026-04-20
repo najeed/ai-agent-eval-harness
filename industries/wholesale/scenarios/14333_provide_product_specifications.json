@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the product the retailer is asking about.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the product in the catalog."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the product in the catalog.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the official product specification sheet from the document management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the PDF spec sheet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the PDF spec sheet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the specification sheet to the retailer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully emails the document to the retailer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully emails the document to the retailer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

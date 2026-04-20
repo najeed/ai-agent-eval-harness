@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a report of all open RFIs and submittals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report listing all pending items is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report listing all pending items is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a two-week look-ahead schedule showing upcoming major activities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A short-term schedule is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A short-term schedule is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile the reports into a single meeting package and distribute it to all OAC meeting attendees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A meeting package is created and sent to stakeholders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A meeting package is created and sent to stakeholders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "As part of the renewal process, identify that the customer is eligible for a loyalty discount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system flags the policy as eligible for the credit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system flags the policy as eligible for the credit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apply the loyalty credit to the renewal premium.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system automatically reduces the renewal premium by the discount amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system automatically reduces the renewal premium by the discount amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Ensure the renewal documents clearly show the credit that was applied.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The generated renewal offer clearly itemizes the loyalty credit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The generated renewal offer clearly itemizes the loyalty credit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

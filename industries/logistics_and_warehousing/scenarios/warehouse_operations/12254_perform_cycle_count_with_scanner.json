@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The operator logs into the scanner and requests a new cycle count task.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system assigns a location to be counted and displays it on the scanner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system assigns a location to be counted and displays it on the scanner.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The operator navigates to the location and scans the location's barcode to verify they are in the right place.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms the location is correct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms the location is correct.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The operator scans the item's barcode and enters the quantity they have physically counted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The count is entered into the system via the scanner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The count is entered into the system via the scanner.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The system confirms the count is complete and assigns the next location to be counted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator is seamlessly guided to their next task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator is seamlessly guided to their next task.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

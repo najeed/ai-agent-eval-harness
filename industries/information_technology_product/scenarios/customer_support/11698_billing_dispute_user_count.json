@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's account and the specific invoice in question.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer and the relevant invoice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer and the relevant invoice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the user list in the customer's account and filter for users who were active during the billing period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that an employee who left the company was deactivated but not removed, thus consuming a license."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that an employee who left the company was deactivated but not removed, thus consuming a license.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the cause of the discrepancy, guide the customer on how to fully remove the user, and issue a credit for the single user license as a one-time courtesy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent resolves the issue, educates the customer, and applies a credit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent resolves the issue, educates the customer, and applies a credit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

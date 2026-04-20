@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the suite of wireline logging tools to be run based on the data objectives (e.g., formation imaging, fluid sampling).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of required logging tools is finalized."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of required logging tools is finalized.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a detailed logging program, specifying the order of tool runs and the depth intervals to be logged.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal logging program document is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal logging program document is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Order the wireline logging services from a service company and coordinate their arrival at the rig site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The service company is booked, and their mobilization is scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The service company is booked, and their mobilization is scheduled.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

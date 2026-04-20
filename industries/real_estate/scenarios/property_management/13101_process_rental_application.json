@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the rental application is complete and the application fee has been paid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all required fields are filled and payment is received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all required fields are filled and payment is received.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a credit and background check on the applicant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A credit and background check is successfully initiated using the applicant's information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A credit and background check is successfully initiated using the applicant's information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the screening report and income verification, approve or deny the application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compares screening results to company policy and makes an approval/denial decision, logging the reason."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compares screening results to company policy and makes an approval/denial decision, logging the reason.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

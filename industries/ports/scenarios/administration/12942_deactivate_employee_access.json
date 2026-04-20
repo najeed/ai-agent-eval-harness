@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the offboarding notification from HR for the departing employee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin receives the official request to terminate access for a specific employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin receives the official request to terminate access for a specific employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Deactivate the employee's user account in all port systems.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user's login credentials for the TOS, finance system, and email are disabled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user's login credentials for the TOS, finance system, and email are disabled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deactivate the employee's physical port access ID card.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The employee's ID card is disabled in the access control system, preventing physical entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The employee's ID card is disabled in the access control system, preventing physical entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

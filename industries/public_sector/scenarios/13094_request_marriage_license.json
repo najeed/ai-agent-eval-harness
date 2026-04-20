@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather personal information and proof of identity and age from both applicants.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The clerk collects and verifies the required documents from the couple."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The clerk collects and verifies the required documents from the couple.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Complete the marriage license application form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The clerk accurately fills out the application with the couple's information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The clerk accurately fills out the application with the couple's information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the application fee and issue the marriage license.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The clerk takes payment and provides the couple with their official marriage license."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The clerk takes payment and provides the couple with their official marriage license.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

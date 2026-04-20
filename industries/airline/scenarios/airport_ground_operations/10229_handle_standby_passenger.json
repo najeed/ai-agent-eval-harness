@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "After all ticketed passengers have boarded, check for any no-shows.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that two passengers did not show up, freeing two seats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that two passengers did not show up, freeing two seats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the standby list and clear the first person on the list for a seat.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the highest-priority standby passenger."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the highest-priority standby passenger.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the passenger a seat, issue them a boarding pass, and allow them to board.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully gets the standby passenger on the flight."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully gets the standby passenger on the flight.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the attorney's calendar and sent emails to identify activities performed during the day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies activities like 'Phone call with client A', 'Draft motion for case B'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies activities like 'Phone call with client A', 'Draft motion for case B'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each activity, create a time entry with the correct client/matter code, a detailed description, and the duration in 0.1-hour increments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates multiple, properly formatted time entries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates multiple, properly formatted time entries.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the completed time entries for partner review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The day's time is successfully recorded in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The day's time is successfully recorded in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

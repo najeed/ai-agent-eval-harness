@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the URL of the pirated video on YouTube.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the exact URL of the infringing content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the exact URL of the infringing content.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the uploader is not a legitimate licensee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the uploader has no rights to the content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the uploader has no rights to the content.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit a formal DMCA takedown request through YouTube's content protection portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully fills out and submits the DMCA form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully fills out and submits the DMCA form.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

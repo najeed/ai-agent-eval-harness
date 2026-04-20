@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Hold a discovery call with the customer's training lead to understand their key learning objectives and user personas.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant gathers all necessary information to design the training."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant gathers all necessary information to design the training.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a detailed curriculum outline and agenda, mapping learning objectives to specific product modules and features.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant creates a structured and logical training plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant creates a structured and logical training plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Get approval from the customer on the curriculum before developing the training materials.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer and consultant are aligned on the training plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer and consultant are aligned on the training plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

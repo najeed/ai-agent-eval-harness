@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all vehicles currently listed as being in the 'Finished Goods - Lot G' status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of 500 VINs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of 500 VINs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch a team with handheld scanners to scan the VIN of every vehicle physically present in Lot G.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A team is dispatched to perform the physical scan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A team is dispatched to perform the physical scan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the system list with the scanned list and flag any discrepancies (missing or extra vehicles).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The comparison shows one vehicle is physically present but not in the system list, and one is in the system list but not physically present."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The comparison shows one vehicle is physically present but not in the system list, and one is in the system list but not physically present.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

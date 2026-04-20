@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the sensor alarm for the pH exceedance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the specific sensor and the measured value."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the specific sensor and the measured value.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the site's environmental permit to confirm the allowable pH range.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the measured pH is outside the permitted limits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the measured pH is outside the permitted limits.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the exceedance in the environmental management system and notify the state regulatory agency as required by the permit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a formal incident report and sends the required notification to the agency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a formal incident report and sends the required notification to the agency.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

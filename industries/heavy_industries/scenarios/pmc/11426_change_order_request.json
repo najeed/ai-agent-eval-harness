@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new change order in the project management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates the change order record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates the change order record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Estimate the cost and schedule impact of the requested change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent works with engineering and procurement to determine the change will add $500,000 and 30 days to the project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent works with engineering and procurement to determine the change will add $500,000 and 30 days to the project.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the change order, including the cost and schedule impact, to the client for their approval before proceeding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the formal change order to the client for their signature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the formal change order to the client for their signature.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

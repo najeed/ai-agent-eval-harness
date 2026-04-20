@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the rejection notice from the listing agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies that the offer was rejected without a counter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies that the offer was rejected without a counter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the buyer client of the rejection in a clear and empathetic manner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the bad news professionally."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the bad news professionally.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the buyer on potential strategies, such as submitting a higher offer or looking for other properties.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides constructive advice and strategic options to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides constructive advice and strategic options to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

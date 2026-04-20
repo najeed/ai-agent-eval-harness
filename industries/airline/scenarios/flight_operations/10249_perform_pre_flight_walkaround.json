@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Follow a standard checklist to visually inspect the aircraft's exterior.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot follows the prescribed flow around the aircraft."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot follows the prescribed flow around the aircraft.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for issues such as tire condition, leaks, damage to control surfaces, and that all sensor covers have been removed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot carefully inspects all key areas."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot carefully inspects all key areas.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If any issues are found, report them to maintenance. If not, sign off on the inspection in the aircraft's technical log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "No issues are found. Pilot signs the log, confirming the aircraft is fit to fly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "No issues are found. Pilot signs the log, confirming the aircraft is fit to fly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

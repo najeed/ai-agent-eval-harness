@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft a public response thanking the guest for their review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A polite thank-you message is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A polite thank-you message is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Acknowledge their specific comments and the mention of the employee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The response is personalized to the guest's comments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The response is personalized to the guest's comments.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post the response and ensure the mentioned employee receives recognition from their manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The response is posted, and the employee is recognized internally."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The response is posted, and the employee is recognized internally.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

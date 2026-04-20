@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the original check in the system using the check number or invoice number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the record of the original payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the record of the original payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Place a stop payment on the original check with the bank.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully issues a stop payment request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully issues a stop payment request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Void the original check in the accounting system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully voids the payment, which reopens the original invoice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully voids the payment, which reopens the original invoice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Issue a new check for the same invoice and mail it to the vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes a new payment and generates a new check."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes a new payment and generates a new check.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

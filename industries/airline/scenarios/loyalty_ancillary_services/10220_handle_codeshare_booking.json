@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the booking and identify the flight segment operated by the partner airline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the codeshare flight."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the codeshare flight.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the customer with Airline B's confirmation number (PNR).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the partner airline's PNR associated with the booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the partner airline's PNR associated with the booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the customer to visit Airline B's website and use the partner PNR to manage their seat selection for that flight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear and correct instructions to resolve the customer's issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear and correct instructions to resolve the customer's issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

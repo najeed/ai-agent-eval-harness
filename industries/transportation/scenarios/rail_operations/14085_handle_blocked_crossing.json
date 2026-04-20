@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a report (from the public or the train crew) that a crossing is blocked.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dispatcher is aware of the blocked crossing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dispatcher is aware of the blocked crossing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the train crew to determine the reason for the stop (e.g., mechanical issue, waiting for another train).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dispatcher understands why the train is stopped."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dispatcher understands why the train is stopped.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If possible, instruct the crew to 'cut' the train (separate the cars) to unblock the crossing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The crew is instructed to clear the road."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The crew is instructed to clear the road.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Log the blocked crossing event, as many jurisdictions have regulations about how long a crossing can be blocked.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The event is logged for compliance reporting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The event is logged for compliance reporting.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

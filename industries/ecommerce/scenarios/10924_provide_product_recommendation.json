@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Understand the customer's needs (terrain: trail, usage: long-distance).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the key requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the key requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Filter the product catalog for 'running shoes' with the tag 'trail' and 'high-cushion'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of suitable products."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of suitable products.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend the top-rated shoe from the filtered list and explain why it's a good fit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a relevant, well-justified recommendation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a relevant, well-justified recommendation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

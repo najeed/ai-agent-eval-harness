@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Verify that all tasks assigned to the 'Framing Crew' are 100% complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all framing tasks are complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all framing tasks are complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the resource plan to show the 'Framing Crew' as available for other projects starting tomorrow.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The crew is released from the project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The crew is released from the project.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

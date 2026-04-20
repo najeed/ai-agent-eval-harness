@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Mount the engine in the test cell and connect all fuel, electrical, and data lines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures the engine is correctly installed in the test cell."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures the engine is correctly installed in the test cell.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run the engine at various power settings, from idle to full thrust, according to a standard test procedure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent operates the engine and follows the test plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent operates the engine and follows the test plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Record all performance parameters (thrust, fuel flow, temperatures, pressures) and verify they meet the manufacturer's specifications.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all data and confirms the engine is performing within limits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all data and confirms the engine is performing within limits.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

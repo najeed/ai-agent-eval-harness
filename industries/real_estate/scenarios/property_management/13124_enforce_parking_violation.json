@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the vehicle and the tenant associated with the parking spot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the vehicle is not registered with the office and identifies the tenant leasing the spot."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the vehicle is not registered with the office and identifies the tenant leasing the spot.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Issue a formal parking violation notice and place it on the vehicle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A standard violation sticker or notice is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A standard violation sticker or notice is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the violation, including a photo, in the tenant's record in the property management software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The violation is documented with evidence in the tenant's file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The violation is documented with evidence in the tenant's file.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

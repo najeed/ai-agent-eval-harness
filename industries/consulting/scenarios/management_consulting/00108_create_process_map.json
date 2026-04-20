@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the transcript to identify all the steps, decision points, and actors in the procurement process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly lists all process steps (e.g., 'Create PR', 'Manager Approval', 'Create PO') and who performs them."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly lists all process steps (e.g., 'Create PR', 'Manager Approval', 'Create PO') and who performs them.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Structure the identified steps and decision points into a logical sequence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly orders the process flow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly orders the process flow.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a process map diagram (e.g., using Mermaid syntax) representing the flow.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a valid and logically correct process map diagram."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a valid and logically correct process map diagram.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

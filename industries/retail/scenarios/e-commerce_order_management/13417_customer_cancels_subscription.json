@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log into their online account and navigate to the 'Manage Subscription' page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer finds their active subscription details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer finds their active subscription details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the 'Cancel Subscription' option and provide a reason for cancellation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer chooses to cancel and provides feedback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer chooses to cancel and provides feedback.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive an on-screen confirmation and an email confirming the subscription has been cancelled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The subscription is successfully cancelled, and the customer is notified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The subscription is successfully cancelled, and the customer is notified.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

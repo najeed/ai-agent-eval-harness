@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the hourly temperature data from the local weather station for the entire winter period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the complete temperature dataset."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the complete temperature dataset.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total number of chill hours (hours below a certain temperature threshold, e.g., 45\u00b0F or 7\u00b0C).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the accumulated chill hours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the accumulated chill hours.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the accumulated chill hours to the known requirement for the specific cherry variety.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines that the chill hour requirement has been met."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines that the chill hour requirement has been met.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

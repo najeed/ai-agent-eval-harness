@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Input the fire's current perimeter and direction of spread into the emergency management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent defines the hazard zone in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent defines the hazard zone in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate optimal evacuation routes for the threatened neighborhoods that lead away from the fire and avoid traffic bottlenecks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system calculates and displays the safest routes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system calculates and displays the safest routes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Push the evacuation routes to public alert channels, Waze, and Google Maps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent disseminates the critical evacuation information widely."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent disseminates the critical evacuation information widely.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

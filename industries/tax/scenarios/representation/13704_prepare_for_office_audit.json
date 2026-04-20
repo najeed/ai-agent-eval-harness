@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the IRS audit notice to identify the specific items under examination.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the audit is focused on travel and meal expenses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the audit is focused on travel and meal expenses.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather all relevant documentation from the taxpayer, such as receipts, mileage logs, and bank statements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a complete set of supporting documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a complete set of supporting documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Organize the documentation and prepare an audit file to present to the IRS agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a well-organized file that substantiates the expenses claimed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a well-organized file that substantiates the expenses claimed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

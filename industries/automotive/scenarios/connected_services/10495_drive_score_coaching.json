@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's driving data for the last 30 days, including events like hard braking, rapid acceleration, and speeding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls the driving behavior report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls the driving behavior report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the customer's current score and highlight the specific behaviors that are negatively impacting it (e.g., frequent hard braking).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the reasons for the score."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the reasons for the score.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide coaching tips for improving the score, such as maintaining a greater following distance to avoid hard braking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides actionable advice to help the customer improve their score and earn a larger discount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides actionable advice to help the customer improve their score and earn a larger discount.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

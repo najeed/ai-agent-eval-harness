@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the offer terms with the buyer (price, financing, contingencies, closing date).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a clear, documented list of all offer terms provided by the buyer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a clear, documented list of all offer terms provided by the buyer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Fill out the state-approved purchase agreement form with all the offer terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The purchase agreement is accurately filled out with all buyer and offer details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The purchase agreement is accurately filled out with all buyer and offer details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the completed offer to the buyer for their signature using an e-signature service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The offer document is sent to the buyer via an e-signature platform."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The offer document is sent to the buyer via an e-signature platform.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a 'Quality Notification' documenting the damage with photos.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a quality report and attaches photographic evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a quality report and attaches photographic evidence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request a Return Material Authorization (RMA) number from the supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent contacts the supplier and obtains an RMA number for the return."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent contacts the supplier and obtains an RMA number for the return.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for the damaged goods to be shipped back to the supplier using the RMA number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent schedules a pickup for the return shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent schedules a pickup for the return shipment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

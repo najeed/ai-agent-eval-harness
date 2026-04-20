@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the two duplicate customer accounts and their associated order histories.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the details for both accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the details for both accounts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the primary account and merge the order history from the secondary account into it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully merges the data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully merges the data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Disable the secondary account and notify the customer of the merge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent deactivates the duplicate and informs the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent deactivates the duplicate and informs the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

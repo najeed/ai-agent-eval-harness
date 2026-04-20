@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a list of targets and desired effects from the ground force commander.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer correctly processes the fire support request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer correctly processes the fire support request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assign the most suitable fire support asset to each target (e.g., naval guns for coastal targets, precision air strikes for point targets).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer makes optimal pairings of assets to targets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer makes optimal pairings of assets to targets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a synchronized firing schedule that ensures all ordnance impacts the targets simultaneously.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer creates a valid and deconflicted fire plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer creates a valid and deconflicted fire plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

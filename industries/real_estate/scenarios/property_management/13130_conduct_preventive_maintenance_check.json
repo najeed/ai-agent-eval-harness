@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Notify the tenant of the upcoming inspection, providing at least 24 hours' notice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal 'Notice of Entry' is generated and sent to the tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal 'Notice of Entry' is generated and sent to the tenant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Using a checklist, inspect key items like smoke detectors, HVAC filters, and look for signs of leaks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes a preventive maintenance checklist for the unit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes a preventive maintenance checklist for the unit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If any issues are found (e.g., dirty HVAC filter), create a work order to address them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new work order is created to replace the HVAC filter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new work order is created to replace the HVAC filter.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the historical failure rate and lead time for replacement for each critical component.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles failure rate and lead time data for all critical spares."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles failure rate and lead time data for all critical spares.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the cost of holding each spare part in inventory versus the cost of downtime if a spare is not available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent quantifies the cost-benefit tradeoff for each part."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent quantifies the cost-benefit tradeoff for each part.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend the optimal number of each spare part to hold in a central warehouse to meet a 98% availability target at the lowest cost.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a list of recommended inventory levels for each critical part."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a list of recommended inventory levels for each critical part.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

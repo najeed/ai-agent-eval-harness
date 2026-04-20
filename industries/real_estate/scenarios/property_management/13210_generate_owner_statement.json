@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the property owner and the correct reporting period (e.g., last month).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the owner and date range."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the owner and date range.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compile all income (rent) and expenses (management fees, repairs) for the property during that period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully gathers all financial transactions for the property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully gathers all financial transactions for the property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a formatted owner statement and send it to the property owner's email.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and delivers an accurate financial report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and delivers an accurate financial report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

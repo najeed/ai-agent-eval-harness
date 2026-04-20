@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Connect the dashboarding tool to the necessary data sources (Google Ads, Google Analytics).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully establishes the data connections."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully establishes the data connections.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create visualizations (scorecards, time-series charts, tables) for key metrics like Spend, Clicks, and Conversions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent builds a dashboard with clear and relevant charts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent builds a dashboard with clear and relevant charts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add filters to the dashboard to allow users to view data by date range and campaign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds interactive controls to the dashboard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds interactive controls to the dashboard.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all documentation related to the guest's stay: the reservation, the signed registration card, and the itemized folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent gathers all evidence for the stay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent gathers all evidence for the stay.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a formal response to the chargeback, providing the documentation as evidence that the charges were valid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A detailed response with supporting evidence is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A detailed response with supporting evidence is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the response and evidence to the credit card company through their merchant portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The chargeback dispute is formally submitted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The chargeback dispute is formally submitted.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

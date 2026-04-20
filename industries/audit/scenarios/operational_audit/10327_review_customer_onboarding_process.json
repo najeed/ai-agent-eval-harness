@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Interview sales, operations, and customer support staff to create a detailed process map of the entire onboarding journey.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A visual process map is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A visual process map is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the process map to identify bottlenecks, such as the manual handoff between the sales and operations teams.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor identifies a key delay in the process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor identifies a key delay in the process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend automating the handoff process by integrating the CRM and the operations management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A specific, actionable recommendation for process improvement is made."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A specific, actionable recommendation for process improvement is made.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

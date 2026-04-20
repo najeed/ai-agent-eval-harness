@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the approved merit increase budgets and guidelines from leadership.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst receives the overall budget (e.g., 3% of total salaries)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst receives the overall budget (e.g., 3% of total salaries).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide managers with worksheets to enter recommended increases for their employees based on performance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst distributes compensation planning worksheets to all managers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst distributes compensation planning worksheets to all managers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once all recommendations are approved, perform a bulk upload to update employee salaries in the HRIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully uploads the new salary data into the system, effective on the specified date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully uploads the new salary data into the system, effective on the specified date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

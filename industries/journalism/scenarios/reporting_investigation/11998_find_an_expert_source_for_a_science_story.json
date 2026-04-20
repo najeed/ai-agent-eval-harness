@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search academic databases for scientists who have published research on the relevant topic but are not affiliated with the original study.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of potential expert sources with their publication histories."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of potential expert sources with their publication histories.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find the contact information for the top three potential experts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves university or institutional email addresses and phone numbers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves university or institutional email addresses and phone numbers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a concise email to the experts introducing the story and requesting a brief interview.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent composes a professional and clear interview request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent composes a professional and clear interview request.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

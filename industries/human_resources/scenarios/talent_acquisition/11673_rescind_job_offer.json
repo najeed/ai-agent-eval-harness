@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the failed background check report from the vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter receives the final report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter receives the final report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Consult with the legal department to ensure the rescission process follows all applicable laws (e.g., FCRA).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter confirms the correct legal process with the legal team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter confirms the correct legal process with the legal team.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the candidate that due to the results of the background check, the offer of employment is being rescinded.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter professionally and legally communicates the decision to the candidate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter professionally and legally communicates the decision to the candidate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

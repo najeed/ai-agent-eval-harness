@@ -12,38 +12,46 @@
       {
         "id": "task-0",
         "task_description": "Verify clinician access and patient identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Identity verified/authorized"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Identity verified/authorized",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-1",
         "task_description": "Identify the patient and the type of appointment they need.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the patient's details and the desired appointment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the patient's details and the desired appointment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Confirm there are no available appointments in the desired timeframe.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the provider's schedule is booked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the provider's schedule is booked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the patient to the provider's appointment waitlist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the patient to the waitlist, so they will be automatically flagged if a cancellation occurs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the patient to the waitlist, so they will be automatically flagged if a cancellation occurs.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

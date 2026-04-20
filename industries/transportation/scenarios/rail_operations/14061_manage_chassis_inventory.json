@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Check the number of inbound containers scheduled to arrive in the next 24 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager sees that 200 containers are scheduled to arrive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager sees that 200 containers are scheduled to arrive.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the current on-hand inventory of available chassis at the terminal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager sees there are only 150 available chassis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager sees there are only 150 available chassis.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify the deficit of 50 chassis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system highlights the upcoming shortage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system highlights the upcoming shortage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Contact a chassis pool provider to order an additional 50 chassis to be delivered to the terminal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "More chassis are ordered to meet the anticipated demand, preventing delays."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "More chassis are ordered to meet the anticipated demand, preventing delays.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

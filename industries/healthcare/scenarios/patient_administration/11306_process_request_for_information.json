@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the patient's signature on the ROI form and confirm their identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the request is valid and properly authorized."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the request is valid and properly authorized.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Define the date range and types of records requested (e.g., lab results, progress notes).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the specific records to be released."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the specific records to be released.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a PDF of the requested records and release it to the patient via the secure patient portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully compiles and sends the requested medical records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully compiles and sends the requested medical records.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

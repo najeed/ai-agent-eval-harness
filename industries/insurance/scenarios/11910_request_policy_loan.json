@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the policyholder and verify their identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely identifies the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely identifies the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine the available cash value and the maximum loan amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the maximum amount the customer can borrow against their policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the maximum amount the customer can borrow against their policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the terms of the loan, including the interest rate, and process the loan request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the loan terms and successfully processes the disbursement of funds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the loan terms and successfully processes the disbursement of funds.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

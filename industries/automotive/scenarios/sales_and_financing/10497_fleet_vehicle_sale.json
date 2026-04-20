@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the business's needs and recommend the appropriate vehicle model and configuration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends the 'Transit 250' cargo van."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends the 'Transit 250' cargo van.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check inventory and factory availability to fulfill an order for 10 units.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the order will need to be a factory order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the order will need to be a factory order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a fleet sales quote, applying any available volume discounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a formal quote with fleet pricing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a formal quote with fleet pricing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Process the fleet sale agreement and place the factory order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully completes the sale and submits the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully completes the sale and submits the order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

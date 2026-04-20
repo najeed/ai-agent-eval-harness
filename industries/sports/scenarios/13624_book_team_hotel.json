@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the number of rooms needed and the check-in/check-out dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the specific lodging requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the specific lodging requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for hotels near the opponent's stadium that have the required availability and meet the team's standards.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds two suitable hotels with availability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds two suitable hotels with availability.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Negotiate a group rate and book the block of rooms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the rooms at a discounted rate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the rooms at a discounted rate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

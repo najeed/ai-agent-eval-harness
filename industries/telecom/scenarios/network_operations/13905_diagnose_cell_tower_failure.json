@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the alert for the specific tower ID and retrieve its diagnostic logs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly pulls the last 24 hours of logs for the specified cell tower."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly pulls the last 24 hours of logs for the specified cell tower.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze logs for critical errors, identifying a 'power failure' error code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the primary error code from the logs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the primary error code from the logs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a trouble ticket and assign it to the field engineering team responsible for power systems.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a ticket with the correct diagnosis and assigns it to the power systems team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a ticket with the correct diagnosis and assigns it to the power systems team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

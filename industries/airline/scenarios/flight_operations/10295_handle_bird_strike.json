@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The pilots monitor the engine instruments for any signs of damage or power loss.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The instruments indicate a slight vibration but no loss of thrust."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The instruments indicate a slight vibration but no loss of thrust.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The crew follows the checklist for a bird strike.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilots complete the relevant checklist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilots complete the relevant checklist.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "As a precaution, the pilot informs ATC of the event and decides to return to the departure airport for an inspection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pilot makes a safe decision to return and land."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pilot makes a safe decision to return and land.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

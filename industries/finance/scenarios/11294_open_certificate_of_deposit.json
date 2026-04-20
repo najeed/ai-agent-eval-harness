@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Present the available CD terms and their corresponding interest rates (APY).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly presents the rate for the 12-month CD."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly presents the rate for the 12-month CD.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the early withdrawal penalties.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the financial penalty if the customer withdraws the funds before the 12-month term is up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the financial penalty if the customer withdraws the funds before the 12-month term is up.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Open the CD account and transfer the funds from the customer's savings account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully opens the new CD and funds it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully opens the new CD and funds it.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the details for the international order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the order and its items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the order and its items.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each item, verify the country of origin, value, and Harmonized System (HS) code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all customs-related data is present and accurate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all customs-related data is present and accurate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the commercial invoice document with all required information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates a complete and accurate commercial invoice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates a complete and accurate commercial invoice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

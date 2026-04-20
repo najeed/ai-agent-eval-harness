@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the guest's loyalty profile using their member number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully locates the guest's profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully locates the guest's profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Navigate to the preferences section of the profile.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct area to update preferences."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct area to update preferences.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add 'High floor' and 'Away from elevator' as permanent stay preferences.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully saves the new preferences to the guest's profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully saves the new preferences to the guest's profile.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

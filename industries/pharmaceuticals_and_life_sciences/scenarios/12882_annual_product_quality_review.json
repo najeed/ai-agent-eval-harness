@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Gather data for all batches manufactured in the last year, including yields and cycle times.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent extracts all relevant manufacturing data from the MES."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent extracts all relevant manufacturing data from the MES.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather all QC test results, stability study results, and environmental monitoring data for the period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent extracts all relevant quality data from the LIMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent extracts all relevant quality data from the LIMS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the data for any trends, such as a slow drift in a specific test result over time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs trend analysis and finds no adverse trends."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs trend analysis and finds no adverse trends.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Compile all data and analysis into the APQR report template and route for approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts the complete APQR and routes it for signature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts the complete APQR and routes it for signature.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the official notification from the government to raise the ISPS Security Level from 1 to 2.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "PFSO receives the directive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "PFSO receives the directive.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Implement the pre-planned security measures for Level 2, such as increasing patrols and conducting more frequent ID checks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The PFSO issues instructions to the security team to implement the new measures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The PFSO issues instructions to the security team to implement the new measures.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify all port users and vessels of the change in security level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An alert is broadcast across the port, and signage is updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An alert is broadcast across the port, and signage is updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

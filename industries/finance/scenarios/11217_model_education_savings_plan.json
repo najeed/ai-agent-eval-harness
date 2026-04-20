@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather inputs: child's current age, estimated college costs, and current savings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary variables for the projection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary variables for the projection.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a 529 plan calculator to determine the required monthly contribution.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the required savings amount based on the provided inputs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the required savings amount based on the provided inputs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Present the results and discuss opening a 529 savings account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the required savings goal and outlines the benefits of a 529 account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the required savings goal and outlines the benefits of a 529 account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

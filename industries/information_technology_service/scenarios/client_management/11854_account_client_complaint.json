@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Listen to the client's complaint, empathize with their frustration, and promise to investigate immediately.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client feels heard and acknowledged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client feels heard and acknowledged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the client's ticket data for the last 3 months, focusing on 'Time to Respond' and 'Time to Resolution' metrics.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The data confirms that while response times are within SLA, they are slower than average."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The data confirms that while response times are within SLA, they are slower than average.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Follow up with the client, acknowledging the findings and presenting a plan to improve performance, such as assigning a dedicated technician.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The account manager takes ownership of the issue and presents a concrete solution, rebuilding trust with the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The account manager takes ownership of the issue and presents a concrete solution, rebuilding trust with the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

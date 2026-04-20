@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Power on all of the aircraft's avionics and electronic systems.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all systems are operational."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all systems are operational.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use antennas to 'listen' for any unintended radio emissions from the aircraft's systems.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent scans the frequency spectrum and finds no emissions that exceed the specified limits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent scans the frequency spectrum and finds no emissions that exceed the specified limits.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Transmit high-power radio waves at the aircraft to test its susceptibility, while monitoring the systems for any upsets or faults.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent bombards the aircraft with RF energy and confirms that all systems continue to operate without interruption."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent bombards the aircraft with RF energy and confirms that all systems continue to operate without interruption.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-0",
         "task_description": "Verify clinician access and patient identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Identity verified/authorized"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Identity verified/authorized",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-1",
         "task_description": "Open the patient's chart and create a new therapy note.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Therapist accesses the correct patient and note template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Therapist accesses the correct patient and note template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Document the specific exercises performed, the duration of the session, and subjective/objective observations of the patient's progress.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Therapist accurately documents the details of the session."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Therapist accurately documents the details of the session.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the appropriate billing codes for the services provided and sign the note.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The session is documented, and the charges are captured for billing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The session is documented, and the charges are captured for billing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

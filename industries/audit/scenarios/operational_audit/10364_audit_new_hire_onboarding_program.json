@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Survey a sample of employees hired in the last 6 months to get their feedback on the onboarding experience.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Survey results indicate that new hires feel unprepared for their roles after the standard one-week onboarding."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Survey results indicate that new hires feel unprepared for their roles after the standard one-week onboarding.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the onboarding curriculum and identify that it lacks role-specific training.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor identifies a gap in the onboarding content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor identifies a gap in the onboarding content.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend that HR develop role-specific training paths to be included in the onboarding program.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A recommendation is made to improve the effectiveness of onboarding."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A recommendation is made to improve the effectiveness of onboarding.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

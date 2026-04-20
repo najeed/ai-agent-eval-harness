@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and explain the process for temporary accommodations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent explains the need for medical documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent explains the need for medical documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive the doctor's note and create a temporary accommodation plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a plan for a volunteer note-taker for the student's classes for six weeks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a plan for a volunteer note-taker for the student's classes for six weeks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the student's professors of the temporary accommodations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends official notification letters to the relevant faculty."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends official notification letters to the relevant faculty.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

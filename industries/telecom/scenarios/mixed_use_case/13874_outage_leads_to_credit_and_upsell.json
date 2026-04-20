@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Handle the initial outage report by checking the network status and providing an ETR.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully handles the service outage part of the call."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully handles the service outage part of the call.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Proactively apply a service credit for the downtime.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent applies a credit without the customer having to ask."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent applies a credit without the customer having to ask.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the customer's account and propose an upgrade to a business-tier plan with an SLA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pivots to a sales conversation and explains the benefits of a business plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pivots to a sales conversation and explains the benefits of a business plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

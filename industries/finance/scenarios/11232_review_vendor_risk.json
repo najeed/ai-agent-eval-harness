@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Pull a third-party financial risk report for the specified vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves the vendor's credit score and financial health report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves the vendor's credit score and financial health report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the report for any red flags, such as poor credit rating or pending litigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the report and finds no significant red flags."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the report and finds no significant red flags.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the risk assessment and provide a recommendation to proceed with the contract.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the assessment and gives a 'low risk' recommendation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the assessment and gives a 'low risk' recommendation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

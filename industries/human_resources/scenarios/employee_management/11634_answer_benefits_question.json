@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the employee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the employee's identity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the employee's identity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain that for security and privacy reasons, the company does not have access to their 401(k) balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the privacy policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the privacy policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the employee with the website and contact information for the 401(k) provider (e.g., Fidelity, Vanguard).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the correct contact information for the benefits vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the correct contact information for the benefits vendor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

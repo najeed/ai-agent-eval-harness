@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the customer's active subscription.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the subscription details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the subscription details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the customer with a secure portal or link to update their payment information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent guides the customer to the secure payment update form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent guides the customer to the secure payment update form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm that the new payment method has been successfully saved for the subscription.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the update in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the update in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

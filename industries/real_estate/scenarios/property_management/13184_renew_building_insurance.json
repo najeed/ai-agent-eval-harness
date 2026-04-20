@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the current insurance policy to review coverage and premium.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the details of the expiring policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the details of the expiring policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the insurance broker to request renewal quotes from multiple carriers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A request is sent to the broker to shop for competitive insurance quotes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A request is sent to the broker to shop for competitive insurance quotes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the quotes with the property owner and process the payment for the chosen policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "After owner approval, the premium for the new policy is paid and the new declaration page is saved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "After owner approval, the premium for the new policy is paid and the new declaration page is saved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

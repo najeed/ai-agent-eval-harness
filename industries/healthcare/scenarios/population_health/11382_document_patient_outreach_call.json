@@ -12,38 +12,46 @@
       {
         "id": "task-0",
         "task_description": "Verify clinician access and patient identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Identity verified/authorized"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Identity verified/authorized",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-1",
         "task_description": "Open the patient's record in the care management platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Care manager finds the correct patient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Care manager finds the correct patient.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Make the phone call to the patient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The care manager speaks with the patient to assess their condition."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The care manager speaks with the patient to assess their condition.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the call in a new note, including that the patient has scheduled their follow-up appointment and has obtained their medications.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The outreach attempt and its outcome are documented, closing the loop on the post-discharge follow-up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The outreach attempt and its outcome are documented, closing the loop on the post-discharge follow-up.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

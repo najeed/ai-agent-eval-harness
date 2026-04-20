@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new product code and name for the experimental material.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new, unique product identifier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new, unique product identifier.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the formulation components and their target percentages into the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new formulation recipe with 4 components, totaling 100%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new formulation recipe with 4 components, totaling 100%.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Define the required in-process and final quality tests for the new product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully links 5 quality tests (e.g., viscosity, pH, solids content) to the new product specification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully links 5 quality tests (e.g., viscosity, pH, solids content) to the new product specification.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the confirmed fault location from the FLISR system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System has the GPS coordinates of the needed repair."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System has the GPS coordinates of the needed repair.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the mobile workforce management system for the real-time location and status of all field crews.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System gets the location and availability of all crews."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System gets the location and availability of all crews.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify the closest available crew and dispatch them to the fault location with all relevant outage details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System sends a work order to the optimal crew's mobile device."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System sends a work order to the optimal crew's mobile device.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

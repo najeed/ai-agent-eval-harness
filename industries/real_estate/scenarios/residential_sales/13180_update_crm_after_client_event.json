@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Take the list of attendees from the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a list of all clients who attended."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a list of all clients who attended.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each attendee, log their attendance in their CRM contact record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Each relevant contact record is updated to show they attended the event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Each relevant contact record is updated to show they attended the event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add any personal notes from conversations at the event (e.g., 'Client X mentioned their sister is looking to buy').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specific, actionable notes are added to the relevant contact records for future follow-up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specific, actionable notes are added to the relevant contact records for future follow-up.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

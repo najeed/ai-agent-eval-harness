@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a list of documents from the attorney that will be used as exhibits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the list of documents to be prepared."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the list of documents to be prepared.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each document, create an exhibit cover page and label it sequentially (Exhibit A, Exhibit B, etc.).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates properly labeled exhibit pages."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates properly labeled exhibit pages.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Combine each exhibit cover page with its corresponding document into a single PDF file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a separate, correctly formatted PDF for each exhibit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a separate, correctly formatted PDF for each exhibit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create an index of all exhibits to be filed with the motion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a final exhibit index."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a final exhibit index.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

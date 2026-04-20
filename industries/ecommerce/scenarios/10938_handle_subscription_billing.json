@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all active subscriptions due for renewal today.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System retrieves a list of all customers to be billed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System retrieves a list of all customers to be billed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each subscription, charge the customer's saved payment method for the monthly fee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System processes the recurring payments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System processes the recurring payments.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each successful payment, automatically generate a new order for this month's coffee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates new orders for all successfully billed customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates new orders for all successfully billed customers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Before sending drill samples to the lab, insert certified reference materials (standards) and blanks into the sample sequence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "QA/QC samples are correctly inserted into the sample batch."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "QA/QC samples are correctly inserted into the sample batch.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive the assay results from the lab for the entire batch, including the QA/QC samples.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The lab results are received and imported."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The lab results are received and imported.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the results for the standards and blanks. If a standard's result is outside the acceptable range, flag the batch for a re-assay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows one of the standards failed, and the corresponding batch of samples is flagged for re-assay at the lab."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows one of the standards failed, and the corresponding batch of samples is flagged for re-assay at the lab.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

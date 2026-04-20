@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Log the product complaint in the quality management system, capturing all details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new complaint record with the product name, lot number, and description of the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new complaint record with the product name, lot number, and description of the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Arrange for the complaint sample to be returned from the pharmacy for investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a return shipping label and instructions for the pharmacist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a return shipping label and instructions for the pharmacist.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the retention samples for the same batch to check for the discoloration issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the retained samples and confirms that the discoloration is also present."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the retained samples and confirms that the discoloration is also present.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Initiate a formal quality investigation to determine the root cause of the discoloration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent opens a new investigation record and links it to the product complaint."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent opens a new investigation record and links it to the product complaint.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

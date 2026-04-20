@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve property details, including square footage, number of beds/baths, and tax records.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary factual data for the listing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary factual data for the listing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write compelling marketing copy for the public remarks section, highlighting key features.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates engaging and descriptive text for the listing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates engaging and descriptive text for the listing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload professional photos and schedule the listing to go live on the MLS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully uploads media and publishes the listing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully uploads media and publishes the listing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

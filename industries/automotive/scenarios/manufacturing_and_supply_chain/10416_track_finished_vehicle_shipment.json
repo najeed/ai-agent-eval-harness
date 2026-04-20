@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the shipment order details using the dealership's ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the shipment order and the carrier details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the shipment order and the carrier details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the GPS location of the transport truck carrying the vehicles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pings the carrier's GPS and finds the truck is 50 miles away, delayed by traffic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pings the carrier's GPS and finds the truck is 50 miles away, delayed by traffic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the dealership with an updated estimated time of arrival.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs the dealership of the new ETA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs the dealership of the new ETA.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

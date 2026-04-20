@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the reservation system for the current wait time and any potential no-shows.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The host sees a 30-minute wait but also a large reservation that is 15 minutes late."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The host sees a 30-minute wait but also a large reservation that is 15 minutes late.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the walk-in party of the estimated wait time and offer to add them to the waitlist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The host clearly communicates the wait time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The host clearly communicates the wait time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the party to the digital waitlist, which will send them a text message when their table is ready.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The party is successfully added to the waitlist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The party is successfully added to the waitlist.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

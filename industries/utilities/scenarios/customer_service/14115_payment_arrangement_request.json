@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's account and verify the past-due balance and disconnection date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the amount owed and the scheduled shut-off date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the amount owed and the scheduled shut-off date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the customer's eligibility for a payment arrangement based on their payment history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer is eligible for a payment plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer is eligible for a payment plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Offer the available payment plan options (e.g., splitting the balance over 3 months) and process the customer's selection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sets up the payment arrangement and cancels the pending disconnection order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sets up the payment arrangement and cancels the pending disconnection order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

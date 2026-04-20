@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the drawing has been fully approved and is at the 'Issued for Construction' revision.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the drawing is ready for fabrication."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the drawing is ready for fabrication.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a transmittal to the selected fabrication shop.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates a new transmittal record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates a new transmittal record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Attach the drawing and any relevant specifications to the transmittal and issue it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the complete fabrication package to the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the complete fabrication package to the vendor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

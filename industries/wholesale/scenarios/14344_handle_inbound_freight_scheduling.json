@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a notification from the freight carrier that the shipment is ready for final delivery.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the alert from the carrier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the alert from the carrier.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the warehouse's receiving dock schedule for availability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an open time slot for tomorrow morning."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an open time slot for tomorrow morning.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the delivery appointment with the carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the delivery."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the delivery.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

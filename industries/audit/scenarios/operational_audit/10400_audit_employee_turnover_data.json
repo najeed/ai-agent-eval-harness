@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain employee turnover data for the past two years from the HR system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor has the complete turnover dataset."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor has the complete turnover dataset.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data by department, manager, and tenure to identify any hotspots or trends.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis reveals that one specific department has a turnover rate three times higher than the company average."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis reveals that one specific department has a turnover rate three times higher than the company average.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the exit interview data for the high-turnover department to identify common themes and root causes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The exit interview data points to poor management and a lack of career development as the primary reasons for leaving."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The exit interview data points to poor management and a lack of career development as the primary reasons for leaving.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

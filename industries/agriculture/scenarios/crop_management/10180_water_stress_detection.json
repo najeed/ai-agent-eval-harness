@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Process the thermal imagery from the drone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a temperature map of the crop canopy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a temperature map of the crop canopy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify areas where the crop canopy temperature is significantly higher than the ambient air temperature, indicating water stress.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent highlights specific zones in the field where plants are running hot."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent highlights specific zones in the field where plants are running hot.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend targeted irrigation for the stressed zones to prevent yield loss.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent suggests a variable rate irrigation plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent suggests a variable rate irrigation plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

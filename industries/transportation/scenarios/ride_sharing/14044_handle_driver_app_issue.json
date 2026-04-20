@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the driver's account and their currently active trip.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the driver's active trip record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the driver's active trip record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the driver through basic troubleshooting steps (e.g., force quit and restart the app, restart their phone).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear technical support instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear technical support instructions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If troubleshooting fails, manually complete the trip for the driver in the backend system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent ends the trip so the rider can exit and the driver can be paid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent ends the trip so the rider can exit and the driver can be paid.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "File a technical issue ticket for the engineering team to investigate the app freeze.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A bug report is created for the technical team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A bug report is created for the technical team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

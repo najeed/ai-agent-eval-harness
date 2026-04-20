@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Compare the invoiced amount with the percentage of work completed, as verified by the site superintendent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the work is 50% complete, but the invoice is for 100% of the contract value."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the work is 50% complete, but the invoice is for 100% of the contract value.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Mark the invoice as 'Disputed' in the accounting system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The invoice status is updated to 'Disputed'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The invoice status is updated to 'Disputed'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a notification to the subcontractor explaining the reason for the dispute and requesting a revised invoice for 50% of the value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear, professional dispute notification is sent to the subcontractor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear, professional dispute notification is sent to the subcontractor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

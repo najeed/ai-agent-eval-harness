@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search the application logs specifically for the affected customer's account ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent isolates the logs for the specific customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent isolates the logs for the specific customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the logs and discover the customer has an unusually large amount of data (e.g., millions of records), which is causing database queries to be slow only for them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the 'noisy neighbor' problem."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the 'noisy neighbor' problem.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Escalate the issue to engineering to explore performance optimizations for large accounts, such as creating dedicated database indexes or moving them to a different database shard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a detailed analysis to engineering for a long-term fix."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a detailed analysis to engineering for a long-term fix.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

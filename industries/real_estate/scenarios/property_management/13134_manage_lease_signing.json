@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft the lease agreement with the correct tenant names, property address, rent amount, and lease dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A legally compliant lease agreement is accurately generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A legally compliant lease agreement is accurately generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send the lease agreement to the new tenant for signature via an e-signature platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The lease is sent for signature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The lease is sent for signature.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once signed, countersign the lease on behalf of the landlord and provide a fully executed copy to the tenant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The lease is fully executed and a copy is stored and sent to the tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The lease is fully executed and a copy is stored and sent to the tenant.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

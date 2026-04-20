@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a report from the certification management system to identify any equipment with certifications expiring in the next 90 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is generated listing several pieces of equipment, including the BOP, with upcoming expiration dates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is generated listing several pieces of equipment, including the BOP, with upcoming expiration dates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule a third-party inspector to come to the rig to perform the required inspections and recertify the equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An inspector is booked for a specific date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An inspector is booked for a specific date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the inspection is complete, upload the new certificates into the system and update the expiration dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system is updated with the new certification documents, ensuring the rig remains compliant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system is updated with the new certification documents, ensuring the rig remains compliant.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

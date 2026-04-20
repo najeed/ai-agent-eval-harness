@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the tip for specific, verifiable details (names, dates, project numbers).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent extracts a list of concrete details from the tip."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent extracts a list of concrete details from the tip.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attempt to corroborate the details through public records or by finding a second, independent source who can confirm the information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a public document that supports one of the tip's claims."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a public document that supports one of the tip's claims.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the verification, decide whether the tip is credible enough to warrant a full investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes an informed decision to either pursue or drop the story."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes an informed decision to either pursue or drop the story.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all income and expense transactions for the last month from the accounting software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets all financial transactions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets all financial transactions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Categorize all transactions into operating, investing, and financing activities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly categorizes all transactions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly categorizes all transactions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a statement of cash flows for the month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a formal cash flow statement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a formal cash flow statement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

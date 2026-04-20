@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the vacant unit and verify that it requires carpet cleaning as part of the standard turnover process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the need for carpet cleaning."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the need for carpet cleaning.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a preferred carpet cleaning vendor and request a quote or schedule the service based on standard pricing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent contacts an approved vendor to book the service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent contacts an approved vendor to book the service.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for the carpet cleaning and schedule it to be completed before the new tenant's move-in date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and schedules the work order correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and schedules the work order correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

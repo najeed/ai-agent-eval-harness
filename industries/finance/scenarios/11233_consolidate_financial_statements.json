@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the individual financial statements for the parent company and all subsidiaries.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully gathers all four sets of financial statements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully gathers all four sets of financial statements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify and process all intercompany transactions that need to be eliminated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies and lists all intercompany loans and sales."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies and lists all intercompany loans and sales.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the consolidated balance sheet and income statement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces the final consolidated financial reports."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces the final consolidated financial reports.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

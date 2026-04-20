@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Enter the shipment details: origin, destination, pallet count, dimensions, weight, and freight class.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately enters all required LTL rating data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately enters all required LTL rating data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request rates from all contracted LTL carriers via a rating API.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system retrieves quotes from five different LTL carriers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system retrieves quotes from five different LTL carriers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the quotes and select the carrier with the lowest price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the cheapest carrier and books the shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the cheapest carrier and books the shipment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

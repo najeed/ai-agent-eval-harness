@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the request for more hot dog buns from the concession stand.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the request from Stand 14."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the request from Stand 14.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the inventory level of hot dog buns in the central storeroom.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms there are sufficient buns in stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms there are sufficient buns in stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a runner to deliver two cases of buns from the storeroom to the concession stand.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and assigns a delivery task to an available runner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and assigns a delivery task to an available runner.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

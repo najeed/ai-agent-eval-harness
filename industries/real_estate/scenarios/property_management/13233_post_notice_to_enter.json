@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the tenant and the reason for entry.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the unit and purpose of the visit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the unit and purpose of the visit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a formal 'Notice to Enter' document, specifying the date, time window, and reason.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a legally compliant notice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a legally compliant notice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deliver the notice to the tenant according to state law (e.g., post on the door and mail).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the delivery of the notice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the delivery of the notice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

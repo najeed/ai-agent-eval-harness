@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Verify that the signed informed consent form (ICF) has been obtained and is documented.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the ICF is complete and uploaded to the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the ICF is complete and uploaded to the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Randomize the patient using the Interactive Response Technology (IRT) system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters patient details into the IRT and receives the treatment arm assignment (e.g., 'Active Drug' or 'Placebo')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters patient details into the IRT and receives the treatment arm assignment (e.g., 'Active Drug' or 'Placebo').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispense the correct investigational product kit to the patient as directed by the IRT.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the dispensed kit number in the IRT system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the dispensed kit number in the IRT system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the patient's status to 'Enrolled' in the Clinical Trial Management System (CTMS).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the patient's status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the patient's status.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the 'Chute Blocked' alarm from the control system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator is aware of the blockage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator is aware of the blockage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately stop the feeding conveyor to prevent more material from being spilled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The conveyor is stopped, limiting the size of the spill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The conveyor is stopped, limiting the size of the spill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority work order for a maintenance crew to safely clear the blockage and clean up the spill.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is created to resolve the issue and get the conveyor system running again."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is created to resolve the issue and get the conveyor system running again.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

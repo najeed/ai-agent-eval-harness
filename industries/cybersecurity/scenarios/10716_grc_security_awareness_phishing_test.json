@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select a phishing template from the training platform (e.g., a fake 'password reset' email).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager selects an appropriate and realistic template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager selects an appropriate and realistic template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Launch the phishing campaign, sending the simulated phishing email to all employees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The campaign is successfully launched."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The campaign is successfully launched.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the campaign results, noting the percentage of users who clicked the link, and automatically enroll those users in remedial training.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager analyzes the results and ensures that employees who failed the test receive follow-up training."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager analyzes the results and ensures that employees who failed the test receive follow-up training.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the final grant report, including a summary of outcomes and final financial statements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The grant manager receives the complete closeout package."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The grant manager receives the complete closeout package.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the report to ensure all grant requirements and objectives were met.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager confirms the non-profit has met all its obligations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager confirms the non-profit has met all its obligations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the final payment, if any, and officially close the grant in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager approves the final report and updates the grant status to 'Closed'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager approves the final report and updates the grant status to 'Closed'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

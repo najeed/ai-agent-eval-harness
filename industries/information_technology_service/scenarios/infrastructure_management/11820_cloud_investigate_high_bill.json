@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use the AWS Cost Explorer to break down the costs by service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician finds that the 'Data Transfer Out' costs are abnormally high."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician finds that the 'Data Transfer Out' costs are abnormally high.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the VPC flow logs to identify which resource is generating the high data transfer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The logs show a single EC2 instance is sending a large amount of data to an unknown IP address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The logs show a single EC2 instance is sending a large amount of data to an unknown IP address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Isolate the EC2 instance by placing it in a restrictive security group and create a high-priority security incident ticket to investigate a potential compromise.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The immediate cost bleed is stopped, and a security investigation is initiated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The immediate cost bleed is stopped, and a security investigation is initiated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

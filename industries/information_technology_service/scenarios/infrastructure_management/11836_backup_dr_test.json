@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use the backup system to perform a test failover, booting a backed-up server in an isolated cloud environment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The server's virtual machine boots successfully in the test environment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The server's virtual machine boots successfully in the test environment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the test server is functional by logging in and checking that key applications are running.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician confirms the server is operational."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician confirms the server is operational.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the results of the DR test, including the time it took to failover, and shut down the test environment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A successful DR test is documented for the client's compliance records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A successful DR test is documented for the client's compliance records.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

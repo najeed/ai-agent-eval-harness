@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The flight crew dons oxygen masks and follows the smoke/fire checklist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilots follow emergency procedures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilots follow emergency procedures.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The pilot declares an emergency with air traffic control ('Mayday, Mayday, Mayday') and requests vectors to the nearest suitable airport.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot communicates the emergency to ATC."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot communicates the emergency to ATC.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The OCC is notified and begins coordinating with the diversion airport, emergency services, and the airline's crisis response team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The airline's ground teams activate their emergency response plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The airline's ground teams activate their emergency response plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

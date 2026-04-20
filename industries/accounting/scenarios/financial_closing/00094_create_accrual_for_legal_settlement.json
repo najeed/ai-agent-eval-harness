@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the estimated settlement amount and likelihood from the legal department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives notification that a settlement of $100,000 is probable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives notification that a settlement of $100,000 is probable.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Based on accounting standards (ASC 450), determine that an accrual is required because the loss is both probable and estimable.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly applies the accounting standard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly applies the accounting standard.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create and post a journal entry to debit 'Legal Expense' and credit 'Accrued Legal Liabilities' for the estimated amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts the correct journal entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts the correct journal entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

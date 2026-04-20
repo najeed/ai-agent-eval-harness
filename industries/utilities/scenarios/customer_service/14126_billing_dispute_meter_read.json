@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's bill and confirm that the read type was 'Estimated'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the bill was based on an estimate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the bill was based on an estimate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ask the customer to provide a current, actual meter read.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent guides the customer on how to read their meter and records the value."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent guides the customer on how to read their meter and records the value.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Re-bill the account using the actual meter read provided by the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent cancels the old bill and issues a new, corrected bill, resolving the dispute."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent cancels the old bill and issues a new, corrected bill, resolving the dispute.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

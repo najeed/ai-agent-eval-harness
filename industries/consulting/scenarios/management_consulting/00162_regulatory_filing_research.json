@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the SEC's EDGAR database and find all filings for a specific company in the last year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves a list of the company's recent filings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves a list of the company's recent filings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "In the latest 10-K filing, locate the 'Risk Factors' section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly navigates to the 'Risk Factors' section of the document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly navigates to the 'Risk Factors' section of the document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Summarize the top 5 risks disclosed by the company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a concise summary of the key risks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a concise summary of the key risks.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

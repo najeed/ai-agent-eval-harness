@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The customer asks the chatbot: 'What are your hours for the downtown store?'",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The chatbot understands the user's intent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The chatbot understands the user's intent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The chatbot looks up the requested store in the store information database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The chatbot finds the correct store record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The chatbot finds the correct store record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The chatbot replies with the store's hours for the current week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer receives an accurate and immediate answer to their question."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer receives an accurate and immediate answer to their question.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

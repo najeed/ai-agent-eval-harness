@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Establish a baseline of the user's normal network activity (e.g., work hours, sites visited, data access patterns).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully models the user's normal behavior."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully models the user's normal behavior.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Monitor the user's live activity and compare it against their baseline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst actively monitors the user's behavior."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst actively monitors the user's behavior.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Flag anomalous activity, such as logging in late at night and attempting to access classified data far outside their job description.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies a significant behavioral anomaly and escalates it for investigation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies a significant behavioral anomaly and escalates it for investigation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

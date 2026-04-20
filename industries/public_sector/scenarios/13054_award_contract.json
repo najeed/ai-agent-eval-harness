@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the contract and the selected winning vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The procurement officer has the details of the winning bid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The procurement officer has the details of the winning bid.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the official contract documents for signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer successfully generates the legal contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer successfully generates the legal contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the contract to the vendor for signature and notify the unsuccessful bidders of the outcome.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer sends the contract for execution and sends notifications to all other bidders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer sends the contract for execution and sends notifications to all other bidders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

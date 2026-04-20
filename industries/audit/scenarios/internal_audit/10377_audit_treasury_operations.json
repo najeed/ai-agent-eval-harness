@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the company's investment policy to understand the types of investments that are permitted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor understands the rules for investing company cash."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor understands the rules for investing company cash.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain a list of all current investments and verify they are compliant with the policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms all investments are of the permitted type and credit rating."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms all investments are of the permitted type and credit rating.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Test the controls over wire transfers, verifying that all large transfers require dual approval from two different managers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor tests a sample of wire transfers and confirms all had the required dual approvals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor tests a sample of wire transfers and confirms all had the required dual approvals.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

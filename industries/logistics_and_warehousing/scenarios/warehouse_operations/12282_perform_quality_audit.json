@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Scan a package's shipping label at the audit station.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system displays the order details for the auditor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system displays the order details for the auditor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The auditor opens the package and scans each item inside to verify it against the order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor finds that all items and quantities are correct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor finds that all items and quantities are correct.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The auditor marks the quality audit as 'Passed' in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is logged as having passed the audit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is logged as having passed the audit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The package is resealed and sent to the shipping dock.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The audited package proceeds to shipping."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The audited package proceeds to shipping.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

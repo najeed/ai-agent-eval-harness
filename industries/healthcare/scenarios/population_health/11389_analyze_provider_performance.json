@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the provider performance dashboard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The director accesses the analytics for provider-level reporting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The director accesses the analytics for provider-level reporting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select several key quality measures (e.g., HBP control, A1c control, cancer screening).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The director chooses the measures they want to compare."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The director chooses the measures they want to compare.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report that shows each provider's performance rate for the selected measures, benchmarked against the clinic average.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report allows the director to identify high-performing providers and those who may need additional support or training."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report allows the director to identify high-performing providers and those who may need additional support or training.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

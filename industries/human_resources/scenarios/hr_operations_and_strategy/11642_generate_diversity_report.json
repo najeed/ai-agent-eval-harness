@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the reporting tools in the HRIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst navigates to the correct reporting module."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst navigates to the correct reporting module.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a report that includes employee demographic data and their current job level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst generates the raw data from the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst generates the raw data from the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create pivot tables and charts to visualize the demographic breakdown at each level of the organization.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst creates a clear, visual presentation of the company's diversity metrics."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst creates a clear, visual presentation of the company's diversity metrics.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

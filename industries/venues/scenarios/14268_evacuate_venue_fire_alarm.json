@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the fire alarm and confirm it is not a false alarm.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms a legitimate alarm via CCTV or staff report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms a legitimate alarm via CCTV or staff report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Activate the emergency announcement system, instructing guests to evacuate calmly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent plays the pre-recorded evacuation message over the PA system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent plays the pre-recorded evacuation message over the PA system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch all staff to their assigned evacuation posts to direct guests.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent issues a command for all staff to proceed to their emergency positions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent issues a command for all staff to proceed to their emergency positions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Contact the local fire department and provide them with necessary information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calls 911 and informs the fire department of the alarm and the venue's status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calls 911 and informs the fire department of the alarm and the venue's status.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

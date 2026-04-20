@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the formulation for the new product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the list of all chemical components."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the list of all chemical components.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each component, check its registration status in the company's REACH database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that 3 of the 4 components are already registered, but one is not."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that 3 of the 4 components are already registered, but one is not.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Flag the new product as 'Not for sale in EU' and notify the R&D team that the unregistered component must be registered or replaced.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the product's compliance status and sends a notification to the R&D manager."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the product's compliance status and sends a notification to the R&D manager.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

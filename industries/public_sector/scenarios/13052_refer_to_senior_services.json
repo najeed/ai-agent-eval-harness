@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the elderly client's case file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The social worker pulls up the correct case."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The social worker pulls up the correct case.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assess the client's needs for additional support services.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The social worker identifies a need for Meals on Wheels and senior transportation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The social worker identifies a need for Meals on Wheels and senior transportation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Make formal referrals to the appropriate partner agencies for these services.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The social worker submits referrals to the local Area Agency on Aging."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The social worker submits referrals to the local Area Agency on Aging.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

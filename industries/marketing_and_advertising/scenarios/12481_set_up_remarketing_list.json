@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "In Google Ads, create a new audience based on 'Website Visitors'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent starts the audience creation process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent starts the audience creation process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Define the list to include all users who have visited in the last 90 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets the correct membership duration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets the correct membership duration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply this audience to an existing search campaign with a '+25%' bid adjustment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sets up the RLSA, which will increase bids for past visitors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sets up the RLSA, which will increase bids for past visitors.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

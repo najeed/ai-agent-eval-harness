@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the project's original scope, budget, and timeline from the SOW.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the planned project parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the planned project parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the final project outcomes, actual costs, and actual completion date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the actual project results."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the actual project results.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the planned vs. actual data to highlight successes and variances.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates variances (e.g., 'completed 5% under budget')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates variances (e.g., 'completed 5% under budget').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Draft a 'Lessons Learned' section based on project team feedback notes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent summarizes the key lessons from the project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent summarizes the key lessons from the project.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

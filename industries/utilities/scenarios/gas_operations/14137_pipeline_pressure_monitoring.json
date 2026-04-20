@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Display real-time pressure readings from sensors along a major transmission pipeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System shows a dashboard with live pressure data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System shows a dashboard with live pressure data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system detects that pressure at one point is approaching its Maximum Allowable Operating Pressure (MAOP).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a high-priority pressure alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a high-priority pressure alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend an action to reduce pressure, such as slightly reducing flow from an upstream compressor station.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System suggests a specific operational adjustment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System suggests a specific operational adjustment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the member's frequent flyer account and verify their elite status level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the member has Gold status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the member has Gold status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the lounge access policy for Gold status members.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that Gold status allows for one guest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that Gold status allows for one guest.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the member they can bring one guest for free and the second guest will need to pay the standard entry fee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the policy and offers to process payment for the second guest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the policy and offers to process payment for the second guest.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the final version of the movie and the list of approved journalists.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the movie file and the distribution list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the movie file and the distribution list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a unique, forensically watermarked copy of the movie for each journalist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates individually watermarked files for each recipient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates individually watermarked files for each recipient.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a secure, time-limited viewing link for the watermarked copy to each journalist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully distributes the secure links."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully distributes the secure links.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and their credit card account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer and their account details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer and their account details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the customer's account history, payment record, and credit score.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer is eligible for a credit limit review based on internal policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer is eligible for a credit limit review based on internal policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the request for a credit limit increase, which is automatically approved by the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the request and the system automatically approves an increase from $5,000 to $7,500."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the request and the system automatically approves an increase from $5,000 to $7,500.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Inform the customer of their new credit limit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the new, higher credit limit to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the new, higher credit limit to the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

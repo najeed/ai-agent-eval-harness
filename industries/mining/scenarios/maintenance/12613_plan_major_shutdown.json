@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Compile the full scope of work for the shutdown, including all maintenance jobs, inspections, and capital tie-ins.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive work list with thousands of tasks is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive work list with thousands of tasks is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Develop a detailed, integrated schedule for all shutdown activities, identifying the critical path.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A Gantt chart is created showing the critical path for the 10-day shutdown."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A Gantt chart is created showing the critical path for the 10-day shutdown.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book all necessary resources, including contractors, cranes, and specialty tools, for the planned dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All required external resources are booked and confirmed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All required external resources are booked and confirmed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

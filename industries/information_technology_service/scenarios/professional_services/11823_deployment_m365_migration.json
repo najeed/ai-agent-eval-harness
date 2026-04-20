@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run the final synchronization of mailboxes from the on-premise server to Microsoft 365.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All mailbox data is successfully synced to the cloud."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All mailbox data is successfully synced to the cloud.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the client's public DNS records (MX, SPF, DKIM) to point to Microsoft 365 instead of the on-premise server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Mail flow is successfully redirected to the cloud."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Mail flow is successfully redirected to the cloud.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run post-migration scripts to reconfigure users' Outlook profiles on Monday morning.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "End-users can access their email on Monday with minimal disruption."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "End-users can access their email on Monday with minimal disruption.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

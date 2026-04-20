@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve performance data (spend, impressions, clicks, conversions) from Google Ads for the last 7 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pulls the correct data from the Google Ads API."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pulls the correct data from the Google Ads API.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve performance data from Facebook Ads for the last 7 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pulls the correct data from the Facebook Ads API."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pulls the correct data from the Facebook Ads API.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Consolidate the data into a standardized report template, calculating overall metrics like total spend and cost-per-conversion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a single, accurate report with all data correctly consolidated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a single, accurate report with all data correctly consolidated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

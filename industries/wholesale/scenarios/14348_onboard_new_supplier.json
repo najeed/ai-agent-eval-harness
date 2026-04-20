@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the new supplier's information, including contact details, payment terms, and product catalog.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all the necessary supplier data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all the necessary supplier data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new supplier record in the procurement system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new supplier account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new supplier account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload the supplier's product catalog and pricing into the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the new products to the company's catalog."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the new products to the company's catalog.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

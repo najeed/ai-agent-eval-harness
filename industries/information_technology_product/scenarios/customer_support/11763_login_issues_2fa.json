@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Go through a rigorous identity verification process with the user, using personal details and account history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the user's identity with a high degree of certainty."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the user's identity with a high degree of certainty.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Once identity is confirmed, temporarily disable 2FA on the user's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully disables 2FA, allowing the user to log in."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully disables 2FA, allowing the user to log in.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the user to immediately set up 2FA again with their new device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions to re-secure the account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions to re-secure the account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

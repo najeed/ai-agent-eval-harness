@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and their personal loan account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly locates the customer's active personal loan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly locates the customer's active personal loan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the loan payoff amount, including principal and any accrued interest, valid for today.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates an accurate payoff quote."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates an accurate payoff quote.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the payoff quote to the customer and explain how to make the payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the total amount due and the payment options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the total amount due and the payment options.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

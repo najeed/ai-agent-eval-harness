@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule the jig's maintenance in a way that minimizes disruption to the production schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a weekend slot for the maintenance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a weekend slot for the maintenance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Arrange for the maintenance team to perform the required checks and repairs on the jig.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a work order for the maintenance team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a work order for the maintenance team.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After maintenance is complete, verify the jig's dimensions and alignment before returning it to production service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the jig is within tolerance and updates its status to 'Available'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the jig is within tolerance and updates its status to 'Available'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

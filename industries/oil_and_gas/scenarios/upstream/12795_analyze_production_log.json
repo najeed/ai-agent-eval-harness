@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run the PLT tool in the well, which measures flow rate, fluid density, and water holdup at different depths.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete set of production log data is acquired over the reservoir interval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete set of production log data is acquired over the reservoir interval.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the log data to create a profile of where oil, gas, and water are entering the wellbore.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis clearly shows that the bottom-most set of perforations is producing 100% water."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis clearly shows that the bottom-most set of perforations is producing 100% water.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend a workover to set a plug to shut off the water-producing perforations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A workover recommendation is created to isolate the water zone and improve the well's oil cut."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A workover recommendation is created to isolate the water zone and improve the well's oil cut.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

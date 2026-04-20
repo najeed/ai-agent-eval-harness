@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the patient's chart and find the patient education flowsheet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse navigates to the correct documentation area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse navigates to the correct documentation area.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the 'Diabetes Education' topic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse chooses the appropriate education category."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse chooses the appropriate education category.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document that education on 'Glucose Meter Use' was provided and that the patient demonstrated understanding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse successfully documents the education session, meeting regulatory requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse successfully documents the education session, meeting regulatory requirements.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

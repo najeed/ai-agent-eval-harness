@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the faculty member and the course sections to be merged.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the professor teaches sections 001, 002, and 003 of 'HIST101'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the professor teaches sections 001, 002, and 003 of 'HIST101'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the implications of merging, such as how the gradebook will appear.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the features of a merged course shell."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the features of a merged course shell.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the course merge request in the LMS admin tools.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully merges the sections into a single LMS course."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully merges the sections into a single LMS course.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the passenger's booking using their passport or confirmation number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully finds the passenger's reservation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully finds the passenger's reservation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the passenger's travel documents (passport and visa) are valid for their destination.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the documents are valid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the documents are valid.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Weigh the passenger's bag, confirm it is within the weight limit, collect any baggage fees, and print the bag tag and boarding pass.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the bag, takes payment, and provides the passenger with their travel documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the bag, takes payment, and provides the passenger with their travel documents.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

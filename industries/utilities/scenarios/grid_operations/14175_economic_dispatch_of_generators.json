@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Get the system load forecast for the next hour.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System has the target MW to be generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System has the target MW to be generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the bid prices and operating limits for all available power plants.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System compiles the cost and capacity for each generator."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System compiles the cost and capacity for each generator.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run an economic dispatch algorithm to determine the optimal output level for each plant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates a dispatch schedule that stacks the generators from cheapest to most expensive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates a dispatch schedule that stacks the generators from cheapest to most expensive.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Send the dispatch setpoints to each power plant's control system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System sends the MW targets to the generators."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System sends the MW targets to the generators.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

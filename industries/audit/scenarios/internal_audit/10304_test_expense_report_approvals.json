@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain a data dump of all expense reports submitted in the last quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor receives a complete dataset of expense reports."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor receives a complete dataset of expense reports.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a random sample of 50 expense reports over $1,000.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A statistically valid sample is selected for testing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A statistically valid sample is selected for testing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each sampled report, verify that the approver was the employee's direct manager or higher, as required by policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor finds 3 instances where an employee's peer approved the report, noting them as exceptions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor finds 3 instances where an employee's peer approved the report, noting them as exceptions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

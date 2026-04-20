@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all known vulnerabilities in the legacy application and the business impact if it were compromised.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst creates a comprehensive list of vulnerabilities and their potential business impact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst creates a comprehensive list of vulnerabilities and their potential business impact.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify existing compensating controls (e.g., network segmentation, enhanced monitoring) that reduce the risk.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst identifies all controls currently in place to protect the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst identifies all controls currently in place to protect the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the residual risk and formally accept it in the risk register, with a recommendation for eventual system replacement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly documents the residual risk and makes a strategic recommendation to address it long-term."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly documents the residual risk and makes a strategic recommendation to address it long-term.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

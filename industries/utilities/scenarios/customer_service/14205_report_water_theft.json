@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the location of the incident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately records the address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately records the address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a high-priority investigation case for the revenue protection department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates a new water theft investigation case."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates a new water theft investigation case.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a field technician to the location to disconnect the illegal connection and secure the hydrant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches a crew to the site."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches a crew to the site.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

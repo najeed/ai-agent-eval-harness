@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new permit to work request, specifying the location, work type (hot work), and duration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A draft permit is created in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A draft permit is created in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that all safety prerequisites are met, such as gas testing, fire watch assignment, and equipment isolation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms all safety checks on the checklist are complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms all safety checks on the checklist are complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve and issue the electronic permit, making it active for the specified shift.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The permit is officially issued and visible to the work crew and control room."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The permit is officially issued and visible to the work crew and control room.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

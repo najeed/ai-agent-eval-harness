@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use an APM tool to identify the slow transaction and the corresponding database query.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pinpoints the exact query causing the slowdown."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pinpoints the exact query causing the slowdown.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the query plan and identify a missing database index as the cause of the poor performance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly diagnoses the need for an index."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly diagnoses the need for an index.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a ticket for the DBA team to add the necessary index to the database table.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an actionable ticket to resolve the performance issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an actionable ticket to resolve the performance issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

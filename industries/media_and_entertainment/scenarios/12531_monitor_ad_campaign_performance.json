@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the specific ad campaign in the ad management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct campaign.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the key performance metrics for the campaign (impressions, click-through rate, video completion rate).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls a report with all the required metrics."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls a report with all the required metrics.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Format the metrics into a clear, concise report and send it to the advertiser.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates and sends a well-formatted report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates and sends a well-formatted report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

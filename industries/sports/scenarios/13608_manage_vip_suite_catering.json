@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the corporate partner and their suite number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the partner's booking details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the partner's booking details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the partner with the suite catering menu and take their order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the menu and records the partner's food and beverage selections."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the menu and records the partner's food and beverage selections.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the payment for the catering order and send the order to the kitchen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the payment and confirms the order with the catering team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the payment and confirms the order with the catering team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

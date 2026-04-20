@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Brainstorm initiatives for the 'Environmental' pillar (e.g., 'reduce carbon footprint', 'implement recycling program').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates relevant environmental initiatives."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates relevant environmental initiatives.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Brainstorm initiatives for the 'Social' pillar (e.g., 'improve employee diversity', 'community volunteering program').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates relevant social initiatives."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates relevant social initiatives.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Brainstorm initiatives for the 'Governance' pillar (e.g., 'increase board transparency', 'implement ethics training').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates relevant governance initiatives."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates relevant governance initiatives.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Compile the brainstormed ideas into a structured ESG strategy document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a report outlining the proposed ESG strategy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a report outlining the proposed ESG strategy.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

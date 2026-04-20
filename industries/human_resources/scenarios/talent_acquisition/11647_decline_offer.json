@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the notification from the candidate that they are declining the offer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter is informed by the candidate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter is informed by the candidate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ask for the reason for the decline, if the candidate is willing to share.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter learns the candidate accepted a competing offer with a higher salary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter learns the candidate accepted a competing offer with a higher salary.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the candidate's status in the ATS to 'Offer Declined' and log the reason.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter accurately updates the candidate's record in the ATS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter accurately updates the candidate's record in the ATS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

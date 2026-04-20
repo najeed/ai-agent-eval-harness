@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the selling company's financial health to assess their creditworthiness as a long-term tenant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the level of risk associated with the tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the level of risk associated with the tenant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the proposed lease terms (rent, term, escalations) to determine if they are at, above, or below market rates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the attractiveness of the proposed lease."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the attractiveness of the proposed lease.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare an investment analysis for a potential buyer, highlighting the cap rate, tenant credit, and long-term security of the investment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive investment summary is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive investment summary is created.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

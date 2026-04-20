@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new 'what-if' scenario based on the current financial plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a copy of the plan labeled 'Recession Scenario'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a copy of the plan labeled 'Recession Scenario'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Adjust the key drivers in the scenario (e.g., decrease sales growth by 10%).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully modifies the assumptions in the new scenario."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully modifies the assumptions in the new scenario.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the scenario and compare the projected P&L against the base plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the model and generates a comparison report showing the impact on profitability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the model and generates a comparison report showing the impact on profitability.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

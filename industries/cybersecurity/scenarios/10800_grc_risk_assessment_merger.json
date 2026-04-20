@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Conduct external reconnaissance of the target company's internet footprint to look for obvious security issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst discovers the company is exposing several unpatched, legacy systems to the internet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst discovers the company is exposing several unpatched, legacy systems to the internet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review public reports of past data breaches or security incidents involving the target company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst finds the company suffered a major ransomware attack two years ago."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst finds the company suffered a major ransomware attack two years ago.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-level risk report for the M&A team, highlighting the potential costs of remediating the target's poor security posture post-acquisition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst provides a valuable input to the M&A due diligence process, potentially impacting the acquisition price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst provides a valuable input to the M&A due diligence process, potentially impacting the acquisition price.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

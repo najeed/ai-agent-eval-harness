@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a work order on the in-cab terminal to pick up a container from a specific crane lane.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator's terminal displays the next job: pick up container WWWW1234567 from QC-01 lane."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator's terminal displays the next job: pick up container WWWW1234567 from QC-01 lane.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Drive the straddle carrier over the container, lock onto it, and lift it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator successfully and safely lifts the container."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator successfully and safely lifts the container.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Drive to the assigned yard location and place the container in the stack, then confirm job completion on the terminal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The container is placed in the correct yard slot, and the operator marks the job as complete, making them available for the next job."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The container is placed in the correct yard slot, and the operator marks the job as complete, making them available for the next job.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

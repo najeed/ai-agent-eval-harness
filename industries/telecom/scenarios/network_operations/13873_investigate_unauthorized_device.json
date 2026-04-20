@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the alert and identify the switch port the device is connected to.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the specific switch and port from the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the specific switch and port from the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Remotely disable the switch port to disconnect the device from the network.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully shuts down the port."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully shuts down the port.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a security incident report and assign it to the physical security team to investigate the location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed security report for further investigation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed security report for further investigation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

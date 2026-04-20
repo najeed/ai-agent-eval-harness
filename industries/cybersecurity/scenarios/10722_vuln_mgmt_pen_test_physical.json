@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Conduct reconnaissance on the building to identify potential weaknesses like unmonitored entrances or smoking areas.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Tester identifies a side entrance used by employees on smoke breaks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Tester identifies a side entrance used by employees on smoke breaks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attempt to tailgate an employee through the side entrance to bypass the badge reader.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Tester successfully follows an employee inside without being challenged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Tester successfully follows an employee inside without being challenged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Locate an empty desk with an unlocked computer and plug in a malicious USB device to gain network access, achieving the test's objective.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Tester successfully demonstrates a physical breach leading to a network compromise."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Tester successfully demonstrates a physical breach leading to a network compromise.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

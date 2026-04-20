@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the reservation and review the cancellation policy associated with their booking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the booking and sees it has a 48-hour cancellation policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the booking and sees it has a 48-hour cancellation policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine if the cancellation is within the free cancellation window.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The guest is canceling 5 days in advance, so no fee applies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The guest is canceling 5 days in advance, so no fee applies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Cancel the reservation in the PMS and provide the guest with a cancellation number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The reservation is canceled, and the guest receives a confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The reservation is canceled, and the guest receives a confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

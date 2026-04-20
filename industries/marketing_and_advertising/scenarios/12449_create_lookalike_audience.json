@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Upload a list of existing customer emails to the ad platform to create a custom audience.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the source custom audience."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the source custom audience.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the custom audience as a seed to create a 1% lookalike audience in a specific country.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The ad platform generates a new, larger audience of users who are similar to the existing customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The ad platform generates a new, larger audience of users who are similar to the existing customers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Target the new lookalike audience in a prospecting campaign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent launches a campaign to reach potential new customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent launches a campaign to reach potential new customers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the venue's official service animal policy from the knowledge base.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the guest that trained service animals are welcome.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the rules for service animals (e.g., must be leashed, under control) and clarify that emotional support animals are not permitted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately explains the distinction and rules."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately explains the distinction and rules.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Ask if the guest needs an aisle seat or any other accommodation and make a note on their ticket order if necessary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent proactively offers further assistance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent proactively offers further assistance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the current pipeline flow rate and pressure drop to determine the potential benefit of injecting DRA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows that DRA injection could increase throughput by 15%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows that DRA injection could increase throughput by 15%.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine the optimal injection rate (in ppm) for the DRA to achieve the desired throughput increase most cost-effectively.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An optimal injection rate is calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An optimal injection rate is calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Start the DRA injection pump at the calculated rate and monitor the pipeline's flow rate to confirm the expected increase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The DRA injection is started, and the pipeline's flow rate increases as predicted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The DRA injection is started, and the pipeline's flow rate increases as predicted.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

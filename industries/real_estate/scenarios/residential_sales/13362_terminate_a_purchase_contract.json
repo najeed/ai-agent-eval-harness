@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Advise the buyer on their right to terminate under the inspection contingency.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The buyer understands their contractual right to cancel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The buyer understands their contractual right to cancel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a formal notice of termination and a request for the return of the earnest money deposit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A legally sound termination notice is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A legally sound termination notice is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the termination notice to the listing agent and the title company to initiate the earnest money refund process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All parties are notified of the termination, and the process to refund the deposit begins."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All parties are notified of the termination, and the process to refund the deposit begins.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

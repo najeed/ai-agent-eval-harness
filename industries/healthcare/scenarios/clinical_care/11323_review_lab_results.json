@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the EHR inbox and identify the critical lab result notification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician opens their inbox and sees a high-priority result."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician opens their inbox and sees a high-priority result.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the lab result, noting that the patient's potassium level is critically high.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician correctly interprets the abnormal lab value."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician correctly interprets the abnormal lab value.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Acknowledge the result and send a message to their nurse to call the patient and instruct them to go to the emergency room.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician takes appropriate clinical action by acknowledging the result and delegating follow-up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician takes appropriate clinical action by acknowledging the result and delegating follow-up.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

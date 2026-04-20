@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the resident's address and the type of bulk item to be collected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the necessary details for the pickup."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the necessary details for the pickup.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the schedule for bulk item collection and find the next available date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the next available pickup date for the resident's area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the next available pickup date for the resident's area.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the pickup and provide the resident with instructions on where and when to place the item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent books the pickup and gives clear instructions to the resident."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent books the pickup and gives clear instructions to the resident.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

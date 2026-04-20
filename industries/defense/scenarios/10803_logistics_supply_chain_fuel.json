@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the route compromise alert and retrieve the convoy's current location and fuel status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer correctly identifies the convoy's position and remaining fuel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer correctly identifies the convoy's position and remaining fuel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze alternate routes, considering threat levels, road conditions, and travel time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer identifies the safest and most efficient alternate route."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer identifies the safest and most efficient alternate route.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue new orders to the convoy commander with the updated route and request air cover for a high-threat portion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer successfully re-tasks the convoy and coordinates for support."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer successfully re-tasks the convoy and coordinates for support.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

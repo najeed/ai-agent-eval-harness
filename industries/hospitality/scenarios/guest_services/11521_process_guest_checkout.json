@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the guest's folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the correct guest bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the correct guest bill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the charges with the guest and confirm they are correct.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The guest agrees to all charges on the folio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The guest agrees to all charges on the folio.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the final payment using the credit card on file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the payment and provides the guest with a final receipt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the payment and provides the guest with a final receipt.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the room status to 'Vacant/Dirty' in the PMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The room status is updated, notifying housekeeping."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The room status is updated, notifying housekeeping.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

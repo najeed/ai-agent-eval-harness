@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the buyer's inspection report and repair request addendum.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the receipt of the inspection documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the receipt of the inspection documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send the documents to the seller's agent and confirm receipt.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The documents are emailed to the listing agent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The documents are emailed to the listing agent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the transaction checklist to track the deadline for the seller's response to the repair request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A task is created or updated in the transaction system with the correct deadline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A task is created or updated in the transaction system with the correct deadline.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

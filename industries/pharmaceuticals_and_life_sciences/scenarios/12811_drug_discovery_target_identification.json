@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Access a cancer genomics database (e.g., TCGA).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully connects to the database and selects the relevant patient cohort."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully connects to the database and selects the relevant patient cohort.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a differential gene expression analysis between tumor and normal tissues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs an analysis and identifies a list of genes that are significantly overexpressed in tumor samples."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs an analysis and identifies a list of genes that are significantly overexpressed in tumor samples.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Cross-reference the overexpressed genes with a database of 'druggable' proteins.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that one of the genes, 'GENE-X', codes for a kinase, which is a druggable target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that one of the genes, 'GENE-X', codes for a kinase, which is a druggable target.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a target profile report for 'GENE-X' for further investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a report with the analysis results and literature evidence supporting 'GENE-X' as a target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a report with the analysis results and literature evidence supporting 'GENE-X' as a target.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the subsidiary's trial balance in the local currency (EUR).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the EUR trial balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the EUR trial balance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the correct foreign exchange rates: average rate for P&L accounts, and closing rate for balance sheet accounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the required historical exchange rates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the required historical exchange rates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Translate the subsidiary's trial balance from EUR to USD using the appropriate rates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully translates all account balances."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully translates all account balances.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Calculate and post the resulting Cumulative Translation Adjustment (CTA) to the equity section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the translation gain/loss and includes it in Other Comprehensive Income (OCI)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the translation gain/loss and includes it in Other Comprehensive Income (OCI).",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

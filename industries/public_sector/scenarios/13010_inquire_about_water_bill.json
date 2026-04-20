@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the resident's utility account and retrieve their billing and usage history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the account and confirms the recent bill is double the historical average."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the account and confirms the recent bill is double the historical average.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the usage data to identify potential reasons for the increase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the meter readings and suggests the high usage could indicate a potential leak."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the meter readings and suggests the high usage could indicate a potential leak.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the resident on how to check for common household leaks (e.g., toilet flapper) and offer to schedule a re-read of the meter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides helpful advice and schedules a follow-up action."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides helpful advice and schedules a follow-up action.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

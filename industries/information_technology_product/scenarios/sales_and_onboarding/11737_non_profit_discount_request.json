@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the non-profit discount program and its eligibility requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the company's non-profit policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the company's non-profit policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request documentation to verify the organization's non-profit status (e.g., 501(c)(3) letter).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent requests the necessary verification documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent requests the necessary verification documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once verified, provide the customer with a unique discount code to use during checkout.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the verified organization with their discount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the verified organization with their discount.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

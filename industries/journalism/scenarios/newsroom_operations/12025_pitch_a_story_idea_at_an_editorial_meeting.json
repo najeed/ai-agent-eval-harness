@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Prepare a written pitch document outlining the story idea, why it's important, potential sources, and the expected timeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a comprehensive and persuasive pitch document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a comprehensive and persuasive pitch document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Present the pitch verbally to the editors during the daily editorial meeting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly and concisely explains the story idea."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly and concisely explains the story idea.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Answer the editors' questions about the feasibility and potential impact of the story.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully defends the story idea and gets it greenlit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully defends the story idea and gets it greenlit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

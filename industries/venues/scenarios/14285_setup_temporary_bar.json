@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Create a work order for the operations team to set up the physical bar and barriers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the setup task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the setup task.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Place an order for the required inventory (kegs, cups) to be delivered to the temporary location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent places the inventory order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent places the inventory order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule bartenders to staff the temporary bar.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and fills the necessary shifts in the scheduling system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and fills the necessary shifts in the scheduling system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Request a temporary POS terminal from the IT department for the location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs a request for the IT team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs a request for the IT team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the failed component's installation date and the terms of its warranty.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the part is still within its 2-year warranty period."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the part is still within its 2-year warranty period.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Complete the manufacturer's warranty claim form, including details of the failure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent fills out the claim form accurately."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent fills out the claim form accurately.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for the failed component to be shipped back to the manufacturer for evaluation and receive a credit or replacement part.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes the claim and arranges the return shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes the claim and arranges the return shipment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

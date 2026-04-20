@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all personnel to be redeployed and their home bases.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner has a complete list of personnel and their destinations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner has a complete list of personnel and their destinations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Book the required number of strategic airlift flights to transport all personnel over a two-week period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner successfully reserves the necessary air transport."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner successfully reserves the necessary air transport.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a detailed manifest for each flight and coordinate ground transportation to and from the airports.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner creates a complete, end-to-end travel plan for all personnel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner creates a complete, end-to-end travel plan for all personnel.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

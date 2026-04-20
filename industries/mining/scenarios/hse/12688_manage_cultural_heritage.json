@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "A dozer operator reports finding unusual stone objects. The supervisor immediately halts all work in the area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Work is stopped to prevent damage to the potential site."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Work is stopped to prevent damage to the potential site.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log the discovery in the system and notify the HSE department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The discovery is officially reported."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The discovery is officially reported.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Engage a qualified archaeologist to inspect the site and work with local indigenous groups to manage it appropriately.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Experts are brought in to ensure the site is managed in a culturally sensitive and legally compliant manner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Experts are brought in to ensure the site is managed in a culturally sensitive and legally compliant manner.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

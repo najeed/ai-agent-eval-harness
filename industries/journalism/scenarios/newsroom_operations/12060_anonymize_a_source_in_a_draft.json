@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Read through the draft specifically looking for potentially identifying details (e.g., specific job title, exact age, location).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies all details that could compromise the source's anonymity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies all details that could compromise the source's anonymity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generalize the identifying details (e.g., change '47-year-old manager of the accounting department' to 'a senior employee in their 40s').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The text is edited to protect the source."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The text is edited to protect the source.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add an editor's note to the document explaining why the source was granted anonymity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A record of the ethical decision is kept with the story."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A record of the ethical decision is kept with the story.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

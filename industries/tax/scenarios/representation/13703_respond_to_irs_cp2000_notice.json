@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the CP2000 notice to understand the discrepancy identified by the IRS (e.g., a missing 1099).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the source of the proposed change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the source of the proposed change.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the IRS's information with the taxpayer's records to determine if the notice is correct.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the taxpayer forgot to include a 1099-MISC on their return."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the taxpayer forgot to include a 1099-MISC on their return.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a response to the IRS, agreeing with the changes and explaining the oversight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares a clear and concise response letter to the IRS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares a clear and concise response letter to the IRS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all maintenance work orders for the specified gearbox model over the past 3 years.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls a list of 25 work orders related to this gearbox type."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls a list of 25 work orders related to this gearbox type.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the work order descriptions and failure codes to categorize the reasons for failure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent's analysis shows that 80% of failures are due to 'bearing seizure'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent's analysis shows that 80% of failures are due to 'bearing seizure'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the findings, update the preventative maintenance plan for the gearbox to include more frequent bearing lubrication and vibration analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a change request to update the asset's maintenance strategy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a change request to update the asset's maintenance strategy.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the shared folio for the room.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct bill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a second folio and move all incidental charges (room service, minibar) to it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully separates the charges onto two different bills."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully separates the charges onto two different bills.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process payment for each folio from the respective guest.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully closes out both bills with separate payments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully closes out both bills with separate payments.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

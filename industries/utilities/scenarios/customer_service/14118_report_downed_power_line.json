@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Advise the caller to stay at least 30 feet away from the line and to not touch anything it may be in contact with.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides critical safety instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides critical safety instructions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Get the precise location of the downed line (address, cross-streets, landmarks).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately records the location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately records the location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch an emergency crew immediately to make the area safe and begin repairs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a Priority 1 emergency work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a Priority 1 emergency work order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

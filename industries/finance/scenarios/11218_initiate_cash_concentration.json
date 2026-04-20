@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all subsidiary accounts and their current balances.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a list of 5 subsidiary accounts and their respective balances."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a list of 5 subsidiary accounts and their respective balances.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Execute the pre-defined cash sweep to move all funds to the master account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates the automated cash concentration process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates the automated cash concentration process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the final balance of the concentration account after the sweep is complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the new, higher balance in the master account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the new, higher balance in the master account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

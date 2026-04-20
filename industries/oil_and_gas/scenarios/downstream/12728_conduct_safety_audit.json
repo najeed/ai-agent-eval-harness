@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the 'Field Maintenance Safety Audit' checklist on a tablet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct digital audit form is loaded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct digital audit form is loaded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Observe the work crew and complete the checklist items, such as verifying PPE usage, correct tool usage, and valid work permits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The audit is conducted, and several items are marked as compliant, but one non-compliance (improperly stored ladder) is noted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The audit is conducted, and several items are marked as compliant, but one non-compliance (improperly stored ladder) is noted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the non-compliance finding, assign a corrective action to the crew supervisor, and submit the completed audit report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The audit is submitted, and a corrective action is automatically tracked in the safety system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The audit is submitted, and a corrective action is automatically tracked in the safety system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

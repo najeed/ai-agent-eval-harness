@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Display the real-time water level for all major storage tanks on a dashboard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System provides a live overview of water storage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System provides a live overview of water storage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system alerts the operator that a tank's level is approaching its low-level alarm setpoint.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates an alert for the specific tank."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates an alert for the specific tank.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Turn on the pumps that fill the tank to bring the level back into the normal operating band.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator sends a command to start the pumps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator sends a command to start the pumps.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

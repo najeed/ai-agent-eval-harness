@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the boundary map for the field to be weeded.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the correct field boundary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the correct field boundary.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a path plan for the robot to efficiently cover the entire field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an optimized path for the robot to follow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an optimized path for the robot to follow.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the mission plan to the robotic weeder and command it to start.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully dispatches the robot."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully dispatches the robot.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

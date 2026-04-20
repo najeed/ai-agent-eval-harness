@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the faculty member and their department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the user's identity and role."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the user's identity and role.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the user to the online curriculum management portal and explain the required proposal form fields.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the correct link and instructions for the course proposal process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the correct link and instructions for the course proposal process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the submitted proposal for completeness before it is routed for committee review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all required fields and attachments (e.g., syllabus) are present."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all required fields and attachments (e.g., syllabus) are present.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the customer and the date range for the report (the previous quarter).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly specifies the report parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly specifies the report parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the performance report from the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is generated with KPIs like 'On-Time Shipping: 98.5%' and 'Order Accuracy: 99.7%'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is generated with KPIs like 'On-Time Shipping: 98.5%' and 'Order Accuracy: 99.7%'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Export the report to a PDF and email it to the account manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report is successfully generated and sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report is successfully generated and sent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and their account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for recent incoming wire transfers to the customer's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent searches the system but finds no matching incoming wire transfer yet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent searches the system but finds no matching incoming wire transfer yet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the customer that the wire has not yet been received and explain typical processing times.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates that the funds are not yet available and provides an estimated timeframe."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates that the funds are not yet available and provides an estimated timeframe.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

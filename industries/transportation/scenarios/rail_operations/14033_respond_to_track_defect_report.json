@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a report of a broken rail at a specific milepost.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the critical defect report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the critical defect report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately issue a 'stop' command to all trains currently authorized to operate in that track block.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All affected trains are instructed to stop."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All affected trains are instructed to stop.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place a block on the affected track segment in the control system to prevent any new authorities from being issued.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The track segment is shown as out-of-service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The track segment is shown as out-of-service.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Dispatch a maintenance-of-way crew to the location to repair the defect.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A repair crew is dispatched to the site."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A repair crew is dispatched to the site.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

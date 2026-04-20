@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the invoice and the corresponding subcontract agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The invoice from 'Sparky Electric' and their subcontract are retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The invoice from 'Sparky Electric' and their subcontract are retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the work described in the invoice ('First floor wiring') matches the completed tasks in the daily logs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the work has been completed and approved by the site superintendent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the work has been completed and approved by the site superintendent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the invoice for payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The invoice is marked as 'Approved' in the accounting system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The invoice is marked as 'Approved' in the accounting system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

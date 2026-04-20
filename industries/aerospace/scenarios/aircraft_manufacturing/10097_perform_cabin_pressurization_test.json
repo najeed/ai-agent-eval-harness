@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Seal the aircraft and connect ground-based air carts to the pressurization system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures the aircraft is ready for the test."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures the aircraft is ready for the test.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Slowly increase the pressure inside the cabin to simulate the pressure differential at high altitude.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent operates the system to pressurize the cabin to the target PSI."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent operates the system to pressurize the cabin to the target PSI.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the pressure decay rate to ensure it is within the allowable limits, which indicates there are no significant leaks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent monitors the pressure and confirms the leak rate is acceptable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent monitors the pressure and confirms the leak rate is acceptable.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

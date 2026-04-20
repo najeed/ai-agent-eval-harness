@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the signed POD for the shipment in question.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the POD image, which shows no notes of shortage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the POD image, which shows no notes of shortage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the carrier and ask them to investigate the shortage with their driver.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent formally requests an investigation from the carrier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent formally requests an investigation from the carrier.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the warehouse's loading photos or videos for the shipment, if available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews security footage, which confirms all 10 pallets were loaded onto the truck."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews security footage, which confirms all 10 pallets were loaded onto the truck.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Present the evidence to the carrier to support a freight claim for the missing pallet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses the evidence to file a successful claim."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses the evidence to file a successful claim.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

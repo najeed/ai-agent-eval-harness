@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Look up the operator in the training management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the operator's profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the operator's profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the operator has completed all required training modules for the process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all prerequisite training is complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all prerequisite training is complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the operator's profile to add the 'Reactor Unit 2 Operator' qualification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the operator's qualifications, allowing them to be scheduled for that work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the operator's qualifications, allowing them to be scheduled for that work.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

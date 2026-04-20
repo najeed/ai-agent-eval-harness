@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Verify the player's identity to confirm they are the legitimate account owner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the enhanced identity verification process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the enhanced identity verification process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate the automated GDPR data deletion workflow for the player's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully triggers the deletion process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully triggers the deletion process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the workflow to ensure data is purged from all systems (game servers, CRM, analytics).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the workflow completes successfully and all data is anonymized or deleted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the workflow completes successfully and all data is anonymized or deleted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Send a final confirmation email to the player once the process is complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the official confirmation of data deletion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the official confirmation of data deletion.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

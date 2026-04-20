@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the total volume of gasoline sold in the last quarter and the total volume of ethanol blended.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The total sales and blending volumes are compiled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The total sales and blending volumes are compiled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the actual blending percentage and compare it to the regulatory requirement (e.g., 10%).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The calculation shows the company is currently at 9.8%, slightly below the mandate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The calculation shows the company is currently at 9.8%, slightly below the mandate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report showing the deficit and instruct the blending schedulers to increase the ethanol ratio slightly for the current quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A compliance report is generated, and an instruction is sent to operations to correct the course."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A compliance report is generated, and an instruction is sent to operations to correct the course.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Photograph and inventory all items left behind.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A detailed list and photos of the abandoned items are created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A detailed list and photos of the abandoned items are created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Look up the state-specific legal requirements for handling abandoned property.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that a formal notice must be sent and the property stored for 30 days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that a formal notice must be sent and the property stored for 30 days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a 'Notice of Belief of Abandonment and Right to Reclaim Property' to the tenant's last known address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct legal notice is generated and sent via certified mail."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct legal notice is generated and sent via certified mail.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

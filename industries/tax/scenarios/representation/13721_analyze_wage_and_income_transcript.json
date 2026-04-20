@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Request the client's Wage and Income transcript from the IRS for the tax year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully obtains the transcript."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully obtains the transcript.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the transcript, which lists all W-2s and 1099s reported to the IRS under the client's SSN.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the official list of income documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the official list of income documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the transcript data to the documents provided by the client to identify any missing income sources.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent discovers a 1099-G for unemployment income that the client forgot about."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent discovers a 1099-G for unemployment income that the client forgot about.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

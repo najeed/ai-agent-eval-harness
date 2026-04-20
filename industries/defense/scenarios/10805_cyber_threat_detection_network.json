@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the alert and analyze the associated network traffic data to confirm malicious activity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst confirms the presence of anomalous traffic patterns consistent with an APT."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst confirms the presence of anomalous traffic patterns consistent with an APT.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the compromised host and quarantine it from the rest of the network to prevent lateral movement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully isolates the correct machine."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully isolates the correct machine.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate a forensic analysis of the quarantined host to identify the attacker's tools and techniques.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst begins the forensic process to understand the scope of the breach."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst begins the forensic process to understand the scope of the breach.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

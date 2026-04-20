@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Analyze solar irradiance and weather data for the specified coordinates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides average annual GHI/DNI values and identifies any significant weather risks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides average annual GHI/DNI values and identifies any significant weather risks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for grid interconnection points within a 10km radius and their available capacity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the nearest substation and its current load and capacity data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the nearest substation and its current load and capacity data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review land topography and environmental zoning restrictions for the parcel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the land is not in a protected zone and has a suitable slope."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the land is not in a protected zone and has a suitable slope.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a preliminary feasibility report summarizing findings and recommending next steps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a structured report with a clear recommendation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a structured report with a clear recommendation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

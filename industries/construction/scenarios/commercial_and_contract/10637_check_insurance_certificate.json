@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the subcontractor's file from the vendor management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The plumbing subcontractor's file is opened."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The plumbing subcontractor's file is opened.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for an uploaded Certificate of Insurance and verify its expiration date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the COI and confirms it is valid for the duration of the project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the COI and confirms it is valid for the duration of the project.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the subcontractor's status to 'Cleared to Start Work'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The subcontractor is approved to begin work on site."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The subcontractor is approved to begin work on site.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

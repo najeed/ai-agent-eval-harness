@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Input the S-Corp's income, deductions, and shareholder information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly enters all financial and ownership data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly enters all financial and ownership data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate officer compensation and ensure it is reasonable.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that the salary paid to the owner is appropriate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that the salary paid to the owner is appropriate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare Schedule K-1 for each shareholder, allocating the business's profit and loss.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates accurate K-1s for all shareholders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates accurate K-1s for all shareholders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

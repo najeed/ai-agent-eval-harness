@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the vessel's details (GT, LOA) and planned activities (number of container moves) from the agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator gathers all necessary information for the estimate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator gathers all necessary information for the estimate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the port tariff document to look up the rates for wharfage, pilotage, and stevedoring.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator finds the correct rates based on the vessel's size and cargo volume."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator finds the correct rates based on the vessel's size and cargo volume.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the estimated total cost and provide it to the agent, stating that it is a non-binding estimate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A pro-forma invoice is generated and communicated to the agent with a disclaimer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A pro-forma invoice is generated and communicated to the agent with a disclaimer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

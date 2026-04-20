@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a remote telemetry alert that a locomotive's fuel level is below 25%.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is notified of the low fuel status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is notified of the low fuel status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find the locomotive's current location and its next scheduled assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees the locomotive is in the main yard and is scheduled for an outbound train in 4 hours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees the locomotive is in the main yard and is scheduled for an outbound train in 4 hours.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for a hostler to move the locomotive to the fueling track.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is created for the internal move."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is created for the internal move.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "After fueling is complete, the locomotive is returned to the ready track for its next assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The fueling process is completed without delaying the outbound train."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The fueling process is completed without delaying the outbound train.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Extract all uncoded adverse event terms from the EDC system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a list of raw terms like 'tummy ache' and 'sore head'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a list of raw terms like 'tummy ache' and 'sore head'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use an auto-coding tool to automatically code the terms against the MedDRA dictionary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool automatically codes 'sore head' to the MedDRA term 'Headache'. 'Tummy ache' is not found."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool automatically codes 'sore head' to the MedDRA term 'Headache'. 'Tummy ache' is not found.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Manually review the terms that could not be auto-coded.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews 'tummy ache' and manually codes it to the MedDRA term 'Abdominal pain'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews 'tummy ache' and manually codes it to the MedDRA term 'Abdominal pain'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

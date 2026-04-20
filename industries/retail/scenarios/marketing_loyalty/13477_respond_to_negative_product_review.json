@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a notification about a new low-rated product review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent is alerted to the negative feedback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent is alerted to the negative feedback.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the customer's comment to understand the issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent understands the reason for the customer's dissatisfaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent understands the reason for the customer's dissatisfaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post a public reply to the review, apologizing for the issue and providing contact information for customer service to resolve the problem directly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A helpful and empathetic response is posted, showing other customers that the company addresses issues."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A helpful and empathetic response is posted, showing other customers that the company addresses issues.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

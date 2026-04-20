@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ensure the patient is safe and provide any immediate assistance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Therapist prioritizes patient safety."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Therapist prioritizes patient safety.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new safety event/incident report in the hospital's safety reporting system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Therapist opens the incident reporting module."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Therapist opens the incident reporting module.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the details of the fall, the patient's condition, any injuries, and the actions taken. Notify the referring provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The event is thoroughly documented for quality and risk management review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The event is thoroughly documented for quality and risk management review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

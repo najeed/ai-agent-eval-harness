@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the player's account details, the original ban reason, and their chat logs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses all historical data related to the ban."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses all historical data related to the ban.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the player's appeal and their past behavior.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the case and notes the player has had multiple previous suspensions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the case and notes the player has had multiple previous suspensions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the history of repeat offenses, deny the appeal and uphold the ban.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent denies the appeal and sends a notification to the player explaining the decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent denies the appeal and sends a notification to the player explaining the decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

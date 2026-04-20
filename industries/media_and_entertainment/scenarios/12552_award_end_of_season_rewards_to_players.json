@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the final leaderboard for the completed season.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of all players and their final ranks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of all players and their final ranks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the specific rewards (e.g., skins, titles) for each rank tier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the reward table for the season."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the reward table for the season.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run a script to grant the appropriate rewards to all eligible players based on their rank.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully executes the script to distribute all rewards."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully executes the script to distribute all rewards.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

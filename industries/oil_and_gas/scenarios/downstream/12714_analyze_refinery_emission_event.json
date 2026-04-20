@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the CEMS data for the flare stack for the past 24 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A timeseries chart of SO2 emissions is displayed, showing a clear spike."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A timeseries chart of SO2 emissions is displayed, showing a clear spike.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Correlate the emission spike with operational data from the associated process unit to find the root cause (e.g., a unit upset).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The emission event is linked to a compressor trip in the sulfur recovery unit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The emission event is linked to a compressor trip in the sulfur recovery unit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a report for the environmental regulatory agency detailing the event, cause, and corrective actions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A compliant regulatory report is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A compliant regulatory report is generated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the health and logs of the load balancers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the load balancer is reporting one of several upstream application servers as 'unhealthy'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the load balancer is reporting one of several upstream application servers as 'unhealthy'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Take the unhealthy application server out of the load balancer's rotation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent removes the problematic server from service to stop the errors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent removes the problematic server from service to stop the errors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a ticket to investigate the unhealthy server itself.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent escalates the issue for root cause analysis of the specific server."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent escalates the issue for root cause analysis of the specific server.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

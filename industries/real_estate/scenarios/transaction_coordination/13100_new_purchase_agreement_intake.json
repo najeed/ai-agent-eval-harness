@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the purchase agreement for completeness and key dates (acceptance, inspection, closing).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly extracts all critical dates, parties, and the property address from the contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly extracts all critical dates, parties, and the property address from the contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new transaction in the transaction management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new transaction file is created for the property address with all parties added."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new transaction file is created for the property address with all parties added.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a transaction timeline/checklist based on the key dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A checklist with all contractual deadlines is created and associated with the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A checklist with all contractual deadlines is created and associated with the transaction.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

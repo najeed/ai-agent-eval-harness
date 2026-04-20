@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Load the 3D model of the new ladder truck into the digital twin.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully imports the vehicle model."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully imports the vehicle model.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Simulate driving the truck down the specified narrow street to check for clearance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The simulation shows the truck can fit down the street."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The simulation shows the truck can fit down the street.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Simulate deploying the ladder from the street to the target building, checking for obstructions like power lines or trees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The simulation shows the ladder can reach the roof without any obstructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The simulation shows the ladder can reach the roof without any obstructions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a report confirming that the new truck is compatible with that location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a confirmation report to the fire department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a confirmation report to the fire department.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

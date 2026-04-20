@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query the medical personnel database for the records of all staff assigned to the ship.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Commander retrieves all relevant personnel records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Commander retrieves all relevant personnel records.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify any staff with expired certifications or missing immunizations required for the destination country.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Commander generates a list of all medical readiness deficiencies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Commander generates a list of all medical readiness deficiencies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the necessary training and immunizations to ensure the entire medical staff is 100% ready for the mission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Commander creates an actionable plan to resolve all readiness issues."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Commander creates an actionable plan to resolve all readiness issues.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

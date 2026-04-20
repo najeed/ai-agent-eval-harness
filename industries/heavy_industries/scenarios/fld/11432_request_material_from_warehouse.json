@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the material request system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully accesses the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully accesses the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new request for one pallet of cement, specifying the required delivery location on site and the date needed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly fills out and submits the material request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly fills out and submits the material request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the status of the request later to confirm it has been approved and scheduled for delivery by the warehouse team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the system and sees the request status is now 'Approved'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the system and sees the request status is now 'Approved'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

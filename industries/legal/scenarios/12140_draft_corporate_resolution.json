@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the firm's template for a board resolution to open a bank account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Populate the template with the company's name, the name of the bank, and the names of the authorized signatories.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent fills in all the specific details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent fills in all the specific details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare the resolution for the board of directors to sign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete draft resolution is generated, ready for execution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete draft resolution is generated, ready for execution.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

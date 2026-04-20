@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "A system process identifies all completed appointments from the previous day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a list of patients to survey."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a list of patients to survey.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each patient, the system sends a link to a satisfaction survey via email or text.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The survey is successfully delivered to the patients."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The survey is successfully delivered to the patients.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The patient's responses are collected and aggregated into a performance dashboard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The practice is able to collect feedback to improve the patient experience."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The practice is able to collect feedback to improve the patient experience.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

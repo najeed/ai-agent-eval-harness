@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the guest and look up their loyalty account and points balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the guest has enough points for a free night."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the guest has enough points for a free night.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for award night availability for the guest's desired dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that award nights are available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that award nights are available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the reservation using the guest's points and deduct the points from their account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the award stay and updates the guest's points balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the award stay and updates the guest's points balance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

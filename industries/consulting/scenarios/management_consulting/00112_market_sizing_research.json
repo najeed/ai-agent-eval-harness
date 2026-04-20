@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search for market research reports, industry analyses, and government statistics related to the product's category.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds at least three credible sources for market size data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds at least three credible sources for market size data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Synthesize the data from the different sources to arrive at a defensible TAM estimate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a final TAM estimate (e.g., '$5 billion') and explains the methodology used to reach it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a final TAM estimate (e.g., '$5 billion') and explains the methodology used to reach it.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile a summary slide with the TAM estimate and a list of the sources used.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a clear summary with proper citations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a clear summary with proper citations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify a room where occupancy sensors show it has been vacant for over 15 minutes, but lights are still on.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies an energy-wasting situation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies an energy-wasting situation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a rule in the Building Management System to link the occupancy sensor to the room's lighting controls.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates an automation rule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates an automation rule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify the rule works by observing that the lights automatically turn off.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the automation is working as intended."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the automation is working as intended.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

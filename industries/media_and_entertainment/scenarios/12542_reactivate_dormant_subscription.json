@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the former subscriber in the marketing database and the specific 'win-back' offer they are eligible for.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the user is eligible for a '3 months for the price of 1' offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the user is eligible for a '3 months for the price of 1' offer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Reactivate the subscriber's account with the special promotional plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reactivates the account and applies the promotion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reactivates the account and applies the promotion.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a confirmation email to the subscriber welcoming them back.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the confirmation email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the confirmation email.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the client's identity and the amount of funds they need to verify.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent authenticates the client and confirms the required amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent authenticates the client and confirms the required amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the client's account balances to ensure they have sufficient liquid assets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the client's account balance exceeds the required amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the client's account balance exceeds the required amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate and provide an official, signed Proof of Funds letter to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the letter on company letterhead and sends it to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the letter on company letterhead and sends it to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

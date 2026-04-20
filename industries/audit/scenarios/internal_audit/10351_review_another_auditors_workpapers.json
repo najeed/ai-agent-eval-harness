@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the workpaper to ensure the test procedures performed are sufficient to support the conclusion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager assesses the adequacy of the audit work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager assesses the adequacy of the audit work.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check that all test exceptions have been clearly documented and investigated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager verifies the completeness of the documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager verifies the completeness of the documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Leave review notes for the junior auditor, asking them to clarify a point or perform one additional test step.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager provides feedback for improvement, ensuring the final workpaper is of high quality."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager provides feedback for improvement, ensuring the final workpaper is of high quality.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

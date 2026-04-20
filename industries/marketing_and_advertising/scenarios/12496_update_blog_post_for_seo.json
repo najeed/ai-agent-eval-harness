@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Review the old blog post and identify outdated information or statistics.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds several stats from 5 years ago that can be updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds several stats from 5 years ago that can be updated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Research new information and statistics to update the content.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds current data to replace the old information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds current data to replace the old information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Rewrite sections of the post to include the new information and ensure it is still accurate and relevant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the blog post with fresh content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the blog post with fresh content.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the post's publish date to the current date to signal to search engines that it has been refreshed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent changes the publish date to today."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent changes the publish date to today.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

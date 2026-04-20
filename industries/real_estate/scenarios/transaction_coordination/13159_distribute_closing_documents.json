@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all signed contracts, addenda, disclosures, and the final closing statement from the transaction file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a complete set of all executed documents from the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a complete set of all executed documents from the transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Combine all documents into a single, organized PDF file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A single, bookmarked PDF containing all documents is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A single, bookmarked PDF containing all documents is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the final document package to the client for their records via a secure link.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A secure email with a link to download the final documents is sent to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A secure email with a link to download the final documents is sent to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

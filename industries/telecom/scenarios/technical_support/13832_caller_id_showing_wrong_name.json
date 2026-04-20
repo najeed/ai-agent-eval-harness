@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the customer's name as it is listed on the account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the correct name is on the account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the correct name is on the account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the public CNAM (Caller ID Name) database for the customer's number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the CNAM database has an old, incorrect name associated with the number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the CNAM database has an old, incorrect name associated with the number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit a request to update the CNAM database with the correct name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the CNAM update request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the CNAM update request.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

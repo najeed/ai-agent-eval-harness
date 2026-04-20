@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the approved minutes for all Board of Directors meetings for the past year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor has the meeting minutes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor has the meeting minutes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the minutes to identify key strategic initiatives, major decisions, and any significant risks or concerns discussed by the board.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The review highlights a board-level concern about cybersecurity risks from a new international expansion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The review highlights a board-level concern about cybersecurity risks from a new international expansion.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use this information to propose a new, high-priority audit of the international expansion's cybersecurity readiness to the CAE.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor uses the board-level information to make a timely and relevant audit proposal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor uses the board-level information to make a timely and relevant audit proposal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

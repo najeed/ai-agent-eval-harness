@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log the quality failure, including the part number, supplier, batch number, and reason for failure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the failure of batch #8821 from 'SteerCo' for 'Inconsistent Stitching'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the failure of batch #8821 from 'SteerCo' for 'Inconsistent Stitching'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Quarantine the entire batch of defective parts to prevent them from entering the assembly line.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the inventory system to place the batch on 'Quality Hold'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the inventory system to place the batch on 'Quality Hold'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the supplier, inform them of the failure, and request a root cause analysis and a replacement shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent formally notifies the supplier and initiates the corrective action process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent formally notifies the supplier and initiates the corrective action process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

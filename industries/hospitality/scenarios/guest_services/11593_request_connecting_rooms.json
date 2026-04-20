@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check availability for a pair of connecting rooms for the requested dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent finds an available connecting pair of rooms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent finds an available connecting pair of rooms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Book both rooms and use the system to link the two reservations together.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Two reservations are created and linked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Two reservations are created and linked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add a note to the booking confirming the connecting room request, ensuring they are not separated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear note is added to prevent accidental room changes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear note is added to prevent accidental room changes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

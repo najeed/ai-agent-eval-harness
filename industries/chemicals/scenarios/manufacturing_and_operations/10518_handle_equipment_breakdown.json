@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the high-priority work order for the pump failure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accepts the work order, changing its status to 'In Progress'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accepts the work order, changing its status to 'In Progress'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the spare parts inventory to see if a replacement pump or motor is in stock.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a complete replacement pump assembly is available in the warehouse."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a complete replacement pump assembly is available in the warehouse.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the cause of failure and the parts used, and close the work order upon completion of the replacement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the work order with failure analysis, confirms the repair, and formally closes it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the work order with failure analysis, confirms the repair, and formally closes it.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

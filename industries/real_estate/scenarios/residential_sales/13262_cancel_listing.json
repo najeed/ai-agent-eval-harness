@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the seller's request and review the cancellation clause in the signed listing agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the contract for any terms related to early cancellation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the contract for any terms related to early cancellation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the official listing cancellation form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the correct legal form for cancellation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the correct legal form for cancellation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the cancellation form to the seller for signature and then update the listing status in the MLS to 'Cancelled'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the cancellation process and updates the MLS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the cancellation process and updates the MLS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

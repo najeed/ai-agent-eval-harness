@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer account and their default shipping location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly pulls up the customer's master data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly pulls up the customer's master data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check inventory levels for the requested product to ensure availability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms there are sufficient drums in stock to fulfill the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms there are sufficient drums in stock to fulfill the order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a new sales order, applying the customer's contract pricing, and submit it for fulfillment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the sales order, which is now visible to the logistics team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the sales order, which is now visible to the logistics team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

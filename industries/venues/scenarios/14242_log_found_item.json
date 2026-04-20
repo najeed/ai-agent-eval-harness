@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the found cell phone from the staff member.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent takes possession of the item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent takes possession of the item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new 'found item' record in the lost and found database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Describe the item in detail (model, color, lock screen image) and the location it was found.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters a detailed description to help with matching it to a lost report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters a detailed description to help with matching it to a lost report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Place the item in the secure storage area and note the storage location in the database record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent secures the item and logs its physical location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent secures the item and logs its physical location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

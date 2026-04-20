@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the first part produced by the supplier along with their FAI report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains the part and the supplier's documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains the part and the supplier's documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Independently measure every dimension on the part as specified on the engineering drawing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent measures all dimensions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent measures all dimensions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the measurements to the drawing's requirements and the supplier's FAI report. If everything matches, approve the supplier's process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all dimensions are within tolerance and approves the FAI."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all dimensions are within tolerance and approves the FAI.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

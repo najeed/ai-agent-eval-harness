@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Thoroughly review the RFP to understand all requirements, from technical needs to service level agreements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The sales team has a complete understanding of the request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The sales team has a complete understanding of the request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write a detailed proposal document that addresses every point in the RFP, outlining the proposed services, team, and methodology.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive and professional proposal is written."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive and professional proposal is written.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Develop a detailed pricing proposal for all requested services.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Accurate pricing is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Accurate pricing is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Submit the complete proposal package by the RFP deadline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The proposal is submitted on time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The proposal is submitted on time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query federal and state databases to identify all protected or endangered species known to inhabit the project area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a list of 3 protected bird species."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a list of 3 protected bird species.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the project layout to determine its proximity to critical habitats or migratory routes identified for these species.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the project site is adjacent to a known migratory flyway."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the project site is adjacent to a known migratory flyway.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend mitigation measures, such as adjusting the project boundary, using bird-friendly materials, and post-construction monitoring.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a list of actionable mitigation strategies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a list of actionable mitigation strategies.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

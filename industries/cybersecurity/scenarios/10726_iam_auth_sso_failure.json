@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge multiple user reports of being unable to log in.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst quickly recognizes the issue is widespread."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst quickly recognizes the issue is widespread.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status page of the SSO provider to confirm they are reporting a major outage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst confirms the root cause is an external vendor outage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst confirms the root cause is an external vendor outage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post a notification on the company's internal status page, informing employees of the issue and that the team is monitoring the vendor for updates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst effectively communicates the situation to the entire company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst effectively communicates the situation to the entire company.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

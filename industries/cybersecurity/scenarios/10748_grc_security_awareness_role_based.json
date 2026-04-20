@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the different roles and their specific training needs (e.g., developers need secure coding training, finance needs training on wire fraud).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager successfully maps roles to required training modules."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager successfully maps roles to required training modules.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create different assignment groups in the LMS for each department (Developers, Finance, etc.).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager successfully creates the assignment groups."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager successfully creates the assignment groups.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the appropriate training modules to each group.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager successfully assigns the correct, specialized training to each department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager successfully assigns the correct, specialized training to each department.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

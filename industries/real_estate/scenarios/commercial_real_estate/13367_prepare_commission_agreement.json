@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The landlord's agent drafts a commission agreement specifying the percentage of the lease value that will be paid as commission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A draft commission agreement is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A draft commission agreement is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The agreement specifies how the commission will be split between the two brokerage firms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The commission split (e.g., 50/50) is clearly stated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The commission split (e.g., 50/50) is clearly stated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Both brokers sign the agreement before the lease is sent to the tenant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A legally binding commission agreement is in place."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A legally binding commission agreement is in place.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

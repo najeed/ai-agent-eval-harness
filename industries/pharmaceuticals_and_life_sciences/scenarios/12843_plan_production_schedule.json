@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Review the demand forecast for all products for the next month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the forecast and identifies which products have the most urgent demand."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the forecast and identifies which products have the most urgent demand.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the inventory of the required raw materials and API for the high-demand products.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that all necessary materials are in stock and released."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that all necessary materials are in stock and released.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a production schedule that prioritizes the high-demand products and optimizes equipment utilization.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a schedule that sequences batches to minimize changeover times."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a schedule that sequences batches to minimize changeover times.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Publish the final schedule and create the electronic work orders for the scheduled batches.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent publishes the schedule and the corresponding work orders are created in the MES."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent publishes the schedule and the corresponding work orders are created in the MES.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

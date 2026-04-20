@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the approved master batch record for the product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the recipe and instructions for the product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the recipe and instructions for the product.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a system tool to scale the recipe quantities from the 100L pilot scale to the 5000L production scale.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully scales all raw material quantities by a factor of 50."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully scales all raw material quantities by a factor of 50.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a new production order for the scaled-up batch on the large-scale reactor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the first full-scale production order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the first full-scale production order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

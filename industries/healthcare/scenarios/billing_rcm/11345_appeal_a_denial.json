@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the denied claim and the payer's reason for denial.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist understands the reason for the denial."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist understands the reason for the denial.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather supporting clinical documentation from the patient's chart that proves medical necessity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist finds the physician's note and test results that justify the service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist finds the physician's note and test results that justify the service.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft an appeal letter, attach the supporting documentation, and submit it to the payer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The appeal is successfully submitted, and the claim status is updated to 'Appealed'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The appeal is successfully submitted, and the claim status is updated to 'Appealed'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

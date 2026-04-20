@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve historical energy consumption data for all city-owned buildings from their respective BMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully queries and aggregates the energy data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully queries and aggregates the energy data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to rank the buildings from most to least energy-efficient per square foot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a ranked list identifying the least efficient buildings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a ranked list identifying the least efficient buildings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a summary report with visualizations to be sent to the sustainability officer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a comprehensive report with charts and key findings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a comprehensive report with charts and key findings.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

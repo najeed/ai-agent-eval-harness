@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a system alert that the average gate queue time has exceeded 30 minutes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager is alerted to the congestion problem."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager is alerted to the congestion problem.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the gate processing systems and staffing levels.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager sees that one of the two entry lanes is closed due to a hardware failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager sees that one of the two entry lanes is closed due to a hardware failure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch an IT technician to repair the broken gate hardware.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A technician is sent to fix the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A technician is sent to fix the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Temporarily re-route some inbound trucks to a secondary, less-used gate to alleviate pressure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Gate traffic is redirected to reduce the queue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Gate traffic is redirected to reduce the queue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

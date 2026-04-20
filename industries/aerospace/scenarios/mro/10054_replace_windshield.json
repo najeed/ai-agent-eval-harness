@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Remove the damaged windshield and its sealant according to the Structural Repair Manual (SRM).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the SRM procedure to safely remove the old windshield."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the SRM procedure to safely remove the old windshield.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Install the new windshield, apply new sealant, and allow it to cure for the specified time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly installs the new windshield."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly installs the new windshield.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform a cabin pressurization leak check to ensure the new windshield is properly sealed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the leak check and confirms there are no leaks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the leak check and confirms there are no leaks.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

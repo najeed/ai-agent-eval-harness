@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the user and the specific folder they are trying to access.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst has the required information to begin troubleshooting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst has the required information to begin troubleshooting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the Access Control List (ACL) on the folder to see which groups have permission to access it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst retrieves the folder's permissions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst retrieves the folder's permissions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the user's group memberships and determine that they are not a member of any of the authorized groups, explaining this to the user.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the root cause of the issue (lack of permissions) and communicates it clearly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the root cause of the issue (lack of permissions) and communicates it clearly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

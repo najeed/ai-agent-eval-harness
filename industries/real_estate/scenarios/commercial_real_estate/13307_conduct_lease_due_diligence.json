@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain copies of all current lease agreements for the property.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has all necessary lease documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has all necessary lease documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each lease, extract and summarize key terms: tenant name, lease start/end dates, rent amount, renewal options, and expense responsibilities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a structured summary (lease abstract) for each tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a structured summary (lease abstract) for each tenant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the lease abstracts to the seller's rent roll to identify any discrepancies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies and flags inconsistencies between the leases and the rent roll for further investigation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies and flags inconsistencies between the leases and the rent roll for further investigation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

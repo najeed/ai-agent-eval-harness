@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and their currently assigned advisor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student's current advisor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student's current advisor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the list of other available advisors in the student's academic department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds two other advisors with availability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds two other advisors with availability.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reassign the student to a new advisor based on their preference or random assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the student's assigned advisor in the SIS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the student's assigned advisor in the SIS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

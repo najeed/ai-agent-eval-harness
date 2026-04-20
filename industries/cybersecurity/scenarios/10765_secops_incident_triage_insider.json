@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the UEBA alert details, including the user, the amount of data downloaded, and the source.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst retrieves the details of the behavioral anomaly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst retrieves the details of the behavioral anomaly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check with the user's manager to see if there is a legitimate business reason for the large download.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager confirms there is no legitimate reason for the activity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager confirms there is no legitimate reason for the activity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the activity is suspicious and escalate to the insider threat team for a full investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies a potential insider threat and escalates it to the appropriate team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies a potential insider threat and escalates it to the appropriate team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

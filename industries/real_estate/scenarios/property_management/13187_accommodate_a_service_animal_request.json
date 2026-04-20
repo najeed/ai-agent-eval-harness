@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the request and understand that service animals are not pets and 'no pets' policies do not apply.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies this as a fair housing accommodation issue, not a pet policy issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies this as a fair housing accommodation issue, not a pet policy issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "If the disability is not obvious, request reliable documentation that the animal performs a necessary service related to a disability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a formal, legally compliant request for verification of the animal's status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a formal, legally compliant request for verification of the animal's status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upon receiving valid documentation, approve the accommodation and proceed with the application process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The accommodation is approved, and the applicant is not charged any pet fees or deposits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The accommodation is approved, and the applicant is not charged any pet fees or deposits.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

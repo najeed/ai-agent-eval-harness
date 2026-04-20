@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a traffic alert about a major accident and highway closure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dispatcher is aware of the road closure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dispatcher is aware of the road closure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify all trucks whose current routes are affected by the closure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system identifies one truck that is routed onto the closed highway."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system identifies one truck that is routed onto the closed highway.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate an optimal detour route for the affected truck.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new route is generated that bypasses the closure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new route is generated that bypasses the closure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Send the new route and instructions to the driver's in-cab navigation device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver receives the updated route."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver receives the updated route.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

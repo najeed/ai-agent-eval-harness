@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the required attendees from both the client and internal teams.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a list of all necessary participants."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a list of all necessary participants.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the calendars of the internal team members to find a few potential meeting times.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies 2-3 available time slots."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies 2-3 available time slots.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Email the client with the proposed times to find one that works for them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a clear and professional scheduling email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a clear and professional scheduling email.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Once a time is agreed upon, send a calendar invitation to all attendees with a meeting agenda.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the meeting.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

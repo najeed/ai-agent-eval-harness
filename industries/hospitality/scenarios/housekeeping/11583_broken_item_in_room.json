@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The housekeeper reports the broken lamp to their supervisor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The issue is reported."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The issue is reported.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The supervisor creates a maintenance work order for a 'Broken Lamp'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is created in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is created in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "An engineer is dispatched to replace the lamp.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A technician is assigned to fix the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A technician is assigned to fix the issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

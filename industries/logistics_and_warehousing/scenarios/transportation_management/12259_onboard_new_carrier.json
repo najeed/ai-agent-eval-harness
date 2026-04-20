@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Create a new carrier profile with their name, address, and DOT number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new carrier record is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new carrier record is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Upload the carrier's contract, W-9 form, and insurance certificate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All required compliance documents are uploaded to the carrier's profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All required compliance documents are uploaded to the carrier's profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the carrier's rate tariff for various lanes into the rating system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The carrier's rates are now available for quoting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The carrier's rates are now available for quoting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Activate the carrier, making them eligible to be selected for shipments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The carrier is now active in the TMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The carrier is now active in the TMS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

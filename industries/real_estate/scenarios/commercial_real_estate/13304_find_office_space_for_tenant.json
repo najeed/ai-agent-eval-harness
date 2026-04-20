@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the client's requirements: location, square footage, budget, and specific needs (e.g., conference rooms).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a clear, documented list of the client's needs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a clear, documented list of the client's needs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search commercial listing databases (e.g., CoStar, LoopNet) for available properties that match the criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of 5-10 potential properties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of 5-10 potential properties.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare a tour book of the selected properties and schedule a day of tours with the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a professional tour package and schedules the property tours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a professional tour package and schedules the property tours.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

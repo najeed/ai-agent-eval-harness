@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a report of all equipment due for calibration in the next 90 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of 25 pieces of equipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of 25 pieces of equipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Coordinate with production planners to schedule downtime for each piece of equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the calibration activities with minimal disruption to production."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the calibration activities with minimal disruption to production.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create work orders for the calibration technicians.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates work orders in the maintenance system for each scheduled calibration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates work orders in the maintenance system for each scheduled calibration.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

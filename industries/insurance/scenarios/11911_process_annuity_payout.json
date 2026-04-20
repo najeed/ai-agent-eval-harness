@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the deceased contract holder and the beneficiary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the annuity contract and confirms the caller is the beneficiary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the annuity contract and confirms the caller is the beneficiary.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the available payout options (e.g., lump sum, stretch over 10 years).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the different ways the beneficiary can receive the funds, including tax implications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the different ways the beneficiary can receive the funds, including tax implications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Collect the necessary forms and documents to process the selected payout option.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the required forms to the beneficiary to start the payout process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the required forms to the beneficiary to start the payout process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

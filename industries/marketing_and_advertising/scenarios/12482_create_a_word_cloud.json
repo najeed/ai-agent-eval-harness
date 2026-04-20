@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all customer review text from the last quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a single body of text containing all reviews."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a single body of text containing all reviews.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Input the text into a word cloud generation tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses the tool to process the text."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses the tool to process the text.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the word cloud visualization.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool produces a visual where more frequent words like 'easy', 'fast', and 'support' appear larger."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool produces a visual where more frequent words like 'easy', 'fast', and 'support' appear larger.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

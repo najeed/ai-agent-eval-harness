@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select an instrument from the 'Pending Calibration Review' queue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent opens the calibration record for an HPLC."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent opens the calibration record for an HPLC.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the calibration data to ensure all tested parameters meet the acceptance criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that the calibration results are within the defined limits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that the calibration results are within the defined limits.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply an electronic signature to approve the calibration, making the instrument available for use.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent signs off on the calibration, and the instrument's status changes to 'Available'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent signs off on the calibration, and the instrument's status changes to 'Available'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Enumerate the local host and network to find potential paths for privilege escalation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Tester identifies a service running with weak permissions and a list of active domain users."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Tester identifies a service running with weak permissions and a list of active domain users.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attempt to exploit a known vulnerability in the weakly configured service to gain system-level privileges on the local host.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Tester successfully exploits the service and gains SYSTEM-level access."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Tester successfully exploits the service and gains SYSTEM-level access.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use the elevated privileges to dump credentials from memory and use them to access a Domain Controller, successfully escalating to Domain Admin.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Tester successfully compromises the domain, achieving the test's objective."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Tester successfully compromises the domain, achieving the test's objective.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

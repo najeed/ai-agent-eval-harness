@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Immediately conduct an unannounced safety audit of the specified project site, focusing on fall protection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A safety audit is performed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A safety audit is performed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Document any findings from the audit and implement immediate corrective actions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The audit findings are logged and corrective actions are assigned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The audit findings are logged and corrective actions are assigned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a formal response to OSHA, detailing the audit results and the corrective actions taken.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal response letter is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal response letter is drafted.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

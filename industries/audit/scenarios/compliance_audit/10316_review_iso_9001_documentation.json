@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the QMS manual to ensure it has been reviewed and approved by management within the last year, as required.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms the manual was last updated 18 months ago, which is a non-conformance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms the manual was last updated 18 months ago, which is a non-conformance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the records from the last management review meeting to ensure all required topics were covered.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor verifies the meeting minutes are complete and compliant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor verifies the meeting minutes are complete and compliant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the corrective action log to ensure that all previously identified non-conformances have been addressed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor finds two corrective actions that are past their due date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor finds two corrective actions that are past their due date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

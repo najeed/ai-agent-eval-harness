@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the list of five properties the client wants to see.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the list of target properties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the list of target properties.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Map the properties and create a geographically logical tour route to minimize travel time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an efficient tour schedule (e.g., Property A at 10am, Property B at 11am, etc.)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an efficient tour schedule (e.g., Property A at 10am, Property B at 11am, etc.).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact each listing broker to schedule the showing at the designated time and send a final itinerary to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books all five showings and provides a clear schedule to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books all five showings and provides a clear schedule to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

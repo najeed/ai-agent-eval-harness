@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a list of all customers who made a purchase in the last 60 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the initial list of recent purchasers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the initial list of recent purchasers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a second list of all customers who did not open the last two email campaigns.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the list of unengaged users."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the list of unengaged users.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Find the intersection of the two lists to create the final target segment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the final, highly-targeted segment of users."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the final, highly-targeted segment of users.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Log the temperature excursion event in the quality system, including the duration and peak temperature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new quality event record with all the details of the excursion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new quality event record with all the details of the excursion.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Consult the product's stability data to determine if the excursion impacts product quality.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the stability profile and finds that the product is stable for up to 6 hours at the recorded temperature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the stability profile and finds that the product is stable for up to 6 hours at the recorded temperature.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Make a disposition decision for the product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Based on the stability data, the agent makes the decision that the product is still usable and can be released."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Based on the stability data, the agent makes the decision that the product is still usable and can be released.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Document the investigation and disposition decision, and close the quality event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a summary report of the investigation and closes the event record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a summary report of the investigation and closes the event record.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

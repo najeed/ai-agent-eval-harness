@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a task to update the price for a specific item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate gets a notification of a required price change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate gets a notification of a required price change.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The new price has already been updated in the central system. The associate prints a new shelf label with the updated price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new, accurate shelf label is printed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new, accurate shelf label is printed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Go to the item's location on the sales floor, remove the old label, and replace it with the new one.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The price displayed to the customer on the shelf now matches the price in the POS system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The price displayed to the customer on the shelf now matches the price in the POS system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

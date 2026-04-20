@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the official media credential application form on the event organizer's website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct application form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct application form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Fill out the application with the reporter's details and the publication's information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The application is filled out accurately."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The application is filled out accurately.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the application and any required supporting documents (e.g., a letter from the editor).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The credential application is successfully submitted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The credential application is successfully submitted.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

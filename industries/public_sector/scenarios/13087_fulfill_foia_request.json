@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the FOIA request and the associated responsive documents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer has the correct request and the final set of documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer has the correct request and the final set of documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a response letter to the requestor, explaining what is being provided and citing the legal exemptions used for any redactions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer writes a clear, legally compliant response letter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer writes a clear, legally compliant response letter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deliver the letter and the documents to the requestor and close the request in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer sends the materials and updates the request status to 'Fulfilled'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer sends the materials and updates the request status to 'Fulfilled'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

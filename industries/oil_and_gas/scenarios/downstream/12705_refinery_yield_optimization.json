@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather current market prices for available crude oils (e.g., WTI, Brent, Mars).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of crudes and their current spot prices is compiled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of crudes and their current spot prices is compiled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Input the crude prices and their assay data into the refinery's Linear Programming (LP) model.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The LP model is correctly populated with the latest data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The LP model is correctly populated with the latest data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the LP model to determine the most profitable crude slate and generate a purchase recommendation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The model outputs a recommended blend of crudes that maximizes the refinery's gross margin."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The model outputs a recommended blend of crudes that maximizes the refinery's gross margin.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

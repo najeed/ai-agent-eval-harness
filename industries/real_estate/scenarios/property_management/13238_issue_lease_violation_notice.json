@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the 'no pets' clause in the tenant's signed lease agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the lease terms prohibit pets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the lease terms prohibit pets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a formal 'Notice to Cure or Quit' citing the specific lease violation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the correct legal notice with all required details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the correct legal notice with all required details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deliver the notice to the tenant as required by law and document the delivery.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows legal requirements for notice delivery and logs the action."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows legal requirements for notice delivery and logs the action.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

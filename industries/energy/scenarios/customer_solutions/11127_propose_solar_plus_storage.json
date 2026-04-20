@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Analyze the customer's interval meter data to understand their load profile and identify peak demand charges.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the customer has high demand charges in the afternoon."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the customer has high demand charges in the afternoon.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Size an optimal solar and storage system to maximize self-consumption and perform peak shaving.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends a 250 kW solar array and a 100 kW/200 kWh battery system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends a 250 kW solar array and a 100 kW/200 kWh battery system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the estimated annual bill savings, project IRR, and payback period for the proposed system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear financial summary for the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear financial summary for the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a formal proposal document including the technical and financial details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a professional, customer-facing proposal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a professional, customer-facing proposal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

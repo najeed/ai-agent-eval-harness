@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer complaint record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the specific customer complaint case."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the specific customer complaint case.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for and identify the related internal NCR.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the matching NCR based on the part number and defect description."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the matching NCR based on the part number and defect description.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Link the two records together for complete traceability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully links the complaint to the NCR in the quality management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully links the complaint to the NCR in the quality management system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

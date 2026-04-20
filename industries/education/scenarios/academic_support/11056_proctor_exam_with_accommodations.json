@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the student's identity and the specific accommodations for this exam.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Proctor confirms the student and the 'text-to-speech software' accommodation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Proctor confirms the student and the 'text-to-speech software' accommodation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set up the student at a computer with the approved software and the digital version of the exam.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Proctor successfully logs the student into the testing environment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Proctor successfully logs the student into the testing environment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the student during the exam to ensure compliance with academic integrity policies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Proctor observes the student without incident."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Proctor observes the student without incident.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Input the details of the proposed cyberattack, including the target (e.g., power grid) and the intended effect (e.g., temporary disruption).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Commander accurately enters the proposed cyber operation parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Commander accurately enters the proposed cyber operation parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assess the potential for second-order effects on the civilian population (e.g., impact on hospitals).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies potential collateral effects that must be mitigated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies potential collateral effects that must be mitigated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Query the ROE database and confirm that the attack is permissible as it is temporary, reversible, and avoids protected civilian infrastructure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear 'go/no-go' recommendation based on a correct interpretation of the ROE."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear 'go/no-go' recommendation based on a correct interpretation of the ROE.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

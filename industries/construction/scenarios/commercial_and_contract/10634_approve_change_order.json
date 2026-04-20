@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the client's approval for the pending change order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The approval is received and logged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The approval is received and logged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the status of the change order to 'Approved' in the project management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The change order status is updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The change order status is updated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the total project budget to include the cost of the approved change order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project budget is increased by the value of the change order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project budget is increased by the value of the change order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

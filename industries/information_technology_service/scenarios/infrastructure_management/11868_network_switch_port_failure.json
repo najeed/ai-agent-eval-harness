@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ask the user for the wall port number they are plugged into and cross-reference it in the documentation to find the corresponding switch and port.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician identifies the exact switch port the user is connected to."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician identifies the exact switch port the user is connected to.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log in to the network switch and check the status of that port.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The switch shows the port is in an 'err-disabled' state, indicating a physical layer issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The switch shows the port is in an 'err-disabled' state, indicating a physical layer issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the user to try a different network cable. If that fails, move their connection to a different port on the switch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Moving the user to a different switch port resolves the issue, indicating the original port has failed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Moving the user to a different switch port resolves the issue, indicating the original port has failed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

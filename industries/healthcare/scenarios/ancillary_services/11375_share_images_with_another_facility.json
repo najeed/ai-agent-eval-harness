@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the imaging studies that need to be shared.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technologist selects the relevant CT and X-ray exams."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technologist selects the relevant CT and X-ray exams.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the image sharing feature to send the studies to the other hospital's PACS system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The images are electronically pushed to the receiving facility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The images are electronically pushed to the receiving facility.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm that the receiving facility has acknowledged receipt of the images.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A confirmation message is received, ensuring continuity of care."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A confirmation message is received, ensuring continuity of care.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

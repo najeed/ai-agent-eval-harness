@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query the system for all hazardous waste manifests from the reporting period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a list of all waste shipments from the last two years."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a list of all waste shipments from the last two years.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Aggregate the data by waste code and quantity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly sums the total weight for each distinct EPA waste code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly sums the total weight for each distinct EPA waste code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the report in the official EPA format.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the formatted report ready for submission."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the formatted report ready for submission.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

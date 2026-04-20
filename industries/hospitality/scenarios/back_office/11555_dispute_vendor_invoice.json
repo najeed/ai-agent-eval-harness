@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Compare the invoice charges to the original purchase order and the agreed-upon contract pricing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent finds that the price for produce is higher than the contract rate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent finds that the price for produce is higher than the contract rate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the vendor to report the discrepancy and request a corrected invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent communicates the issue to the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent communicates the issue to the vendor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place a hold on the incorrect invoice in the accounting system until a credit memo or new invoice is received.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The invoice is put on hold to prevent accidental payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The invoice is put on hold to prevent accidental payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

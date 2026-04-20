@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Generate a new CTA for an investigator site using an approved legal template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a draft CTA populated with the site's details and the study's budget."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a draft CTA populated with the site's details and the study's budget.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send the draft CTA to the site for their review and negotiation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the contract to the site's legal contact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the contract to the site's legal contact.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive a redlined version of the CTA from the site and route it to the internal legal department for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the redlined version and routes it to the legal team's work queue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the redlined version and routes it to the legal team's work queue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Track the CTA status until it is fully executed by both parties.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent monitors the contract status, facilitates communication, and updates the status to 'Executed' upon completion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent monitors the contract status, facilitates communication, and updates the status to 'Executed' upon completion.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

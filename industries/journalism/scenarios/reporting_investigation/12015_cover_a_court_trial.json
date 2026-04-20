@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Obtain the court docket to understand the day's schedule and witnesses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent knows the plan for the day's proceedings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent knows the plan for the day's proceedings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attend the trial and take detailed notes of testimony and arguments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent captures the key events of the trial."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent captures the key events of the trial.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "During breaks, file short updates to the newsroom's live blog.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The online audience receives timely updates from the courtroom."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The online audience receives timely updates from the courtroom.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "At the end of the day, write a summary article of the day's proceedings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive summary article is produced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive summary article is produced.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

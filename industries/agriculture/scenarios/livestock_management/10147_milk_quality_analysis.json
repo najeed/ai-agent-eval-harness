@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the individual SCC data for all cows from the last milking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the SCC data for every cow in the herd."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the SCC data for every cow in the herd.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the top 10 cows with the highest SCC that are contributing most to the bulk tank average.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of the 10 problem cows."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of the 10 problem cows.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a task for the farm manager to check the identified cows for mastitis and potentially divert their milk from the bulk tank.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an actionable task to address the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an actionable task to address the issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "URGENT: Fetch the record for auth-99. The patient is on the line yelling that they've already provided this three times.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Record found with code AUTH-99, status 'Pending'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Record found with code AUTH-99, status 'Pending'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the Insurance Payer's database for AUTH-99.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Record shows AUTH-99 is marked as 'Denied' due to 'Incomplete Documentation'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Record shows AUTH-99 is marked as 'Denied' due to 'Incomplete Documentation'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reconcile the records and propose a 'Correction Request' to the Insurance system for auth-99.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Correction submitted, status updated to 'Under Review'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Correction submitted, status updated to 'Under Review'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Notify the angry patient (john.smith@example.com) that their update for auth-99 is sent. Be extremely apologetic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Email sent to patient explaining the administrative correction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Email sent to patient explaining the administrative correction.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

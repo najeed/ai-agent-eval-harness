@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the Job Hazard Analysis (JHA) for 'Concrete Demolition'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The relevant JHA document is retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The relevant JHA document is retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log that a pre-task briefing was held, covering the hazards and controls listed in the JHA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new entry is made in the safety meeting log."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new entry is made in the safety meeting log.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Record the names of the 6 crew members who attended the briefing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The attendee list is added to the log entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The attendee list is added to the log entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

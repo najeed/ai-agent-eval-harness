@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the report of the workplace injury.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The safety manager receives the initial injury report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The safety manager receives the initial injury report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the employee with the required claim forms and information on approved medical providers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager gives the employee all necessary paperwork."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager gives the employee all necessary paperwork.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "File the 'First Report of Injury' with the company's workers' compensation insurance carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager successfully submits the claim to the insurance provider."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager successfully submits the claim to the insurance provider.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

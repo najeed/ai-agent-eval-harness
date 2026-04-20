@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the start and end time of the platform shutdown from the event log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The exact duration of the downtime is determined."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The exact duration of the downtime is determined.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine the root cause of the shutdown by reviewing alarms and operator logs (e.g., 'Compressor Failure').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The root cause is correctly identified and categorized."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The root cause is correctly identified and categorized.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the total volume of deferred production (oil and gas) by multiplying the downtime duration by the platform's normal production rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The lost production volume is calculated and logged in the downtime tracking system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The lost production volume is calculated and logged in the downtime tracking system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

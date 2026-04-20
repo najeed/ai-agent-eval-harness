@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Develop a project brand, including a name, logo, and website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete brand identity for the project is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete brand identity for the project is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create high-quality 3D renderings and virtual tours of the future units and amenities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Compelling visual marketing assets are produced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Compelling visual marketing assets are produced.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Launch a digital advertising campaign targeting potential buyers on social media and real estate portals to generate leads for the sales gallery.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A lead generation campaign is launched and monitored."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A lead generation campaign is launched and monitored.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

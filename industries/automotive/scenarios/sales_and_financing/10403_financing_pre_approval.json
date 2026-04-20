@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Collect the customer's personal information, employment details, and income for the credit application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely gathers all necessary information for the application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely gathers all necessary information for the application.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit the application to the financing partners and retrieve the credit decision.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the application and receives a 'pre-approved' status with a maximum loan amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the application and receives a 'pre-approved' status with a maximum loan amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the customer of the pre-approval status, the approved amount, and the next steps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the results and what the customer needs to bring to the dealership."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the results and what the customer needs to bring to the dealership.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

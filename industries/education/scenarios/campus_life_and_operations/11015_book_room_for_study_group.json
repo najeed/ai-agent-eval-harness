@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and their club/group affiliation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student is part of a registered student organization."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student is part of a registered student organization.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the availability of small classrooms for the requested date and time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds several available rooms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds several available rooms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reserve the selected classroom for the student group.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the room and sends a confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the room and sends a confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

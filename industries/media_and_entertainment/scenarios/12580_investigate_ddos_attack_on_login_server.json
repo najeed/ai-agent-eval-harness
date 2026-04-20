@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the DDoS alert and analyze traffic patterns to the login server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms a high volume of traffic from a botnet is targeting the server."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms a high volume of traffic from a botnet is targeting the server.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Activate DDoS mitigation services to filter the malicious traffic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enables the DDoS protection service, which begins to drop the attack traffic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enables the DDoS protection service, which begins to drop the attack traffic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the server status until it returns to normal operation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent watches the server load and confirms that legitimate players can log in again."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent watches the server load and confirms that legitimate players can log in again.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

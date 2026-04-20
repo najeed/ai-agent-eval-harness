@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the pending application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent finds the application in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent finds the application in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the incorrect date of birth.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent confirms the error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent confirms the error.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit a request to the underwriter to correct the demographic information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent sends a formal request to the underwriting team to amend the application with the correct date of birth."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent sends a formal request to the underwriting team to amend the application with the correct date of birth.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

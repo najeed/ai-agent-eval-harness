@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the passenger's booking and verify the infant is on the reservation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the booking includes an infant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the booking includes an infant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the aircraft has bassinet positions and if one is available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an available bassinet seat at a bulkhead."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an available bassinet seat at a bulkhead.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the bassinet request to the booking and assign the passenger to the appropriate seat.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the special request and changes the seat assignment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the special request and changes the seat assignment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

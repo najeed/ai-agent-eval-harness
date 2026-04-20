@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Work with a jewelry company to design the championship ring.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A final design for the ring is approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A final design for the ring is approved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Get the ring size for every eligible player and staff member.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all the necessary ring sizes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all the necessary ring sizes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place the order for the rings with the jewelry company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully places the bulk order for the rings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully places the bulk order for the rings.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

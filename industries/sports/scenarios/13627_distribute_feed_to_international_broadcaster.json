@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the correct game and the specific international partner who needs the clean feed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the details of the distribution agreement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the details of the distribution agreement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set up a dedicated satellite or fiber transmission path for the clean feed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent configures the transmission route."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent configures the transmission route.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the feed throughout the game to ensure the partner is receiving a high-quality signal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent monitors the signal strength and quality for the duration of the game."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent monitors the signal strength and quality for the duration of the game.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

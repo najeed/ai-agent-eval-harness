@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the most compelling quote or statistic from the report to use as a hook.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a powerful, shareable piece of information from the article."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a powerful, shareable piece of information from the article.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a unique post for each platform, tailoring the language and format (e.g., a Twitter thread, a Facebook post, an Instagram story).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates three distinct, platform-appropriate posts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates three distinct, platform-appropriate posts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the posts to be published at optimal engagement times.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The posts are scheduled for publication."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The posts are scheduled for publication.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

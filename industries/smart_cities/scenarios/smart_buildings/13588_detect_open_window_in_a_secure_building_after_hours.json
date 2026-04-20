@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an 'Open Window' alert from the 'City Finance Office' after 6 PM.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the after-hours security alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the after-hours security alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Pivot the nearest interior camera to view the window and confirm it is open.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets visual confirmation of the open window."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets visual confirmation of the open window.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a mobile security guard to close the window and secure the building.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches security to resolve the physical issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches security to resolve the physical issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

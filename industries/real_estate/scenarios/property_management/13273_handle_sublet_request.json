@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the tenant's lease to see if subletting is permitted and under what conditions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the lease allows subletting with landlord's written consent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the lease allows subletting with landlord's written consent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the tenant of the required procedure, which includes the prospective sublessee submitting a full rental application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the required steps to the tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the required steps to the tenant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the sublessee's application, including screening, and if approved, draft a formal sublet agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the standard application and leasing process for the sublessee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the standard application and leasing process for the sublessee.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

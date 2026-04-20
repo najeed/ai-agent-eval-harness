@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Look up the customer's order using their order number or email address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully finds the original ticket purchase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully finds the original ticket purchase.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the event was officially canceled and that the ticket is eligible for a refund.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the event cancellation and ticket eligibility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the event cancellation and ticket eligibility.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process a full refund to the original payment method.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates the refund transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates the refund transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Send a confirmation email to the customer showing the refund has been processed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the refund confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the refund confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

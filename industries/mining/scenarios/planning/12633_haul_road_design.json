@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the start and end points of the new haul road on the mine plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The road's corridor is defined."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The road's corridor is defined.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Design the road's alignment, ensuring the gradient does not exceed the maximum allowed for the haul trucks (e.g., 10%).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A safe and efficient road alignment is designed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A safe and efficient road alignment is designed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the final design, including cut and fill volumes needed to construct the road.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete road design package is created for the construction team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete road design package is created for the construction team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

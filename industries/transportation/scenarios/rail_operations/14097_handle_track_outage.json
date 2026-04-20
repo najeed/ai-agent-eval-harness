@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Log the track outage in the system for a specific segment of the network.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The main line is marked as out-of-service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The main line is marked as out-of-service.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify all trains that were scheduled to use that track segment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of affected trains is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of affected trains is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each affected train, find a viable detour route, potentially using trackage rights on another railroad's lines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "New, longer routes are found for all trains."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "New, longer routes are found for all trains.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the schedule and routing for each train and notify the crews of their new instructions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All affected trains are re-routed to bypass the outage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All affected trains are re-routed to bypass the outage.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

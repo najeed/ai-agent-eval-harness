@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and verify that voicemail is an active feature on their account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms voicemail is provisioned for the customer's line."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms voicemail is provisioned for the customer's line.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the call forwarding settings on the customer's account to ensure they are correctly pointing to the voicemail system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that call forwarding is incorrectly disabled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that call forwarding is incorrectly disabled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reset the call forwarding settings to the default voicemail configuration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully uses the tool to reset the settings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully uses the tool to reset the settings.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

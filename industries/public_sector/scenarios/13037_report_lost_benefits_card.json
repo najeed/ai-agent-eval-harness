@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify and authenticate the benefits recipient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely verifies the citizen's identity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely verifies the citizen's identity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately deactivate the lost EBT card to prevent fraudulent use.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully deactivates the card."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully deactivates the card.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Order a replacement card to be mailed to the citizen's address on file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the request for a new card."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the request for a new card.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

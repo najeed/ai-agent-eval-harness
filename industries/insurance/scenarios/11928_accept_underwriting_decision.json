@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the final underwriting offer for the applicant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the approved, rated offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the approved, rated offer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the applicant's acceptance of the rated policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the applicant agrees to the new premium."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the applicant agrees to the new premium.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Take the initial premium payment and issue the policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the first payment and places the policy in force."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the first payment and places the policy in force.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Copy the text of the submitted article.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The text is ready to be checked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The text is ready to be checked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run the text through a plagiarism detection tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool scans the web and internal archives for matching text."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool scans the web and internal archives for matching text.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the plagiarism report and investigate any flagged passages to determine if they are properly attributed or constitute plagiarism.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a final determination on the originality of the work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a final determination on the originality of the work.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

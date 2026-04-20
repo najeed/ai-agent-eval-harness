@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the flagged review from the moderation queue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the user's review and the reason it was flagged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the user's review and the reason it was flagged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the content against the platform's community guidelines for hate speech.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the review violates community guidelines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the review violates community guidelines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Remove the review from the platform and issue a warning to the user's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully deletes the review and applies a warning strike to the user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully deletes the review and applies a warning strike to the user.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Contact the electric utility company to report a change in occupancy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The utility company is notified of the tenant move-out."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The utility company is notified of the tenant move-out.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the utility company with the management company's information to establish service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new account is created for the management company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new account is created for the management company.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm that the utility service has been successfully transferred and the account is active.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives confirmation of the new active account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives confirmation of the new active account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

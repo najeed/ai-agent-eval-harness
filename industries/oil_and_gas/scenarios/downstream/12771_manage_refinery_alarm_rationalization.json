@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a report on alarm frequency for the entire refinery over the last month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is generated, listing the top 10 most frequent alarms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is generated, listing the top 10 most frequent alarms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Investigate the top alarm, a 'low flow' alarm on a pump, to determine its cause.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The investigation reveals the alarm's setpoint is too close to the pump's normal operating point, causing it to trigger unnecessarily."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The investigation reveals the alarm's setpoint is too close to the pump's normal operating point, causing it to trigger unnecessarily.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit a management of change (MOC) request to adjust the alarm's setpoint to a more appropriate value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An MOC is created to formally review and approve the change to the alarm setting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An MOC is created to formally review and approve the change to the alarm setting.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

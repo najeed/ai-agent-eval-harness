@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Review the reader's email and identify the specific error they are reporting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the nature of the potential error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the nature of the potential error.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Re-check the reporter's original notes and sources to verify the reader's claim.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines that the reader is correct and the article contains an error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines that the reader is correct and the article contains an error.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the online article with the correct information and add a formal correction notice at the bottom of the story.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The article is corrected and a transparent notice is added."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The article is corrected and a transparent notice is added.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Reply to the reader's email, thanking them for pointing out the error and informing them that it has been corrected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A polite and professional response is sent to the reader."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A polite and professional response is sent to the reader.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

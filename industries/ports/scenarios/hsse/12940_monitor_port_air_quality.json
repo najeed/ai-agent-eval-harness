@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the dashboard for the port's real-time air quality monitoring sensors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer logs into the environmental monitoring system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer logs into the environmental monitoring system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the current levels of pollutants like NOx, SOx, and particulate matter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer reviews the data from all sensors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer reviews the data from all sensors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that all readings are within the permitted regulatory limits and log the check.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer confirms all levels are compliant and creates a log entry for the daily check."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer confirms all levels are compliant and creates a log entry for the daily check.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

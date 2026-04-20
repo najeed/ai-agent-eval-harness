@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer's service address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer's location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer's location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the internal network expansion roadmap for any planned upgrades in that area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the neighborhood is scheduled for a fiber upgrade in the next 6-9 months."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the neighborhood is scheduled for a fiber upgrade in the next 6-9 months.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the customer of the planned upgrade timeline and offer to add them to a notification list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the information and adds the customer to the notification list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the information and adds the customer to the notification list.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

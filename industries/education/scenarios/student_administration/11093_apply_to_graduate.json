@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and guide them to the online graduation application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the correct URL from the registrar's website."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the correct URL from the registrar's website.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a preliminary degree audit to ensure the student is on track to complete all requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The audit shows the student will meet all requirements upon successful completion of their current courses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The audit shows the student will meet all requirements upon successful completion of their current courses.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assist the student in completing the application, including confirming the name they want printed on their diploma.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent helps the student submit the application successfully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent helps the student submit the application successfully.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

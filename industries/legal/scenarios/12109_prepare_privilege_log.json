@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all documents tagged as 'Privileged' from the e-discovery platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the list of privileged documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the list of privileged documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each document, create a log entry that includes the date, author, recipients, a brief non-privileged description, and the specific privilege being asserted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed log entry for each document without revealing privileged information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed log entry for each document without revealing privileged information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Format the entries into a formal privilege log document for production to the opposing counsel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a properly formatted privilege log."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a properly formatted privilege log.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

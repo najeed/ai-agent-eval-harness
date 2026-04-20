@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the project's design documents to understand the application's architecture and data flows.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst gains a thorough understanding of the proposed application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst gains a thorough understanding of the proposed application.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Conduct a threat modeling exercise to identify potential threats and vulnerabilities in the design.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst identifies several potential threats, such as insecure data storage on the mobile device."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst identifies several potential threats, such as insecure data storage on the mobile device.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a risk register for the project, documenting the identified risks and recommending security requirements for the developers to implement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst provides the project team with actionable security requirements to mitigate the identified risks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst provides the project team with actionable security requirements to mitigate the identified risks.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

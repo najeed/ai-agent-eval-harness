@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Detect the electronic emissions from the radar site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully detects the radar signal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully detects the radar signal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the signal's parameters, such as frequency, pulse repetition interval, and scan pattern.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly characterizes the technical parameters of the signal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly characterizes the technical parameters of the signal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the signal parameters against a threat library to positively identify the radar system (e.g., SA-20).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst makes a high-confidence identification of the threat system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst makes a high-confidence identification of the threat system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

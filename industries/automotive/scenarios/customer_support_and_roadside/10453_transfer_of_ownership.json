@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the identity of the original owner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent authenticates the seller."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent authenticates the seller.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the new owner's name and contact information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the buyer's details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the buyer's details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the vehicle's record in the system with the new owner's information, initiating the transfer process for any applicable services.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the ownership record in the master vehicle database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the ownership record in the master vehicle database.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

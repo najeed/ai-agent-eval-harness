@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the as-planted map for the corn field to get the exact location of the rows.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the row guidance lines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the row guidance lines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a path plan for the robot to drive between the corn rows.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a precise guidance path for the robot."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a precise guidance path for the robot.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch the interseeder robot to begin the mission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully dispatches the robot."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully dispatches the robot.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-0",
         "task_description": "Verify clinician access and patient identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Identity verified/authorized"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Identity verified/authorized",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-1",
         "task_description": "Open the patient's chart and navigate to the allergies section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse accesses the correct module for managing allergies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse accesses the correct module for managing allergies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add 'Penicillin' to the allergy list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse searches for and selects the correct substance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse searches for and selects the correct substance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the nature of the reaction (e.g., 'Hives') and save the changes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse adds the specific reaction details, and the new allergy is now prominently displayed in the patient's chart banner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse adds the specific reaction details, and the new allergy is now prominently displayed in the patient's chart banner.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

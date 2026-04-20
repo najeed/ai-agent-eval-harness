@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Authenticate the customer's identity with a high level of scrutiny to prevent malicious closures.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows a strict verification process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows a strict verification process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Confirm with the customer that this action is irreversible and will delete their order history and saved information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the consequences of account closure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the consequences of account closure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate the account deletion process, which may involve anonymizing past orders for data retention purposes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully triggers the account closure and data deletion workflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully triggers the account closure and data deletion workflow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

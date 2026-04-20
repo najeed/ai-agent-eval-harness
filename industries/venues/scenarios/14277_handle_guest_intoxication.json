@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Dispatch a security supervisor and a guest services manager to the location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends both security and guest services management to assess the situation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends both security and guest services management to assess the situation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The on-site team assesses the guest and determines they need to be ejected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The decision is made to remove the guest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The decision is made to remove the guest.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the incident, including the decision to eject the guest.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed incident report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed incident report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Arrange for safe transportation for the guest, such as calling a taxi or ride-sharing service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Security ensures the guest has a safe way to leave the property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Security ensures the guest has a safe way to leave the property.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

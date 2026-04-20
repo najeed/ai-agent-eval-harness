@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Navigate to the brand safety settings in the display advertising platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the relevant section."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the relevant section.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a placement exclusion list of specific websites to block.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uploads a list of known inappropriate sites."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uploads a list of known inappropriate sites.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply content category exclusions to block ads from appearing alongside sensitive topics (e.g., 'Tragedy and Conflict').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the appropriate content categories to exclude."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the appropriate content categories to exclude.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

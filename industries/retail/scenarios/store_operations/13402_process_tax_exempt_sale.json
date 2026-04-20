@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan all items for the purchase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All items are correctly added to the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All items are correctly added to the transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the customer's tax-exempt certificate and enter the tax-exempt ID into the POS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate validates the customer's status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate validates the customer's status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The POS system removes the sales tax from the total. Complete the transaction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The sale is completed correctly without sales tax."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The sale is completed correctly without sales tax.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

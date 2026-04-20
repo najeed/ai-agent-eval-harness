@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the work order and retrieve the technical specifications for the pump.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The planner understands the scope of work and the equipment involved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The planner understands the scope of work and the equipment involved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Develop a step-by-step job plan, including safety procedures (like isolation and lockout/tagout), required spare parts, tools, and estimated labor hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A detailed and safe job plan is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A detailed and safe job plan is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Order the required spare parts from the warehouse and reserve them for the job.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All necessary parts are confirmed to be available and are reserved for this work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All necessary parts are confirmed to be available and are reserved for this work order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

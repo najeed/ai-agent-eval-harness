@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Look up the guest's loyalty account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent finds the guest's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent finds the guest's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Manually adjust the guest's point balance, adding the gifted points.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "5,000 points are added to the guest's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "5,000 points are added to the guest's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add a note to the transaction explaining it was for service recovery.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The transaction is documented."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The transaction is documented.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

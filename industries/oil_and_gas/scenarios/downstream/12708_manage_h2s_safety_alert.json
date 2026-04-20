@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the H2S gas alert and identify its exact location on the plant map.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The location of the high H2S reading is pinpointed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The location of the high H2S reading is pinpointed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Trigger the area alarm horn and lights and send an emergency notification to all personnel in that unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All personnel in the affected area are alerted to evacuate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All personnel in the affected area are alerted to evacuate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the incident in the safety management system and dispatch the emergency response team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The incident is officially logged, and the response team is on its way."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The incident is officially logged, and the response team is on its way.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

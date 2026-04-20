@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive and log the completed enrollment form from the patient's physician.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new patient case and enters their demographic and insurance information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new patient case and enters their demographic and insurance information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a benefits verification check with the patient's insurance provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses a benefits verification tool and finds the drug is covered but requires prior authorization."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses a benefits verification tool and finds the drug is covered but requires prior authorization.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate the prior authorization process on behalf of the physician's office.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the required clinical information to the insurance company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the required clinical information to the insurance company.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Inform the patient and physician that the enrollment is pending prior authorization approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a status update notification to the patient and physician."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a status update notification to the patient and physician.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

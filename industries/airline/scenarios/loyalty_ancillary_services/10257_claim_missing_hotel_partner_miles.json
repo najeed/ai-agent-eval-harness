@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the member's frequent flyer number and a copy of their hotel receipt.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the required information and proof of stay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the required information and proof of stay.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the hotel stay and calculate the number of miles that should have been awarded based on the partnership agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the stay and calculates the correct mileage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the stay and calculates the correct mileage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Manually credit the miles to the member's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the miles to the member's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the miles to the member's account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

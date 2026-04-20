@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the shipment that is ready for pickup.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the shipment record in the TMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the shipment record in the TMS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify all details, including addresses, piece count, weight, and freight class.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all data required for the BOL is accurate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all data required for the BOL is accurate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the BOL document in the standard format.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates a printable, legally compliant BOL document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates a printable, legally compliant BOL document.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

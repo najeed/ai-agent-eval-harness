@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new specification document in the quality management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates a new spec document linked to the product code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates a new spec document linked to the product code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Define the quality attributes to be tested (e.g., Purity, Water Content, Color).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds the required tests to the specification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds the required tests to the specification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each attribute, define the test method to be used and the acceptable range (e.g., 'Purity, Method GC-101, NLT 99.5%'). Submit for approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent defines the limits for each test and submits the new specification into the approval workflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent defines the limits for each test and submits the new specification into the approval workflow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

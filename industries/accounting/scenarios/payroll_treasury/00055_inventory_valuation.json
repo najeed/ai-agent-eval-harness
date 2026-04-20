@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the list of all inventory items and their on-hand quantities at the end of the month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the physical inventory count."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the physical inventory count.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each item, retrieve its standard cost from the item master file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the standard cost for each inventory item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the standard cost for each inventory item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the total value of the ending inventory by multiplying the quantity of each item by its standard cost.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the total inventory value."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the total inventory value.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create the journal entry to adjust the inventory account in the general ledger to this new value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the adjusting journal entry for inventory."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the adjusting journal entry for inventory.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

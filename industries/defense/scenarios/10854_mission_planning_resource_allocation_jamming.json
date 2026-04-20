@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze intelligence on the specific type and frequency bands of the enemy radar system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner correctly identifies the technical characteristics of the threat radar."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner correctly identifies the technical characteristics of the threat radar.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the available EW asset database for platforms capable of jamming the identified frequencies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner identifies two types of aircraft with suitable jamming pods."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner identifies two types of aircraft with suitable jamming pods.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the standoff jamming aircraft as it can suppress the radar from a safe distance, reducing risk to the strike package.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner makes the optimal choice based on both effectiveness and safety."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner makes the optimal choice based on both effectiveness and safety.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the barcode on the customer's receipt.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The POS system retrieves the original transaction details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The POS system retrieves the original transaction details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the item being returned and visually inspect it to ensure it is in returnable condition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms the item was on the original transaction, and the associate verifies its condition."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms the item was on the original transaction, and the associate verifies its condition.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the return, issuing a refund to the customer's original form of payment (e.g., credit card).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The return is completed, and the refund is successfully processed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The return is completed, and the refund is successfully processed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

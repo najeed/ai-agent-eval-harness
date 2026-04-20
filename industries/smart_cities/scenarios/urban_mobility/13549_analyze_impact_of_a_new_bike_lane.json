@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve historical traffic speed data for the street before and after the bike lane installation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the two datasets for comparison."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the two datasets for comparison.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve data from bicycle counters along the new lane.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the cyclist volume data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the cyclist volume data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a comparative report showing that vehicle speeds decreased by 5% while cyclist volume increased by 200%.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a report summarizing the project's impact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a report summarizing the project's impact.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

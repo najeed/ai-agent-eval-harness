@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Import and validate the new drillhole data, checking for errors in location, depth, and assay values.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "New drillhole data is successfully imported and validated in the geology software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "New drillhole data is successfully imported and validated in the geology software.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a geostatistical estimation (e.g., kriging) to interpolate grades from the drillholes into the block model.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The block model grades are updated based on the new data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The block model grades are updated based on the new data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a new resource tonnage and grade report and compare it with the previous version.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is generated showing an increase in indicated resources."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is generated showing an increase in indicated resources.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

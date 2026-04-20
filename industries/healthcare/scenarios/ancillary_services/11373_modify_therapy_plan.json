@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the patient's current plan of care.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Therapist locates the active plan of care."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Therapist locates the active plan of care.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Mark several short-term goals as 'Met'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Therapist updates the status of the existing goals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Therapist updates the status of the existing goals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add new, more advanced short-term goals and sign the updated plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The plan of care is modified to reflect the patient's current condition and new objectives."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The plan of care is modified to reflect the patient's current condition and new objectives.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

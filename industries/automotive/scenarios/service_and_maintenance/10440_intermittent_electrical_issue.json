@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule a service appointment and instruct the customer to note the time and date if the issue reoccurs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent books an appointment and provides clear instructions for data gathering."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent books an appointment and provides clear instructions for data gathering.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Once the vehicle is at the dealership, have a technician check for any available software updates for the infotainment module.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician finds a Technical Service Bulletin (TSB) describing this issue, which is resolved by a software update."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician finds a Technical Service Bulletin (TSB) describing this issue, which is resolved by a software update.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the software update and monitor the system to ensure the issue is resolved.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the repair order to show the software was updated and the issue is resolved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the repair order to show the software was updated and the issue is resolved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

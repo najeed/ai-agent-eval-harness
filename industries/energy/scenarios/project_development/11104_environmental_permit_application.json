@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all required local, state, and federal environmental permits for a battery storage project at the given location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a checklist of all necessary permits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a checklist of all necessary permits.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather project specifications, including battery chemistry, thermal management system, and fire suppression plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles all relevant technical documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles all relevant technical documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft the main application form, referencing the compiled technical data and impact assessments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a completed draft of the primary permit application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a completed draft of the primary permit application.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

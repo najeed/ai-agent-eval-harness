@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the NSF notification from the bank.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system automatically flags the customer's account for a returned payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system automatically flags the customer's account for a returned payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add any applicable NSF fees to the customer's account balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system adds a $25 NSF fee to the amount due."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system adds a $25 NSF fee to the amount due.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the customer of the returned payment, the fee, and the risk of cancellation if payment is not made.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An automated email and letter are sent to the customer explaining the situation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An automated email and letter are sent to the customer explaining the situation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

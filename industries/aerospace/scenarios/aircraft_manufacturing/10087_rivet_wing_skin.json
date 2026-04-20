@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load the correct riveting program for the specific wing panel into the machine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent loads the correct NC program."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent loads the correct NC program.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Operate the machine to drill the holes and install the rivets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent oversees the automated riveting process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent oversees the automated riveting process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform a quality inspection to ensure all rivets are properly installed and have no defects.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent inspects the rivets and confirms they all meet quality standards."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent inspects the rivets and confirms they all meet quality standards.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

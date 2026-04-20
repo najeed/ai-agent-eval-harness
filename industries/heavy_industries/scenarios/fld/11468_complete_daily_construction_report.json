@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open a new daily report for the current date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates a new report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates a new report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the number of personnel from each contractor that were on site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly logs the manpower for the day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly logs the manpower for the day.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Describe the main construction activities completed and note any delays or safety incidents, then submit the report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a summary of the day's work and submits the report to the project manager."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a summary of the day's work and submits the report to the project manager.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

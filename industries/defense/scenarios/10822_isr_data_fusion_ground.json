@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze ground sensor alerts indicating movement of multiple vehicles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the time and location of ground movement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the time and location of ground movement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Correlate the sensor data with drone imagery showing the formation of an armored column.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully links the sensor data to a visual confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully links the sensor data to a visual confirmation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Fuse the findings with communications intelligence suggesting an imminent attack and issue a high-priority warning.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst combines all data to correctly assess the enemy's intent and issues a timely warning."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst combines all data to correctly assess the enemy's intent and issues a timely warning.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

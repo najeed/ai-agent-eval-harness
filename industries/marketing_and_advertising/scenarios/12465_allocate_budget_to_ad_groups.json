@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the total campaign budget and the different ad groups within it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the necessary budget and campaign structure information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the necessary budget and campaign structure information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Allocate a higher percentage of the budget to high-priority ad groups (e.g., those targeting high-intent keywords).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines a logical budget split (e.g., 60% to Ad Group A, 40% to Ad Group B)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines a logical budget split (e.g., 60% to Ad Group A, 40% to Ad Group B).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set the specific daily or lifetime budgets for each ad group in the platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the budget settings for each ad group."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the budget settings for each ad group.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

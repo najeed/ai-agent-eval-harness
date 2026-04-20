@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the cargo manifest and the load plan for the flight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the plan showing where each piece of cargo should be placed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the plan showing where each piece of cargo should be placed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Load the cargo into the correct positions in the aircraft's hold according to the load plan to maintain the aircraft's center of gravity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent loads all cargo according to the plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent loads all cargo according to the plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Secure the cargo with nets and locks and confirm to the loadmaster that the loading is complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent secures the cargo and reports completion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent secures the cargo and reports completion.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

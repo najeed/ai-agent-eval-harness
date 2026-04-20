@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the product's functionality to understand the service being offered.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands what the SaaS product does."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands what the SaaS product does.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a ToS template appropriate for a SaaS product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent starts with a relevant template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent starts with a relevant template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft key clauses, including user license grants, acceptable use policies, disclaimer of warranties, and limitation of liability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts a comprehensive ToS that protects the company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts a comprehensive ToS that protects the company.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

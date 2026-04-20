@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use a digital checklist to inspect the warehouse for potential safety hazards (e.g., blocked aisles, unsafe stacking).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager completes the inspection checklist on a tablet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager completes the inspection checklist on a tablet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify any safety violations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspection identifies a pallet that is stacked too high."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspection identifies a pallet that is stacked too high.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a corrective action task for the identified violation and assign it to a warehouse worker.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a task for a worker to restack the pallet safely."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a task for a worker to restack the pallet safely.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

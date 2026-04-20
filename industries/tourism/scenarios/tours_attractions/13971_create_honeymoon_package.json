@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the couple's travel dates and preferences.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for and select components for the package: flights, a 5-star resort, a helicopter tour, and a restaurant for the private dinner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds high-quality, available options for all components."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds high-quality, available options for all components.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a detailed itinerary, price the complete package, and present it to the couple.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent builds a comprehensive honeymoon package with a total price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent builds a comprehensive honeymoon package with a total price.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

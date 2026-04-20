@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load a dataset of clients with their industry and annual revenue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads the data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads the data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform k-means clustering to group the clients into 4 clusters.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully runs the clustering algorithm."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully runs the clustering algorithm.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the resulting clusters and give each one a descriptive name (e.g., 'Large Tech Companies', 'Small Retail Businesses').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides meaningful labels for each identified client cluster."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides meaningful labels for each identified client cluster.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

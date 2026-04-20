@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all donation receipts and acknowledgment letters from the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all supporting documentation for the claimed donations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all supporting documentation for the claimed donations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a response letter to the IRS auditor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares a professional letter explaining the deductions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares a professional letter explaining the deductions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Mail the response letter and copies of the supporting documents to the IRS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the complete response package to the auditor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the complete response package to the auditor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

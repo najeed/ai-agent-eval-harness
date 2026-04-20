@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the employee whose reporting structure has changed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin identifies the employee and their new manager."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin identifies the employee and their new manager.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ensure the reporting change has been made in the HRIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin confirms the 'reports to' field is correct in the HRIS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin confirms the 'reports to' field is correct in the HRIS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Trigger a refresh of the org chart tool, which pulls data from the HRIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin initiates a data sync, and the visual org chart updates to reflect the new structure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin initiates a data sync, and the visual org chart updates to reflect the new structure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

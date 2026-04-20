@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search a database of pre-approved freelancers for video editors with experience in the relevant genre.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds five suitable freelance editors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds five suitable freelance editors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the availability of the shortlisted editors for the project dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms two of the five editors are available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms two of the five editors are available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a contract offer to the selected editor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates and sends a standard freelance contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates and sends a standard freelance contract.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

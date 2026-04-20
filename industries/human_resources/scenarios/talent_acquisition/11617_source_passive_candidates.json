@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Build a Boolean search string to identify candidates with the required skills and experience.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter creates an effective search string (e.g., '\"cybersecurity architect\" AND (AWS OR Azure) AND CISSP')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter creates an effective search string (e.g., '\"cybersecurity architect\" AND (AWS OR Azure) AND CISSP').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Execute the search on a professional networking site and review the profiles of the top results.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter identifies a list of 20 promising candidates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter identifies a list of 20 promising candidates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send personalized outreach messages to the top candidates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter sends InMail messages to the candidates, introducing the role and company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter sends InMail messages to the candidates, introducing the role and company.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

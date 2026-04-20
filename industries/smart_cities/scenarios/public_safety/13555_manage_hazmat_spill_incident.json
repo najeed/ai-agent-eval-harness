@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 911 call about an overturned truck and identify the chemical from the truck's placard number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the hazardous material involved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the hazardous material involved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Establish an exclusion zone around the spill and dispatch the specialized fire department Hazmat team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent defines the safety perimeter and dispatches the correct team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent defines the safety perimeter and dispatches the correct team.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the environmental protection agency and public health department of the spill.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly notifies all required external agencies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly notifies all required external agencies.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

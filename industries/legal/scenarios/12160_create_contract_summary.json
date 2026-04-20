@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ingest the full contract document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the full text of the agreement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the full text of the agreement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify and extract the key business terms, such as the contract term, payment obligations, termination rights, and liability caps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent extracts the most important clauses for a business user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent extracts the most important clauses for a business user.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a concise, one-page summary in plain English, avoiding legal jargon.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a clear and easy-to-understand summary for the executive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a clear and easy-to-understand summary for the executive.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

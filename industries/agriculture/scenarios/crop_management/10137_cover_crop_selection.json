@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the farmer's primary goals for the cover crop (e.g., nitrogen scavenging, soil compaction reduction, weed suppression).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent documents the farmer's goals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent documents the farmer's goals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve information on various cover crop species and their attributes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers data on species like cereal rye, tillage radish, and crimson clover."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers data on species like cereal rye, tillage radish, and crimson clover.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend a cover crop mix and seeding rates that best match the farmer's goals and geographic region.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends a mix of cereal rye and tillage radish."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends a mix of cereal rye and tillage radish.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

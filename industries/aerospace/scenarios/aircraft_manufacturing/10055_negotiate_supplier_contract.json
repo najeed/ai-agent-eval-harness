@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the supplier's proposal, including pricing, delivery schedule, and quality terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies all key terms in the proposal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies all key terms in the proposal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Develop a negotiation strategy, identifying target prices and key concessions to ask for.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a clear negotiation plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a clear negotiation plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Negotiate the final terms with the supplier and draft a formal contract for legal review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reaches a favorable agreement and drafts the contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reaches a favorable agreement and drafts the contract.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

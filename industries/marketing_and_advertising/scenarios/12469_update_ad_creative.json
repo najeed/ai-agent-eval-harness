@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the underperforming ad creative in the campaign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the ad with the declining CTR."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the ad with the declining CTR.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Pause the old ad.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pauses the fatigued ad."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pauses the fatigued ad.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a new ad within the same ad set using the new creative assets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully uploads and launches the new ad."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully uploads and launches the new ad.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

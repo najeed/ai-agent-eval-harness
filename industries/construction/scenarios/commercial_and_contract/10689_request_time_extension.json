@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Document the client-caused delay, including its start date, end date, and impact on the critical path.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The delay is fully documented."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The delay is fully documented.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a formal contract modification request for a time extension, citing the relevant contract clauses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal request is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal request is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the request to the client for their approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The time extension request is sent to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The time extension request is sent to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

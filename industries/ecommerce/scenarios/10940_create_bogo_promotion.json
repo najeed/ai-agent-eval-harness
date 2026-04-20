@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Define the parameters of the BOGO promotion: applies to all products from 'Brand X', no coupon code needed, automatically applies in cart.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly sets up the promotion rules."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly sets up the promotion rules.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Activate the promotion and set a start and end date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully activates the BOGO offer for the specified time period."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully activates the BOGO offer for the specified time period.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

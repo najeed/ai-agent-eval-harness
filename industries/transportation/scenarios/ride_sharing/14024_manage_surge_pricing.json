@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The system detects a rapid increase in ride requests and a low number of available drivers in a specific geographic zone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system identifies a supply/demand imbalance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system identifies a supply/demand imbalance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically applies a surge multiplier (e.g., 2.5x) to fares in that zone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Surge pricing is activated for the concert zone."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Surge pricing is activated for the concert zone.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system sends a notification to drivers in nearby zones, informing them of the high earnings potential in the surge zone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Drivers are incentivized to move towards the area of high demand."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Drivers are incentivized to move towards the area of high demand.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

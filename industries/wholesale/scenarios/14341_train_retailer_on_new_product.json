@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Contact the retailer to schedule a product training session.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A date and time for a virtual training session is agreed upon."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A date and time for a virtual training session is agreed upon.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Prepare training materials, including a presentation and product demos.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a comprehensive training packet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a comprehensive training packet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Conduct the training session for the retailer's staff.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully delivers the training."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully delivers the training.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the full text of the new regulation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent downloads the official text of the new regulation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent downloads the official text of the new regulation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify which of the company's products are affected by the new regulation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent searches the product database and identifies three software-as-a-medical-device (SaMD) products sold in the EU."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent searches the product database and identifies three software-as-a-medical-device (SaMD) products sold in the EU.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a gap analysis comparing the new requirements to the current product documentation and processes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a report highlighting the gaps, such as a need for enhanced cybersecurity documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a report highlighting the gaps, such as a need for enhanced cybersecurity documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a remediation plan with tasks and timelines to address the gaps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent develops a project plan to bring the affected products into compliance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent develops a project plan to bring the affected products into compliance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

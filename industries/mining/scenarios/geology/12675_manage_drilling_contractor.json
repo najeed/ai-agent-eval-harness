@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the daily drilling reports from the contractor for the past month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All daily reports are collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All daily reports are collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to calculate key performance indicators (KPIs) like meters drilled per shift and rig utilization.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The contractor's KPIs are calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The contractor's KPIs are calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the KPIs against the contractual targets. Hold a meeting with the contractor to discuss performance and address any shortfalls.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The performance review shows that utilization is below target, and a meeting is scheduled to discuss an improvement plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The performance review shows that utilization is below target, and a meeting is scheduled to discuss an improvement plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

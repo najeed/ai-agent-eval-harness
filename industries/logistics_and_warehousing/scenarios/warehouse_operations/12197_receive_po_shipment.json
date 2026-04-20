@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the bill of lading (BOL) to retrieve the associated purchase order details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the PO and its expected items and quantities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the PO and its expected items and quantities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each item, scan the barcode and enter the received quantity, noting a shortage for one item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately records the quantities for all items, highlighting the discrepancy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately records the quantities for all items, highlighting the discrepancy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Finalize the receiving process, which flags the PO as 'Received with Discrepancy' and generates a put-away task.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully closes the receiving event, and the system correctly updates the PO status and creates tasks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully closes the receiving event, and the system correctly updates the PO status and creates tasks.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

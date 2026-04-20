@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the BOL, and the system retrieves the PO but hides the expected quantities from the operator.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator sees the items to be received but no quantities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator sees the items to be received but no quantities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The operator counts and enters the physical quantity for each item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator enters their counted quantities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator enters their counted quantities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After submission, the system compares the counted quantity to the PO quantity and flags any discrepancies for a manager to review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system reveals a discrepancy on one item and creates a supervisory review task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system reveals a discrepancy on one item and creates a supervisory review task.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

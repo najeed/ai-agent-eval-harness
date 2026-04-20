@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze historical WAMI data to establish a baseline pattern of normal activity (e.g., traffic flow, civilian movement).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully establishes a pattern of life for the area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully establishes a pattern of life for the area.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Monitor the live WAMI feed and compare it against the established baseline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst monitors the feed for deviations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst monitors the feed for deviations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Flag a vehicle that stops in an unusual location and at an unusual time as a potential anomaly requiring further investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies an activity that deviates from the norm."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies an activity that deviates from the norm.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

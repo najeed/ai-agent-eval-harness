@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Analyze topographical maps and satellite imagery to identify potential road corridors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent proposes three potential routes from the main highway to the site."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent proposes three potential routes from the main highway to the site.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Evaluate each route for factors like grade, water crossings, and proximity to sensitive habitats.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent scores each route based on the evaluation criteria."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent scores each route based on the evaluation criteria.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Estimate the construction cost for the most promising route.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a preliminary cost estimate for the recommended route."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a preliminary cost estimate for the recommended route.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Recommend the optimal route and provide a justification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the route that best balances cost and environmental impact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the route that best balances cost and environmental impact.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

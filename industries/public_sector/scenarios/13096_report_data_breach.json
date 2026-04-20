@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the initial report of the potential breach from the employee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The IT security officer documents the initial report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The IT security officer documents the initial report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately launch an investigation to determine the scope of the breach: what data was exposed and how many citizens are affected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The security team begins a forensic investigation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The security team begins a forensic investigation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the agency's leadership and legal counsel of the incident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The security officer escalates the incident to the appropriate leadership."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The security officer escalates the incident to the appropriate leadership.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

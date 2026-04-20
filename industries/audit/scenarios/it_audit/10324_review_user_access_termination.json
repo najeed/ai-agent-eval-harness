@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain a list of all employees who left the company in the last 6 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor has a list of terminated employees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor has a list of terminated employees.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For a sample of 30 terminated employees, check the system access logs to verify their access was disabled on their last day of employment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor finds 3 cases where access remained active for more than 24 hours after termination."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor finds 3 cases where access remained active for more than 24 hours after termination.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the exceptions as a control failure, as it creates a risk of unauthorized post-termination activity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A finding is drafted detailing the control weakness."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A finding is drafted detailing the control weakness.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

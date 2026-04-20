@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Input the income reported on Form 1099-K onto Schedule C.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly reports the gross income."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly reports the gross income.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather the driver's total miles driven for the year and their business miles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains the mileage log."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains the mileage log.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the vehicle expense deduction using the standard mileage rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the largest deduction for the driver."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the largest deduction for the driver.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

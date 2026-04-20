@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a 'Stock Transfer Out' request in the inventory system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate initiates the transfer process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate initiates the transfer process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the item number, the quantity being transferred, and the destination store.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The details of the transfer are accurately recorded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The details of the transfer are accurately recorded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Pack the items and ship them. The system deducts the inventory from the sending store and places it in an 'in-transit' status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inventory is accurately tracked as it moves between locations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inventory is accurately tracked as it moves between locations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

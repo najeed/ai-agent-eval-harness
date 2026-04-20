@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the specific unpaid invoice in the billing system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct invoice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct invoice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the responsible partner has approved the write-off.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms approval is documented."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms approval is documented.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply a credit to the invoice for the full outstanding amount, using the reason code 'Bad Debt Write-Off'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The invoice balance is zeroed out in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The invoice balance is zeroed out in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

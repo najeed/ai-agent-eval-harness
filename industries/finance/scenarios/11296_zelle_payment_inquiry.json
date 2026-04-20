@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and the specific Zelle transaction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the transaction in the customer's history."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the transaction in the customer's history.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the recipient's contact information (phone number or email) used for the payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the phone number with the customer, who realizes they entered one digit incorrectly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the phone number with the customer, who realizes they entered one digit incorrectly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain that Zelle payments are like cash and cannot be canceled if the recipient's contact is valid, and advise the customer on next steps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the bank cannot retrieve the funds and advises the customer to contact the unintended recipient if possible."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the bank cannot retrieve the funds and advises the customer to contact the unintended recipient if possible.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use a data loss prevention (DLP) tool to scan company emails for any instances of 'Confidential' data being sent to external email addresses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The DLP tool flags several emails containing confidential financial data sent to personal Gmail accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The DLP tool flags several emails containing confidential financial data sent to personal Gmail accounts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the access permissions on a network share drive designated for 'Highly Confidential' data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor finds that the 'Everyone' group has read access to the folder, a policy violation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor finds that the 'Everyone' group has read access to the folder, a policy violation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the findings and recommend additional employee training on data handling policies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A finding is created with a recommendation for improved training."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A finding is created with a recommendation for improved training.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

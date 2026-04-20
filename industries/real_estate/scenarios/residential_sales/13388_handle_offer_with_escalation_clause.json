@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the offer to understand the terms of the escalation clause: the increment amount and the maximum price cap.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent fully understands how the escalation clause works."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent fully understands how the escalation clause works.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the clause to the seller, including the pros and cons.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The seller understands the offer and its implications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The seller understands the offer and its implications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If another offer is received, apply the escalation clause to determine the new, higher price of the first offer, and provide proof of the competing offer to the first buyer's agent as required.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The escalation clause is triggered correctly and transparently, leading to a final contract price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The escalation clause is triggered correctly and transparently, leading to a final contract price.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "During the returns inspection process, an operator grades the item's condition as 'Requires Refurbishment'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The item is given the correct disposition code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The item is given the correct disposition code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system creates a transfer order to move the item from the returns area to the refurbishment work center.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A task is generated to move the item internally."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A task is generated to move the item internally.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The item's inventory status is changed to 'In Refurbishment', making it unavailable for sale.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system accurately reflects the item's current, non-sellable status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system accurately reflects the item's current, non-sellable status.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

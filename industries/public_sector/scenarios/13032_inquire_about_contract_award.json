@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the vendor and the specific contract they bid on.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the contract in the procurement system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the contract in the procurement system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the contract award.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the contract has been awarded to another vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the contract has been awarded to another vendor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the vendor of the outcome. If public, provide the name of the winning vendor and the award amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the decision to the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the decision to the vendor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

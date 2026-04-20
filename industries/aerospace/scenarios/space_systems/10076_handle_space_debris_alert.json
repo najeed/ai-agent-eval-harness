@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the conjunction data message (CDM) to determine the probability of collision, miss distance, and time of closest approach.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the probability of collision is high (1 in 1,000)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the probability of collision is high (1 in 1,000).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Plan a collision avoidance maneuver (a small thruster burn) to move the satellite out of the path of the debris.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent designs a maneuver that increases the miss distance to a safe level."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent designs a maneuver that increases the miss distance to a safe level.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Execute the maneuver and verify the satellite is on its new, safer trajectory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the command for the burn and confirms the satellite's new orbit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the command for the burn and confirms the satellite's new orbit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

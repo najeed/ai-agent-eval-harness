@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Provide the manager with a standard 30-60-90 day plan template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP sends the manager the template document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP sends the manager the template document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Consult with the manager to customize the template with role-specific goals and milestones.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP and manager work together to define key objectives for the new hire's first 90 days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP and manager work together to define key objectives for the new hire's first 90 days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload the completed plan to the new hire's profile in the performance management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP saves the final plan to the employee's record for future reference."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP saves the final plan to the employee's record for future reference.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

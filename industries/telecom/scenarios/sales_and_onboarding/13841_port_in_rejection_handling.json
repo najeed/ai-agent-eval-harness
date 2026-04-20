@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and the rejected port-in request, noting the reason 'Incorrect PIN'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the rejected request and the reason code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the rejected request and the reason code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the customer, explain the reason for rejection, and ask them to verify the correct PIN with their old carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the problem and the required next step for the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the problem and the required next step for the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the customer provides the new PIN, resubmit the port-in request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully resubmits the request with the updated information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully resubmits the request with the updated information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

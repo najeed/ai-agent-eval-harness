@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the status of the port-in request and find the rejection reason: 'Port Out Prohibited'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the rejection reason."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the rejection reason.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the inter-carrier knowledge base to understand what 'Port Out Prohibited' means for the source carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent learns this code often means a fraud lock is on the account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent learns this code often means a fraud lock is on the account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the customer to contact their old carrier to have the fraud prevention lock removed before the port can be resubmitted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear and correct instructions to the customer to resolve the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear and correct instructions to the customer to resolve the issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

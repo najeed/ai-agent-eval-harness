@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a report to identify all items that exist in multiple, partially-filled bins.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of candidate items for consolidation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of candidate items for consolidation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select an item from the list and create a consolidation task.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a series of moves to consolidate the items into a single bin."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a series of moves to consolidate the items into a single bin.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the task to an operator to physically move the items and confirm the moves in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An operator completes the moves, and the system shows the inventory consolidated and bins freed up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An operator completes the moves, and the system shows the inventory consolidated and bins freed up.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

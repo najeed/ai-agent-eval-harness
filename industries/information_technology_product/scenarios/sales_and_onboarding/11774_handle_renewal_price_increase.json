@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Prepare for the call by documenting the new features and value added to the product over the past year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent builds a justification for the price increase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent builds a justification for the price increase.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the customer, communicate the new price, and explain the value that justifies it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent proactively addresses the price change and reinforces the product's value."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent proactively addresses the price change and reinforces the product's value.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the customer objects, offer a small, one-time discount to ease the transition to the new price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses a discretionary discount to overcome the objection and secure the renewal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses a discretionary discount to overcome the objection and secure the renewal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

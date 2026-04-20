@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the claim file and confirm the at-fault party and their insurance carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster confirms liability rests with the other driver and identifies their insurance company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster confirms liability rests with the other driver and identifies their insurance company.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total amount paid out on the claim (for repairs, rental, etc.).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster calculates the total claim cost to be recovered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster calculates the total claim cost to be recovered.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a formal subrogation demand letter to the at-fault party's insurance carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster successfully sends the demand packet to the other insurer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster successfully sends the demand packet to the other insurer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

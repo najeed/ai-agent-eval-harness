@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the member's loyalty profile and confirm they have an unused 'Gift Status' benefit available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the member is eligible to gift status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the member is eligible to gift status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the name and email address of the family member who will receive the gifted status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the recipient's information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the recipient's information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the status gift, upgrading the recipient's account to Gold and marking the benefit as used on the primary member's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the request, and the recipient's account is upgraded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the request, and the recipient's account is upgraded.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the social media posts to identify the specific narratives and hashtags being used by the bot network.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer correctly identifies the key elements of the disinformation campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer correctly identifies the key elements of the disinformation campaign.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Develop a counter-messaging campaign using verified information and authentic military accounts to debunk the disinformation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer creates a plan to release truthful counter-information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer creates a plan to release truthful counter-information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Report the bot network to the social media platform for takedown.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer submits a comprehensive report to the platform's trust and safety team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer submits a comprehensive report to the platform's trust and safety team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

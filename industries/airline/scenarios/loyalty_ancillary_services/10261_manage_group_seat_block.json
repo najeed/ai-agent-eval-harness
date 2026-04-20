@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the group booking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find a block of adjacent seats on the seat map that can accommodate the entire group.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a suitable block of seats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a suitable block of seats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the seats to the passengers in the group booking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully assigns all passengers to seats in the block."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully assigns all passengers to seats in the block.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

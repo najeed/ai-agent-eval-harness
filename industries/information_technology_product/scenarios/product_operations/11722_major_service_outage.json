@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the P1 alert and initiate the incident response protocol.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent starts the incident response process, creating a war room and notifying the on-call engineer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent starts the incident response process, creating a war room and notifying the on-call engineer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the public status page to inform customers of the ongoing outage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts a clear and timely update to the status page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts a clear and timely update to the status page.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After engineers find the root cause (e.g., failed deployment), execute the rollback procedure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent coordinates the rollback of the failed deployment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent coordinates the rollback of the failed deployment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Once service is restored, update the status page again and begin the post-mortem analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent marks the incident as resolved and schedules a post-mortem meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent marks the incident as resolved and schedules a post-mortem meeting.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

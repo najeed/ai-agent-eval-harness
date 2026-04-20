@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the customer's account in the CRM.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct customer account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct customer account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the new address to the customer's list of shipping locations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately enters the new address details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately enters the new address details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set the new address as the default shipping address for future orders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the customer's preferences to use the new address by default."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the customer's preferences to use the new address by default.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

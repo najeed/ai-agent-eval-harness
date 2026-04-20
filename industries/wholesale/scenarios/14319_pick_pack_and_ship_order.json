@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve a pick list for a ready order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker gets a list of items and their locations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker gets a list of items and their locations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Pick the correct items and quantities from the warehouse locations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker gathers all items for the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker gathers all items for the order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Pack the items into a box, weigh it, and generate a shipping label.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker packs the order and prints a shipping label."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker packs the order and prints a shipping label.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the order status to 'shipped' and provide the tracking number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system is updated, and the customer is notified of the shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system is updated, and the customer is notified of the shipment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the individual's current income, tax bracket, and eligibility for each type of IRA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers financial data and checks IRA contribution limits and phase-outs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers financial data and checks IRA contribution limits and phase-outs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Discuss the individual's expected future income and tax bracket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent helps the client think about their long-term financial trajectory."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent helps the client think about their long-term financial trajectory.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a recommendation based on whether it's better to take the tax deduction now (Traditional) or have tax-free growth later (Roth).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends a Roth IRA, as the client is currently in a lower tax bracket than they are likely to be in the future."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends a Roth IRA, as the client is currently in a lower tax bracket than they are likely to be in the future.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

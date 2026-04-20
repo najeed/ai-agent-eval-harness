@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify a potential shortcut or more direct route to the destination.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot finds a more efficient route."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot finds a more efficient route.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact ATC and formally request the direct routing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot makes the request to ATC."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot makes the request to ATC.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "ATC approves the request. The pilot updates the Flight Management System (FMS) with the new route.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot receives approval and reprograms the FMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot receives approval and reprograms the FMS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

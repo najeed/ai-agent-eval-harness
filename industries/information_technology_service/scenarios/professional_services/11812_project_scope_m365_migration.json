@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather key details from the potential client, such as the number of mailboxes, total data size, and current Exchange version.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The sales engineer has all the necessary information to scope the project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The sales engineer has all the necessary information to scope the project.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the gathered details to estimate the total number of hours required for the migration project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A realistic effort estimate is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A realistic effort estimate is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a formal quote and Statement of Work (SOW) detailing the project scope, timeline, and cost.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A professional and accurate quote is provided to the potential client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A professional and accurate quote is provided to the potential client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

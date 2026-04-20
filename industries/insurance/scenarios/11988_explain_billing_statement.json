@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and retrieve their latest billing statement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the statement in question."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the statement in question.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the statement and the customer's recent policy changes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees the customer recently added a new car, which triggered a prorated premium charge."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees the customer recently added a new car, which triggered a prorated premium charge.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Clearly walk the customer through the statement, explaining each line item and how the prorated charge was calculated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully explains the bill to the customer's satisfaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully explains the bill to the customer's satisfaction.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

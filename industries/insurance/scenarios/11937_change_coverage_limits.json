@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the policyholder and their current coverage limits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the customer's policy and notes their current coverage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the customer's policy and notes their current coverage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Discuss the new desired coverage amount with the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent and customer determine an appropriate new coverage limit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent and customer determine an appropriate new coverage limit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the policy with the new coverage limit and calculate the resulting premium change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully increases the coverage and informs the customer of the new premium."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully increases the coverage and informs the customer of the new premium.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

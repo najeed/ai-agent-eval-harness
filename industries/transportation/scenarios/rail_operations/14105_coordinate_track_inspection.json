@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a system alert that a track segment is due for inspection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager is aware of the upcoming compliance task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager is aware of the upcoming compliance task.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule a track inspection crew for the task.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A crew is assigned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A crew is assigned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for a track maintenance window with the network dispatchers so the inspectors can work safely.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work window is granted by dispatch."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work window is granted by dispatch.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The crew performs the inspection and logs their findings in the system, marking the task as complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspection is completed and documented, ensuring regulatory compliance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspection is completed and documented, ensuring regulatory compliance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

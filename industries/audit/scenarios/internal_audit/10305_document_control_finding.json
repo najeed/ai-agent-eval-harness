@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Draft the 'Condition' part of the finding, stating that the same employee can both create a new vendor and approve payments to that vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The 'what is' part of the finding is clearly written."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The 'what is' part of the finding is clearly written.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the 'Criteria' part, citing the company's policy on segregation of duties.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The 'what should be' part of the finding is correctly cited."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The 'what should be' part of the finding is correctly cited.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft the 'Cause' and 'Effect' (Risk), explaining that this weakness could lead to fraudulent payments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The root cause and potential impact are clearly articulated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The root cause and potential impact are clearly articulated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Link the finding to the supporting workpaper that contains the evidence from testing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The finding is properly cross-referenced to the evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The finding is properly cross-referenced to the evidence.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

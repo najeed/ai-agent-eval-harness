@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Connect a diagnostic tool to the excavator's control system to read fault codes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent connects the tool and retrieves a 'Low Hydraulic Pressure' fault code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent connects the tool and retrieves a 'Low Hydraulic Pressure' fault code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Consult the equipment's troubleshooting manual for the 'Low Hydraulic Pressure' code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the manual suggests checking the hydraulic filter for clogs as a primary cause."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the manual suggests checking the hydraulic filter for clogs as a primary cause.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inspect the hydraulic filter and find that it is clogged. Create a work order to replace the filter and the hydraulic fluid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the root cause and creates a work order to fix it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the root cause and creates a work order to fix it.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

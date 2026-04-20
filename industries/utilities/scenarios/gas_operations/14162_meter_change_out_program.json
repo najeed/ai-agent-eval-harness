@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query the asset database to identify all gas meters scheduled for replacement in the next fiscal year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a list of 10,000 meters to be replaced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a list of 10,000 meters to be replaced.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Group the meters by geographic area to create efficient work packages for the field crews.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System clusters the meters into logical geographic zones."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System clusters the meters into logical geographic zones.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Develop a schedule and budget for the replacement program.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System produces a project plan with a timeline and cost estimate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System produces a project plan with a timeline and cost estimate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

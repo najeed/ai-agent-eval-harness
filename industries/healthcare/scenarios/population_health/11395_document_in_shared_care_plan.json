@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the patient's shared care plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The nurse accesses the collaborative care plan document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The nurse accesses the collaborative care plan document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new progress note within the care plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The nurse begins a new entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The nurse begins a new entry.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document their findings from the home visit and save the note.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The note is saved to the shared plan, and other members of the care team are notified of the update."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The note is saved to the shared plan, and other members of the care team are notified of the update.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

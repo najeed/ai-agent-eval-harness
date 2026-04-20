@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Project the consultant's total annual self-employment income and expenses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a projection of annual net profit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a projection of annual net profit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total projected income and self-employment tax for the year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent estimates the total tax liability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent estimates the total tax liability.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Divide the total estimated tax by four and prepare a payment voucher for the current quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the required quarterly payment and prepares Form 1040-ES."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the required quarterly payment and prepares Form 1040-ES.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge multiple customer reports of outages in a specific geographic area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a cluster of outage reports."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a cluster of outage reports.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the network monitoring system for the status of the main fiber node serving that area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the fiber node is reporting a 'Loss of Signal' (LOS) alarm."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the fiber node is reporting a 'Loss of Signal' (LOS) alarm.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Escalate to the network operations center (NOC) with a 'Priority 1 - Suspected Fiber Cut' ticket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a P1 ticket and escalates it to the NOC."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a P1 ticket and escalates it to the NOC.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

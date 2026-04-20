@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log into the employee scheduling portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate accesses the scheduling system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate accesses the scheduling system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Navigate to the 'Time Off Request' section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate opens the correct form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate opens the correct form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the date, enter a reason, and submit the request for manager approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The time off request is successfully submitted and appears in the manager's queue for approval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The time off request is successfully submitted and appears in the manager's queue for approval.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

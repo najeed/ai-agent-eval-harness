@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a high-priority ticket that the OCR camera at Lane 2 is not reading containers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician is assigned a ticket for the camera failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician is assigned a ticket for the camera failure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Remotely connect to the camera's diagnostic software to check its status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician logs in and sees a 'No Network Connection' error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician logs in and sees a 'No Network Connection' error.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Go to the physical location and find that the camera's network cable is unplugged. Plug it back in and verify the system is working.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician resolves the physical issue, reboots the camera, and confirms with the gate clerk that it is now working correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician resolves the physical issue, reboots the camera, and confirms with the gate clerk that it is now working correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the critical role in the workforce planning tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst selects the 'Lead Data Scientist' role."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst selects the 'Lead Data Scientist' role.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the list of potential internal successors for the role.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst finds there is only one identified successor, and they are not yet ready for the role."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst finds there is only one identified successor, and they are not yet ready for the role.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Flag the role as 'high risk' due to a weak internal pipeline and recommend initiating an external search to build a bench of candidates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst updates the workforce plan with the risk assessment and recommendation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst updates the workforce plan with the risk assessment and recommendation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

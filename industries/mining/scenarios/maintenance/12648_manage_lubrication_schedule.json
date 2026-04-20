@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a list of scheduled lubrication tasks for the day on a mobile device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician has a clear list of all required lubrication jobs for their shift."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician has a clear list of all required lubrication jobs for their shift.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Go to each piece of equipment, identify the correct lubrication points, and apply the specified type and amount of grease.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All equipment on the list is lubricated correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All equipment on the list is lubricated correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Mark each task as complete in the mobile app, which updates the equipment's maintenance history in the CMMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All tasks are completed, and the CMMS is updated in real-time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All tasks are completed, and the CMMS is updated in real-time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

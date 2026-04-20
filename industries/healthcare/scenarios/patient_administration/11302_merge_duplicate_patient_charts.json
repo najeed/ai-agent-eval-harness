@@ -12,38 +12,46 @@
       {
         "id": "task-0",
         "task_description": "Verify clinician access and patient identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Identity verified/authorized"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Identity verified/authorized",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-1",
         "task_description": "Identify the two potential duplicate patient records and review the demographic information on both.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that the two records belong to the same patient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that the two records belong to the same patient.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the primary (surviving) record and the secondary (to be merged) record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly designates which record will be kept as the master."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly designates which record will be kept as the master.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate the chart merge process, which combines all clinical and financial data into the primary record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully merges the two charts, and the secondary record is inactivated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully merges the two charts, and the secondary record is inactivated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

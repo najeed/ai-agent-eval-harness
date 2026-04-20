@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Check the database monitoring dashboard and confirm that the number of active connections is at its maximum limit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that the connection pool is exhausted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that the connection pool is exhausted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Temporarily increase the maximum connection limit to restore service immediately.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent applies a temporary fix to mitigate the outage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent applies a temporary fix to mitigate the outage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Investigate which application service is holding onto connections and not releasing them properly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a memory leak in a specific microservice is causing the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a memory leak in a specific microservice is causing the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Restart the problematic microservice to clear the stuck connections and create a ticket for the owning team to fix the underlying leak.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent resolves the immediate issue and ensures a long-term fix is tracked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent resolves the immediate issue and ensures a long-term fix is tracked.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

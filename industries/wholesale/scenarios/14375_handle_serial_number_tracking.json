@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "When receiving items, scan the serial number of each individual unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All serial numbers are recorded in the inventory system upon receipt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All serial numbers are recorded in the inventory system upon receipt.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "When shipping an order, scan the serial number of each unit being sent to a customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system links specific serial numbers to the customer's sales order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system links specific serial numbers to the customer's sales order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "When a customer has a warranty claim, use the serial number to verify the purchase date and details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent can use the serial number to instantly look up the item's entire history."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent can use the serial number to instantly look up the item's entire history.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

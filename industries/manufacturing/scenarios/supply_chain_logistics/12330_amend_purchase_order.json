@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the original purchase order and verify its status is 'Submitted' or 'Acknowledged'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the PO and confirms it has not shipped yet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the PO and confirms it has not shipped yet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a PO amendment to change the quantity on the relevant line item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a change order request for the PO."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a change order request for the PO.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the amended PO to the supplier and request confirmation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the revised PO and awaits acknowledgement from the supplier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the revised PO and awaits acknowledgement from the supplier.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

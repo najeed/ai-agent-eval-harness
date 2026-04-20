@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Provide the tenant with the pet application form and explain the process, including any fees or pet rent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tenant receives the application and understands the terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tenant receives the application and understands the terms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the submitted application, including the pet's breed, size, and vaccination records, to ensure it complies with the building's pet policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the pet meets the property's rules."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the pet meets the property's rules.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the pet, collect the pet deposit, and have the tenant sign a pet addendum to the lease.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pet is officially approved and all necessary paperwork and fees are completed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pet is officially approved and all necessary paperwork and fees are completed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check for pre-existing 'Lift & Rental' packages.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a package that includes a lift ticket and equipment rental at a discounted rate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a package that includes a lift ticket and equipment rental at a discounted rate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the skier's details, including height, weight, and shoe size for the rental equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary information for the equipment rental."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary information for the equipment rental.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the 2-day 'Lift & Rental' package and provide the customer with a voucher to pick up their tickets and equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the package and provides confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the package and provides confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

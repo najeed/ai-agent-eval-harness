@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the correct government agency and specific office responsible for handling the requested records.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the target agency for the FOIA request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the target agency for the FOIA request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a FOIA request letter that clearly and specifically describes the records being sought, citing the relevant contract numbers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts a legally sound and specific request to prevent rejection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts a legally sound and specific request to prevent rejection.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the request through the agency's official portal and set a calendar reminder to follow up if no response is received within the statutory time limit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the request and creates a follow-up task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the request and creates a follow-up task.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

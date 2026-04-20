@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Each day, query the customer database for all customers whose birthday is today.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a list of customers celebrating their birthday."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a list of customers celebrating their birthday.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each customer on the list, add 100 bonus points to their loyalty account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully updates the loyalty balance for all eligible customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully updates the loyalty balance for all eligible customers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send each customer a 'Happy Birthday' email mentioning their bonus points.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System sends a personalized birthday email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System sends a personalized birthday email.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

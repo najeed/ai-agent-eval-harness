@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the creative brief for key messaging, branding guidelines, and required ad sizes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the core requirements for the ad visuals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the core requirements for the ad visuals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a visual design for the ads that incorporates the brand's logo, colors, and the main call-to-action.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a design that is on-brand and visually appealing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a design that is on-brand and visually appealing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Export the design in all required sizes (e.g., 300x250, 728x90, 160x600).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a complete set of ad files in the correct dimensions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a complete set of ad files in the correct dimensions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

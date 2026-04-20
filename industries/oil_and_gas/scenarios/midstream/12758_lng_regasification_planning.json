@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the gas demand nomination from the pipeline operator for the next 24 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The required volume of natural gas to be sent out is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The required volume of natural gas to be sent out is identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the amount of LNG that needs to be pumped from the storage tanks and vaporized to meet the demand.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The required LNG volume and flow rate are calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The required LNG volume and flow rate are calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set the schedule in the terminal's control system to automatically manage the LNG pumps and vaporizers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The regasification process is scheduled and automated in the DCS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The regasification process is scheduled and automated in the DCS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

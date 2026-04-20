@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all citizen service requests from the last 12 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully queries the 311 database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully queries the 311 database.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Categorize and count the requests by type (e.g., 'pothole', 'graffiti', 'noise complaint').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system aggregates the data by category."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system aggregates the data by category.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report showing the top 10 most frequent complaint types.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a summary report identifying 'potholes' and 'missed trash collection' as the top two issues."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a summary report identifying 'potholes' and 'missed trash collection' as the top two issues.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

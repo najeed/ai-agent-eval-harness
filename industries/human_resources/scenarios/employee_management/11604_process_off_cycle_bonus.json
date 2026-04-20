@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the approved bonus details (employee, amount, reason).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Payroll specialist confirms the approved bonus information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Payroll specialist confirms the approved bonus information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the bonus payment into the payroll system as an off-cycle payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist correctly enters the bonus details for processing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist correctly enters the bonus details for processing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the off-cycle payroll and verify the net pay and tax calculations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist processes the payment and confirms the calculations are correct before finalizing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist processes the payment and confirms the calculations are correct before finalizing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

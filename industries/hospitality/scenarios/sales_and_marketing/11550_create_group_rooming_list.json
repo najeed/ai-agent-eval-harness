@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the group block reservation in the PMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent finds the master group block."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent finds the master group block.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the names from the client's list into the individual reservations within the block.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All guest names are accurately entered against the reserved rooms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All guest names are accurately entered against the reserved rooms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a confirmation of the completed rooming list back to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client receives a confirmation that all their guests are registered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client receives a confirmation that all their guests are registered.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

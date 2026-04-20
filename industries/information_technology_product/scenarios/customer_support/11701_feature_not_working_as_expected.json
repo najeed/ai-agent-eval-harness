@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Gather details about the user's browser, operating system, and the specific data being exported.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects environment details to replicate the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects environment details to replicate the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attempt to replicate the issue using a test account with similar data and environment settings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reproduces the bug."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reproduces the bug.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log a detailed bug report for the engineering team, including replication steps and user details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a high-quality bug report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a high-quality bug report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Inform the user that the bug has been confirmed and provide an alternative export format (e.g., CSV) as a temporary workaround.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent manages customer expectations and provides a temporary solution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent manages customer expectations and provides a temporary solution.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

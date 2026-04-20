@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the request for the special service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager understands the customer's requirement for a floating crane."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager understands the customer's requirement for a floating crane.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine the cost of providing the service by getting quotes from subcontractors or calculating internal costs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager determines the cost of the service will be $10,000."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager determines the cost of the service will be $10,000.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a formal quotation to the customer for their approval before arranging the service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A quote is sent to the customer for the special service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A quote is sent to the customer for the special service.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

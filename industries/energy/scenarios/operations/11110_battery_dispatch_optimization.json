@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the day-ahead hourly price forecast for the battery's market node.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the 24-hour price forecast."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the 24-hour price forecast.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the battery's current state of charge (SoC) and operational constraints (e.g., max charge/discharge rate, round-trip efficiency).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent fetches the real-time status and technical limits of the battery."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent fetches the real-time status and technical limits of the battery.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate an optimal hourly dispatch schedule that maximizes arbitrage profit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a schedule detailing when to charge, discharge, or remain idle."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a schedule detailing when to charge, discharge, or remain idle.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

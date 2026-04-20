@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the customer's requested redlines for the MSA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Account Executive understands the customer's legal concerns."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Account Executive understands the customer's legal concerns.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Consult the internal legal playbook for pre-approved fallback positions on liability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Account Executive finds an approved alternative clause."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Account Executive finds an approved alternative clause.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the request is outside standard fallbacks, escalate the redlines to the legal department for review and approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Account Executive correctly escalates the non-standard request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Account Executive correctly escalates the non-standard request.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

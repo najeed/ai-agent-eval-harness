@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the NAC alert and identify the device's MAC address and the switch port it is connected to.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder retrieves the key details of the unauthorized connection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder retrieves the key details of the unauthorized connection.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the NAC system to automatically move the device's port into a quarantined VLAN with no access to internal resources.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The rogue device is successfully isolated from the corporate network."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The rogue device is successfully isolated from the corporate network.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a ticket for the physical security team to go to the port's location and investigate the unauthorized device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder coordinates with physical security to address the physical aspect of the incident."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder coordinates with physical security to address the physical aspect of the incident.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

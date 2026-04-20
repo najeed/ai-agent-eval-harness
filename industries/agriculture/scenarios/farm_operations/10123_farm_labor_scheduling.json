@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "List all harvesting, packing, and logistics tasks that need to be completed for the week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a complete list of required tasks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a complete list of required tasks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the list of available employees and their skill sets (e.g., tractor operator, packer).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the list of all available workers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the list of all available workers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate an optimized weekly schedule that assigns employees to tasks based on skills and availability, ensuring compliance with break time regulations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed schedule for the week."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed schedule for the week.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Calm the parent and gather critical information: child's name, age, description, clothing, and last seen location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calmly and efficiently collects all necessary details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calmly and efficiently collects all necessary details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately initiate the park's 'lost child' protocol by broadcasting the information to all park security and staff.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully triggers the park-wide alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully triggers the park-wide alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Escort the parent to a designated waiting area and provide continuous updates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides support to the parent while coordinating with security."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides support to the parent while coordinating with security.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

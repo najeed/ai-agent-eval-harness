@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the file server and the exact path and name of the file that needs to be restored.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician has the full path of the deleted file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician has the full path of the deleted file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the backup system, browse the previous night's backup set for the file server, and locate the file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician successfully finds the file in the backup archive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician successfully finds the file in the backup archive.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Restore the file to its original location and notify the user that it is available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The file is successfully restored, and the user's issue is resolved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The file is successfully restored, and the user's issue is resolved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

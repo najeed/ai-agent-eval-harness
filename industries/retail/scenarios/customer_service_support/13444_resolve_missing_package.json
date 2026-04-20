@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Look up the customer's order and verify the tracking information shows it as delivered.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent confirms the carrier's delivery scan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent confirms the carrier's delivery scan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Advise the customer to check around their property and with neighbors, and to wait one more business day in case of a premature scan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent provides standard first-step troubleshooting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent provides standard first-step troubleshooting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the package still doesn't arrive, initiate a claim with the shipping carrier and send a replacement order to the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent resolves the customer's issue while also attempting to recover the cost from the carrier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent resolves the customer's issue while also attempting to recover the cost from the carrier.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

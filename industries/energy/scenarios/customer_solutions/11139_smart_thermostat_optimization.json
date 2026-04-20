@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify all enrolled smart thermostats in the target region.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a list of 10,000 eligible thermostats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a list of 10,000 eligible thermostats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a dispatch signal to the thermostats to pre-cool homes by 2 degrees in the hour leading up to the peak demand period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the pre-cooling command."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the pre-cooling command.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "During the peak period, send a second signal to raise the setpoint by 4 degrees, creating a load reduction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the temperature setback command."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the temperature setback command.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Monitor the aggregate load reduction from the thermostat fleet to verify performance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the fleet is delivering the expected load shed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the fleet is delivering the expected load shed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

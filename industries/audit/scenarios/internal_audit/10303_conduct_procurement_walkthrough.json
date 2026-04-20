@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Prepare a list of questions for the walkthrough covering vendor selection, purchase order creation, and invoice approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive list of interview questions is prepared."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive list of interview questions is prepared.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the walkthrough, ask the specialist to demonstrate how a new vendor is set up in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor observes the process and identifies that no check is performed for duplicate vendors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor observes the process and identifies that no check is performed for duplicate vendors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Request a sample of 25 new vendor setup forms for later testing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal data request is logged and sent to the auditee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal data request is logged and sent to the auditee.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

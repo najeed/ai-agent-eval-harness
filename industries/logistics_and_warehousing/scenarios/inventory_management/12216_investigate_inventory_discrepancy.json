@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the short-pick alert and identify the item and location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the item and location with the discrepancy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the item and location with the discrepancy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the transaction history for the item, looking for recent movements, receipts, or adjustments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the logs to find clues for the missing item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the logs to find clues for the missing item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check if the item exists in any other locations in the warehouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the 'missing' stock was put away in an incorrect location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the 'missing' stock was put away in an incorrect location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a task for an operator to move the item to its correct location and perform an inventory adjustment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates tasks to correct both the physical location and the system record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates tasks to correct both the physical location and the system record.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

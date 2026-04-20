@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and find their sales order using the PO number they provided.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves the correct sales order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves the correct sales order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the current status of the linked production work order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees the work order is currently in the 'Final Assembly' stage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees the work order is currently in the 'Final Assembly' stage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the customer that their order is in final assembly and provide an estimated completion date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the status and the ETA to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the status and the ETA to the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'stolen vehicle' report with the vehicle's license plate number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the license plate to search for."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the license plate to search for.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the city-wide Automated License Plate Reader (ALPR) network for any matches in the last 24 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system returns a match, showing the vehicle passed a reader on 'Highway 3' one hour ago."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system returns a match, showing the vehicle passed a reader on 'Highway 3' one hour ago.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Relay the location and time of the last sighting to the requesting police department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides actionable intelligence to law enforcement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides actionable intelligence to law enforcement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

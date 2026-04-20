@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the safe mode alarm and retrieve the satellite's historical telemetry data leading up to the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls the relevant telemetry logs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls the relevant telemetry logs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to find the root cause, such as a single event upset (SEU) in a memory chip.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the likely cause of the anomaly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the likely cause of the anomaly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Follow the established procedure to send a command sequence to reboot the affected subsystem and return the satellite to its nominal operational mode.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the correct command sequence to recover the satellite."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the correct command sequence to recover the satellite.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

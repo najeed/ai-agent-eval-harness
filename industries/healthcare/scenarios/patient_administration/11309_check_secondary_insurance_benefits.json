@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the patient's record and identify their secondary insurance policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the secondary payer information in the patient's chart."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the secondary payer information in the patient's chart.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit an electronic eligibility request to the secondary payer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the eligibility query."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the eligibility query.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the response to confirm the policy is active and understand the coordination of benefits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the secondary coverage and understands how it will apply after the primary pays."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the secondary coverage and understands how it will apply after the primary pays.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

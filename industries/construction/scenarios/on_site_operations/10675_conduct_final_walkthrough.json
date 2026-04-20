@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Schedule the final walkthrough with the client and architect.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A meeting is successfully scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A meeting is successfully scheduled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the walkthrough, use a mobile device to log any defects or incomplete items identified by the client directly into the punch list system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "New punch list items are created in real-time during the meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "New punch list items are created in real-time during the meeting.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

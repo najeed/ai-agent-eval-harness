@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the approved lift plan for the operation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the lift plan, which details the crane size, rigging, and exclusion zones."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the lift plan, which details the crane size, rigging, and exclusion zones.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the crane has been inspected and the weather conditions (especially wind speed) are within the limits specified in the lift plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the crane's daily inspection is complete and the current wind speed is acceptable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the crane's daily inspection is complete and the current wind speed is acceptable.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Authorize the lift to proceed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gives the final go-ahead to the crane operator and rigging crew."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gives the final go-ahead to the crane operator and rigging crew.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

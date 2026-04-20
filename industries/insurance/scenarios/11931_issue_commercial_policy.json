@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the approved application and final quote.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter has the final, approved terms for the policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter has the final, approved terms for the policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Bind coverage, making the policy officially active.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter successfully binds the policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter successfully binds the policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the complete policy document package and send it to the new policyholder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates and sends the full policy packet to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates and sends the full policy packet to the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the financial inputs for both scenarios: lease rates, purchase price, loan terms, operating expenses, tax assumptions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary data for the analysis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary data for the analysis.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a 10-year cash flow projection for both the leasing and buying scenarios.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates detailed cash flow models for both options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates detailed cash flow models for both options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare a summary report comparing the net present value (NPV) and long-term implications of each option to help the client decide.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent delivers a clear, data-driven report to facilitate the client's decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent delivers a clear, data-driven report to facilitate the client's decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

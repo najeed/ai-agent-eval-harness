@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the reporting module of the HRIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully navigates to the reporting tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully navigates to the reporting tool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run the standard 'Headcount by Department' report, filtering for the specific department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully generates the report with the correct data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully generates the report with the correct data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Export the report to Excel and send it to the department head.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully exports and emails the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully exports and emails the report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

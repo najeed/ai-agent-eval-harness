@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Communicate with the vessel master to confirm their ETA and that no berth is yet available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "VTS operator informs the vessel they will need to anchor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "VTS operator informs the vessel they will need to anchor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the anchorage chart for an available and suitable spot based on vessel size and draft.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator identifies Anchorage B2 as available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator identifies Anchorage B2 as available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the vessel to proceed to the designated anchorage spot and report when they are 'at anchor'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The vessel is guided to the anchorage, and its status is updated in the VTS system once anchored."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The vessel is guided to the anchorage, and its status is updated in the VTS system once anchored.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

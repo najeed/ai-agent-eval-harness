@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select a sample of 25 recent marketing materials from various departments (e.g., brochures, web pages, presentations).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A diverse sample of materials is collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A diverse sample of materials is collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review each item to ensure it uses the correct company logo, fonts, and color palette as defined in the brand style guide.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor finds several items that use an outdated version of the company logo."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor finds several items that use an outdated version of the company logo.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Report the findings to the marketing department and recommend a centralized asset library to ensure everyone uses the correct brand assets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A finding and recommendation are made to improve brand consistency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A finding and recommendation are made to improve brand consistency.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

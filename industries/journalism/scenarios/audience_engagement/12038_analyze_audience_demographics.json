@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Navigate to the 'Audience Demographics' section of the web analytics platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the correct report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the correct report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the age, gender, and geographic location data of the website's visitors over the last 6 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the primary demographics of the audience."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the primary demographics of the audience.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a summary report of the findings for the editorial team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team receives a clear picture of who their readers are."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team receives a clear picture of who their readers are.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

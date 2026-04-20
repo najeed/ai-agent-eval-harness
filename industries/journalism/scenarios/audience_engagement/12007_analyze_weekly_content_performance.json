@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Pull a report from the analytics platform showing key metrics (page views, unique visitors, average engagement time) for all articles published last week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the raw performance data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the raw performance data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the top 5 and bottom 5 performing articles based on page views.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates two lists of articles."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates two lists of articles.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the topics and formats of the top-performing articles to identify potential trends.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a summary of insights, such as 'Human-interest stories with video performed best.'"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a summary of insights, such as 'Human-interest stories with video performed best.'",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

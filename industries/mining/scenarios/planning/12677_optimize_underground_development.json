@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Import the final stope designs for the section of the mine to be developed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All target ore bodies (stopes) are loaded into the design software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All target ore bodies (stopes) are loaded into the design software.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use an automated tool to generate a network of development tunnels that connects all the stopes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A preliminary network of access tunnels is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A preliminary network of access tunnels is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the generated network and manually refine it to ensure it is practical and meets all design constraints.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A final, cost-effective, and practical development design is produced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A final, cost-effective, and practical development design is produced.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Initiate the fire alarm system to start the drill.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The site alarms are activated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The site alarms are activated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Time how long it takes for all personnel to evacuate to their designated muster points.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The EHS specialist records the total evacuation time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The EHS specialist records the total evacuation time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the drill details, including the evacuation time and any observations, in the emergency drill log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new record in the drill log, documenting the successful drill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new record in the drill log, documenting the successful drill.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

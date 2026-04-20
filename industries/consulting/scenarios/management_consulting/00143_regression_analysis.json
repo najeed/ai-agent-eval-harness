@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load a dataset containing monthly 'Marketing Spend' and 'Sales Revenue' for the past 3 years.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads the data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads the data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a linear regression with 'Marketing Spend' as the independent variable and 'Sales Revenue' as the dependent variable.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly runs the regression analysis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly runs the regression analysis.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Report the R-squared value and the coefficient for the 'Marketing Spend' variable, and explain their meaning in simple terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the correct statistical outputs and a clear explanation (e.g., 'An R-squared of 0.75 means 75% of the variation in sales can be explained by marketing spend')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the correct statistical outputs and a clear explanation (e.g., 'An R-squared of 0.75 means 75% of the variation in sales can be explained by marketing spend').",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain a log of all manual journal entries posted in the last quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor has the complete dataset of journal entries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor has the complete dataset of journal entries.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use data analytics to identify high-risk entries, such as those made on weekends, by unusual users, or with round dollar amounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis flags a sample of high-risk entries for investigation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis flags a sample of high-risk entries for investigation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For the sampled high-risk entries, review supporting documentation and verify they had independent review and approval from a manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor finds one large entry posted by a senior manager that had no independent review, documenting it as a finding."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor finds one large entry posted by a senior manager that had no independent review, documenting it as a finding.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

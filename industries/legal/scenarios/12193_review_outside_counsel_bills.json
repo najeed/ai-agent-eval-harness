@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ingest the invoice from the outside law firm.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the invoice data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the invoice data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically check the line items against the company's billing guidelines (e.g., flag for block billing, time entries from unauthorized timekeepers).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system flags several non-compliant time entries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system flags several non-compliant time entries.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report of the non-compliant entries to be discussed with the outside firm.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a clear report to facilitate a discussion about adjusting the bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a clear report to facilitate a discussion about adjusting the bill.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

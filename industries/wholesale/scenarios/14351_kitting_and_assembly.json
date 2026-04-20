@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a work order to assemble a specific number of kits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the order to assemble 50 gift baskets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the order to assemble 50 gift baskets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the bill of materials (BOM) for the kit, which lists all the component items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the list of all individual items needed for the gift basket."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the list of all individual items needed for the gift basket.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Pick the required quantities of all component items from the warehouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker gathers all the necessary components."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker gathers all the necessary components.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Assemble the components into the final kits and update the inventory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker assembles the 50 kits, and the agent updates the inventory, decreasing component stock and increasing the stock of the final kit product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker assembles the 50 kits, and the agent updates the inventory, decreasing component stock and increasing the stock of the final kit product.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

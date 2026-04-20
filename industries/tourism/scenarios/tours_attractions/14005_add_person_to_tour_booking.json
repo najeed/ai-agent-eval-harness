@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the original booking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the booking for two people."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the booking for two people.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if there is still availability on the tour to add one more person.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms there is space for one more."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms there is space for one more.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Modify the booking to include three people and collect payment for the additional person.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the booking and processes the payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the booking and processes the payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

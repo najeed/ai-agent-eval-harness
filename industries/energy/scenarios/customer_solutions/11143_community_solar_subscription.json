@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Based on the customer's address, identify available community solar projects with open subscriptions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds one local solar farm with 10 remaining subscription slots."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds one local solar farm with 10 remaining subscription slots.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the program's terms, including the subscription fee and the estimated monthly bill credit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the costs and benefits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the costs and benefits.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the customer's subscription application and sign them up for a 5 kW share of the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully enrolls the customer in the program."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully enrolls the customer in the program.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

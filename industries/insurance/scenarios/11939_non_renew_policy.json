@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the policy's claim history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter confirms the policy has had 4 water claims in 3 years, which exceeds the risk threshold."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter confirms the policy has had 4 water claims in 3 years, which exceeds the risk threshold.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Document the reason for non-renewal in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter logs 'Excessive Claims Frequency' as the reason."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter logs 'Excessive Claims Frequency' as the reason.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate and send the legally required notice of non-renewal to the policyholder in advance of the renewal date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal non-renewal notice is mailed to the customer within the legally mandated timeframe."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal non-renewal notice is mailed to the customer within the legally mandated timeframe.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

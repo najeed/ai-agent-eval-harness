@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge an alert for unusually high traffic volume on 'Main Street Corridor'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the congested area from the traffic monitoring system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the congested area from the traffic monitoring system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze real-time traffic flow and queue length data for the affected intersections.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms a bottleneck at the intersection of Main St and 5th Ave."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms a bottleneck at the intersection of Main St and 5th Ave.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Activate the 'Congestion Relief' signal timing plan for the affected corridor to prioritize flow on Main Street.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the new timing plan to the traffic signals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the new timing plan to the traffic signals.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

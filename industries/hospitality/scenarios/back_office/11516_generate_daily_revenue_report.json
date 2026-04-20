@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the financial reporting module.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is in the correct system module."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is in the correct system module.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the 'Daily Manager's Report' for the previous day's date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The report should show a breakdown of revenue by source (rooms, F&B, other) and key metrics like Occupancy, ADR, and RevPAR.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent verifies the report contains all the correct data points and is accurate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent verifies the report contains all the correct data points and is accurate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

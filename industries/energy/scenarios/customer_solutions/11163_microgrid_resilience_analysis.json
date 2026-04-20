@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the hospital's critical loads and their total power demand in kW.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the critical load is 500 kW."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the critical load is 500 kW.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Get the current status of the microgrid assets: battery state of charge, solar generation forecast, and diesel fuel level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles the real-time status of all microgrid components."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles the real-time status of all microgrid components.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Simulate the microgrid's operation during an outage, dispatching assets in order of cost (solar, battery, then diesel).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs a simulation of the microgrid under islanded mode."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs a simulation of the microgrid under islanded mode.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Calculate the total number of hours the microgrid can sustain the critical load.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reports that the microgrid can power critical loads for 72 hours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reports that the microgrid can power critical loads for 72 hours.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

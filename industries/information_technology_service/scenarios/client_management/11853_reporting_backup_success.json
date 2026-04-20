@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the central backup administration console.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager is logged into the backup system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager is logged into the backup system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a historical job summary report for the specific client for the last 30 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is generated listing all backup jobs and their status (success, warning, failure)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is generated listing all backup jobs and their status (success, warning, failure).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the overall success percentage and add it to the client's monthly performance report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client receives a clear report showing a 99.5% backup success rate for the month."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client receives a clear report showing a 99.5% backup success rate for the month.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

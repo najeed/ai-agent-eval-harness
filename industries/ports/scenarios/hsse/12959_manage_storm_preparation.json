@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the storm's forecast track and intensity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager gets regular updates on the hurricane's expected arrival time and wind speed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager gets regular updates on the hurricane's expected arrival time and wind speed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Instruct terminal operations to lower crane booms and add extra tie-downs to all cranes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Work orders are issued to secure all heavy equipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Work orders are issued to secure all heavy equipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Order the evacuation of all vessels from their berths to safer anchorage offshore.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The harbormaster communicates with all vessels and directs them to leave the port."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The harbormaster communicates with all vessels and directs them to leave the port.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

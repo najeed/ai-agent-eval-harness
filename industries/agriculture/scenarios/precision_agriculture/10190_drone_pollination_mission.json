@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the layout map of the greenhouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the greenhouse map."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the greenhouse map.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a flight path for the drone to fly over each row of tomato plants.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an optimized path."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an optimized path.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Configure the drone to create gentle air turbulence (simulating wind) to distribute pollen as it flies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets the correct parameters for the drone's propellers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets the correct parameters for the drone's propellers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Dispatch the drone to begin the pollination mission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully starts the mission."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully starts the mission.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

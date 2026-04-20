@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the environmental alert and retrieve real-time data for temperature, humidity, and ammonia.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the parameters are out of the safe range."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the parameters are out of the safe range.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically activate the ventilation fans and cooling systems to bring the temperature down.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends commands to the environmental control system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends commands to the environmental control system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send an alert to the farm manager to notify them of the situation and the automated action taken.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a clear notification message."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a clear notification message.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

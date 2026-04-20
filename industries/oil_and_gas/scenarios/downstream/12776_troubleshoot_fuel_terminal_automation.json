@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Look up the driver's account in the terminal automation system using their name or company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver's account is located."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver's account is located.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the driver's certifications (e.g., safety training) to ensure they are up to date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system shows the driver's safety certification expired yesterday."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system shows the driver's safety certification expired yesterday.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the driver that their access is denied due to an expired certification and instruct them on how to renew it online.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The root cause is communicated clearly to the driver with instructions for resolution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The root cause is communicated clearly to the driver with instructions for resolution.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

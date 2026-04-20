@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the broadcast schedule, which indicates when sponsored graphics should be shown.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent knows the exact time to display the halftime show graphic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent knows the exact time to display the halftime show graphic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "At the scheduled time, activate the appropriate sponsored graphic in the broadcast graphics system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully displays the correct graphic on air."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully displays the correct graphic on air.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the display of the graphic for sponsorship fulfillment reporting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a log entry confirming the ad was shown."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a log entry confirming the ad was shown.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

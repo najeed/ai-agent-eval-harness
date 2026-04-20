@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "During the night audit, the system automatically identifies members who have met the criteria for a tier upgrade.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system flags a guest for upgrade."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system flags a guest for upgrade.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically updates the member's status to the new, higher tier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The guest's profile is updated to the 'Gold' tier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The guest's profile is updated to the 'Gold' tier.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system sends an automated congratulations email to the guest, outlining their new benefits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A notification email is sent to the guest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A notification email is sent to the guest.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

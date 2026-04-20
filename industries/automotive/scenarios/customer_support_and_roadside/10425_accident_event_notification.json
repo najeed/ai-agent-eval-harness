@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the automated alert, which includes the vehicle's location and an indication of a severe impact.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the alert with GPS coordinates and 'Airbag Deployment' flag."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the alert with GPS coordinates and 'Airbag Deployment' flag.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately open a voice channel to the vehicle to speak with the occupants.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully establishes a two-way voice call into the car's cabin."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully establishes a two-way voice call into the car's cabin.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If there is no response or if help is requested, dispatch emergency services (police, ambulance) to the vehicle's location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives no response and dispatches emergency services with the location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives no response and dispatches emergency services with the location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

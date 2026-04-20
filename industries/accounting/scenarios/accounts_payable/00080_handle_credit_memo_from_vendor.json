@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive and capture the data from the vendor credit memo.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent extracts the vendor, credit memo number, and amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent extracts the vendor, credit memo number, and amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Post the credit memo to the vendor's account in the AP sub-ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully posts the credit, creating a negative balance for the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully posts the credit, creating a negative balance for the vendor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the credit memo against an open invoice from the same vendor to reduce the amount that needs to be paid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the credit to an open payable, reducing the net payment amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the credit to an open payable, reducing the net payment amount.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

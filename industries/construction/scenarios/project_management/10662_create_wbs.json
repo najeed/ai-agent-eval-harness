@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Create the top-level WBS elements: 'Design', 'Pre-Construction', 'Construction', and 'Closeout'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The main phases of the project are created as the top level of the WBS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The main phases of the project are created as the top level of the WBS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Under the 'Construction' element, add the sub-elements: 'Foundations', 'Framing', 'MEP', and 'Finishes'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The 'Construction' phase is broken down into its major components."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The 'Construction' phase is broken down into its major components.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

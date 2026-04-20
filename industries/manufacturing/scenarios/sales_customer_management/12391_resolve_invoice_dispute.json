@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's invoice and the original sales order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up both the invoice and the sales order for comparison."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up both the invoice and the sales order for comparison.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the pricing on the order with the pricing on the invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the price on the invoice matches the price on the order the customer signed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the price on the invoice matches the price on the order the customer signed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the charge to the customer, referencing the agreed-upon price on the sales order, and provide a copy of the order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clarifies the charge for the customer, resolving the dispute."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clarifies the charge for the customer, resolving the dispute.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

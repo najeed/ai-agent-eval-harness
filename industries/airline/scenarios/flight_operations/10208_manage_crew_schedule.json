@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the sick call and remove the original pilot from the flight assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the crew schedule to show the pilot is unavailable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the crew schedule to show the pilot is unavailable.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the list of reserve pilots who are on standby and qualified for the aircraft type.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of available and qualified reserve pilots."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of available and qualified reserve pilots.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the first pilot on the list, assign them to the flight, and notify them of the departure time and location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully finds a replacement pilot and updates the schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully finds a replacement pilot and updates the schedule.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

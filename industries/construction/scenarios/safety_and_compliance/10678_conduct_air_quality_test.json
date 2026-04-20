@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule a third-party industrial hygienist to perform air monitoring in the containment area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An appointment with a testing agency is scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An appointment with a testing agency is scheduled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the air test results from the hygienist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The test results are received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The test results are received.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the results are below the permissible exposure limit and formally clear the area for re-entry.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the area is safe and updates the site status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the area is safe and updates the site status.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

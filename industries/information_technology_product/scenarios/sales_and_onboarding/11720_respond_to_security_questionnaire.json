@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the security questionnaire from the prospective customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent downloads the questionnaire file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent downloads the questionnaire file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use an internal knowledge base of pre-approved answers to fill out as much of the questionnaire as possible.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses the tool to answer a majority of the standard questions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses the tool to answer a majority of the standard questions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For any new or unanswered questions, escalate them to the internal security team for a formal response.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly routes the remaining questions to the security team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly routes the remaining questions to the security team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

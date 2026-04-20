@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather real-time weather data along the transmission line corridor (e.g., wind speed, ambient temperature).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System retrieves live weather data from field sensors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System retrieves live weather data from field sensors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the real-time thermal rating of the line based on the cooling effect of the wind.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System calculates that the line can safely carry 15% more power than its static rating."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System calculates that the line can safely carry 15% more power than its static rating.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the line's operating limit in the energy management system (EMS), allowing for more efficient grid dispatch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System updates the operational limit in the EMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System updates the operational limit in the EMS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Perform a physical walkthrough of the plant to identify any immediate safety hazards.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor observes that several emergency exits are partially blocked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor observes that several emergency exits are partially blocked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the plant's injury and illness logs to identify any trends.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor finds a high number of back injuries in the shipping department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor finds a high number of back injuries in the shipping department.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that all forklift operators have a current, valid certification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor reviews training records and confirms all operators are certified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor reviews training records and confirms all operators are certified.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

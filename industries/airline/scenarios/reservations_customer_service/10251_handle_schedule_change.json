@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Notify the customer of the schedule change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends an email/SMS about the change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends an email/SMS about the change.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The customer calls and says the new time does not work for them. Explain their options, such as accepting the change, moving to a different flight for free, or getting a refund.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the customer's options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the customer's options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The customer chooses to move to a later flight. Process this change free of charge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully rebooks the customer on a more suitable flight at no cost."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully rebooks the customer on a more suitable flight at no cost.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

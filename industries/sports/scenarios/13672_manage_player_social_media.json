@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft a post based on the player's instructions (e.g., thanking the fans after a win).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes the text for the social media post."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes the text for the social media post.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send the draft to the player for approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets approval from the player."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets approval from the player.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once approved, post the message to the player's Twitter and Instagram accounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully posts the message."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully posts the message.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

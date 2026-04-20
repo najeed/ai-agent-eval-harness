@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the sales order and verify it has not yet shipped.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the order and confirms its status is 'Processing'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the order and confirms its status is 'Processing'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check inventory to ensure the additional quantity is available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms there is enough stock to cover the increased order size."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms there is enough stock to cover the increased order size.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the quantity on the sales order line item and resend the order confirmation to the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully modifies the order and the customer receives an updated confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully modifies the order and the customer receives an updated confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

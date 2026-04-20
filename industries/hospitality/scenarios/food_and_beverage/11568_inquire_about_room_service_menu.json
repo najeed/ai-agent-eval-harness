@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Inform the guest that the full room service menu is closed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent sets the correct expectation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent sets the correct expectation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Present the options from the limited, overnight menu (e.g., sandwiches, salads).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent clearly explains the available options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent clearly explains the available options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Take the guest's order from the overnight menu.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The guest places an order, which the agent processes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The guest places an order, which the agent processes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

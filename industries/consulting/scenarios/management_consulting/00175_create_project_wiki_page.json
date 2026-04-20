@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the deliverable document to extract its purpose, key findings, and final output.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully summarizes the deliverable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully summarizes the deliverable.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the content for the wiki page using markdown formatting, including headings, bullet points, and links.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates well-formatted content for the wiki."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates well-formatted content for the wiki.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use a tool to publish the content to the project wiki under the correct parent page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new wiki page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new wiki page.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the technical data to be shared.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent specifies the drawing number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent specifies the drawing number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the drawing's classification against the U.S. Munitions List to determine if it is export-controlled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the drawing is controlled under ITAR."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the drawing is controlled under ITAR.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply for an export license or verify that a license exception is available before sending the data to the foreign supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines a license is required and submits the application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines a license is required and submits the application.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

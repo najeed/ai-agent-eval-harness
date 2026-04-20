@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the PPE requirements for the specified production area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the requirements are: hard hat, safety glasses, steel-toed boots, and chemical-resistant gloves."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the requirements are: hard hat, safety glasses, steel-toed boots, and chemical-resistant gloves.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Observe employees in the area and note any non-compliance on an audit form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent observes 10 employees and notes one is not wearing safety glasses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent observes 10 employees and notes one is not wearing safety glasses.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Finalize the audit report and assign a corrective action to the area supervisor to address the finding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the final audit report and creates a CAPA for the supervisor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the final audit report and creates a CAPA for the supervisor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

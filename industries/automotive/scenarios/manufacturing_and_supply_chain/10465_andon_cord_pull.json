@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the Andon alert from the specific workstation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees the alert from workstation 'D-37'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees the alert from workstation 'D-37'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately dispatch the workstation's team lead to investigate the issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent notifies the team lead to go to the workstation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent notifies the team lead to go to the workstation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the issue is resolved (e.g., part realigned), authorize the line to be restarted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team lead confirms the fix, and the agent restarts the line in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team lead confirms the fix, and the agent restarts the line in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

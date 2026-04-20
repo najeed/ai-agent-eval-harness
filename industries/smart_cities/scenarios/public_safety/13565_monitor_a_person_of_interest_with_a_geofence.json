@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a request from police to monitor a specific device ID (e.g., a phone or vehicle tracker).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the surveillance request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the surveillance request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a geofence around a sensitive location, such as a school or government building.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully draws the virtual fence on the map."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully draws the virtual fence on the map.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set up an alert to be sent directly to the requesting detective if the monitored device ID crosses into the geofenced area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the conditional alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the conditional alert.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

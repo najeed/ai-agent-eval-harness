@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the disapproved ad and the specific policy violation cited by the platform (e.g., 'Misleading Claims').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the ad and the reason for disapproval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the ad and the reason for disapproval.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the ad copy and landing page to find the content that violates the policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a claim in the ad copy that is unsubstantiated on the landing page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a claim in the ad copy that is unsubstantiated on the landing page.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Edit the ad copy to remove the problematic claim.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent rewrites the ad to be compliant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent rewrites the ad to be compliant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Resubmit the ad for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The ad is sent back to the platform for a new review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The ad is sent back to the platform for a new review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

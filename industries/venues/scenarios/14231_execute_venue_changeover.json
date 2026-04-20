@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the standard operating procedure (SOP) for the hockey-to-basketball changeover.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the detailed checklist and timeline for the conversion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the detailed checklist and timeline for the conversion.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create and assign tasks to the various crews (e.g., ice crew, floor crew, seating crew) in the work order system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates all necessary work orders for the changeover."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates all necessary work orders for the changeover.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the progress of the changeover against the timeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent tracks the completion of each major task in real-time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent tracks the completion of each major task in real-time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Once complete, perform a final quality check and mark the venue as 'Ready' for the next event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the venue is ready and updates its status in the master calendar."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the venue is ready and updates its status in the master calendar.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

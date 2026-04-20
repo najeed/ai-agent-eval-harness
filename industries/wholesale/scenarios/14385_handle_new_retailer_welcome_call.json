@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify a new retailer who was onboarded in the last week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the contact information for a new retailer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the contact information for a new retailer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Call the retailer to welcome them, introduce themselves as the account representative, and answer any initial questions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent makes a successful welcome call."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent makes a successful welcome call.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the call in the CRM system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a record of the call."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a record of the call.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

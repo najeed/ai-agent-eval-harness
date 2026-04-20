@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the original article from the archive.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the source text."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the source text.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Rewrite the article in a more conversational tone, suitable for being spoken aloud.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new, more conversational script is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new, more conversational script is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Break the script into short segments and add visual cues for the video editor (e.g., '[B-roll of traffic]').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The script is formatted for video production."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The script is formatted for video production.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

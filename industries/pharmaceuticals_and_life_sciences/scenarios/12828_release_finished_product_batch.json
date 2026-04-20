@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Compile the complete batch record package, including the eBR and all QC test results.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all required documentation for the batch."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all required documentation for the batch.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the entire package to ensure there are no unresolved deviations or OOS results.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that all deviations and investigations have been closed and the product meets all specifications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that all deviations and investigations have been closed and the product meets all specifications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the Certificate of Analysis (CoA) for the batch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the official CoA document summarizing the release test results."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the official CoA document summarizing the release test results.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Perform the final electronic sign-off to release the batch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent applies their electronic signature, changing the batch status to 'Released'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent applies their electronic signature, changing the batch status to 'Released'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

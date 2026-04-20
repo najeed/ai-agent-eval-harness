@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all unbilled time entries and expenses for a specific client matter for the last month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all billable items for the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all billable items for the client.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a draft invoice, itemizing all time entries and expenses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a detailed draft bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a detailed draft bill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the draft invoice to the responsible partner for review and approval before sending to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the firm's pre-bill review process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the firm's pre-bill review process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

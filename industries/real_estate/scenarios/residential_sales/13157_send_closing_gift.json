@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the client's new address and the agent's budget for the gift.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Assistant confirms the client's new home address and the agent's standard gift budget of $100."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Assistant confirms the client's new home address and the agent's standard gift budget of $100.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Order a standard closing gift (e.g., a gift basket) from a preferred vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A gift basket is ordered from 'Gifts & More' to be delivered to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A gift basket is ordered from 'Gifts & More' to be delivered to the client.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Include a personalized, handwritten card from the agent with the gift.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A personalized message is provided to the vendor to include with the delivery."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A personalized message is provided to the vendor to include with the delivery.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

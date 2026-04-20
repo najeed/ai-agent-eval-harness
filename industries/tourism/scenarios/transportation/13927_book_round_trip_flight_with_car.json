@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search for round-trip flights to Denver (DEN) for the specified dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds suitable flight options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds suitable flight options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for available rental cars at Denver airport for the same dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds suitable rental car options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds suitable rental car options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a single booking containing both the selected flights and rental car.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a bundled booking and provides a single confirmation number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a bundled booking and provides a single confirmation number.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

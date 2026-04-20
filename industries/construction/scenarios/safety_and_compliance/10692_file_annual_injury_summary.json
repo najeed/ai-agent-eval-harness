@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Compile all OSHA 300 logs for the company for the past calendar year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All necessary logs are gathered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All necessary logs are gathered.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the summary data required for Form 300A, including total number of cases, days away from work, etc.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The summary data is accurately calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The summary data is accurately calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the summary data through OSHA's Injury Tracking Application (ITA) website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The annual report is successfully filed with the regulatory agency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The annual report is successfully filed with the regulatory agency.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

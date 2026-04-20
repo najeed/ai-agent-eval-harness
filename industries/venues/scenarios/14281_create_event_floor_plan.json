@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Open the venue's floor plan design software for the main exhibition hall.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent loads the correct template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent loads the correct template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add 50 standard 10x10 foot booths to the floor plan, ensuring proper spacing for aisles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent lays out the booths according to fire code and accessibility standards."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent lays out the booths according to fire code and accessibility standards.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add other elements like the registration desk, a food court area, and restrooms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the detailed floor plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the detailed floor plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Save the floor plan and share it with the client for their approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a PDF of the floor plan to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a PDF of the floor plan to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

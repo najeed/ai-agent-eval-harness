@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Display the real-time frac van data, including treating pressure, slurry rate, and proppant concentration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A live dashboard of the fracturing job parameters is active."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A live dashboard of the fracturing job parameters is active.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the live treating pressure with the modeled pressure response to detect any deviations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows the pressure is higher than modeled, indicating a potential screen-out."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows the pressure is higher than modeled, indicating a potential screen-out.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the field crew to reduce proppant concentration immediately to avoid a screen-out and complete the stage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A command is sent and acknowledged, and the crew adjusts the job parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A command is sent and acknowledged, and the crew adjusts the job parameters.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

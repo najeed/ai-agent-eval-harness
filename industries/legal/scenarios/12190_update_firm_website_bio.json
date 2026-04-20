@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Locate the attorney's profile page in the website's content management system (CMS).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct page to edit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct page to edit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the attorney's title from 'Associate' to 'Partner'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent changes the title."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent changes the title.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add any new representative matters or awards to their bio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the content of the bio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the content of the bio.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Publish the changes to make the updated bio live.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The website now reflects the attorney's promotion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The website now reflects the attorney's promotion.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

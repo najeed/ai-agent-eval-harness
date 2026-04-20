@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Determine the visa requirements for the destination country for all players and staff based on their nationalities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a list of who needs a visa."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a list of who needs a visa.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather all necessary documentation from each person who needs a visa.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all passports and application forms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all passports and application forms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the visa applications to the relevant embassy or consulate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits all applications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits all applications.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

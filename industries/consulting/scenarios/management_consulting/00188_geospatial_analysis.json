@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load a dataset of potential cities with demographic data (e.g., population, median income, age distribution).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads the data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads the data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Filter the list of cities to only include those that meet certain criteria (e.g., population > 500,000 and median income > $60,000).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly filters the list down to a smaller set of candidate cities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly filters the list down to a smaller set of candidate cities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "From the filtered list, recommend the city with the highest median income.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a final, data-driven recommendation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a final, data-driven recommendation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

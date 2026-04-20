@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Reconcile all income (rent, fees) and expenses (repairs, management fees) for the property for the previous month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All financial transactions for the period are categorized and verified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All financial transactions for the period are categorized and verified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the owner statement report, which itemizes all income and expenses and shows the net income.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear and accurate financial report is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear and accurate financial report is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the statement to the property owner along with the net income payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The owner receives their report and funds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The owner receives their report and funds.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

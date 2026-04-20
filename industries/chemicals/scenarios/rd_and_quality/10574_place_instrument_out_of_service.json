@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the instrument in the LIMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly selects the malfunctioning instrument."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly selects the malfunctioning instrument.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Change the instrument's status to 'Out of Service', which should prevent it from being assigned new tests.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the instrument status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the instrument status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a maintenance request for the instrument, describing the problem.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs a new service request for the instrument with the service department or vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs a new service request for the instrument with the service department or vendor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

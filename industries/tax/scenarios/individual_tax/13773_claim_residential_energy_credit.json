@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the invoices and proof of payment for the solar panel installation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects documentation showing the total cost of the project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects documentation showing the total cost of the project.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the solar panels are qualifying property for the credit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the property is eligible."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the property is eligible.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the credit amount based on the applicable percentage of the cost and complete Form 5695.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the credit and prepares the required form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the credit and prepares the required form.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

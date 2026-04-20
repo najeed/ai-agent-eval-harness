@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the claim from the retailer, including photos of the damaged items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the claim and saves the photos."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the claim and saves the photos.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the claim against the order details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the damaged items were part of the recent order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the damaged items were part of the recent order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a credit memo to the retailer for the value of the damaged goods.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a credit memo on the retailer's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a credit memo on the retailer's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Arrange for a replacement shipment of the damaged items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new, no-charge sales order for the replacement items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new, no-charge sales order for the replacement items.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

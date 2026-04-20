@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a request for access codes from a fire captain at the scene of an alarm.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the request from the first responder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the request from the first responder.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Look up the building address in the secure 'Knox Box' database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the secure database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the secure database.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Securely transmit the building's door and elevator access codes to the fire captain's authenticated device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the critical access information securely."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the critical access information securely.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

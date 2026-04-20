@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "For each recommendation, assign a score for 'Potential Impact' (1-5) and 'Implementation Effort' (1-5).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent assigns a reasonable score to each recommendation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent assigns a reasonable score to each recommendation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Categorize each recommendation into one of four quadrants: 'Quick Wins' (High Impact, Low Effort), 'Major Projects' (High Impact, High Effort), 'Fill-ins' (Low Impact, Low Effort), and 'Thankless Tasks' (Low Impact, High Effort).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly categorizes all recommendations based on their scores."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly categorizes all recommendations based on their scores.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report listing the recommendations, starting with the 'Quick Wins'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a prioritized list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a prioritized list.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

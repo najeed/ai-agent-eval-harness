@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the size (in MW) of the offline nuclear plant and its typical contribution to regional supply.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms a 1.2 GW plant is offline, representing 10% of regional baseload."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms a 1.2 GW plant is offline, representing 10% of regional baseload.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the regional supply stack to identify which marginal generators (likely natural gas) will be dispatched to cover the shortfall.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the gas peaker plants that will set the market price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the gas peaker plants that will set the market price.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Forecast the resulting increase in LMPs for the next 24 hours based on the higher cost of marginal generation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent predicts a 30% increase in average LMPs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent predicts a 30% increase in average LMPs.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

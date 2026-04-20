@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft the updated community rules and regulations document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A revised document with the new rule changes is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A revised document with the new rule changes is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Distribute the updated rules to all current residents as required by law or the lease agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new rules document is sent via email to all tenants in the complex."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new rules document is sent via email to all tenants in the complex.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the new resident onboarding package to include the new version of the rules.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The template for new lease packages is updated with the latest rules document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The template for new lease packages is updated with the latest rules document.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

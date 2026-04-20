@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'Stage 2 Drought' declaration from the water department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the new water conservation measures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the new water conservation measures.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the smart irrigation control system for all city parks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent connects to the central irrigation system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent connects to the central irrigation system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply a 'Drought' preset that reduces watering times by 50% and restricts watering to overnight hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the water-saving measures across all parks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the water-saving measures across all parks.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

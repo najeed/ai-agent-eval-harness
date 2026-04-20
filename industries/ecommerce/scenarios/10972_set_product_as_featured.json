@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Identify the product to be featured.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the correct product SKU."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the correct product SKU.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the product to the 'Homepage Featured' collection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the product to the special collection that populates the homepage section."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the product to the special collection that populates the homepage section.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

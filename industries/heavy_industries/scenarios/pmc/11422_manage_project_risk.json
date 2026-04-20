@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new entry in the project's risk register.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully logs the new risk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully logs the new risk.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assess the risk's probability and impact, and assign it a risk score.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent assesses the risk and the system calculates a high risk score."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent assesses the risk and the system calculates a high risk score.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Develop a mitigation plan, such as identifying an alternative air freight option, and assign an owner to the risk.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent documents a mitigation strategy and assigns responsibility for monitoring the risk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent documents a mitigation strategy and assigns responsibility for monitoring the risk.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

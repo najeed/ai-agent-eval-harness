@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The inspector asks the passenger for their ticket and finds they do not have one.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A fare evasion is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A fare evasion is identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The inspector requests the passenger's identification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The passenger's ID is obtained."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The passenger's ID is obtained.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Using a handheld device, the inspector enters the passenger's information and issues a citation for fare evasion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A citation is generated and printed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A citation is generated and printed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The incident is logged in the system for tracking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The citation is recorded in the compliance database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The citation is recorded in the compliance database.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

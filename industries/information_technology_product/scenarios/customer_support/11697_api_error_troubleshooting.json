@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the customer's account ID, the full API request (endpoint, headers, body), and the approximate time of the error.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary details to investigate the API call."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary details to investigate the API call.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Look up the API request logs using the customer's ID and timestamp to find the specific error trace.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the corresponding error log and stack trace."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the corresponding error log and stack trace.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the error trace, identify it as a known bug, and provide the customer with a link to the bug report and a suggested workaround.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly diagnoses the issue as a known bug and provides helpful information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly diagnoses the issue as a known bug and provides helpful information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

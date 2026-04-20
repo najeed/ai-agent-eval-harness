@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the buyer's search criteria from their CRM profile (e.g., location, price, beds, baths).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the client's specific search parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the client's specific search parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new automated search in the MLS using the client's criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An auto-search is successfully configured in the MLS system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An auto-search is successfully configured in the MLS system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Configure the search to send new listings to the client instantly via email.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The notification settings are set to 'immediate email alerts' for the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The notification settings are set to 'immediate email alerts' for the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

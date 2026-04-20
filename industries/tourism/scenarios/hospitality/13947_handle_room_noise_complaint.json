@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Apologize to the guest and confirm their room number and the location of the noise.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the necessary details and shows empathy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the necessary details and shows empathy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch security personnel to the location of the party to address the noise.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends a security officer to the correct room."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends a security officer to the correct room.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Offer the complaining guest a room change or a service recovery gesture (e.g., complimentary breakfast).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent proactively offers a solution to make up for the inconvenience."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent proactively offers a solution to make up for the inconvenience.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the location and time frame of the reported theft.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the incident occurred near the library between 2 PM and 4 PM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the incident occurred near the library between 2 PM and 4 PM.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the video management system and retrieve footage from the relevant cameras and time frame.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pulls the requested video clips."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pulls the requested video clips.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Securely save the relevant footage as evidence and attach it to the incident report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent archives the video evidence in accordance with policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent archives the video evidence in accordance with policy.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all policies with payments that are past the grace period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a list of policies pending cancellation for non-payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a list of policies pending cancellation for non-payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each policy, generate the legally required notice of pending cancellation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates the correct legal notice for each customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates the correct legal notice for each customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the notices to the customers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system mails the notices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system mails the notices.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the stockpile blending plan, which specifies the target grade and the required tons from different ore sources.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The blending recipe for the stockpile is understood."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The blending recipe for the stockpile is understood.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "As a haul truck carrying high-grade ore approaches, instruct the dispatcher to assign it to dump on the 'high-grade' section of the stockpile.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The truck is correctly dispatched to the right dump location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The truck is correctly dispatched to the right dump location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the digital model of the stockpile with the new load, tracking the build-up of tons and grade in real-time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The stockpile inventory model is updated, showing the current blended grade is on target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The stockpile inventory model is updated, showing the current blended grade is on target.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

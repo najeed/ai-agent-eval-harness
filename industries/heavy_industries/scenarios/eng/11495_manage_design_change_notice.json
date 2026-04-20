@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new DCN in the system, linking it to the affected drawing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates a new DCN record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates a new DCN record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Describe the change and the reason for it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer clearly documents the required change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer clearly documents the required change.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the DCN for approval. Once approved, the DCN will be attached to the next revision of the drawing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the DCN, which enters an approval workflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the DCN, which enters an approval workflow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

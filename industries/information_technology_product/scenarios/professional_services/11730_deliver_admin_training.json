@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Prepare a custom training curriculum focused on admin-level tasks like user management, security settings, and billing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant creates a tailored training agenda and slide deck."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant creates a tailored training agenda and slide deck.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Conduct the live, remote training session for the customer's administrators.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant effectively delivers the training material and answers questions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant effectively delivers the training material and answers questions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Follow up after the session with a recording of the training and links to relevant documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant provides valuable post-training resources."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant provides valuable post-training resources.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

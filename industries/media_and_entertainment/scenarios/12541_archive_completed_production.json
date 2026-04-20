@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all digital assets associated with the completed film project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a complete list of all video, audio, and project files."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a complete list of all video, audio, and project files.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a data integrity check (e.g., checksum) on all files to ensure they are not corrupt.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the integrity of all files before archiving."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the integrity of all files before archiving.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Transfer all verified assets to the long-term archival storage system (e.g., LTO tape library).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates and completes the transfer to archival storage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates and completes the transfer to archival storage.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

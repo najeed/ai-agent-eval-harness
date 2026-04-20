@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the latest level and temperature readings for crude oil tank TK-204.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Accurate, real-time readings are retrieved from the tank gauging system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Accurate, real-time readings are retrieved from the tank gauging system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the temperature-corrected volume of oil in the tank.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The net standard volume is calculated correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The net standard volume is calculated correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the calculated volume with the book inventory. If a discrepancy exists, flag for investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The physical and book inventories are compared, and a small discrepancy is flagged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The physical and book inventories are compared, and a small discrepancy is flagged.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

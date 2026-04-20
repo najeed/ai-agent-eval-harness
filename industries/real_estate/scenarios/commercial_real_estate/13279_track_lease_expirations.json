@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a report to find all leases with an expiration date within the next 365 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of all upcoming lease expirations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of all upcoming lease expirations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each expiring lease, review the renewal option clause.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent notes the terms and notification deadline for each renewal option."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent notes the terms and notification deadline for each renewal option.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a task for the responsible agent to initiate renewal discussions with each tenant 9 months prior to expiration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and assigns follow-up tasks for each expiring lease."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and assigns follow-up tasks for each expiring lease.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

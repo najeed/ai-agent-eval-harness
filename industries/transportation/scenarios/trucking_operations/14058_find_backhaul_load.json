@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify that a driver will be empty in a specific city tomorrow.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dispatcher knows they need to find a load for this driver."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dispatcher knows they need to find a load for this driver.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search an external load board for available loads picking up in or near the driver's location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system returns a list of available loads from various brokers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system returns a list of available loads from various brokers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Filter the loads to find one that is profitable and matches the driver's equipment and destination preference.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dispatcher identifies a suitable load."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dispatcher identifies a suitable load.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Contact the broker to book the load.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The backhaul load is secured, ensuring a profitable return trip."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The backhaul load is secured, ensuring a profitable return trip.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

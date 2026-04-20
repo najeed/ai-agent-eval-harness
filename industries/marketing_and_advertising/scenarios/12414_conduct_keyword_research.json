@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Enter the seed keyword 'home office setup' into a keyword research tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses the tool to start the research process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses the tool to start the research process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the results to find related keywords with high search volume and low-to-medium difficulty.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a list of potential target keywords."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a list of potential target keywords.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select a primary keyword (e.g., 'best home office setup') and several secondary keywords (e.g., 'small home office ideas', 'ergonomic office chair') to include in the article.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a final, prioritized list of keywords for the writer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a final, prioritized list of keywords for the writer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

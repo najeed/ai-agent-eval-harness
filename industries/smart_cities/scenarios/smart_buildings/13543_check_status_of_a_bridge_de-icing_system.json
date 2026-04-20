@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'Freezing Temperatures Expected' weather alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the weather forecast."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the weather forecast.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a remote diagnostic on the 'Central Bridge' de-icing system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates the system test."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates the system test.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the diagnostic report, which confirms all heating elements are functional and ready.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the system is ready for the cold weather."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the system is ready for the cold weather.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

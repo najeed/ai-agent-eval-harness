@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the historical correlation between rainfall levels in the dam's catchment area and the plant's annual revenue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms a strong positive correlation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms a strong positive correlation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Evaluate quotes for a rainfall derivative that pays out if rainfall is below a certain threshold.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves quotes and terms for a suitable derivative product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves quotes and terms for a suitable derivative product.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Model the combined financial outcome of the hydro plant and the derivative under different rainfall scenarios (drought, normal, wet).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent shows how the derivative smooths revenue by paying out in the drought scenario."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent shows how the derivative smooths revenue by paying out in the drought scenario.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

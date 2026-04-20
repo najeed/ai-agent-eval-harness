@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a report from the HRIS of all employees and their demographic and job category data as of the required snapshot date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist generates the raw data needed for the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist generates the raw data needed for the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Format the data according to the EEO-1 reporting specifications.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist correctly maps company job titles to the standard EEO-1 categories."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist correctly maps company job titles to the standard EEO-1 categories.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the formatted data file through the official EEO-1 online filing portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist successfully submits the report before the deadline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist successfully submits the report before the deadline.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

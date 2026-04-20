@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a radio call from a driver about the announcement system failure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dispatcher logs the vehicle defect."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dispatcher logs the vehicle defect.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Instruct the driver to manually announce all stops for the remainder of their trip to ensure ADA compliance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver is given clear instructions to maintain service accessibility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver is given clear instructions to maintain service accessibility.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a maintenance work order for the bus to have the announcement system repaired at the end of the day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A repair ticket is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A repair ticket is created.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

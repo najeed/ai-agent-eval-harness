@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the contract for specific keywords like 'indemnity', 'liability', 'termination', and 'exclusivity'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the clauses containing these keywords."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the clauses containing these keywords.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the identified clauses to assess if they are standard or potentially risky.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent flags a clause with 'unlimited liability' as high-risk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent flags a clause with 'unlimited liability' as high-risk.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a summary report of the identified risks for review by the legal team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a concise report highlighting the risky clauses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a concise report highlighting the risky clauses.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the budgeted cost for the work package.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the budget for the package."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the budget for the package.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Get the reported physical percentage complete for the work package from the field team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The field reports that the work is 50% complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The field reports that the work is 50% complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the earned value by multiplying the budget by the percentage complete, and update the project's performance metrics.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the earned value and updates the project's performance dashboard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the earned value and updates the project's performance dashboard.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

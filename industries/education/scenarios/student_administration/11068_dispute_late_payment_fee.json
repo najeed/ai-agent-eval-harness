@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and the late fee in question.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the charge on the student's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the charge on the student's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the student's payment history, including the timestamp of the last payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the payment was posted one day after the due date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the payment was posted one day after the due date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the student's record for any prior late payments. Finding none, offer a one-time courtesy waiver of the fee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "As a goodwill gesture for a first-time issue, the agent waives the fee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "As a goodwill gesture for a first-time issue, the agent waives the fee.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

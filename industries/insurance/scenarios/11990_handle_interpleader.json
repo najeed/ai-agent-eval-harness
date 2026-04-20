@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive notice that the beneficiaries are disputing the claim.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The claims examiner is notified of the dispute."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The claims examiner is notified of the dispute.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Notify the legal department of the dispute.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The examiner escalates the case to the company's legal team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The examiner escalates the case to the company's legal team.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Following legal advice, file an interpleader action, depositing the policy proceeds with the court and allowing the court to decide the rightful recipient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The company pays the funds to the court, removing itself from the dispute between the beneficiaries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The company pays the funds to the court, removing itself from the dispute between the beneficiaries.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

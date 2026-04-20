@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Filter all submissions based on the role's requirements (e.g., age range, gender, specific skills).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent filters over 5,000 submissions down to 200 that meet the basic criteria."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent filters over 5,000 submissions down to 200 that meet the basic criteria.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the headshots and resumes of the filtered candidates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the materials for the 200 candidates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the materials for the 200 candidates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a shortlist of the top 20 candidates and schedule them for an audition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a shortlist and sends out audition invitations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a shortlist and sends out audition invitations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

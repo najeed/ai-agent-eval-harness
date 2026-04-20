@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the player's account and check their eligibility for a username change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the player has one free username change available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the player has one free username change available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the desired new username is available and does not violate the naming policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the new username is available and appropriate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the new username is available and appropriate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the player's username in the account system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully changes the username."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully changes the username.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

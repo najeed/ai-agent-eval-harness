@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the full commercial lease document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the complete lease PDF."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the complete lease PDF.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Extract key data points from the lease, including: tenant name, premises, term, rent schedule, renewal options, and use clause.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately extracts all specified information from the lengthy legal document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately extracts all specified information from the lengthy legal document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a concise lease abstract report summarizing the key data points.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A one-page summary document is created and provided to the investor client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A one-page summary document is created and provided to the investor client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

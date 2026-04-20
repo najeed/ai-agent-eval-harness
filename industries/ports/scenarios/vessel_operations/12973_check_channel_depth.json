@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the vessel's required draft from the nomination.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot confirms the vessel has a draft of 14.5 meters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot confirms the vessel has a draft of 14.5 meters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the latest hydrographic survey chart for the channel's official depth.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The chart shows a minimum depth of 12 meters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The chart shows a minimum depth of 12 meters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the tide tables for the vessel's ETA and calculate the total water depth to ensure it is sufficient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot checks the tide will be +3 meters at ETA, making the total depth 15 meters. This provides enough under-keel clearance, and the pilot approves the transit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot checks the tide will be +3 meters at ETA, making the total depth 15 meters. This provides enough under-keel clearance, and the pilot approves the transit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

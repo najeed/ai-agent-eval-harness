@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of rooms where HVAC maintenance is due this month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a list of rooms needing service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a list of rooms needing service.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each room, block it from being sold on a day when it is vacant to perform the maintenance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Rooms are put 'Out of Order' in the PMS for the maintenance day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Rooms are put 'Out of Order' in the PMS for the maintenance day.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create work orders for the technician to perform the maintenance on the scheduled days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Work orders are created for all required rooms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Work orders are created for all required rooms.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

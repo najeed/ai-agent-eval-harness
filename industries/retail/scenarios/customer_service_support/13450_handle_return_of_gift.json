@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the gift receipt.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The POS retrieves the original transaction details but hides the price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The POS retrieves the original transaction details but hides the price.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the item being returned.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms the item was part of the gift purchase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms the item was part of the gift purchase.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the return and issue the refund on a store credit/gift card, per store policy for gift returns.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The gift recipient receives store credit for the value of the item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The gift recipient receives store credit for the value of the item.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The system gets the package weight, dimensions, destination, and required service level ('Standard Ground').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system gathers all necessary rating data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system gathers all necessary rating data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system sends rate requests to all integrated parcel carriers (e.g., UPS, FedEx, USPS).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system receives rate responses from all carriers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system receives rate responses from all carriers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system compares the rates and selects the cheapest option.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system identifies USPS Ground Advantage as the lowest-cost option."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system identifies USPS Ground Advantage as the lowest-cost option.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The system automatically generates the shipping label for the selected carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A USPS shipping label is printed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A USPS shipping label is printed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

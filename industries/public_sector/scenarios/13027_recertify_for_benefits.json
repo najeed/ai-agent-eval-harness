@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the citizen and their existing benefits case.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the citizen's active housing assistance case."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the citizen's active housing assistance case.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the citizen through the recertification form, verifying their current income, household composition, and expenses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent helps the citizen accurately complete the recertification application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent helps the citizen accurately complete the recertification application.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the recertification and inform the citizen of the outcome or if more information is needed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the form, which is auto-approved, and confirms the citizen's benefits will continue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the form, which is auto-approved, and confirms the citizen's benefits will continue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

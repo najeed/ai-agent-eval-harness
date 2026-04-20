@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the new drawing and the company's official drafting standard document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up both documents for comparison."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up both documents for comparison.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the drawing for compliance with standards for layering, text styles, and dimensioning.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The senior designer finds that the layering is incorrect."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The senior designer finds that the layering is incorrect.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Return the drawing to the junior designer with comments on what needs to be corrected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent rejects the drawing in the workflow, providing specific feedback for correction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent rejects the drawing in the workflow, providing specific feedback for correction.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

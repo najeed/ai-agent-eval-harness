@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Integrate the SAST tool with the source code repository (e.g., GitHub, GitLab).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully sets up the integration between the two systems."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully sets up the integration between the two systems.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Configure a webhook to trigger a new SAST scan every time a developer pushes a new code commit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly configures the automated scan trigger."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly configures the automated scan trigger.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Configure the system to automatically fail the build and create a ticket if the scan discovers any new critical vulnerabilities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully implements a 'break the build' security check in the CI/CD pipeline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully implements a 'break the build' security check in the CI/CD pipeline.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

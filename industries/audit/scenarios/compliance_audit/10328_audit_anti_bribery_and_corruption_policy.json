@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain a list of all payments made to third-party agents in high-risk countries.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor has a dataset of potentially high-risk payments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor has a dataset of potentially high-risk payments.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For a sample of payments, review supporting documentation to ensure there was a legitimate business purpose.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor reviews invoices and contracts for the sampled payments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor reviews invoices and contracts for the sampled payments.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review expense reports from the international sales team for any excessive or inappropriate gifts or entertainment expenses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor identifies several expenses for 'client entertainment' that lack detailed receipts or business justification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor identifies several expenses for 'client entertainment' that lack detailed receipts or business justification.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

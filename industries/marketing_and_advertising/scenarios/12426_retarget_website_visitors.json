@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new audience in the ad platform for 'All Website Visitors (Last 30 Days)'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the retargeting audience based on the tracking pixel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the retargeting audience based on the tracking pixel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new campaign targeting this audience.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets up a new campaign with the correct audience selected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets up a new campaign with the correct audience selected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload ad creatives specifically designed for users who are already familiar with the brand.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses ad copy like 'Still thinking about it?' or 'Come back and see what's new'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses ad copy like 'Still thinking about it?' or 'Come back and see what's new'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

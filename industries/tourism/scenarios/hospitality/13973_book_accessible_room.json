@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search for available accessible rooms with a roll-in shower for the requested dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that an accessible room is available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that an accessible room is available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Confirm the features of the room with the guest (e.g., grab bars, roll-in shower).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the room's accessibility features."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the room's accessibility features.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the accessible room and add a note to the reservation confirming the requirement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the correct room type and adds a confirmation note."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the correct room type and adds a confirmation note.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

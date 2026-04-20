@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the formal protest from the team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the protest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the protest.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the official rulebook and the video of the play in question.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the play and determines the officials did, in fact, misapply the rule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the play and determines the officials did, in fact, misapply the rule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Uphold the protest and schedule the final play of the game to be replayed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a ruling and schedules the replay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a ruling and schedules the replay.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

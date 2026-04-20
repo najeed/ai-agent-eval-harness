@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the payment pledge from the charity agency.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the pledge details, including customer name, account number, and amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the pledge details, including customer name, account number, and amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the customer account and the past-due balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the account details are correct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the account details are correct.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the pledged amount as a credit to the customer's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully posts the credit, reducing the customer's balance due."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully posts the credit, reducing the customer's balance due.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

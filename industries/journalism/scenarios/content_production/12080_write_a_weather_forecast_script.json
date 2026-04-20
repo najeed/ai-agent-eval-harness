@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the latest data from weather models (temperature, precipitation, wind).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has all the necessary meteorological data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has all the necessary meteorological data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Translate the complex data into simple, understandable language for a general audience.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The script explains the weather in easy-to-understand terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The script explains the weather in easy-to-understand terms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Structure the script to align with the graphics that will be shown on screen (e.g., the 7-day forecast graphic).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The script is synchronized with the visual elements of the broadcast."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The script is synchronized with the visual elements of the broadcast.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

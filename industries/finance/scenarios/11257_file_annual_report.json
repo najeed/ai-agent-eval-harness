@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Compile the final 10-K document in the required EDGAR format.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully converts the final report into the correct format for filing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully converts the final report into the correct format for filing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a final validation check on the formatted document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system validates the file and confirms there are no formatting errors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system validates the file and confirms there are no formatting errors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the 10-K filing to the SEC via the official gateway.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the filing and receives an acceptance confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the filing and receives an acceptance confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

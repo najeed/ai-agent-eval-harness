@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query the personnel database for the unit's roster and each individual's status (e.g., medical, dental, training).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Commander retrieves a complete and accurate readiness status for all personnel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Commander retrieves a complete and accurate readiness status for all personnel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify all personnel who are non-deployable and the reasons why.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Commander generates a list of non-deployable personnel and the specific deficiencies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Commander generates a list of non-deployable personnel and the specific deficiencies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a report summarizing the unit's overall deployment readiness percentage and a plan to address the deficiencies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Commander creates an actionable report to improve unit readiness."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Commander creates an actionable report to improve unit readiness.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

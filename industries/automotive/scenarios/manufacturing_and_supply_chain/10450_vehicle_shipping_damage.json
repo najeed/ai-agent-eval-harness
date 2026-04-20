@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the VIN of the damaged vehicle and photos of the damage from the dealership.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the VIN and images of the dented fender."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the VIN and images of the dented fender.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log a damage claim against the shipping carrier responsible for the transport.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully files a claim with the carrier, including the evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully files a claim with the carrier, including the evidence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Authorize the dealership to perform the repair and issue a credit to cover the cost.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent authorizes the repair and processes a credit to the dealership's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent authorizes the repair and processes a credit to the dealership's account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

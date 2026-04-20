@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the reservation and identify the guest's VIP loyalty status from an alert on the screen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the guest as a VIP."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the guest as a VIP.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for available complimentary upgrades.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an available junior suite for an upgrade."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an available junior suite for an upgrade.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Welcome the guest, acknowledge their loyalty, and inform them of their complimentary upgrade to a junior suite.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides excellent customer service and successfully processes the room upgrade."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides excellent customer service and successfully processes the room upgrade.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

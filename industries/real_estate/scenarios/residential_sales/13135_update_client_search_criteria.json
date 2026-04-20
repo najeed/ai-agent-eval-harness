@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the buyer client in the CRM.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the correct client profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the correct client profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the client's search criteria in the CRM and the MLS auto-search.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client's max price is updated to the new amount, and 'Pool' is added as a required feature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client's max price is updated to the new amount, and 'Pool' is added as a required feature.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the new search and send any new matching listings to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new list of properties is generated and emailed to the client for their review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new list of properties is generated and emailed to the client for their review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

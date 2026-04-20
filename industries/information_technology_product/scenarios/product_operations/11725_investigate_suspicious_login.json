@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the security alert and immediately suspend the user's session.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent takes immediate action to prevent potential damage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent takes immediate action to prevent potential damage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the login history and geolocate the suspicious IP address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the successful login originated from a different country than usual."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the successful login originated from a different country than usual.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Force a password reset for the user and contact the customer to report the potential account compromise.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent secures the account and communicates with the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent secures the account and communicates with the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

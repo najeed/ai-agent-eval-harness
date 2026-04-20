@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the customer's profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the customer's profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the customer's complete order history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of all past orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of all past orders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Read off the date and total amount for the three most recent orders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately communicates the requested information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately communicates the requested information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

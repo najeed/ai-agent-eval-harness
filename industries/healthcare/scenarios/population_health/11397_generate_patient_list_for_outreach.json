@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the patient list builder tool in the analytics platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager accesses the reporting tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager accesses the reporting tool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Build a query with the following criteria: (Diagnosis = Asthma) AND (Risk Score = High) AND (ED Visit within last 180 days).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager correctly defines the criteria for the patient list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager correctly defines the criteria for the patient list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run the query and generate the list of patients.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A targeted list of patients is created, allowing the care manager to focus their outreach efforts on the most vulnerable patients."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A targeted list of patients is created, allowing the care manager to focus their outreach efforts on the most vulnerable patients.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

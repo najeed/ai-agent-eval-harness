@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the 'Intercompany AP' balance from Subsidiary A for transactions with Subsidiary B.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds Subsidiary A shows a payable of $15,200 to B."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds Subsidiary A shows a payable of $15,200 to B.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the 'Intercompany AR' balance from Subsidiary B for transactions with Subsidiary A.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds Subsidiary B shows a receivable of $14,800 from A."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds Subsidiary B shows a receivable of $14,800 from A.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify the transactions causing the discrepancy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a timing difference: Subsidiary A has recorded an invoice from B that B has not yet recorded as revenue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a timing difference: Subsidiary A has recorded an invoice from B that B has not yet recorded as revenue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Propose a consolidating adjustment to ensure the balances eliminate upon consolidation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts the correct elimination entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts the correct elimination entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

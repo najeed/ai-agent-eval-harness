@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the latest lab measurements for mud weight, viscosity, and fluid loss.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The most recent mud check results are retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The most recent mud check results are retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the measured properties against the planned drilling fluid program limits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The comparison shows that mud weight is trending low, approaching the lower limit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The comparison shows that mud weight is trending low, approaching the lower limit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend adding barite to the mud system to increase the mud weight back to the target value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear instruction for treating the mud system is logged and communicated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear instruction for treating the mud system is logged and communicated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all e-scooter trip data (start and end points) for the last 3 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully queries the micromobility database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully queries the micromobility database.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a heatmap visualization of the most popular trip routes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a map showing the most heavily trafficked corridors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a map showing the most heavily trafficked corridors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Export the heatmap and underlying data for the transportation planning department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a report for the planners."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a report for the planners.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

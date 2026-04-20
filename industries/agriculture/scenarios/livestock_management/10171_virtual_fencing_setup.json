@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Display a satellite map of the pasture.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent shows the map."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent shows the map.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Allow the rancher to draw a polygon on the map to define the virtual fence boundary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully captures the polygon drawn by the user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully captures the polygon drawn by the user.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Save the new polygon as a virtual fence and apply it to the GPS collars of the cattle in that pasture.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the geofence and updates the animal collars."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the geofence and updates the animal collars.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

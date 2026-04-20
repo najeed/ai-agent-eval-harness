@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify highly appreciated, long-term holdings in the client's portfolio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a stock that has significant unrealized capital gains."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a stock that has significant unrealized capital gains.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the tax benefits of donating appreciated stock directly versus selling it and donating the cash.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains how donating the stock avoids capital gains tax."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains how donating the stock avoids capital gains tax.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Facilitate the transfer of the shares from the client's account to the charity's brokerage account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes the transfer of shares to the designated charity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes the transfer of shares to the designated charity.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

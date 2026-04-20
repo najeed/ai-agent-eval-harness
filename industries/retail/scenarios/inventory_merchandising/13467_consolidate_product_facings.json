@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify a product on the shelf that has gaps or looks depleted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate finds an area that needs merchandising attention."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate finds an area that needs merchandising attention.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Pull all units of the product to the front of the shelf.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The shelf now looks neat and full."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The shelf now looks neat and full.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the shelf tag to ensure it is accurate and visible.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The product is well-presented and easy for customers to shop."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The product is well-presented and easy for customers to shop.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

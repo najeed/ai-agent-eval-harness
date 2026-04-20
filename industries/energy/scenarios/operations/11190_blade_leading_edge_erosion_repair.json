@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Review the drone inspection reports to identify all turbines with severe (Category 4 or 5) leading-edge erosion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a list of 12 turbines requiring repair."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a list of 12 turbines requiring repair.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Estimate the annual energy production (AEP) loss caused by the erosion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates that the erosion is causing a 2% AEP loss."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates that the erosion is causing a 2% AEP loss.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Obtain quotes from specialized contractors for leading-edge repair.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets quotes from three different repair companies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets quotes from three different repair companies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Schedule the repair campaign, creating work orders and coordinating turbine downtime with grid operators.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a full project plan for the repair campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a full project plan for the repair campaign.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

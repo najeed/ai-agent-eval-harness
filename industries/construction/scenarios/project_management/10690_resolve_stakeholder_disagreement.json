@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log the design conflict in the project issue tracker.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The disagreement is formally documented as an issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The disagreement is formally documented as an issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule a meeting with the architect and the structural engineer to discuss the conflict.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A meeting is scheduled to resolve the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A meeting is scheduled to resolve the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the agreed-upon resolution from the meeting and distribute it to the project team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The resolution is documented and communicated to prevent confusion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The resolution is documented and communicated to prevent confusion.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new customer account with their legal name and tax ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the main customer record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the main customer record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the customer's billing and primary shipping addresses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds two distinct addresses to the customer record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds two distinct addresses to the customer record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the new account for a credit check and set the approved credit limit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the credit check, receives an approved limit of $50,000, and updates the customer's financial profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the credit check, receives an approved limit of $50,000, and updates the customer's financial profile.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

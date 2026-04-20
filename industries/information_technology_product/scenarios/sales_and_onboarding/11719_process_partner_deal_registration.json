@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the deal registration request from the partner portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the submitted lead details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the submitted lead details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the CRM to ensure the lead is not an existing customer or already in the sales pipeline (de-duplication).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the lead is new and not an existing opportunity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the lead is new and not an existing opportunity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the deal registration, linking the new opportunity to the partner's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent approves the registration, ensuring the partner will get credit for the deal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent approves the registration, ensuring the partner will get credit for the deal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

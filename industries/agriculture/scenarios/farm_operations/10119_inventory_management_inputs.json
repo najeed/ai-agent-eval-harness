@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Calculate the total amount of corn seed required based on the planned acreage and the target seeding rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the total seed requirement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the total seed requirement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the current on-farm inventory level for the specified corn seed variety.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the current inventory count from the management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the current inventory count from the management system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the required amount with the inventory and notify the farmer of the shortfall, if any.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs the farmer they are 50 bags short of the required seed and need to order more."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs the farmer they are 50 bags short of the required seed and need to order more.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

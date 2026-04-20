@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the client's stock option grant details, including number of vested options and strike price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the client has 1,000 vested options with a strike price of $10."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the client has 1,000 vested options with a strike price of $10.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Execute the cashless exercise: simultaneously exercise the options and sell the resulting shares at the current market price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully executes the exercise-and-sell transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully executes the exercise-and-sell transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate and explain the net proceeds to the client after deducting the exercise cost and taxes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the final cash amount that will be deposited into the client's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the final cash amount that will be deposited into the client's account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify key dates, holidays, or company events for the month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent lists all relevant dates that could inspire content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent lists all relevant dates that could inspire content.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Brainstorm content themes for each week of the month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent defines four weekly themes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent defines four weekly themes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Populate a calendar with specific content titles and formats (e.g., Blog Post, Video, Infographic) for each day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed schedule of content to be created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed schedule of content to be created.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

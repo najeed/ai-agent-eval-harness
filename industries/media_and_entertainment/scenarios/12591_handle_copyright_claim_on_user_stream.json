@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the automated copyright detection alert for the user's stream.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the details of the claim, including the copyrighted song and the rights holder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the details of the claim, including the copyrighted song and the rights holder.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically mute the audio on the user's live stream to prevent further infringement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully mutes the stream's audio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully mutes the stream's audio.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a notification to the user explaining the copyright claim and the action taken.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly informs the user about the issue and how to resolve it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly informs the user about the issue and how to resolve it.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

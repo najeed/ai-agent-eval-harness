@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the bankruptcy notification from the court.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the legal notice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the legal notice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve all open invoices for the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of all amounts owed by the bankrupt customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of all amounts owed by the bankrupt customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Cease all standard collections activity for the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent flags the customer account to stop dunning notices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent flags the customer account to stop dunning notices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Prepare a proof of claim to be filed with the bankruptcy court, detailing the amounts owed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the legal proof of claim document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the legal proof of claim document.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

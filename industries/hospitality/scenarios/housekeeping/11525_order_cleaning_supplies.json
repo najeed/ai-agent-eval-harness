@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the current inventory level of the required cleaning chemical.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system shows the stock is below the reorder point."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system shows the stock is below the reorder point.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a purchase order for the chemical from the approved vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new purchase order is created in the procurement system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new purchase order is created in the procurement system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the purchase order to the vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The PO is successfully transmitted to the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The PO is successfully transmitted to the vendor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all tasks on the critical path affected by the 3-day weather delay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of critical path tasks that were scheduled during the lost days is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of critical path tasks that were scheduled during the lost days is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the Gantt chart by shifting the affected tasks and their dependencies forward by three days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project schedule is correctly updated to reflect the delay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project schedule is correctly updated to reflect the delay.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify all project stakeholders of the revised project completion date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A notification is sent to all relevant stakeholders with the new timeline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A notification is sent to all relevant stakeholders with the new timeline.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

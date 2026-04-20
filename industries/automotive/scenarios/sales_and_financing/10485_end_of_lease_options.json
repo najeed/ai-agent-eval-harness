@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and their expiring lease details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the lease contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the lease contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Clearly explain the three primary options: 1) Return the vehicle, 2) Purchase the vehicle for the residual value, 3) Lease or purchase a new vehicle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear and concise explanation of all options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear and concise explanation of all options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule a pre-inspection to check for any excess wear and tear before the lease return.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent offers and schedules a complimentary pre-inspection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent offers and schedules a complimentary pre-inspection.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

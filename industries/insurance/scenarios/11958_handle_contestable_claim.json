@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify that the claim is within the contestability period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The claims examiner flags the claim for additional investigation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The claims examiner flags the claim for additional investigation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Order the deceased's medical records to compare against the information provided on the application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The examiner orders all relevant medical records from the insured's doctors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The examiner orders all relevant medical records from the insured's doctors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the records for any material misrepresentations. If none are found, approve the claim.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "After review, the examiner finds no misrepresentations and proceeds to approve and pay the claim."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "After review, the examiner finds no misrepresentations and proceeds to approve and pay the claim.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

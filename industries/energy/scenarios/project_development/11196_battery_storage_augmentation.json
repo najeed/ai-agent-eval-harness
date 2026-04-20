@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the solar farm's historical generation profile and the amount of energy that is curtailed or sold at low prices.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent quantifies the volume of energy that could be stored and sold later."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent quantifies the volume of energy that could be stored and sold later.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Size an economically optimal battery system to capture this energy and participate in ancillary service markets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends a 4-hour duration battery with a specific MW rating."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends a 4-hour duration battery with a specific MW rating.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform a financial analysis of the battery addition, calculating its IRR and NPV.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a complete financial case for the project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a complete financial case for the project.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

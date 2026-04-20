@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Measure the item to confirm it is oversized but still within the maximum allowable dimensions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the item can be transported."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the item can be transported.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the passenger of the oversized baggage fee and process the payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the fee and takes payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the fee and takes payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Tag the item and direct the passenger to the special oversized baggage drop-off point.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly tags the bag and provides clear directions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly tags the bag and provides clear directions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

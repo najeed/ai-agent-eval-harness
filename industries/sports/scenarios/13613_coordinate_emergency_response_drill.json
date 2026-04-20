@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Create a detailed plan for the drill, including the scenario, timeline, and staff roles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a comprehensive drill plan document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a comprehensive drill plan document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Notify all venue staff and local emergency services (fire department) of the upcoming drill.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends out notifications to all relevant parties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends out notifications to all relevant parties.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "On the day of the drill, use the PA system to announce the start of the drill.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent activates the public address system with the drill announcement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent activates the public address system with the drill announcement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Monitor the drill and log the time it takes to evacuate the venue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the results of the drill for a post-event review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the results of the drill for a post-event review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

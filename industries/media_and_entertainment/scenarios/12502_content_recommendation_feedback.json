@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the user's viewing history and their currently recommended content list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the user's profile and recommendation data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the user's profile and recommendation data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the viewing history and identify the primary genres the user watches.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the user primarily watches historical dramas and documentaries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the user primarily watches historical dramas and documentaries.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Trigger a full refresh of the user's recommendation profile to re-calibrate the algorithm.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates a profile refresh."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates a profile refresh.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

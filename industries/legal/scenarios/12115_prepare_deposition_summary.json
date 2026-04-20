@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ingest the deposition transcript.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the full text of the transcript."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the full text of the transcript.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify and extract key testimony related to the central themes of the case.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls out the most important questions and answers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls out the most important questions and answers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a chronological or topic-based summary of the testimony, including page and line numbers for key admissions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a well-organized, accurate summary that is easy to navigate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a well-organized, accurate summary that is easy to navigate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

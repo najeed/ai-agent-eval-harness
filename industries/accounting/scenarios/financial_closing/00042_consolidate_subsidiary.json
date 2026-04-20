@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the final trial balances for both the parent company and the subsidiary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets both trial balances."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets both trial balances.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify and prepare the necessary elimination entries for intercompany transactions (e.g., loans, sales).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares all required elimination entries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares all required elimination entries.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Combine the trial balances and post the elimination entries to produce a consolidated trial balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the consolidated trial balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the consolidated trial balance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

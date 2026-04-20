@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the request for a hot work permit, including the location and scope of work.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer receives the request to perform welding on QC-03."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer receives the request to perform welding on QC-03.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that a risk assessment has been completed and all required safety precautions are in place (e.g., fire extinguisher, fire watch).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer confirms all safety prerequisites are met."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer confirms all safety prerequisites are met.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a time-limited hot work permit and log it in the safety system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A permit is issued for a specific time frame, and the maintenance team is authorized to begin work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A permit is issued for a specific time frame, and the maintenance team is authorized to begin work.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the target area based on the geophysical survey results.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The target for drilling is clearly defined on a map."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The target for drilling is clearly defined on a map.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Design the layout of the proposed drillholes, specifying their location, azimuth, dip, and planned total depth.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A set of planned drillholes is designed to optimally test the target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A set of planned drillholes is designed to optimally test the target.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Estimate the total cost of the drilling program and prepare a proposal for management approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A costed proposal is generated to support the funding request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A costed proposal is generated to support the funding request.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

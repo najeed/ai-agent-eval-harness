@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check if the customer has accidentally enabled 'Do Not Disturb' or a similar focus mode on their device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent guides the customer to check their phone's settings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent guides the customer to check their phone's settings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the account's call forwarding settings for any unconditional forwards.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent discovers an unconditional call forward to voicemail is active on the account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent discovers an unconditional call forward to voicemail is active on the account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Disable the unconditional call forwarding on the customer's line.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully removes the setting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully removes the setting.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

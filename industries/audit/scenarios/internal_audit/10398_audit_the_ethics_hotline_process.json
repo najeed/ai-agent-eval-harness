@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the log of all cases reported to the ethics hotline in the past year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor has the case management log."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor has the case management log.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a sample of cases to review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A sample is selected for testing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A sample is selected for testing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each sampled case, review the investigation file to ensure that the issue was investigated thoroughly, documented properly, and resolved in a timely manner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms that all sampled cases were handled in accordance with the investigation protocol."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms that all sampled cases were handled in accordance with the investigation protocol.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Conduct in-depth research on the interviewee and the topic of discussion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is fully briefed on the subject matter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is fully briefed on the subject matter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a list of 20-30 potential questions, starting with easy rapport-building questions and moving to more challenging ones.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A structured and comprehensive question list is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A structured and comprehensive question list is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Organize all background research and the question list into a single briefing document to be used during the interview.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete interview prep package is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete interview prep package is created.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

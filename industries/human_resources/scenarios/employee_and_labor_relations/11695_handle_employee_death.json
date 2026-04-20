@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the information and express condolences to the family.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The HRBP confirms the sad news and speaks with the family."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The HRBP confirms the sad news and speaks with the family.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Work with the family and the company's life insurance provider to process the claim.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP facilitates the life insurance claim process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP facilitates the life insurance claim process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the final paycheck and coordinate the return of company property with the employee's family.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP sensitively handles all final administrative tasks related to the employee's separation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP sensitively handles all final administrative tasks related to the employee's separation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

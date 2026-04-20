@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Analyze traffic flow data and identify major commuter and travel corridors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent highlights three major highways as potential areas."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent highlights three major highways as potential areas.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify locations with existing amenities like retail stores and restaurants along these corridors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a list of potential host sites (e.g., shopping centers)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a list of potential host sites (e.g., shopping centers).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check grid capacity at the potential host sites to ensure they can support a bank of fast chargers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent filters the list to sites with sufficient grid power."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent filters the list to sites with sufficient grid power.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Rank the top 5 most promising sites based on a combined score of traffic, amenities, and grid access.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent delivers a prioritized list of target locations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent delivers a prioritized list of target locations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

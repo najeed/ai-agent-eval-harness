@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the candidate to be screened.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter selects the candidate in the ATS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter selects the candidate in the ATS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a scheduling tool (e.g., Calendly) to send the candidate a link to the recruiter's availability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter sends an email with the scheduling link."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter sends an email with the scheduling link.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the candidate selects a time, confirm the appointment is automatically added to both calendars.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter verifies the meeting appears on their calendar."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter verifies the meeting appears on their calendar.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and confirm their upgrade eligibility.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer can upgrade their device."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer can upgrade their device.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Present the latest flagship phone models with their financing options.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly presents the features and costs of new phones."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly presents the features and costs of new phones.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the order for the new phone selected by the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully completes the sale and arranges for shipping."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully completes the sale and arranges for shipping.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

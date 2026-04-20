@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the QR code or enter the voucher number from the customer's ticket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly captures the voucher information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly captures the voucher information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Validate the voucher in the system to confirm it is valid for the current tour.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms the voucher is valid and has not been used before."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms the voucher is valid and has not been used before.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Mark the voucher as redeemed and allow the tourist to board the bus.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully redeems the voucher and confirms the tourist can proceed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully redeems the voucher and confirms the tourist can proceed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

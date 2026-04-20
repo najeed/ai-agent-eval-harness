@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the old URL that is being deleted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the source URL."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the source URL.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the most relevant new page to redirect the old URL to.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects an appropriate destination URL."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects an appropriate destination URL.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the 301 redirect rule to the website's configuration file or redirect management tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully implements the redirect."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully implements the redirect.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

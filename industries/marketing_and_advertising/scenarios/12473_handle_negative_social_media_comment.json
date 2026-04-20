@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the negative comment and the user who posted it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees the comment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees the comment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Post a public reply that acknowledges the issue, apologizes, and asks the user to send a private message with more details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent responds publicly in a professional and empathetic manner, moving the conversation to a private channel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent responds publicly in a professional and empathetic manner, moving the conversation to a private channel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the user sends a private message, work to resolve their specific issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent resolves the customer's problem through private messaging."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent resolves the customer's problem through private messaging.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

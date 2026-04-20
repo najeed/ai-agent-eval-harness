@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the submission ID for the taxpayer's e-filed return.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the unique identifier for the tax return submission."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the unique identifier for the tax return submission.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the submission with the IRS e-file system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent's query returns a status of 'Accepted'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent's query returns a status of 'Accepted'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the taxpayer that their return has been successfully accepted by the IRS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the good news to the taxpayer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the good news to the taxpayer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

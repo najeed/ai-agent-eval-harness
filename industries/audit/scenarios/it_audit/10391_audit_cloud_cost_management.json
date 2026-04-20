@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the detailed cloud billing data for the last 6 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor has the complete cloud spend data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor has the complete cloud spend data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify 'zombie' resources, such as unattached storage volumes or idle virtual machines, that are incurring costs but not being used.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis identifies a significant amount of monthly spend on unused resources."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis identifies a significant amount of monthly spend on unused resources.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend the implementation of an automated process to identify and decommission unused cloud resources.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A recommendation is made to improve cloud cost governance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A recommendation is made to improve cloud cost governance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

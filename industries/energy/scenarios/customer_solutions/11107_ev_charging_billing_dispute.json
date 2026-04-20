@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the charging session details using the customer's account ID and the date of the session.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls the session record showing start time, end time, and kWh delivered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls the session record showing start time, end time, and kWh delivered.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the pricing rate applied during the session against the published rates for that charger and time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the correct time-of-use rate was applied."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the correct time-of-use rate was applied.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the charges to the customer, breaking down the cost based on energy consumed and any session fees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the calculation of the final bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the calculation of the final bill.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

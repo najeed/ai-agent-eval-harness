@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the guest's folio and their original reservation confirmation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up both the bill and the initial booking confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up both the bill and the initial booking confirmation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the rate on the folio with the confirmed rate and identify the discrepancy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the rate on the folio is incorrect."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the rate on the folio is incorrect.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Adjust the room rate on the folio to match the confirmed rate for all nights of the stay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully corrects the billing error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully corrects the billing error.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

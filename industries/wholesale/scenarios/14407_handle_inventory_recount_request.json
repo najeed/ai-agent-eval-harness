@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the item that needs a recount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent knows which item to recount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent knows which item to recount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assign a different warehouse worker to perform a blind recount (without seeing the system quantity).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new count is initiated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new count is initiated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The second count matches the first physical count, confirming the system quantity is wrong.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The discrepancy is confirmed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The discrepancy is confirmed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Adjust the inventory record based on the confirmed physical count.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system inventory is corrected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system inventory is corrected.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

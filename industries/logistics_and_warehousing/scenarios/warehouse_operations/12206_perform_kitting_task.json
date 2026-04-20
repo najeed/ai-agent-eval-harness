@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the kitting work order, which lists the component items and the quantity of kits to assemble.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the components and target quantity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the components and target quantity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Pick the required quantities of all component items from their storage locations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary components at the kitting station."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary components at the kitting station.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assemble the kits according to instructions, then report the completion of the work order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reports 50 kits assembled. The system deducts the component inventory and adds 50 units of the new kit SKU."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reports 50 kits assembled. The system deducts the component inventory and adds 50 units of the new kit SKU.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

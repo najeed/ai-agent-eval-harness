@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Clarify the reporting requirements: division, certification name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst confirms the request is for the 'Sales' division and the 'PMP' certification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst confirms the request is for the 'Sales' division and the 'PMP' certification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Build a custom query in the HRIS reporting tool to filter for the specified criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully builds and runs the query."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully builds and runs the query.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate and deliver the list of employees to the business leader.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst provides the requested list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst provides the requested list.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

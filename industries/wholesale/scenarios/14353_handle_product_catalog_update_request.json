@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the report from the retailer about the incorrect product description.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands which product has the error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands which product has the error.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the correct product description from the master product information system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct description."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct description.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the product description in the online catalog.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully corrects the description on the website."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully corrects the description on the website.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

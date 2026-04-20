@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the change order request from the contractor, including the reason and cost impact.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project manager receives the formal change order request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project manager receives the formal change order request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the change order for validity and reasonableness.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project manager reviews the request and agrees that it is necessary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project manager reviews the request and agrees that it is necessary.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the change order, which updates the project budget and contract.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project manager approves the change, and the system updates the project's financials."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project manager approves the change, and the system updates the project's financials.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

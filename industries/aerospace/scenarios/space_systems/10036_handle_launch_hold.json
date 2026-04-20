@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Announce a hold in the countdown and safe the vehicle's systems.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent issues the hold command and confirms the vehicle is in a safe state."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent issues the hold command and confirms the vehicle is in a safe state.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch a team to troubleshoot the anomalous sensor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent coordinates with the engineering team to diagnose the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent coordinates with the engineering team to diagnose the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the team's findings, decide whether to resume the countdown or scrub the launch for the day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team finds a faulty sensor that can't be fixed quickly. Agent makes the decision to scrub the launch."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team finds a faulty sensor that can't be fixed quickly. Agent makes the decision to scrub the launch.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

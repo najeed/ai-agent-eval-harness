@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the status of the VPN gateway in the Azure portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The Azure portal shows the gateway is active and connected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The Azure portal shows the gateway is active and connected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log in to the client's on-premise firewall and check the VPN logs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The firewall logs show a 'Phase 2 Mismatch' error, indicating a configuration problem."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The firewall logs show a 'Phase 2 Mismatch' error, indicating a configuration problem.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Correct the misconfigured VPN policy on the on-premise firewall and restart the tunnel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The VPN tunnel successfully re-establishes its connection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The VPN tunnel successfully re-establishes its connection.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

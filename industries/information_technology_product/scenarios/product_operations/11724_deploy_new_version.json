@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Verify that the build version in the CI/CD pipeline is the correct one and has a 'green' status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the correct build is approved for deployment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the correct build is approved for deployment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate a canary deployment, releasing the new version to 5% of users.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully starts the canary release process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully starts the canary release process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor error rates and performance metrics for the canary group for 30 minutes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent monitors dashboards and confirms no increase in errors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent monitors dashboards and confirms no increase in errors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Since the canary release is stable, proceed with a full rollout to all users.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully promotes the release to 100% of traffic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully promotes the release to 100% of traffic.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

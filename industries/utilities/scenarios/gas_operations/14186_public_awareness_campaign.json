@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft the content for the campaign, including social media posts, bill inserts, and radio ads.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates various pieces of marketing content with a consistent message."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates various pieces of marketing content with a consistent message.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule the distribution of the content across the various channels for the spring season, when digging projects increase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a campaign schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a campaign schedule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Track the number of 811 calls before and during the campaign to measure its effectiveness.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System is set up to monitor and report on campaign metrics."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System is set up to monitor and report on campaign metrics.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

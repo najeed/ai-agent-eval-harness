@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Create a lift plan, specifying the crane position, load weight, and exclusion zone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal lift plan document is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal lift plan document is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Notify all site personnel of the time and area of the upcoming crane lift and exclusion zone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A site-wide safety notification is sent out."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A site-wide safety notification is sent out.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

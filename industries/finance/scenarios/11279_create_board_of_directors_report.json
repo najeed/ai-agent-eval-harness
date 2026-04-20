@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate all standard financial reports for the quarter (P&L, Balance Sheet, Cash Flow Statement).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates all required reports."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates all required reports.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a summary dashboard with key performance indicators (KPIs) and variance analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a visual dashboard highlighting key financial metrics."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a visual dashboard highlighting key financial metrics.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile all reports and the dashboard into a single presentation deck for the board.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent assembles the final board package."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent assembles the final board package.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

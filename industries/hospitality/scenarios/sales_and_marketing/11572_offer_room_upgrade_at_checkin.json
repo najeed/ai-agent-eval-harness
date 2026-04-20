@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "While checking in a guest, notice that higher-tier rooms are available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent identifies an upsell opportunity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent identifies an upsell opportunity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Describe the benefits of the upgraded room (e.g., better view, more space) and offer it for a special discounted upgrade fee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent makes an attractive offer to the guest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent makes an attractive offer to the guest.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the guest accepts, update their reservation to the new room type and add the upgrade charge to their folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The guest accepts, and the booking is successfully modified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The guest accepts, and the booking is successfully modified.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

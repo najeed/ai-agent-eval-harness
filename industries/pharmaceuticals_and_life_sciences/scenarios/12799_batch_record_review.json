@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the eBR for the specified batch number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly pulls up the complete batch record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly pulls up the complete batch record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the eBR for any recorded deviation events.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a deviation logged for 'incorrect mixing time' in the granulation step."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a deviation logged for 'incorrect mixing time' in the granulation step.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the linked quality investigation report for the deviation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the investigation which concluded 'no impact on product quality'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the investigation which concluded 'no impact on product quality'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Forward the batch record to the Quality Assurance department for final approval and release.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully routes the eBR to the QA work queue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully routes the eBR to the QA work queue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

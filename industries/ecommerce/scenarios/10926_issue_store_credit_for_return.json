@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the product being returned and its current selling price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the product and its price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the product and its price.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate store credit for the value of the returned item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a store credit voucher for the correct amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a store credit voucher for the correct amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the store credit to the customer's account and email them the confirmation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the credit and notifies the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the credit and notifies the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Start a new claim and gather initial details, including the police report number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster opens a new claim and records the police report details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster opens a new claim and records the police report details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ask the customer to provide a list of stolen items with their estimated value and any proof of ownership.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster clearly instructs the customer on what documentation is needed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster clearly instructs the customer on what documentation is needed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the list is received, review it against the policy's coverage limits and deductible to determine the settlement amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster reviews the submitted documents and calculates the claim payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster reviews the submitted documents and calculates the claim payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the latest NDVI (Normalized Difference Vegetation Index) satellite image for the field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves and displays the NDVI map."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves and displays the NDVI map.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create management zones based on the NDVI values (low, medium, high biomass).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a map with 3 distinct nitrogen management zones."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a map with 3 distinct nitrogen management zones.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a variable rate nitrogen prescription, applying more N to the lower-scoring zones and less to the higher-scoring zones.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a downloadable prescription file for a fertilizer spreader."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a downloadable prescription file for a fertilizer spreader.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

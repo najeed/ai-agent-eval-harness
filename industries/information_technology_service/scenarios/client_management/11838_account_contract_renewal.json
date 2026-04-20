@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The account manager contacts the client to initiate the renewal discussion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A meeting is scheduled to discuss the renewal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A meeting is scheduled to discuss the renewal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the renewal contract document from a template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new contract document is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new contract document is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the contract to the client for e-signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client signs and returns the renewal contract, ensuring service continuity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client signs and returns the renewal contract, ensuring service continuity.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

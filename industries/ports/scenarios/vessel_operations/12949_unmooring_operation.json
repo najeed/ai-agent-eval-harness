@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the order from the vessel pilot to 'single up', meaning to release all but a few essential lines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Supervisor gets the command to prepare for departure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Supervisor gets the command to prepare for departure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Direct the linesmen to release the mooring lines in the sequence requested by the pilot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The mooring lines are safely cast off the bollards."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The mooring lines are safely cast off the bollards.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the final line is released, confirm 'all lines gone' to the pilot and ensure all personnel are clear of the quay edge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supervisor confirms the vessel is free and all personnel are safe."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supervisor confirms the vessel is free and all personnel are safe.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the full packet capture (PCAP) associated with the IDS alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully gets the network traffic evidence for the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully gets the network traffic evidence for the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the PCAP to confirm that the traffic contains a malicious SQL injection payload.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst confirms the presence of 'OR 1=1' in the HTTP request, validating the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst confirms the presence of 'OR 1=1' in the HTTP request, validating the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the web server's logs to see if the attack was successful or if it was blocked by the Web Application Firewall (WAF).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst confirms the WAF blocked the request, making the alert a 'blocked attempt' with lower priority."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst confirms the WAF blocked the request, making the alert a 'blocked attempt' with lower priority.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

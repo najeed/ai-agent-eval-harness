@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "A rider books a trip for a future time and date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The scheduled ride is logged in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The scheduled ride is logged in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Shortly before the scheduled pickup time, the system offers the trip to nearby drivers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The trip request is sent out to eligible drivers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The trip request is sent out to eligible drivers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "A driver accepts the scheduled trip.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The trip is assigned to a specific driver."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The trip is assigned to a specific driver.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The system instructs the driver to head towards the pickup location to arrive at the scheduled time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver is dispatched to ensure an on-time pickup."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver is dispatched to ensure an on-time pickup.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

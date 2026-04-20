@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Answer incoming calls from viewers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The producer is connected to a viewer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The producer is connected to a viewer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Briefly speak with the caller to understand their question and vet them for clarity and appropriateness.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The producer screens the caller and their question."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The producer screens the caller and their question.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place the best callers in a queue to be put on the air.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A queue of vetted callers is ready for the host."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A queue of vetted callers is ready for the host.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

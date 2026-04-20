@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ask the customer for the promo code they are trying to use.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent gets the specific code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent gets the specific code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Look up the promo code in the marketing system to check its terms and validity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent discovers the code was only valid for new customers, and this is a returning customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent discovers the code was only valid for new customers, and this is a returning customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the terms to the customer and, as a goodwill gesture, provide them with a different, valid promo code for a small discount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent resolves the customer's frustration and provides a valid discount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent resolves the customer's frustration and provides a valid discount.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

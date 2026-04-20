@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive notification of a 2-week delay for a specific part from a supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the delayed part and the affected aircraft units."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the delayed part and the affected aircraft units.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the production schedule to identify all downstream tasks that will be impacted by the delay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of all affected work orders and assembly steps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of all affected work orders and assembly steps.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the master production schedule, shifting the impacted tasks and notifying the affected production teams of the new timeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully revises and publishes the new schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully revises and publishes the new schedule.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

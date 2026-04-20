@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Distribute game notes and starting lineups to all credentialed media before the game.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully provides all media with the necessary information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully provides all media with the necessary information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the game, provide real-time statistics and injury updates to the media.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent continuously provides updates as they happen."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent continuously provides updates as they happen.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the game, arrange and facilitate post-game interviews with players and coaches.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully coordinates the post-game press conferences."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully coordinates the post-game press conferences.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a final audit of all compliance documents, test reports, and analyses to ensure the package is complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that all required documents are present and signed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that all required documents are present and signed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Digitize and organize all documents according to the regulatory agency's submission guidelines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a fully compliant digital submission package."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a fully compliant digital submission package.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Formally submit the package to the regulatory agency and log the submission date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the package and records the action."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the package and records the action.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

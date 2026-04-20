@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search for market research reports and government energy reports related to electric vehicle market growth.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent executes relevant web searches."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent executes relevant web searches.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find a specific report from a reputable source (e.g., BloombergNEF, Energy Provider Agency) that contains a forecast supporting the claim.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates a suitable report and the relevant chart or statement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates a suitable report and the relevant chart or statement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a citation for the source and the specific quote or data point that supports the claim.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a properly formatted citation and the supporting evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a properly formatted citation and the supporting evidence.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

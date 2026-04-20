@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the prime contract to review the notification requirements for delays.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the contract requires written notice within 10 days of a delay event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the contract requires written notice within 10 days of a delay event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a formal 'Notice of Delay' letter to the client, citing the specific cause (city permit) and its impact.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A professional, formal notice is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A professional, formal notice is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the notice to the client and log it in the project's correspondence log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The notice is sent and a record is kept."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The notice is sent and a record is kept.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

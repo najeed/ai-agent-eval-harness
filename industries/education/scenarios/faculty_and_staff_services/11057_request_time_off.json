@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the employee and check their available vacation leave balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the employee has enough accrued time for their request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the employee has enough accrued time for their request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the employee on how to submit a time-off request in the HR system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent walks the employee through the submission form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent walks the employee through the submission form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain that the request is now pending approval from their direct manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the next step in the workflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the next step in the workflow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The driver uploads a photo of the inspection report, which notes a violation for a burnt-out headlight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The safety manager receives the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The safety manager receives the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log the inspection and the violation in the safety management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new compliance record is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new compliance record is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority repair order for the truck to have the headlight replaced.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A repair order is generated for the specific violation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A repair order is generated for the specific violation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Once repaired, upload proof of correction to the relevant government portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The violation is formally closed out with the DOT."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The violation is formally closed out with the DOT.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

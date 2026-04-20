@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the contingent offer, paying close attention to the terms of the contingency, such as the timeline for the buyer to sell their home.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent fully understands the terms and risks of the contingency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent fully understands the terms and risks of the contingency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Advise the seller on the pros and cons of accepting a contingent offer and suggest adding a 'kick-out' clause.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Seller understands the risks and decides to counter with a kick-out clause, allowing them to accept another offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Seller understands the risks and decides to counter with a kick-out clause, allowing them to accept another offer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Negotiate the terms of the contingency and kick-out clause with the buyer's agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An agreement is reached that protects the seller's interests while accepting the contingent offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An agreement is reached that protects the seller's interests while accepting the contingent offer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

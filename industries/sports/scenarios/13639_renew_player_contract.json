@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the player's current contract details and recent performance data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has all the necessary background information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has all the necessary background information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Based on performance and market value, generate a competitive contract extension offer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent proposes a 4-year contract extension with a specified salary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent proposes a 4-year contract extension with a specified salary.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the offer to the player's agent for negotiation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent formally sends the contract offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent formally sends the contract offer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Once agreed upon, generate the final contract for signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces the final legal document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces the final legal document.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Process the player's retirement paperwork with the league.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully files the official retirement forms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully files the official retirement forms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the team's official roster, removing the player.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the roster, freeing up a spot."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the roster, freeing up a spot.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Coordinate with the events team to plan a pre-game farewell ceremony for the player at an upcoming game.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent works with the events team to schedule and plan the ceremony."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent works with the events team to schedule and plan the ceremony.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

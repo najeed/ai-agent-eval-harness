@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Compile all documented findings from the audit workpapers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All approved findings are gathered for inclusion in the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All approved findings are gathered for inclusion in the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write the executive summary, including the overall audit rating (e.g., 'Satisfactory') and a summary of key findings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A concise and impactful executive summary is written."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A concise and impactful executive summary is written.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the draft report to the Director of Marketing for their review and to provide management responses to the findings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The draft report is formally issued to the auditee for their response."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The draft report is formally issued to the auditee for their response.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

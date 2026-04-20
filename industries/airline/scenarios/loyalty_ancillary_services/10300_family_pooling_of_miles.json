@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the rules of the family pooling feature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Get the frequent flyer number of the family member to be added.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the required information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the required information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Link the two accounts in the system to create the family pool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully links the accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully links the accounts.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the client and locate the specific open order in their account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the open limit order to buy 200 shares of ZYX."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the open limit order to buy 200 shares of ZYX.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the order to ensure it has not yet been filled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the order is still pending and has not executed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the order is still pending and has not executed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Cancel the pending order and confirm the cancellation with the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully cancels the order and informs the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully cancels the order and informs the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

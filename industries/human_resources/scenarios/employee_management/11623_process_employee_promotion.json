@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the promotion request from the manager, including the new title and proposed salary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP receives the promotion details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP receives the promotion details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the proposed salary against the company's compensation bands for the new role to ensure equity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP confirms the proposed salary is within the approved range."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP confirms the proposed salary is within the approved range.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the promotion in the HRIS, updating the employee's title, salary, and reporting structure, effective on the specified date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP successfully updates the employee's record with all the promotion details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP successfully updates the employee's record with all the promotion details.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

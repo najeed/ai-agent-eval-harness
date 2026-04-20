@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Update the event status to 'Canceled' in the master calendar and ticketing system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the status, which automatically halts any further ticket sales."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the status, which automatically halts any further ticket sales.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Post cancellation notices on the venue's website, social media channels, and mobile app.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pushes a coordinated cancellation message across all public-facing platforms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pushes a coordinated cancellation message across all public-facing platforms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send an email and SMS notification to all ticket holders about the cancellation and refund process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates a bulk communication to all attendees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates a bulk communication to all attendees.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Notify all scheduled staff and vendors that the event is canceled.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a cancellation notice to all internal and external stakeholders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a cancellation notice to all internal and external stakeholders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

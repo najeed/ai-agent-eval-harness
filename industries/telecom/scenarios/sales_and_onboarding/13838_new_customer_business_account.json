@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather business details and credit check requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary information for a business account setup."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary information for a business account setup.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Recommend a suitable business plan with a shared data pool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends the 'Business Flex 100GB' plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends the 'Business Flex 100GB' plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create the master business account and process the order for the 5 lines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the account and order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the account and order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

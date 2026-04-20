@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Analyze the full report to understand the problem statement, key findings, and final recommendations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly grasps the core message of the entire document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly grasps the core message of the entire document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the executive summary, ensuring it is concise and covers all critical elements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a well-written summary that is approximately one page long."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a well-written summary that is approximately one page long.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Apply chemical stripper to the aircraft to remove the old paint.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent safely manages the paint stripping process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent safely manages the paint stripping process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inspect the bare metal skin for any corrosion or damage that was hidden by the old paint.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs an inspection and finds no hidden damage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs an inspection and finds no hidden damage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the new livery according to the customer's engineering drawings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully paints the aircraft in the new colors and logos."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully paints the aircraft in the new colors and logos.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

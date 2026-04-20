@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the failed render job and retrieve its error log from the render queue manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the log, which shows a 'Missing Texture File' error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the log, which shows a 'Missing Texture File' error.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the digital asset management system to verify the location of the missing texture file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the texture file was recently moved to a new directory."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the texture file was recently moved to a new directory.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the scene file with the correct file path for the texture.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the path in the scene file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the path in the scene file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Resubmit the render job to the queue with a high priority.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully re-queues the job."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully re-queues the job.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

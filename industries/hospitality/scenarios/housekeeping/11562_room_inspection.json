@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The supervisor receives a notification that a room is ready for inspection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supervisor is alerted to the task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supervisor is alerted to the task.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The supervisor uses a digital checklist on their device to inspect the room against hotel standards.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supervisor completes the inspection checklist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supervisor completes the inspection checklist.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the room passes inspection, the supervisor updates its status to 'Ready', making it available in the PMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The room passes and its status is updated to 'Ready'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The room passes and its status is updated to 'Ready'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

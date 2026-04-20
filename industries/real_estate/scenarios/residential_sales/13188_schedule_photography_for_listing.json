@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Contact the brokerage's preferred real estate photographer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Assistant finds the contact info for 'Picture Perfect Homes'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Assistant finds the contact info for 'Picture Perfect Homes'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Coordinate with the seller to find a suitable date and time for the photo shoot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A time that works for both the seller and photographer is agreed upon."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A time that works for both the seller and photographer is agreed upon.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a 'Preparing for Photos' checklist to the seller to help them get the house ready.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A helpful checklist is emailed to the seller."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A helpful checklist is emailed to the seller.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

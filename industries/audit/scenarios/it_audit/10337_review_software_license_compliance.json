@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain a report of all installed software from the IT asset management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor has a list of all software installed on company devices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor has a list of all software installed on company devices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain the purchase records for software licenses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor has a list of all licenses the company owns."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor has a list of all licenses the company owns.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the number of installations for a specific software (e.g., Adobe Photoshop) to the number of licenses purchased.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor finds there are 150 installations but only 120 licenses, indicating a compliance gap."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor finds there are 150 installations but only 120 licenses, indicating a compliance gap.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

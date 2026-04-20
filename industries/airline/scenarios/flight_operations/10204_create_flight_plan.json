@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the most efficient route, considering current weather, winds aloft, and any restricted airspace.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects an optimal route for the flight."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects an optimal route for the flight.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the required fuel load, including trip fuel, contingency fuel, and fuel for a designated alternate airport.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the total fuel needed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the total fuel needed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the final flight plan document and file it with air traffic control (ATC).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the official flight plan and successfully files it with ATC."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the official flight plan and successfully files it with ATC.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

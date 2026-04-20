@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "When receiving a hazardous material, verify that it has the correct safety data sheet (SDS) and labeling.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker confirms all compliance documentation is present."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker confirms all compliance documentation is present.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Store the material in the designated, specially equipped hazardous materials section of the warehouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The material is stored according to safety regulations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The material is stored according to safety regulations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "When shipping a hazardous material, use the correct packaging and generate the required hazardous materials shipping papers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is packed and labeled in compliance with transportation regulations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is packed and labeled in compliance with transportation regulations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

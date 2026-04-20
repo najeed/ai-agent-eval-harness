@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Develop a hydrotest plan, specifying the test pressure (e.g., 1.25 times max operating pressure) and duration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A detailed and compliant test plan is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A detailed and compliant test plan is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Monitor the pressure in the pipeline segment in real-time as it is filled with water and brought up to the test pressure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pressure is monitored and held steady at the target test pressure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pressure is monitored and held steady at the target test pressure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the pressure data over the test duration. A stable pressure confirms no leaks. Generate the final test report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The test is successful, and a certified report is generated for regulatory filing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The test is successful, and a certified report is generated for regulatory filing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

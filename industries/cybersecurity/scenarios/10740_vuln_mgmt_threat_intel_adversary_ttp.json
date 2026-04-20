@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all available reporting on the adversary group (e.g., APT28) from internal and external sources.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully collects a corpus of reports on the target group."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully collects a corpus of reports on the target group.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the reports and map the group's observed behaviors to the MITRE ATT&CK framework.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst creates a detailed ATT&CK map showing the group's preferred TTPs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst creates a detailed ATT&CK map showing the group's preferred TTPs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use the ATT&CK map to identify gaps in the company's own security controls and recommend improvements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst uses the intelligence to provide actionable recommendations for improving defenses against that specific adversary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst uses the intelligence to provide actionable recommendations for improving defenses against that specific adversary.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

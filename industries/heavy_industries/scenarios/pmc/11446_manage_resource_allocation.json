@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a resource utilization report for the engineering team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report shows one engineer is allocated at 150% for the next month."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report shows one engineer is allocated at 150% for the next month.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the tasks assigned to the overallocated engineer and find another qualified engineer with available capacity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a suitable engineer who is only allocated at 60%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a suitable engineer who is only allocated at 60%.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reassign two of the tasks from the overallocated engineer to the available engineer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the task assignments, resolving the overallocation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the task assignments, resolving the overallocation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

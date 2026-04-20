@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather offer details from the buyer: price, contingencies (inspection, financing), and desired closing date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary terms for the offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary terms for the offer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the official purchase agreement and other required documents (e.g., proof of funds).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a complete and accurate offer package."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a complete and accurate offer package.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the offer package to the listing agent and confirm receipt.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the offer and logs the submission time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the offer and logs the submission time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

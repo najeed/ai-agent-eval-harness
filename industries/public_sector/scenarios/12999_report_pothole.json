@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Collect the location of the pothole (address or intersection) and the citizen's contact information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately captures the location and reporter's details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately captures the location and reporter's details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new service request in the public works management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new service ticket for the pothole repair."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new service ticket for the pothole repair.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the citizen with a service request number so they can track the status of the repair.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gives the citizen a tracking number for their request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gives the citizen a tracking number for their request.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

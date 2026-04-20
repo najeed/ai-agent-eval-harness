@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the employee's current year-to-date income and withholding information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all relevant paystub data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all relevant paystub data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Project the employee's total annual income, including the bonus.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately projects the total income for the year."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately projects the total income for the year.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the total projected tax liability and recommend an additional withholding amount for the bonus payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a specific dollar amount to have withheld from the bonus."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a specific dollar amount to have withheld from the bonus.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

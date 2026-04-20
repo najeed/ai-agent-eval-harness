@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Based on interview notes, write a step-by-step description of the payroll process, from employee time entry to payment disbursement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear narrative of the process is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear narrative of the process is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify and embed key controls within the narrative, such as 'Manager review and approval of employee timesheets'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The narrative clearly indicates the key control points in the process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The narrative clearly indicates the key control points in the process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the draft narrative to the Payroll Manager to confirm its accuracy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditee confirms that the auditor's understanding of the process is correct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditee confirms that the auditor's understanding of the process is correct.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

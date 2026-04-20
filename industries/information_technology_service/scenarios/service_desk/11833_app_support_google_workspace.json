@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the Google Workspace status dashboard for any known issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician confirms there are no widespread issues with Google Drive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician confirms there are no widespread issues with Google Drive.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the user to pause and resume syncing in the Google Drive desktop client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "This simple step does not resolve the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "This simple step does not resolve the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the user to sign out of the Google Drive client, and then sign back in to force a re-authentication and re-sync.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "This action resolves the sync issue, and files begin syncing correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "This action resolves the sync issue, and files begin syncing correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

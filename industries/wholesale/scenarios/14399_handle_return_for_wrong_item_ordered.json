@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The retailer requests an RMA for the item they ordered by mistake.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the RMA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the RMA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the retailer that they will be responsible for the return shipping costs and may be subject to a restocking fee, per company policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the return policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the return policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "When the item is returned and inspected, issue a credit to the retailer, minus the restocking fee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes the credit correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes the credit correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

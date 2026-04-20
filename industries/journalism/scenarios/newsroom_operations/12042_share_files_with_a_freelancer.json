@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a secure, password-protected folder on a cloud sharing service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A secure folder is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A secure folder is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Upload the relevant documents to the folder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The files are uploaded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The files are uploaded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Share the link to the folder with the freelancer and send the password in a separate, secure message (e.g., encrypted text).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The freelancer receives secure access to the necessary files."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The freelancer receives secure access to the necessary files.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

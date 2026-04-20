@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the latest pipe-to-soil potential readings from the CP test points along pipeline segment PL-451.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of recent voltage readings is retrieved from the monitoring system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of recent voltage readings is retrieved from the monitoring system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the readings to ensure they meet the regulatory criteria for protection (e.g., more negative than -850 mV).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows one test point reading is below the required threshold."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows one test point reading is below the required threshold.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for a technician to visit the low-reading test point and troubleshoot the CP rectifier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is generated to investigate and repair the CP system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is generated to investigate and repair the CP system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

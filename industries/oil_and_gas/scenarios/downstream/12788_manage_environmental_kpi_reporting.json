@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather data for the month from various systems: total SO2/NOx emissions from CEMS, number of spills from the incident log, and total waste manifests.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All required environmental data for the month is collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All required environmental data for the month is collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Populate the standard monthly environmental KPI dashboard with the collected data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The KPI dashboard is updated with the latest month's figures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The KPI dashboard is updated with the latest month's figures.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the month's performance against targets and historical trends, adding commentary on any significant deviations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report is finalized with analysis and commentary and distributed to plant management."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report is finalized with analysis and commentary and distributed to plant management.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

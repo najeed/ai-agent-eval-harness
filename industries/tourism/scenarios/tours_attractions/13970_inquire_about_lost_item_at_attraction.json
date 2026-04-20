@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather details from the visitor: description of the camera, where and when it was likely lost.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary information to search for the item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary information to search for the item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the park's lost and found database for a matching item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent searches the database but finds no matching camera at this time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent searches the database but finds no matching camera at this time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a lost item report with the visitor's contact information and advise them that they will be contacted if it is found.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully files a report and provides the visitor with a reference number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully files a report and provides the visitor with a reference number.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

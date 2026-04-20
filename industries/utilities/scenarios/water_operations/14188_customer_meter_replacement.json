@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The asset management system flags a meter that is due for replacement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System automatically generates a replacement work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System automatically generates a replacement work order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Notify the customer of the upcoming required meter change and provide a scheduling link.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System sends a notification to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System sends a notification to the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once scheduled, assign the work order to a field technician.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System dispatches the work order for the scheduled date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System dispatches the work order for the scheduled date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the alert and confirm the user account and the two geographic locations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst retrieves the core details of the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst retrieves the core details of the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the user is using a VPN, which could explain the anomalous locations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst checks VPN logs and finds no active session for the user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst checks VPN logs and finds no active session for the user.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Conclude that this is a likely account compromise and escalate to the incident response team to reset the user's password and terminate sessions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst makes a correct triage decision and escalates for immediate containment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst makes a correct triage decision and escalates for immediate containment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

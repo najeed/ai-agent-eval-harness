@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the two planned activities from the daily schedule and recognize them as a potential SIMOPS conflict.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system flags the two activities as a SIMOPS risk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system flags the two activities as a SIMOPS risk.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the SIMOPS matrix to determine the required mitigation measures (e.g., extra fire watch, exclusion zones).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The required safety controls are identified from the company's procedures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The required safety controls are identified from the company's procedures.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a SIMOPS permit that details the required controls and ensure all parties involved sign off on it before work begins.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A specific permit for the simultaneous operations is created and approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A specific permit for the simultaneous operations is created and approved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

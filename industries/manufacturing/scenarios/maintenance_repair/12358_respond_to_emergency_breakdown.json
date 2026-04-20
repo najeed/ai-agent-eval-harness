@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the high-priority maintenance ticket from the CMMS (Computerized Maintenance Management System).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the ticket, indicating they are responding."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the ticket, indicating they are responding.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Diagnose the fault by inspecting the motor and drive system of the conveyor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician finds a snapped drive belt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician finds a snapped drive belt.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Replace the broken belt, test the conveyor, and close the maintenance ticket, logging the cause and resolution.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent replaces the part, confirms the machine is running, and closes the ticket with notes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent replaces the part, confirms the machine is running, and closes the ticket with notes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

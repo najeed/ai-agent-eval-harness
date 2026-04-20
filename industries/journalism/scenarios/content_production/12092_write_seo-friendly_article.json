@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use an SEO tool to research the most common keywords and phrases people use when searching for this topic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of target keywords is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of target keywords is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Incorporate the target keywords naturally into the article's headline, subheadings, and body text.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The article is optimized for the target keywords."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The article is optimized for the target keywords.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Write a compelling meta description that includes the primary keyword and will entice users to click from a search results page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An effective meta description is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An effective meta description is drafted.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a list of 3-5 key data points (e.g., 'Reduced costs by 20%', 'Customer satisfaction up 15%').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly ingests the key findings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly ingests the key findings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each data point, suggest a suitable icon or simple visual representation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent suggests appropriate icons (e.g., a downward arrow for cost reduction, a smiley face for satisfaction)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent suggests appropriate icons (e.g., a downward arrow for cost reduction, a smiley face for satisfaction).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange the data points and icons into a visually balanced layout description.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a text-based description of a clean and simple infographic layout."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a text-based description of a clean and simple infographic layout.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

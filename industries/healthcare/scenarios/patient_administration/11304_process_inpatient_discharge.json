@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the discharge order from the physician.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the discharge order is signed and present in the patient's chart."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the discharge order is signed and present in the patient's chart.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Process the discharge ADT message in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the patient's status to 'Discharged'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the patient's status to 'Discharged'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the bed management system to show the patient's bed is now 'dirty' and requires cleaning.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the bed status, triggering a notification to environmental services."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the bed status, triggering a notification to environmental services.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

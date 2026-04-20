@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The system receives a new piece of feedback from a rider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The feedback is logged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The feedback is logged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "An AI tool automatically categorizes the feedback as a 'Feature Request'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The feedback is correctly tagged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The feedback is correctly tagged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system creates a ticket for the feedback.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new ticket is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new ticket is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The ticket is automatically assigned to the 'Product Feedback' queue for the product team to review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The feedback is routed to the correct team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The feedback is routed to the correct team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all required handover documents from the project plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a checklist of all required documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a checklist of all required documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each item on the checklist, retrieve the final approved version from the document management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent gathers all the final documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent gathers all the final documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile all the documents into a single, structured handover package and transmit it to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the final documentation package and formally transmits it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the final documentation package and formally transmits it.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

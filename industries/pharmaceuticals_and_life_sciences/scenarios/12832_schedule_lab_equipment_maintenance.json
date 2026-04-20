@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Check the maintenance schedule for the specific HPLC machine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the annual preventative maintenance is due next month."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the annual preventative maintenance is due next month.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the equipment vendor to schedule a service visit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent contacts the vendor and schedules a service engineer for a specific date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent contacts the vendor and schedules a service engineer for a specific date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Block off the equipment's time in the lab scheduling system for the day of the maintenance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully makes the HPLC unavailable for booking on the scheduled date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully makes the HPLC unavailable for booking on the scheduled date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Log the completion of the maintenance and upload the service report once the visit is complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the maintenance record and attaches the vendor's service report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the maintenance record and attaches the vendor's service report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the OOG cargo's dimensions, weight, and lifting point diagram.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner has all the specifications for the oversized cargo."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner has all the specifications for the oversized cargo.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a special lifting plan, including the use of a spreader frame or special slings for the crane.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A detailed, step-by-step lifting plan is engineered and approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A detailed, step-by-step lifting plan is engineered and approved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign a specialized stevedoring gang and crane operator to perform the lift under the supervision of a foreman.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The work is assigned to a crew experienced with heavy and oversized lifts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The work is assigned to a crew experienced with heavy and oversized lifts.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all required water quality sample results for the past month from the Laboratory Information Management System (LIMS).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System compiles all required data points (e.g., BOD, TSS, pH)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System compiles all required data points (e.g., BOD, TSS, pH).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the results against the plant's discharge permit limits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System confirms all results were within compliance limits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System confirms all results were within compliance limits.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Populate the official DMR form with the data and prepare it for submission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates the completed DMR in the required format."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates the completed DMR in the required format.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

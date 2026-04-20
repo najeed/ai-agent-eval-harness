@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the incorrect part received and the correct part number from the repair order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the wrong part was sent and identifies the correct part needed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the wrong part was sent and identifies the correct part needed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the parts department to arrange an emergency order for the correct part.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent places a 'STAT' order for the correct part."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent places a 'STAT' order for the correct part.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the customer to inform them of the delay and provide a new estimated completion time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent proactively calls the customer to manage their expectations about the delay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent proactively calls the customer to manage their expectations about the delay.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

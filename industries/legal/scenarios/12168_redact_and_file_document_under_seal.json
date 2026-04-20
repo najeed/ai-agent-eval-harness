@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft a motion to file under seal, explaining to the court why the information is confidential and requires protection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts the necessary motion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts the necessary motion.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a redacted, public version of the document with the confidential information blacked out.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the public version of the file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the public version of the file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Electronically file the motion to seal, the redacted public version, and submit the unredacted version to the court through the proper sealed filing procedure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly follows the complex e-filing procedure for sealed documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly follows the complex e-filing procedure for sealed documents.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

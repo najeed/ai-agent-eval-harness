@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the final, picture-locked edit of the film from the asset management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct version of the final edit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct version of the final edit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate an Edit Decision List (EDL) from the sequence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully exports an EDL file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully exports an EDL file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the colorist with the final sequence and the EDL file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely transfers the necessary files to the colorist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely transfers the necessary files to the colorist.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

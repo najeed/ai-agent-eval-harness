@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Formulate a hypothesis: 'An attacker is using built-in Windows tools like net.exe and tasklist.exe for reconnaissance'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst defines a clear, testable hypothesis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst defines a clear, testable hypothesis.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query endpoint logs for suspicious sequences of command line activity, such as 'whoami' followed by 'net user' and 'net group'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst writes a query to find behavioral patterns, not just single indicators."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst writes a query to find behavioral patterns, not just single indicators.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Discover a host where a user account ran a series of reconnaissance commands, then created a new local admin account, and flag it for investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst discovers an active intrusion by piecing together a sequence of suspicious behaviors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst discovers an active intrusion by piecing together a sequence of suspicious behaviors.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

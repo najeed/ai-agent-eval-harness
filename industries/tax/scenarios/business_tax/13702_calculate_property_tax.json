@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the latest assessed value of the property from the county assessor's office.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains the official assessed value for the property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains the official assessed value for the property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Look up the applicable local property tax rate (millage rate).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct tax rate for the property's location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct tax rate for the property's location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the total property tax due for the year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately multiplies the assessed value by the tax rate to determine the total tax."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately multiplies the assessed value by the tax rate to determine the total tax.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the actor's contract and the final cut of the commercial.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses both the legal document and the video file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses both the legal document and the video file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the video to measure the actor's total screen time and check for logo proximity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows the actor's screen time is compliant, but a brand logo appears too close to their face."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows the actor's screen time is compliant, but a brand logo appears too close to their face.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Flag the commercial for re-edit and notify the post-production team of the specific compliance issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a revision request with a clear explanation of the required change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a revision request with a clear explanation of the required change.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

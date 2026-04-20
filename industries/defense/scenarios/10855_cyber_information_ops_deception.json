@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the adversary's intelligence collection capabilities to understand what they are looking for.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer correctly assesses the adversary's ISR patterns and capabilities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer correctly assesses the adversary's ISR patterns and capabilities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Develop a deception plan that uses a combination of fake radio traffic, decoy equipment, and cyber effects to create a believable, fictitious force.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer creates a detailed and credible deception story."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer creates a detailed and credible deception story.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a plan to monitor the adversary's reaction to the deception to assess its effectiveness.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer includes measures of effectiveness in the plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer includes measures of effectiveness in the plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

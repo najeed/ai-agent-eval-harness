@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The housekeeper selects the room number on their handheld device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct room is selected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct room is selected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The housekeeper updates the room status from 'Dirty' to 'Clean'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The status is updated in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The status is updated in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system may automatically trigger a notification for a supervisor to inspect the room before marking it as 'Ready'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A supervisor inspection task is automatically generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A supervisor inspection task is automatically generated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

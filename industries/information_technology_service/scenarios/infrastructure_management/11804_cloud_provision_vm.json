@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the required specifications for the VM (CPU, RAM, storage) from the ticket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician has the required specs for the new server."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician has the required specs for the new server.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log in to the Azure portal and provision the new VM based on the specifications, placing it in the correct virtual network and resource group.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new VM is successfully created in the client's Azure tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new VM is successfully created in the client's Azure tenant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the new VM's details (IP address, credentials) in the client's documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new asset is documented correctly for future reference."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new asset is documented correctly for future reference.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

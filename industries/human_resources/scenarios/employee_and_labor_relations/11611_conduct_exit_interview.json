@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule a voluntary exit interview with the departing employee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR successfully schedules the meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR successfully schedules the meeting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Conduct the interview using a standardized set of questions regarding their experience and reason for leaving.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR representative asks all standard questions and documents the employee's feedback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR representative asks all standard questions and documents the employee's feedback.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the feedback into the HR system to be used for aggregate turnover analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The feedback is logged in the system under the appropriate categories."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The feedback is logged in the system under the appropriate categories.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

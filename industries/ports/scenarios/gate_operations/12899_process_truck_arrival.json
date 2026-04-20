@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the truck license plate and container number from the gate's OCR camera system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Clerk's system correctly displays the truck and container identifiers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Clerk's system correctly displays the truck and container identifiers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the truck has a valid appointment (VBS) and the container has been cleared by customs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Clerk confirms a valid appointment and 'Customs Cleared' status for the container."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Clerk confirms a valid appointment and 'Customs Cleared' status for the container.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a job ticket to the driver with the container's yard location and instruct them to proceed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A ticket is printed, and the gate barrier is opened."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A ticket is printed, and the gate barrier is opened.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

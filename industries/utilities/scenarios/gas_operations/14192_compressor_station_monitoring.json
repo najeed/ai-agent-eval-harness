@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor real-time operational data from the compressor, including suction pressure, discharge pressure, and engine vibration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System displays a live dashboard of compressor health."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System displays a live dashboard of compressor health.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system detects an increasing trend in engine vibration levels.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a predictive maintenance alert for the compressor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a predictive maintenance alert for the compressor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for a maintenance crew to inspect the compressor before a failure occurs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System schedules a preventive maintenance task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System schedules a preventive maintenance task.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

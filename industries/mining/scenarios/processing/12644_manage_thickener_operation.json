@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the key parameters of the thickener: bed level, underflow density, and overflow clarity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator confirms the thickener is operating normally."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator confirms the thickener is operating normally.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Notice that the underflow density is decreasing, which is inefficient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator correctly identifies the performance issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator correctly identifies the performance issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Increase the flocculant dosing rate to improve particle settling and increase the underflow density back to the target.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The flocculant rate is adjusted, and the underflow density returns to its optimal level."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The flocculant rate is adjusted, and the underflow density returns to its optimal level.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

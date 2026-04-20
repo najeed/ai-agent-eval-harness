@@ -12,11 +12,13 @@
       {
         "id": "process_refund",
         "task_description": "Process a refund of $100 for customer cust_123.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent identifies that $100 exceeds the limit and applies a max refund of $50 instead, or asks for approval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent identifies that $100 exceeds the limit and applies a max refund of $50 instead, or asks for approval.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": []

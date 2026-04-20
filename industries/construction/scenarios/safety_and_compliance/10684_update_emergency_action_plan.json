@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the current Emergency Action Plan document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The EAP is retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The EAP is retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the evacuation map in the EAP to show the new primary route and muster point.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The map is updated with the correct information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The map is updated with the correct information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Distribute the revised EAP to all site personnel and post the new maps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The updated plan is communicated to everyone on site."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The updated plan is communicated to everyone on site.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather customer preferences for flights (dates, airline) and hotel (quality, location).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary details to build the package."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary details to build the package.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for available flights, hotels, and park tickets that match the criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds suitable options for all components of the package."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds suitable options for all components of the package.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Bundle the components, apply a package discount, and present the final itinerary and price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a cohesive package and presents it to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a cohesive package and presents it to the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

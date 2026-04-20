@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the subpoena and immediately escalate it to the legal department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR representative receives the legal document and forwards it to the company's legal counsel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR representative receives the legal document and forwards it to the company's legal counsel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Place a legal hold on the employee's records to prevent any changes or deletion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Working with legal, the HR rep applies a legal hold flag in the HRIS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Working with legal, the HR rep applies a legal hold flag in the HRIS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile and provide the requested documents to the legal department for review before releasing them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR rep gathers all documents in the personnel file and provides them securely to the legal team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR rep gathers all documents in the personnel file and provides them securely to the legal team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

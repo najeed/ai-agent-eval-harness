@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the congested sector ID and retrieve its current load percentage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the sector and confirms its load is above the 85% threshold."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the sector and confirms its load is above the 85% threshold.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify all adjacent sectors and query their current load to find a candidate for offloading.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a list of neighboring sectors and their load percentages."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a list of neighboring sectors and their load percentages.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the neighboring sector with the lowest load and execute a command to offload 20% of traffic to it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the best candidate sector and executes the traffic management command."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the best candidate sector and executes the traffic management command.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

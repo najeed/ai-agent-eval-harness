@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the date the injury occurred and the jurisdiction (state).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the key facts needed for the calculation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the key facts needed for the calculation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Research the statute of limitations for personal injury claims in that specific state.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the statute of limitations is two years."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the statute of limitations is two years.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the exact deadline by adding the statutory period to the date of injury.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the final date by which a complaint must be filed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the final date by which a complaint must be filed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Enter the deadline into the case management and calendar systems with multiple reminders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The critical deadline is docketed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The critical deadline is docketed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

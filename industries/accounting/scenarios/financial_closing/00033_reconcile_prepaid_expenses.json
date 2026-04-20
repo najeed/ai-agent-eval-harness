@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the month-end balance of the 'Prepaid Expenses' account from the general ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the GL account balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the GL account balance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the detailed prepaid expenses schedule, which lists all prepaid items and their remaining balances.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the supporting schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the supporting schedule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the total of the supporting schedule to the general ledger balance and confirm they match.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the two balances reconcile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the two balances reconcile.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

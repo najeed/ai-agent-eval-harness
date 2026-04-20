@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new entry in the regulatory inspection log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new log entry is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new log entry is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log the agency as 'EPA', the inspector's name, and the purpose of the visit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The basic details of the inspection are recorded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The basic details of the inspection are recorded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Record the outcome of the inspection as 'No Violations Found' and attach a scan of the inspector's field report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The outcome is documented and supporting evidence is attached."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The outcome is documented and supporting evidence is attached.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

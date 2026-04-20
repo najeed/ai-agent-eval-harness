@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify at least five comparable recent sales of similar warehouse properties in the same submarket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a list of relevant sales comparables."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a list of relevant sales comparables.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the comparables, making adjustments for differences in size, age, condition, and location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates an adjusted price per square foot from the comps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates an adjusted price per square foot from the comps.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Produce a Broker Opinion of Value (BOV) report summarizing the analysis and concluding a likely market value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a professional BOV document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a professional BOV document.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

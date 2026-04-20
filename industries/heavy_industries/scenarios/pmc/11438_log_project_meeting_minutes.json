@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new meeting record in the project management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates a new meeting record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates a new meeting record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Upload the meeting minutes document and list the attendees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent attaches the minutes and adds the attendees to the record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent attaches the minutes and adds the attendees to the record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each action item discussed, create a new task in the system and assign it to the responsible person with a due date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates three new action items, each assigned to a different team member."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates three new action items, each assigned to a different team member.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

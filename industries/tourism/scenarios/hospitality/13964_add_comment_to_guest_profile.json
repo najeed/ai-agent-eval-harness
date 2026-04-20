@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the guest's profile.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct guest profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct guest profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add a permanent note or alert to the profile stating 'Severe feather allergy. Use synthetic bedding only'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the critical allergy information as a permanent note."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the critical allergy information as a permanent note.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm with the guest that the note has been added for all future visits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs the guest their preference is saved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs the guest their preference is saved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

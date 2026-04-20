@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the two products the customer is considering.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate knows which two items to compare."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate knows which two items to compare.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a handheld device to bring up a side-by-side comparison of the two models' features.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system displays a comparison chart of the products."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system displays a comparison chart of the products.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the key differences to the customer (e.g., 'This one has a built-in grinder, while the other one does not').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate helps the customer make an informed decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate helps the customer make an informed decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

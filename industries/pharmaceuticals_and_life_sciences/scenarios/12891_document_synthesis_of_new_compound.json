@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Draw the chemical structure of the newly synthesized compound.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses a chemical drawing tool to create the structure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses a chemical drawing tool to create the structure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Register the new compound in the corporate compound registry.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the structure and the system assigns a unique registration number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the structure and the system assigns a unique registration number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the multi-step synthesis procedure in the Electronic Lab Notebook (ELN).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a detailed, step-by-step protocol in the ELN."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a detailed, step-by-step protocol in the ELN.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Upload the analytical data (e.g., NMR, mass spec) that confirms the structure and purity of the compound.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent attaches the analytical data files to the ELN entry for the new compound."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent attaches the analytical data files to the ELN entry for the new compound.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "A mechanic scans the barcode of a part as they use it on a repair order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The part is added to the repair order, and inventory is deducted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The part is added to the repair order, and inventory is deducted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system checks the new on-hand quantity for the part against its reorder point.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system sees the quantity has fallen below the reorder point."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system sees the quantity has fallen below the reorder point.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system automatically generates a purchase order for the part from the designated supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A PO is created to replenish the stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A PO is created to replenish the stock.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

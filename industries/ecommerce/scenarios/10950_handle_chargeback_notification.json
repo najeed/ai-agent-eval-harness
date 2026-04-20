@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the chargeback notification and identify the associated order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the order details related to the chargeback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the order details related to the chargeback.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather evidence to dispute the chargeback, such as proof of delivery and communication history with the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all relevant documents and logs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all relevant documents and logs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the evidence to the payment processor to fight the chargeback.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the dispute paperwork through the processor's portal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the dispute paperwork through the processor's portal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Observe a work area (e.g., the quay) and check if workers are wearing hard hats, safety vests, and steel-toed boots.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer observes the area and the workers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer observes the area and the workers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify a worker who is not wearing their hard hat.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer spots a violation of the PPE policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer spots a violation of the PPE policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approach the worker, instruct them to stop work and put on their hard hat, and log the safety violation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer corrects the unsafe behavior and logs the event for reporting and trend analysis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer corrects the unsafe behavior and logs the event for reporting and trend analysis.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

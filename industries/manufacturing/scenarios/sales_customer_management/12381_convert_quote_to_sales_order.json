@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the existing quote using the quote number provided by the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the active quote in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the active quote in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the 'Convert to Order' function to automatically create a sales order from the quote details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully converts the quote into a new sales order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully converts the quote into a new sales order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the new sales order number with the customer and send them an order acknowledgement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the SO number to the customer and emails the acknowledgement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the SO number to the customer and emails the acknowledgement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

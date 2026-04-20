@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the part number and material specifications for the required titanium forgings from the engineering bill of materials (BOM).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the exact part and material specs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the exact part and material specs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the approved supplier list to find vendors qualified to produce this specific part.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of 2-3 approved suppliers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of 2-3 approved suppliers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a Request for Quotation (RFQ) to the approved suppliers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates and sends the RFQ to the selected suppliers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates and sends the RFQ to the selected suppliers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

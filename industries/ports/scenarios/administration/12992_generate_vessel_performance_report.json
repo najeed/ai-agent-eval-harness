@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all key timestamps for the vessel's visit (e.g., arrival, first line, operations start, operations end, departure).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst pulls the complete event timeline for the vessel from the TOS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst pulls the complete event timeline for the vessel from the TOS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate key performance indicators (KPIs) such as crane intensity, gross crane productivity (GCP), and berth productivity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All standard KPIs are accurately calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All standard KPIs are accurately calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a summary report and send it to the shipping line.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A standardized performance report is created and emailed to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A standardized performance report is created and emailed to the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

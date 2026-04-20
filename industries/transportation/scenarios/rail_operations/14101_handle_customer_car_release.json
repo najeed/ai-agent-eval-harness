@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a notification from a customer, via a web portal or EDI, that a specific railcar is now empty and released.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system receives the release notification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system receives the release notification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the status of the railcar in the system from 'At Customer' to 'Empty, Available for Pickup'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The car's status is correctly updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The car's status is correctly updated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system automatically creates a work order for a local train crew to go to the customer's facility and pull the empty car back to the yard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new switching work order is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new switching work order is generated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

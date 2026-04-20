@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the passenger's booking and confirm the delay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the flight is delayed and provides the new estimated departure time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the flight is delayed and provides the new estimated departure time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the reason for the delay (e.g., technical, weather, air traffic control).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the delay is due to a technical issue with the aircraft."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the delay is due to a technical issue with the aircraft.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the passenger of their options, such as waiting for the flight or being rebooked on a later flight, and issue a meal voucher as per policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the options and successfully issues a meal voucher."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the options and successfully issues a meal voucher.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

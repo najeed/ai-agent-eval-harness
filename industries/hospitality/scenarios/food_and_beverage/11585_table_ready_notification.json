@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The host marks the table as 'Ready' in the reservation system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The table status is updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The table status is updated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically sends an SMS notification to the next party on the waitlist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The guest receives a text message that their table is ready."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The guest receives a text message that their table is ready.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The host removes the party from the waitlist and assigns them to the table.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The party is seated, and the system is updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The party is seated, and the system is updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

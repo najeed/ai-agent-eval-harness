@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the policyholder and verify they have comprehensive coverage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer has the necessary coverage for glass repair."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer has the necessary coverage for glass repair.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain that windshield repair is often covered with no deductible.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs the customer there will likely be no out-of-pocket cost."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs the customer there will likely be no out-of-pocket cost.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Connect the customer with a network glass repair shop to schedule the service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules an appointment for the customer with a local approved vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules an appointment for the customer with a local approved vendor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

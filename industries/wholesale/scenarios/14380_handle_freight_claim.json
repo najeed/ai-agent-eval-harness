@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The receiving worker notes the damage on the bill of lading when signing for the shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The damage is officially noted upon receipt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The damage is officially noted upon receipt.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Take photos of the damaged shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Photographic evidence is collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Photographic evidence is collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "File a formal freight claim with the carrier, including the photos and an estimate of the value of the damaged goods.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the claim to the carrier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the claim to the carrier.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

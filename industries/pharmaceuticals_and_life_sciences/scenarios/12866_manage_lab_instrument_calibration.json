@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the calibration status of the analytical balance in the equipment log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that the daily calibration check is due."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that the daily calibration check is due.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform the calibration check using a set of certified weights.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs the check and finds the balance is reading outside of the acceptable tolerance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs the check and finds the balance is reading outside of the acceptable tolerance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place an 'Out of Service' tag on the balance and log the failure in the equipment management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent tags the equipment and creates a maintenance request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent tags the equipment and creates a maintenance request.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

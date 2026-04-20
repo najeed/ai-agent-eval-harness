@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all necessary documentation (Form 1098, property tax bills, donation receipts).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all required documents from the taxpayer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all required documents from the taxpayer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the data for mortgage interest, state and local taxes (SALT), and charitable giving onto Schedule A.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly inputs all itemized deduction information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly inputs all itemized deduction information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the total itemized deductions to the standard deduction and use the larger amount on the final return.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that itemizing provides a greater tax benefit and finalizes the return."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that itemizing provides a greater tax benefit and finalizes the return.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

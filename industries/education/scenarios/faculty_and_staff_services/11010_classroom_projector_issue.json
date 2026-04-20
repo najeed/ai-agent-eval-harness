@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the professor and the classroom number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the exact location of the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the exact location of the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attempt a remote restart of the classroom's A/V system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses the remote management tool to power cycle the projector."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses the remote management tool to power cycle the projector.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the remote restart fails, dispatch an on-site technician immediately.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a high-priority ticket and dispatches the nearest technician."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a high-priority ticket and dispatches the nearest technician.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

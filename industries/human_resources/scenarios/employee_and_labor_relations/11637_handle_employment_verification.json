@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Explain the company's policy is to only provide verification through a third-party service (e.g., The Work Number).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the company policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the company policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the third-party service's contact information and the company's employer code to the lender.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gives the lender the necessary information to complete the verification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gives the lender the necessary information to complete the verification.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

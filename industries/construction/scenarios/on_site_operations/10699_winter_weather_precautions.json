@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Order and place concrete curing blankets on all recently poured concrete to prevent freezing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Blankets are placed on all exposed concrete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Blankets are placed on all exposed concrete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ensure any temporary water lines are drained to prevent them from bursting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Water lines are drained."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Water lines are drained.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log all winter precaution activities in the daily log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All actions taken are documented."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All actions taken are documented.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check ticket availability and pricing for the show through the hotel's ticketing partner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds two available seats in the orchestra section."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds two available seats in the orchestra section.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Confirm with the guest that they approve the seats and the price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The guest approves the purchase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The guest approves the purchase.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Purchase the tickets and charge the amount to the guest's room folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tickets are purchased, and the charge is posted to the guest's bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tickets are purchased, and the charge is posted to the guest's bill.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

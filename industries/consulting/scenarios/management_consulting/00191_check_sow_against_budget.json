@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Estimate the total effort (in days) required for the tasks listed in the SOW.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a reasonable total effort estimate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a reasonable total effort estimate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total estimated cost based on the effort and standard day rates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the total estimated project cost."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the total estimated project cost.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the estimated cost against the project budget and flag any discrepancy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reports that the estimated cost is 10% over the allocated budget."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reports that the estimated cost is 10% over the allocated budget.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

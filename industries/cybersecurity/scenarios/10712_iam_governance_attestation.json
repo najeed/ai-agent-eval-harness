@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate access reports for each employee and send them to their respective managers for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully generates and distributes the access reports."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully generates and distributes the access reports.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Track the managers' responses and send reminders for incomplete reviews.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst monitors the campaign's progress."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst monitors the campaign's progress.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive a manager's request to revoke access to a specific application for one of their employees. Process the revocation request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst receives the access change request and successfully removes the unnecessary permission."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst receives the access change request and successfully removes the unnecessary permission.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the client's current portfolio holdings and identify the deviation from the target allocation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the current allocation is 70% stocks / 30% bonds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the current allocation is 70% stocks / 30% bonds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a list of recommended trades (sell stocks, buy bonds) to return to the target allocation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a trade list to sell specific stocks and buy specific bonds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a trade list to sell specific stocks and buy specific bonds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Present the rebalancing plan to the client for approval before execution.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the rationale for the trades and seeks client consent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the rationale for the trades and seeks client consent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

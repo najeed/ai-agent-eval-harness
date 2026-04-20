@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the control interface for the specific packaging machine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully connects to the machine's control panel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully connects to the machine's control panel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the current operating parameters and the recommended limits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent views the current speed and the safe operating range."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent views the current speed and the safe operating range.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Increase the machine speed by 5% and monitor the output for any quality issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adjusts the parameter and confirms the machine is operating stably at the new speed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adjusts the parameter and confirms the machine is operating stably at the new speed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Open the document in a redaction tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the document loaded in the appropriate software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the document loaded in the appropriate software.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify all instances of attorney-client communication or attorney work product within the document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the specific text to be redacted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the specific text to be redacted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply black-box redactions over the privileged text.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully covers the sensitive information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully covers the sensitive information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Produce a new version of the document with the redactions permanently applied.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A safe, redacted version of the document is created for production."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A safe, redacted version of the document is created for production.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

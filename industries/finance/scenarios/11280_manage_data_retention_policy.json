@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query the system for all financial records older than 7 years.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs a query and identifies a set of records due for disposition."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs a query and identifies a set of records due for disposition.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that none of the identified records are subject to a legal hold.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent cross-references the list against the legal hold database and finds no conflicts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent cross-references the list against the legal hold database and finds no conflicts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Execute the data disposition process for the eligible records.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates the secure archival and deletion process for the old records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates the secure archival and deletion process for the old records.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "An operator scans a newly received item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system identifies the item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system identifies the item.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system analyzes put-away rules: first, it looks for an existing pick face for that item with available capacity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system checks for a primary location to top-off."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system checks for a primary location to top-off.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Finding no room in the pick face, the system then finds the closest available bulk storage location that can fit the pallet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system suggests an optimal bulk storage bin."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system suggests an optimal bulk storage bin.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The system creates a put-away task directing the operator to the suggested location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator receives a clear instruction for where to store the item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator receives a clear instruction for where to store the item.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

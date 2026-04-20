@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "When receiving goods, record the lot number for each item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The lot number is entered into the inventory system upon receipt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The lot number is entered into the inventory system upon receipt.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "When shipping goods, record which lot numbers are being sent to which customers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system links specific lot numbers to specific sales orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system links specific lot numbers to specific sales orders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "In the event of a recall, use the system to quickly identify all customers who received the affected lot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent can instantly generate a list of customers who need to be notified about the recall."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent can instantly generate a list of customers who need to be notified about the recall.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

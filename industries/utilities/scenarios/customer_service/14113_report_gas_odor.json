@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Immediately advise the customer to evacuate the premises and not use any electronics or light switches.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows safety protocol and provides critical instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows safety protocol and provides critical instructions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "While the customer is evacuating, dispatch an emergency crew to the location with the highest priority.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a Priority 1 emergency work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a Priority 1 emergency work order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the customer's location and a safe callback number once they are outside.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the address and contact details for the emergency crew."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the address and contact details for the emergency crew.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

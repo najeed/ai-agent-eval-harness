@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the new asset in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct asset record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct asset record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the recommended spare parts list from the equipment's OEM manual.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The planner gets the list of required spares from the manual."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The planner gets the list of required spares from the manual.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each part on the list, add it to the asset's BOM in the maintenance system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully builds the BOM, linking each spare part record to the asset."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully builds the BOM, linking each spare part record to the asset.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

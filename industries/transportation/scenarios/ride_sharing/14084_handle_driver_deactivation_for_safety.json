@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The system receives results from a continuous background check, flagging a driver for a disqualifying offense.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A high-priority alert is sent to the safety team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A high-priority alert is sent to the safety team.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "A safety agent reviews the report and confirms the offense violates the platform's safety standards.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent validates the reason for deactivation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent validates the reason for deactivation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The agent immediately and permanently deactivates the driver's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver's access to the platform is revoked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver's access to the platform is revoked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Send a formal notification to the driver informing them of the deactivation, citing the safety policy violation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal notice is sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal notice is sent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

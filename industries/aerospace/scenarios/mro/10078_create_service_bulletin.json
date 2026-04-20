@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Describe the potential issue and the reason for the recommended action.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a clear explanation of the problem."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a clear explanation of the problem.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide detailed, step-by-step instructions for the inspection or modification procedure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent authors a clear and unambiguous procedure for technicians."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent authors a clear and unambiguous procedure for technicians.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Publish the Service Bulletin and distribute it to all registered owners and operators of the affected aircraft model.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully publishes and distributes the SB."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully publishes and distributes the SB.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

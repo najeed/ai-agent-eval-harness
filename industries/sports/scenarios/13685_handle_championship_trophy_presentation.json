@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Coordinate with the broadcast producer to schedule the ceremony.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The ceremony is scheduled to happen immediately after the game ends."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The ceremony is scheduled to happen immediately after the game ends.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ensure the championship trophy is securely transported to the field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The trophy is in position for the ceremony."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The trophy is in position for the ceremony.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Direct the winning team and league officials to the presentation stage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All necessary personnel are in place for the ceremony."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All necessary personnel are in place for the ceremony.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

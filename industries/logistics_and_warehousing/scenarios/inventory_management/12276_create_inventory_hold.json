@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "After a PO is received, the system automatically identifies that the item requires a QA check.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system flags the received inventory for a mandatory QA hold."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system flags the received inventory for a mandatory QA hold.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The inventory's status is automatically set to 'QA Hold', making it unavailable for fulfillment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inventory is successfully ring-fenced from the available stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inventory is successfully ring-fenced from the available stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "A task is created in the QA team's queue to inspect the new inventory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The QA team is notified that a new inspection is required."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The QA team is notified that a new inspection is required.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Once QA inspects and approves the batch, they update the task, and the system releases the hold, making the inventory available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inventory status is changed to 'Available', and it can now be used to fulfill orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inventory status is changed to 'Available', and it can now be used to fulfill orders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

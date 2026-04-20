@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all cranes approaching their preventive maintenance (PM) service intervals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner generates a report showing crane QC-03 is due for its 500-hour PM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner generates a report showing crane QC-03 is due for its 500-hour PM.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the terminal's operational schedule to find a low-traffic window to take the crane offline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner identifies a 4-hour window on Wednesday with no vessel operations at the crane's berth."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner identifies a 4-hour window on Wednesday with no vessel operations at the crane's berth.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a maintenance work order and assign it to the engineering team for the identified window.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order for the PM is created and scheduled in the maintenance system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order for the PM is created and scheduled in the maintenance system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

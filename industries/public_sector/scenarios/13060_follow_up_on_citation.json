@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the property with the outstanding violation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer pulls up the case file for the property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer pulls up the case file for the property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a follow-up inspection to confirm the violation has not been corrected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer visits the property and confirms the lawn is still overgrown."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer visits the property and confirms the lawn is still overgrown.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a second, more severe citation with a fine and a new deadline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer issues a new citation with escalating penalties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer issues a new citation with escalating penalties.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

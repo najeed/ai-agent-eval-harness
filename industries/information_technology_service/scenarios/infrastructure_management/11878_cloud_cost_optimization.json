@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use the cloud provider's reporting tools to identify idle or underutilized resources (e.g., VMs, unattached disks).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer identifies several VMs running at less than 5% CPU and multiple unattached storage volumes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer identifies several VMs running at less than 5% CPU and multiple unattached storage volumes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify VMs that are candidates for 'right-sizing' (i.e., changing to a smaller, cheaper instance type).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of VMs to be resized is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of VMs to be resized is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare a report for the client with recommendations to de-provision idle resources and right-size others, including the estimated monthly savings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear, actionable report is provided to the client to help them reduce their cloud spend."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear, actionable report is provided to the client to help them reduce their cloud spend.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

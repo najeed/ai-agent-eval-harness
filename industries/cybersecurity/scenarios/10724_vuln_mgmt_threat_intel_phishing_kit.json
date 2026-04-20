@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Safely acquire the phishing kit from the dark web forum.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully and securely downloads the kit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully and securely downloads the kit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the kit's source code to understand how it works and what brands it is designed to impersonate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst determines the kit impersonates Microsoft 365 and uses a novel technique to bypass MFA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst determines the kit impersonates Microsoft 365 and uses a novel technique to bypass MFA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Write a detailed intelligence report on the new phishing kit and share it with industry partners and internal security teams.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst produces a valuable report that helps the broader community defend against this new threat."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst produces a valuable report that helps the broader community defend against this new threat.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

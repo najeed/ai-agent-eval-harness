@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the approved new hire form from HR.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin has the new employee's name, title, and department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin has the new employee's name, title, and department.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a user account in the port's main system based on their job role template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new user account is created with permissions appropriate for an operations manager."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new user account is created with permissions appropriate for an operations manager.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Request the issuance of a physical port access ID card.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A request is sent to the badging office to create a new ID card for the employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A request is sent to the badging office to create a new ID card for the employee.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

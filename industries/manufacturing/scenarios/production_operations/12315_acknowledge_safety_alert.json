@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the safety alert in the control system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the alert, noting the time and location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the alert, noting the time and location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review safety camera footage to determine the cause of the alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the footage and sees a piece of cardboard fell into the path of the sensor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the footage and sees a piece of cardboard fell into the path of the sensor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the cause, clear the obstruction, and reset the machine to resume operation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs 'Foreign Object' as the cause and successfully restarts the machine."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs 'Foreign Object' as the cause and successfully restarts the machine.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

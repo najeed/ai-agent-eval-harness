@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather data on recent security incidents and the current threat landscape relevant to the company's industry.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager collects relevant and timely threat intelligence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager collects relevant and timely threat intelligence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a concise, non-technical presentation that summarizes the key risks and highlights the importance of executive support for security initiatives.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager creates a presentation tailored to a non-technical, executive audience."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager creates a presentation tailored to a non-technical, executive audience.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deliver the briefing to the executive team and answer their questions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager successfully communicates the key security risks and gains executive buy-in."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager successfully communicates the key security risks and gains executive buy-in.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

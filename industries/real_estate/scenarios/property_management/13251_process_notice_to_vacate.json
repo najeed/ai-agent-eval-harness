@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the tenant's written notice to vacate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the notice and the date it was received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the notice and the date it was received.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the official move-out date based on the notice period and update the tenant's lease record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the correct lease end date and updates the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the correct lease end date and updates the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a confirmation to the tenant acknowledging their notice and providing them with move-out procedures and a cleaning checklist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a comprehensive email with all necessary move-out information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a comprehensive email with all necessary move-out information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

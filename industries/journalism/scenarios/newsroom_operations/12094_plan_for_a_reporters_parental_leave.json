@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Meet with the departing reporter to get a full list of their stories and sources.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The editor has a complete handover document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The editor has a complete handover document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify other reporters on the team who have the expertise and bandwidth to cover the beat temporarily.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A suitable replacement reporter is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A suitable replacement reporter is identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Formally reassign the beat and transition the ongoing stories to the new reporter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The coverage is seamlessly transitioned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The coverage is seamlessly transitioned.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

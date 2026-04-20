@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the property the inquiry is about and the person's specific question (e.g., 'What are the HOA fees?').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the property and the question being asked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the property and the question being asked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Look up the answer in the MLS listing details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the monthly HOA fee is $250."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the monthly HOA fee is $250.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reply to the inquiry with the answer and ask a follow-up question to engage them (e.g., 'Would you like to schedule a time to see it?').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A helpful response is sent, and the lead is added to the CRM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A helpful response is sent, and the lead is added to the CRM.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

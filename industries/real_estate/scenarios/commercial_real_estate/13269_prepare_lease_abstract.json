@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all executed lease agreements for the property.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles all the lease documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles all the lease documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each lease, extract and summarize critical information: tenant name, suite, lease term, rent schedule, renewal options, and key clauses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately extracts the key data points from a complex legal document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately extracts the key data points from a complex legal document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile the abstracts into a single, organized document for the property management team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a useful summary document for the team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a useful summary document for the team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

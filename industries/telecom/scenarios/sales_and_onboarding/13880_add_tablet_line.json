@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and present the available data-only plans for tablets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the tablet plan options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the tablet plan options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain how the tablet line will be billed alongside their existing phone plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clarifies the billing impact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clarifies the billing impact.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the order to add the tablet line to the customer's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the new service line."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the new service line.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

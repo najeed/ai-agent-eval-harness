@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Notify all building occupants of the planned water shutdown, providing the date, time, and duration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A notification is sent to all affected occupants."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A notification is sent to all affected occupants.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Coordinate with the plumbing subcontractor to ensure they are ready to perform the tie-in during the shutdown window.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The subcontractor confirms their readiness."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The subcontractor confirms their readiness.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

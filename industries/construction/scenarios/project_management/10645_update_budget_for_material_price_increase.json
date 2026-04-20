@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the remaining amount of lumber to be purchased from the project takeoff.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines that $100,000 worth of lumber still needs to be ordered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines that $100,000 worth of lumber still needs to be ordered.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the new forecasted cost for the lumber line item, including the 10% increase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new forecasted cost is calculated as $110,000."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new forecasted cost is calculated as $110,000.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the 'Lumber' line item in the project budget with the new forecast.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project budget is successfully updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project budget is successfully updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

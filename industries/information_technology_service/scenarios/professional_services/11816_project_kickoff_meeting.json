@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Prepare and distribute a kickoff meeting agenda, including project goals, scope, timeline, roles, and responsibilities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All attendees receive a clear agenda before the meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All attendees receive a clear agenda before the meeting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Lead the meeting, present the project plan, and establish communication protocols and meeting cadences.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project manager successfully aligns all stakeholders and sets clear expectations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project manager successfully aligns all stakeholders and sets clear expectations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Follow up the meeting with documented minutes and action items assigned to both the client and internal team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The meeting outcomes and next steps are clearly documented and distributed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The meeting outcomes and next steps are clearly documented and distributed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

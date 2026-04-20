@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the accommodation request and begin the interactive process with the employee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR representative acknowledges the request and explains the process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR representative acknowledges the request and explains the process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request medical documentation to understand the employee's limitations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR requests and receives a doctor's note supporting the need for an ergonomic chair."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR requests and receives a doctor's note supporting the need for an ergonomic chair.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the request and coordinate with facilities to procure and deliver the ergonomic chair.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR approves the accommodation and creates a work order for facilities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR approves the accommodation and creates a work order for facilities.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

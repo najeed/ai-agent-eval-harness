@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all completed and invoiced loads for a specific driver for the settlement period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of all loads ready for payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of all loads ready for payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total revenue for the loads.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The total linehaul revenue is correctly calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The total linehaul revenue is correctly calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deduct standard items like fuel advances, insurance, and equipment rental fees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All deductions are correctly applied."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All deductions are correctly applied.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Finalize the settlement and generate a statement for the driver, then schedule the payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The final net pay is calculated, and the payment is queued."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The final net pay is calculated, and the payment is queued.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

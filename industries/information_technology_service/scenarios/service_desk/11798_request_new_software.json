@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a service request ticket for the software installation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new ticket is logged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new ticket is logged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the client's list of approved software. If the software is not on the list, seek approval from the user's manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the software is pre-approved for this user's department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the software is pre-approved for this user's department.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use the RMM tool to silently deploy the software to the user's machine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The software is successfully installed on the user's laptop without requiring user interaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The software is successfully installed on the user's laptop without requiring user interaction.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

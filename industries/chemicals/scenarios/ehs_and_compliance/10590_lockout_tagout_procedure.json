@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the specific LOTO procedure for the equipment being serviced.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct procedure, which identifies all energy sources (electrical, pneumatic, etc.)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct procedure, which identifies all energy sources (electrical, pneumatic, etc.).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Follow the procedure to isolate and lock all energy sources.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician physically applies locks and tags to all required isolation points."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician physically applies locks and tags to all required isolation points.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the LOTO application in the electronic system, recording the lock numbers and the start time of the work.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new entry in the LOTO log."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new entry in the LOTO log.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

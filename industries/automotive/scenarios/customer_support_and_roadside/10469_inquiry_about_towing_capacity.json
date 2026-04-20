@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the vehicle's VIN to identify the exact model, engine, and any towing packages installed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the VIN and identifies the specific configuration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the VIN and identifies the specific configuration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Look up the official towing capacity for that specific configuration in the manufacturer's database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the maximum towing capacity is 11,500 lbs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the maximum towing capacity is 11,500 lbs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the towing capacity to the customer and remind them to account for passenger and cargo weight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gives the correct capacity and provides helpful context."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gives the correct capacity and provides helpful context.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

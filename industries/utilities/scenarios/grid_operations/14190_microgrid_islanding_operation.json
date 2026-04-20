@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The microgrid controller detects the loss of voltage from the main grid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Controller identifies the start of an upstream outage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Controller identifies the start of an upstream outage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The controller automatically opens the main switch, physically disconnecting the microgrid from the surrounding grid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully and safely islands the microgrid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully and safely islands the microgrid.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The controller starts the microgrid's generators and uses its batteries to form a stable, independent grid, restoring power to the local customers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Microgrid successfully forms its own grid and maintains stable voltage and frequency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Microgrid successfully forms its own grid and maintains stable voltage and frequency.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

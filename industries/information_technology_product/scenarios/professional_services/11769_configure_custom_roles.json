@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Work with the customer to define the exact permissions required for each custom role.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant documents the permission matrix for each new role."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant documents the permission matrix for each new role.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create the new roles in the product's admin panel and configure the specified permissions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant successfully creates the custom roles."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant successfully creates the custom roles.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the new roles to test users and have the customer validate that the permissions are working as expected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer confirms the roles are configured correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer confirms the roles are configured correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

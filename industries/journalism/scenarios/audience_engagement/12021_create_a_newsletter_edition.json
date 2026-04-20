@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the week's published articles and select the 5 most important or popular stories.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent curates a list of top stories."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent curates a list of top stories.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each selected story, write a short, engaging summary to entice readers to click.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes five compelling summaries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes five compelling summaries.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assemble the newsletter in the email marketing platform, adding the summaries, links, and a brief introduction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The newsletter is built and ready to be sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The newsletter is built and ready to be sent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

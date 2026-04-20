@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the approved-for-construction drawings for the structural steel package.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct set of drawings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct set of drawings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a software tool to scan the drawings and automatically identify and quantify all the steel beams, columns, and plates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The MTO tool generates a list of all steel components and their quantities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The MTO tool generates a list of all steel components and their quantities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Format the output into a bill of materials (BOM) and send it to the procurement team to source the steel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a formal BOM and transmits it to the procurement system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a formal BOM and transmits it to the procurement system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

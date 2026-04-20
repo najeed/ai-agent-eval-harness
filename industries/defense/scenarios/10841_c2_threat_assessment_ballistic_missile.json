@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the launch alert from space-based infrared sensors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator confirms the launch detection and its point of origin."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator confirms the launch detection and its point of origin.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Fuse tracking data from multiple radar systems to calculate the missile's trajectory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator generates a precise trajectory and predicted impact point."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator generates a precise trajectory and predicted impact point.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a high-priority warning to leadership and downstream missile defense units with the target information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator disseminates a timely and accurate warning message."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator disseminates a timely and accurate warning message.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

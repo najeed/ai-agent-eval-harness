@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Determine the total amount of lettuce to be harvested based on the grocery store order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the order quantity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the order quantity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the required labor and time needed for harvesting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent estimates the harvest duration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent estimates the harvest duration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the harvest crew, the transport to the cooling facility, and the final refrigerated truck for delivery, ensuring the entire process from field to store is completed within the required timeframe.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed, time-sensitive logistics plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed, time-sensitive logistics plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

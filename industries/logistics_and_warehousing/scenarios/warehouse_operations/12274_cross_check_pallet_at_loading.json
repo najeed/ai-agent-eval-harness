@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "A loader scans the dock door barcode to set their context to the current shipment being loaded.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The scanner is now locked to a specific manifest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The scanner is now locked to a specific manifest.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The loader brings a pallet from staging and scans its license plate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pallet ID is captured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pallet ID is captured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system validates if the scanned pallet belongs to the manifest for that dock door. It returns a 'Success' message.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms the pallet is correct, and the loader proceeds to load it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms the pallet is correct, and the loader proceeds to load it.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The loader scans another pallet, but the system returns an 'Error: Pallet Belongs to Different Shipment' message, preventing a loading error.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system successfully prevents an incorrect pallet from being loaded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system successfully prevents an incorrect pallet from being loaded.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

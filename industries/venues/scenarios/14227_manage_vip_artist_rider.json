@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the hospitality rider for all food, beverage, and other requests.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent extracts a list of all required items (e.g., '24 bottles of Fiji water', '1 bowl of green M&Ms')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent extracts a list of all required items (e.g., '24 bottles of Fiji water', '1 bowl of green M&Ms').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Place an order with the venue's catering department for all food and beverage items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully places the catering order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully places the catering order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Coordinate with venue operations to ensure the dressing room is set up as specified in the rider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a task for the operations team to set up the dressing room."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a task for the operations team to set up the dressing room.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

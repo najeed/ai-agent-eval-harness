@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Check the current number of empty trailers at the customer's location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system shows there are 2 empty trailers in the pool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system shows there are 2 empty trailers in the pool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The customer notifies that they have just finished loading one of the trailers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A notification is received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A notification is received.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The dispatcher creates a new load in the system for the loaded trailer and dispatches a driver to pick it up.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A driver is sent to retrieve the loaded trailer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A driver is sent to retrieve the loaded trailer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Seeing the pool of empties is now low, the dispatcher also dispatches a driver to drop off a new empty trailer to replenish the pool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The trailer pool is managed to ensure the customer always has empties available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The trailer pool is managed to ensure the customer always has empties available.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

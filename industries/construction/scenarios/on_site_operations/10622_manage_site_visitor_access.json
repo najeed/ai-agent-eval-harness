@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Log the visitor's name, company, and time of entry in the site visitor log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new entry is created in the visitor log."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new entry is created in the visitor log.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the visitor has the required Personal Protective Equipment (PPE): hard hat and safety glasses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the visitor has the correct PPE."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the visitor has the correct PPE.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

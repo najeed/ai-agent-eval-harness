@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a rent payment after the grace period has ended.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that the payment is late."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that the payment is late.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically calculate and apply the late fee as specified in the lease agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct late fee is added to the tenant's ledger."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct late fee is added to the tenant's ledger.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Record the rent payment and the late fee payment in the tenant's ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tenant's balance is correctly updated to zero."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tenant's balance is correctly updated to zero.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the property owner and the specific property.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct owner and property in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct owner and property in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the 'Monthly Owner Statement' for the previous month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a PDF report showing income, expenses, and net distribution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a PDF report showing income, expenses, and net distribution.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Email the statement to the property owner with a brief summary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report is successfully emailed to the owner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report is successfully emailed to the owner.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

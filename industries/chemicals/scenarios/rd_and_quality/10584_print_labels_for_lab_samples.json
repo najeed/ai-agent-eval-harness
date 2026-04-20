@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the label printing software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully launches the application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully launches the application.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a label template appropriate for small bottles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent chooses the '1x2 inch Reagent Bottle' template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent chooses the '1x2 inch Reagent Bottle' template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the information for the new solution and print 5 copies of the label.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the text and successfully sends the print job to the specialty label printer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the text and successfully sends the print job to the specialty label printer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

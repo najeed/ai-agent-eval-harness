@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a call from a driver reporting an incident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers initial details: driver, location, and a brief description."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers initial details: driver, location, and a brief description.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new safety incident report in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new incident record is created with a unique ID."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new incident record is created with a unique ID.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Request photos of the damage from the driver and upload them to the incident report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Photos are successfully attached to the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Photos are successfully attached to the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Assign the incident to a claims adjuster for follow-up.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report is assigned to the correct person for investigation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report is assigned to the correct person for investigation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

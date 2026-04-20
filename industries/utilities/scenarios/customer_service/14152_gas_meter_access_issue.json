@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the 'No Access' report from the meter reader's handheld device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System logs the failed read attempt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System logs the failed read attempt.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically send a notification (email or text) to the customer explaining the issue and providing a link to reschedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully sends the notification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully sends the notification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Estimate the customer's bill for the current period based on historical usage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates an estimated bill to avoid a billing delay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates an estimated bill to avoid a billing delay.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

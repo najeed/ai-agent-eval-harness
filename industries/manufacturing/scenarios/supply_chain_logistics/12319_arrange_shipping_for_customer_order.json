@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer order that is ready for shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the sales order and confirms its status is 'Ready to Ship'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the sales order and confirms its status is 'Ready to Ship'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Get freight quotes from approved carriers based on the shipment's weight, dimensions, and destination.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives quotes from three different freight carriers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives quotes from three different freight carriers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the shipment with the most cost-effective carrier and generate the Bill of Lading (BOL).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent books the shipment and prints the BOL for the driver."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent books the shipment and prints the BOL for the driver.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

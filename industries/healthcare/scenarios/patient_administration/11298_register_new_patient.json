@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search for the patient in the EHR to ensure they are not already in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms no existing patient record is found."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms no existing patient record is found.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the patient's demographic information, including name, DOB, address, and contact details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately creates a new patient chart with all required demographic data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately creates a new patient chart with all required demographic data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Scan the patient's photo ID and insurance card and upload them to their chart.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully attaches the document images to the new patient record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully attaches the document images to the new patient record.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

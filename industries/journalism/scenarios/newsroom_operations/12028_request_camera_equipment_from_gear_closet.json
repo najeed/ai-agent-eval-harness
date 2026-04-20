@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the newsroom's equipment booking system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is logged into the booking system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is logged into the booking system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the availability of the required camera, lens, and microphone for the dates of the shoot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the gear is available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the gear is available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reserve the equipment under their name for the specified dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The equipment is successfully booked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The equipment is successfully booked.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

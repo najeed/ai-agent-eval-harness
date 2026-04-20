@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the complete maintenance history for a specific asset (e.g., straddle carrier SC-10).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor pulls all work orders and service records for SC-10 from the maintenance system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor pulls all work orders and service records for SC-10 from the maintenance system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the completed work orders against the OEM's recommended maintenance schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor checks if all required PMs have been completed at the correct intervals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor checks if all required PMs have been completed at the correct intervals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify any missed or overdue maintenance tasks and create a report of the findings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The audit reveals that a scheduled oil change was missed. A report is generated to flag the non-compliance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The audit reveals that a scheduled oil change was missed. A report is generated to flag the non-compliance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

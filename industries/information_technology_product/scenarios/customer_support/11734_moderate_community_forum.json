@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the flagged post and determine that it violates the community guidelines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the post is inappropriate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the post is inappropriate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Remove the post from the forum.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully deletes the post."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully deletes the post.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a private warning to the user who made the post, explaining the violation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the policy violation to the user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the policy violation to the user.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

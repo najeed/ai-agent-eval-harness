@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze HUMINT reports to identify key individuals in the network.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst extracts the names and roles of key network members."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst extracts the names and roles of key network members.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze SIGINT to map communications between the identified individuals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst creates a link analysis chart showing who is talking to whom."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst creates a link analysis chart showing who is talking to whom.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze FININT to identify financial transactions between the individuals, confirming the network's structure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst uses financial data to validate the network map and identify the leader."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst uses financial data to validate the network map and identify the leader.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

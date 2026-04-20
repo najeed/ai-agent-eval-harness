@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the process parameter (e.g., 'Torque') and the machine to be analyzed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the correct parameter from the SPC system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the correct parameter from the SPC system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the X-bar and R control chart for the last 24 hours of data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent views the control chart on their screen."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent views the control chart on their screen.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify a trend on the chart where seven consecutive points are all above the centerline, indicating a potential process shift.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies a rule violation on the SPC chart and flags it for investigation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies a rule violation on the SPC chart and flags it for investigation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

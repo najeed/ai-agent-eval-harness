@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the buyer's search criteria: location, price range, number of beds/baths, and specific features (e.g., a pool).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly logs all of the buyer's search parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly logs all of the buyer's search parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new saved search in the MLS system based on the client's criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately configures the search parameters in the MLS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately configures the search parameters in the MLS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set up the search to automatically email new listings that match the criteria to the buyer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enables automated email alerts for the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enables automated email alerts for the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the dates for each leg of the journey.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary dates for the multi-city itinerary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary dates for the multi-city itinerary.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for flights for each segment of the trip (LHR-CDG, CDG-FCO, FCO-LHR).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds available flights for all three legs of the journey."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds available flights for all three legs of the journey.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a single booking containing all three flight segments and provide a total price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the complete itinerary and provides one booking reference."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the complete itinerary and provides one booking reference.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

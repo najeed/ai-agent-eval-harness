@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the parameters of the promotion: name, valid dates, discount percentage, and included value-adds.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager defines all aspects of the new package."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager defines all aspects of the new package.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new rate code and package in the PMS with these parameters.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new promotional package is successfully built in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new promotional package is successfully built in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Make the new promotion available for booking on the hotel's website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The promotion is activated and visible on the public booking engine."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The promotion is activated and visible on the public booking engine.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

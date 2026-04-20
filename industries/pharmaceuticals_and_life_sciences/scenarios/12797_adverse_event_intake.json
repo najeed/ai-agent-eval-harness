@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the patient and the drug product involved.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the patient (or reporter) and the specific drug, including lot number if available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the patient (or reporter) and the specific drug, including lot number if available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Capture the details of the adverse event, including symptoms, date of onset, and severity, using a structured intake form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately captures all required fields in the safety database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately captures all required fields in the safety database.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assess the event for seriousness and expectedness against the product's reference safety information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly flags the event as 'serious' and 'unexpected'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly flags the event as 'serious' and 'unexpected'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Initiate a follow-up request for more medical information if necessary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates a follow-up query to be sent to the patient's HCP."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates a follow-up query to be sent to the patient's HCP.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

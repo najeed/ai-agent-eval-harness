@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the vehicle's cost basis, date placed in service, and percentage of business use.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary information for the calculation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary information for the calculation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine the correct depreciation method and recovery period under MACRS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the asset class and depreciation schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the asset class and depreciation schedule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the annual depreciation deduction using Form 4562.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the allowable depreciation for the year."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the allowable depreciation for the year.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

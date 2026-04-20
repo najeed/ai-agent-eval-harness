@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the set of documents to be produced.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the final production set."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the final production set.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Configure the Bates stamp format (e.g., prefix 'ABC', starting number '000001').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly sets up the numbering scheme."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly sets up the numbering scheme.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the Bates stamp to the bottom right corner of every page of every document in the production set.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All pages are uniquely and sequentially numbered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All pages are uniquely and sequentially numbered.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

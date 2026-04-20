@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve customer account and the bill in question.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer and the bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer and the bill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the account's active promotions and their terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms a 12-month loyalty discount should be active."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms a 12-month loyalty discount should be active.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply a manual credit for the missing discount amount and ensure the promotion is fixed for future bills.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent credits the current bill and re-applies the promotion code to the account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent credits the current bill and re-applies the promotion code to the account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

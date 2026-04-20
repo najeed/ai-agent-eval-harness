@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the service's memory usage graph and logs to confirm the pattern of a memory leak.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the memory usage steadily grows until the service crashes and restarts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the memory usage steadily grows until the service crashes and restarts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Take a memory dump of the problematic service for offline analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully captures a heap dump."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully captures a heap dump.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority ticket for the engineering team, attaching the memory dump and performance graphs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides developers with the necessary artifacts to debug the leak."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides developers with the necessary artifacts to debug the leak.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Clarify the client's detailed requirements (e.g., Class A/B, parking needs, specific amenities).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent documents client needs for Class A building, 10 parking spaces, and a conference room."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent documents client needs for Class A building, 10 parking spaces, and a conference room.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search commercial real estate databases (e.g., CoStar, LoopNet) for available listings matching the criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent executes a search and finds at least 3 matching properties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent executes a search and finds at least 3 matching properties.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile a report of the matching properties with leasing details and send it to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A professional report summarizing the options is generated and emailed to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A professional report summarizing the options is generated and emailed to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

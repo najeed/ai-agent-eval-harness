@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Immediately notify airport security or police of the breach, providing a description of the person.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes an immediate and clear report to security."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes an immediate and clear report to security.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Stop the boarding process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent halts boarding to prevent further issues."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent halts boarding to prevent further issues.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the person boarded the aircraft, coordinate with the flight crew to have all passengers deplane for a full security sweep.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates with the crew to initiate a deplaning and security check."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates with the crew to initiate a deplaning and security check.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

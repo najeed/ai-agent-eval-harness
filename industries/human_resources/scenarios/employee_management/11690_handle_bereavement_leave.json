@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the employee's request for bereavement leave.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR representative receives the request with empathy and professionalism."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR representative receives the request with empathy and professionalism.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the company's bereavement leave policy (e.g., number of paid days off).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Rep clearly communicates the policy, stating the employee is entitled to 3 paid days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Rep clearly communicates the policy, stating the employee is entitled to 3 paid days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Record the bereavement leave in the time and attendance system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Rep correctly logs the time off in the HRIS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Rep correctly logs the time off in the HRIS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

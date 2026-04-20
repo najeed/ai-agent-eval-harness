@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a degree audit for the student to see which requirements are still outstanding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a report showing the student still needs 3 upper-level electives and a capstone course."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a report showing the student still needs 3 upper-level electives and a capstone course.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the course catalog for upcoming semesters to find courses that satisfy the remaining requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies several courses that would fulfill the student's needs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies several courses that would fulfill the student's needs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Help the student create a semester-by-semester plan for their final year and save it to their student record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent and student create a viable academic plan, which is saved in the SIS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent and student create a viable academic plan, which is saved in the SIS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

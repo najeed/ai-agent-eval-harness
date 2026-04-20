@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Define the search strategy, including the drug name, event term (e.g., 'myocarditis'), and relevant databases (e.g., PubMed, Embase).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent constructs a clear and comprehensive search query."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent constructs a clear and comprehensive search query.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Execute the search across the selected literature databases.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the search and retrieves a list of abstracts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the search and retrieves a list of abstracts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Screen the abstracts for relevance and identify any potential case reports.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the abstracts and identifies three potentially relevant articles."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the abstracts and identifies three potentially relevant articles.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "For relevant articles, create new cases in the safety database and attach the source publication.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates three new cases, populating them with data from the publications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates three new cases, populating them with data from the publications.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

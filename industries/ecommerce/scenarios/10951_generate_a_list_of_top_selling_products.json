@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query the sales database for all orders placed in the last quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves all relevant sales data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves all relevant sales data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Aggregate the data to count the total units sold for each product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the sales volume per SKU."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the sales volume per SKU.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Sort the products by units sold in descending order and return the top 10.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates an accurate report of the top 10 best-sellers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates an accurate report of the top 10 best-sellers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

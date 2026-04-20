@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the key play and log the time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the timestamp of the play."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the timestamp of the play.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Cue up the replay from multiple camera angles in the replay system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the different angles ready to play."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the different angles ready to play.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Play the replays on air as directed by the producer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully airs the multi-angle replay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully airs the multi-angle replay.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

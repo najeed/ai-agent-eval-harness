@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Following a new phone order, present the device insurance options.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pivots to an insurance offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pivots to an insurance offer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the coverage details (e.g., theft, accidental damage) and the monthly cost.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains what the insurance covers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains what the insurance covers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the selected insurance plan to the customer's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the insurance feature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the insurance feature.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Read through the final draft of the article.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is familiar with the content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is familiar with the content.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify several short, powerful, and representative quotes from the article.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of potential pull quotes is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of potential pull quotes is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the single best quote that captures the essence of the story and will entice people to read.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The final pull quote is chosen."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The final pull quote is chosen.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Send the selected quote to the print designer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The designer receives the content they need for the layout."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The designer receives the content they need for the layout.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

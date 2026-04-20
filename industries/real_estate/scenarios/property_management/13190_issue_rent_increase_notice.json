@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Determine the legally required notice period for a rent increase in the property's jurisdiction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks local regulations and confirms a 60-day notice is required."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks local regulations and confirms a 60-day notice is required.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a formal rent increase notice with the new rental amount and the date it becomes effective.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A compliant notice is created with all the required information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A compliant notice is created with all the required information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deliver the notice to the tenant according to legal requirements (e.g., certified mail or personal service).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The notice is sent via certified mail, and the tracking number is logged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The notice is sent via certified mail, and the tracking number is logged.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

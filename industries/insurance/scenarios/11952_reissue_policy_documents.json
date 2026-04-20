@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify and authenticate the policyholder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely verifies the customer's identity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely verifies the customer's identity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a duplicate copy of the original policy contract.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the duplicate document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the duplicate document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Mail the duplicate policy to the customer's address on file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes the mailing of the physical document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes the mailing of the physical document.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

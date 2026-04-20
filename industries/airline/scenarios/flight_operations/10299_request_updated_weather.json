@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use the Aircraft Communications Addressing and Reporting System (ACARS) to request the latest METAR for the destination airport.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot sends the request via datalink."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot sends the request via datalink.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive the METAR report, which is printed out in the cockpit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system provides the latest weather report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system provides the latest weather report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The crew reviews the weather (wind, visibility, cloud cover) to brief the approach.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The crew uses the information to plan for a safe landing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The crew uses the information to plan for a safe landing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the citizen using their existing license number and date of birth.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves the citizen's DMV record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves the citizen's DMV record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the citizen is eligible for online renewal (e.g., no outstanding violations, vision test not required).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the citizen's eligibility for online renewal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the citizen's eligibility for online renewal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the renewal payment and provide a temporary digital license.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully takes payment and issues a temporary license pending mailing of the physical card."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully takes payment and issues a temporary license pending mailing of the physical card.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

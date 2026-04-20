@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Research the issue to confirm the IRS will issue a ruling on this type of transaction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the issue is not on the IRS's no-rule list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the issue is not on the IRS's no-rule list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a detailed request for a Private Letter Ruling (PLR), including a full statement of facts and legal analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares a comprehensive legal document for the IRS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares a comprehensive legal document for the IRS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the PLR request to the IRS National Office along with the required user fee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully files the request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully files the request.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

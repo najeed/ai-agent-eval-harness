@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the previously filed tax return and identify the information that needs to be changed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the original return and understands the required correction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the original return and understands the required correction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Prepare Form 1040-X, showing the original figures, the changes, and the corrected figures.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly fills out the three columns on the 1040-X."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly fills out the three columns on the 1040-X.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Write a clear explanation of the reason for the amendment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a concise explanation for the change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a concise explanation for the change.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Coordinate with local police to manage traffic signals at key intersections near the venue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates with police to prioritize traffic leaving the venue's parking lots."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates with police to prioritize traffic leaving the venue's parking lots.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch parking attendants and security to direct traffic within the parking lots.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends staff to all major parking areas to direct drivers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends staff to all major parking areas to direct drivers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use digital signage on nearby roadways to direct drivers to the least congested routes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates digital signs with real-time traffic advice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates digital signs with real-time traffic advice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Monitor CCTV feeds of parking lots and roadways to identify and resolve any bottlenecks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent watches the cameras and re-deploys staff as needed to keep traffic moving."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent watches the cameras and re-deploys staff as needed to keep traffic moving.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

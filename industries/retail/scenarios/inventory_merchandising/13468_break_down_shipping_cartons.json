@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all empty cartons from the sales floor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate collects the cardboard waste."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate collects the cardboard waste.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a box cutter to safely break down the cartons so they are flat.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The cartons are flattened for easier handling."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The cartons are flattened for easier handling.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place the flattened cardboard into the designated cardboard recycling baler.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The waste is properly disposed of, keeping the backroom clean and safe."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The waste is properly disposed of, keeping the backroom clean and safe.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

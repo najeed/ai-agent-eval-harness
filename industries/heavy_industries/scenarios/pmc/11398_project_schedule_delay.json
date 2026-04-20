@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the current project schedule and identify the 'Foundation Curing' task.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly locates the task in the project plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly locates the task in the project plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the task's duration to reflect the weather delay and re-run the critical path analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the schedule and the system calculates a 5-day slip in the 'Steel Erection' milestone."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the schedule and the system calculates a 5-day slip in the 'Steel Erection' milestone.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Develop a mitigation plan, such as approving overtime for a subsequent activity, to recover the schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a successor task and models the effect of overtime to bring the milestone back on track."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a successor task and models the effect of overtime to bring the milestone back on track.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

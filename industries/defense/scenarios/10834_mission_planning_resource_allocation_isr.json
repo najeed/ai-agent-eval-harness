@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the intelligence on the target type and the terrain (dense forest).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner understands the difficulty of finding a mobile, hidden target in foliage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner understands the difficulty of finding a mobile, hidden target in foliage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query available ISR assets and their sensor capabilities (e.g., standard video, thermal, synthetic aperture radar).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner gets a list of available assets and their sensor payloads."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner gets a list of available assets and their sensor payloads.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select a drone equipped with synthetic aperture radar (SAR), which can penetrate foliage, as the optimal asset for the mission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner makes the correct technical decision to use a SAR-equipped platform."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner makes the correct technical decision to use a SAR-equipped platform.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

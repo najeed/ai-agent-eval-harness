@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Configure the CSPM tool with read-only credentials to the AWS environment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst securely configures the tool's access."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst securely configures the tool's access.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Launch the scan against the AWS environment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The scan runs to completion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The scan runs to completion.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the results and identify a critical misconfiguration: an S3 bucket containing sensitive data that is open to the public internet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies and prioritizes a critical cloud misconfiguration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies and prioritizes a critical cloud misconfiguration.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive and organize all submitted offers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has all offer documents properly filed and accessible."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has all offer documents properly filed and accessible.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a spreadsheet to summarize and compare the key terms of each offer (price, contingencies, closing date).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a clear, easy-to-understand comparison for the seller."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a clear, easy-to-understand comparison for the seller.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the seller on negotiation strategies, such as asking all buyers for their 'highest and best' offer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides strategic advice, and a chosen strategy is implemented."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides strategic advice, and a chosen strategy is implemented.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

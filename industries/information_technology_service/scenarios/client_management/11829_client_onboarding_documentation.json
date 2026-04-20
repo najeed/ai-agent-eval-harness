@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a network scan using a discovery tool to identify all devices on the network (servers, switches, printers, etc.).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician gets a complete list of all network-connected devices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician gets a complete list of all network-connected devices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log in to each network device to document its configuration (e.g., firewall rules, switch VLANs).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician gathers all configuration details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician gathers all configuration details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create detailed documentation and a network diagram in the central documentation system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client's network is fully documented for future support."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client's network is fully documented for future support.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "When getting LTL rates, specify a 'Guaranteed by 10 AM' service requirement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The rating request includes the special service flag."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The rating request includes the special service flag.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system returns rates only from carriers that offer this guaranteed service, along with the service upcharge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Only relevant carriers and services are displayed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Only relevant carriers and services are displayed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select a carrier and book the shipment, ensuring the 'Guaranteed Service' option is selected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The shipment is booked with the carrier, and the guarantee is noted on the BOL."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The shipment is booked with the carrier, and the guarantee is noted on the BOL.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

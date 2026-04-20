@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the story's entry in the newsroom management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the story's project file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the story's project file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the reporter's logged activities, notes, and the current status of the story.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets an overview of the work done so far."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets an overview of the work done so far.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a message to the reporter asking for a brief status update and if they are facing any roadblocks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The editor proactively checks in with the reporter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The editor proactively checks in with the reporter.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

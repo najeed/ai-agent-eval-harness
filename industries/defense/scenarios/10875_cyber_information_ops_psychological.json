@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze intelligence on the morale and grievances of the target enemy soldiers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer identifies key themes (e.g., lack of food, poor leadership) that can be exploited."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer identifies key themes (e.g., lack of food, poor leadership) that can be exploited.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Develop the content for the leaflets and radio broadcasts, including surrender instructions and promises of safe treatment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer creates persuasive and culturally appropriate messaging."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer creates persuasive and culturally appropriate messaging.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Plan the delivery of the messages, including coordinating for aircraft to drop the leaflets and a broadcast aircraft to transmit the radio messages.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer creates a detailed execution plan for the PSYOP campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer creates a detailed execution plan for the PSYOP campaign.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

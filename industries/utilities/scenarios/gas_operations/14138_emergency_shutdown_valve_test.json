@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all ESD valves that are due for their annual test in the next quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System produces a list of valves requiring testing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System produces a list of valves requiring testing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Coordinate with gas control operators to schedule the test during a low-demand period to minimize disruption.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System finds an optimal time slot for the test."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System finds an optimal time slot for the test.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for the maintenance crew, including the detailed testing procedure and safety protocols.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates and dispatches the work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates and dispatches the work order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather customer's personal information and verify their identity using a provided document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully collects and verifies customer PII against the document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully collects and verifies customer PII against the document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Present available checking account options and their features.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the 'Basic Checking' and 'Interest Checking' accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the 'Basic Checking' and 'Interest Checking' accounts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create the new checking account and provide the customer with their new account number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the account and provides the correct account details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the account and provides the correct account details.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Verify that a valid joint check agreement is on file for the subcontractor and their supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the agreement is in place."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the agreement is in place.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "When processing the subcontractor's payment, issue the check as payable to both the subcontractor and the material supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A joint check is correctly generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A joint check is correctly generated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

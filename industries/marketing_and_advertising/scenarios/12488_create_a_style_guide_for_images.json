@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the desired style for photography (e.g., 'Bright, airy, with natural light').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent specifies the overall mood and lighting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent specifies the overall mood and lighting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Specify rules for image composition, such as color palettes and subject matter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent defines the visual rules for all marketing images."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent defines the visual rules for all marketing images.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a document with examples of 'on-brand' and 'off-brand' images.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a clear visual guide for the team to follow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a clear visual guide for the team to follow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

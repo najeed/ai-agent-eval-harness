@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather property financials: purchase price, gross income from rent roll, and operating expenses (taxes, insurance, maintenance).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary financial data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary financial data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the Net Operating Income (NOI) and the Capitalization Rate (Cap Rate).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates NOI and Cap Rate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates NOI and Cap Rate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a pro-forma report summarizing the analysis and key investment metrics for the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a clear and accurate investment analysis report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a clear and accurate investment analysis report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

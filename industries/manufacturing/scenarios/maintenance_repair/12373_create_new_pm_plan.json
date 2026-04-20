@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new asset record for the equipment in the CMMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new asset record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new asset record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Define the individual PM tasks based on the OEM's recommendations (e.g., 'Inspect monthly', 'Replace filter quarterly').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates several new PM tasks with different frequencies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates several new PM tasks with different frequencies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Build the maintenance plan by associating the PM tasks with the new asset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the full PM plan, and the system generates the first set of due dates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the full PM plan, and the system generates the first set of due dates.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

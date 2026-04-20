@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Collect required documentation from the potential supplier (e.g., quality certifications, financial statements).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives and logs the necessary documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives and logs the necessary documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the new supplier's details into the supplier relationship management (SRM) system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new supplier profile with all contact and business information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new supplier profile with all contact and business information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate the supplier qualification workflow for internal review and approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the new supplier profile for approval by the quality and finance teams."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the new supplier profile for approval by the quality and finance teams.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

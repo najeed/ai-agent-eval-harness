@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Monitor the bids submitted by all major generators.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System is continuously ingesting market bid data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System is continuously ingesting market bid data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system flags a generator that is bidding its capacity at a price significantly higher than its estimated marginal cost, especially during a constrained period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System's algorithm detects anomalous bidding behavior."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System's algorithm detects anomalous bidding behavior.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Automatically mitigate the bid by capping it at a reference level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System automatically replaces the high bid with a more reasonable, cost-based bid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System automatically replaces the high bid with a more reasonable, cost-based bid.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Refer the incident to the enforcement department for further investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates an investigation case."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates an investigation case.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

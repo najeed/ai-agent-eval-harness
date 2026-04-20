@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the closing balances from all company bank accounts from the previous day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets all bank balances."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets all bank balances.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve a forecast of today's expected cash inflows (e.g., customer payments) and outflows (e.g., vendor payments).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the daily cash forecast."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the daily cash forecast.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the projected end-of-day cash position.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates a projected deficit in the main operating account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates a projected deficit in the main operating account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Initiate a wire transfer from the money market account to the operating account to cover the projected shortfall.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates the required transfer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates the required transfer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

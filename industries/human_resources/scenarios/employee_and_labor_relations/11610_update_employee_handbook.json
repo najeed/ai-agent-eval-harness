@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft the new policy language in consultation with the legal department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR drafts legally compliant language for the new policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR drafts legally compliant language for the new policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the employee handbook document with the new policy language.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR successfully edits the handbook document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR successfully edits the handbook document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Publish the updated handbook on the company intranet and send a notification to all employees about the change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR makes the new handbook available and communicates the update to all staff."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR makes the new handbook available and communicates the update to all staff.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the traveler's booking using their confirmation code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the passenger is checked in.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the passenger's check-in status is complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the passenger's check-in status is complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the boarding pass to the email address on file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully emails the boarding pass."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully emails the boarding pass.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

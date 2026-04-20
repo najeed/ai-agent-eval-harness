@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the customer's usage logs that triggered the alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer is repeatedly exporting data and then re-importing it after making changes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer is repeatedly exporting data and then re-importing it after making changes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the customer and explain how they can achieve the same outcome using the 'Bulk Edit' feature directly within the application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the more efficient workflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the more efficient workflow.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Offer to schedule a brief screen-share session to walk them through the feature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides proactive support to improve customer efficiency and satisfaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides proactive support to improve customer efficiency and satisfaction.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

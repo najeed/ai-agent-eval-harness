@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the two duplicate accounts in the customer management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent confirms both accounts belong to the same person."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent confirms both accounts belong to the same person.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the primary account to keep and the secondary account to be merged.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent chooses the account with the correct email as the primary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent chooses the account with the correct email as the primary.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Initiate the account merge, which combines the order history and loyalty points into the primary account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer now has a single, unified account with all their historical data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer now has a single, unified account with all their historical data.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

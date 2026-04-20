@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the expert witness invoice for compliance with the terms of their engagement letter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that the hourly rates and expenses are correct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that the hourly rates and expenses are correct.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Approve the invoice for payment in the firm's accounting system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent marks the invoice as approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent marks the invoice as approved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Forward the approved invoice to the accounts payable department to process the payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The payment process is initiated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The payment process is initiated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

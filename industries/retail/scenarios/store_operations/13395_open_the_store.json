@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log into the store management system and start the 'Opening Checklist' task.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager accesses the daily opening procedure checklist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager accesses the daily opening procedure checklist.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Count the cash in the safe and prepare the cash floats for each POS terminal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager confirms the safe balance and correctly prepares the cash drawers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager confirms the safe balance and correctly prepares the cash drawers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Complete all checklist items (e.g., 'Check lighting', 'Turn on music') and formally open the store for business in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All opening tasks are completed, and the POS systems are ready to accept transactions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All opening tasks are completed, and the POS systems are ready to accept transactions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use historical data to establish the normal pattern of life for the supply route, including typical traffic density by time of day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully models the normal traffic patterns."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully models the normal traffic patterns.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Monitor the live traffic feed from a persistent surveillance drone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst actively monitors the route."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst actively monitors the route.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Flag a sudden and complete lack of civilian traffic on the route as a critical anomaly, suggesting insurgents have blocked the road to set up an ambush.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the 'negative space' anomaly and issues a warning to upcoming convoys."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the 'negative space' anomaly and issues a warning to upcoming convoys.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

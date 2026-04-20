@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find a coworker who is willing to swap shifts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate makes an agreement with another employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate makes an agreement with another employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log into the scheduling system and initiate a 'Shift Swap' request, selecting their shift and the coworker's shift.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal swap request is created in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal swap request is created in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The request is sent to a manager for approval. Once approved, the schedules for both associates are updated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The shift swap is approved and reflected in the official schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The shift swap is approved and reflected in the official schedule.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the employee and explain the process for a qualifying life event (QLE).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent congratulates the employee and explains the 30-day window to make changes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent congratulates the employee and explains the 30-day window to make changes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the employee with a link to the benefits portal and a list of required documents (e.g., birth certificate).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the necessary resources to the employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the necessary resources to the employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the employee makes the change, review and approve the updated benefits enrollment in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the submitted documents and approves the addition of the dependent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the submitted documents and approves the addition of the dependent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

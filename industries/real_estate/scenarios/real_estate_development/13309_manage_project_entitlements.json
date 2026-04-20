@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Prepare and submit the complete application package to the city planning department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The application is submitted correctly with all required documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The application is submitted correctly with all required documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Track the application's progress through the city's review process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides regular status updates to the development team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides regular status updates to the development team.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Represent the project at public hearings and planning commission meetings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent effectively presents the project and addresses community concerns."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent effectively presents the project and addresses community concerns.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

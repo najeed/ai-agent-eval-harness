@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search social media platforms using relevant keywords and location tags for the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a stream of posts from the event location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a stream of posts from the event location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the most compelling and credible-looking photos and videos.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A selection of potential user-generated content is made."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A selection of potential user-generated content is made.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the original posters to ask for permission to use their content with credit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent secures the rights to use the content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent secures the rights to use the content.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

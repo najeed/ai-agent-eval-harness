@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Enter the product and quantity for the potential order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the details of the large order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the details of the large order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run an 'Available-to-Promise' (ATP) check.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system checks material availability and production capacity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system checks material availability and production capacity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system returns a confirmation that the order can be fulfilled by the requested date. The sales rep informs the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the delivery date with the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the delivery date with the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

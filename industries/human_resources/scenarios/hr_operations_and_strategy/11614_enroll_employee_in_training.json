@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the employee and the desired training course in the Learning Management System (LMS).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "L&D specialist identifies the employee and the course."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "L&D specialist identifies the employee and the course.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for available seats in the upcoming course session.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist confirms there are open seats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist confirms there are open seats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enroll the employee in the course and send a confirmation to the employee and their manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist successfully enrolls the employee and sends notifications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist successfully enrolls the employee and sends notifications.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

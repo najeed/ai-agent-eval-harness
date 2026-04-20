@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new submittal package in the project management system for 'Steel Shop Drawings'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new submittal package is created with a unique ID."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new submittal package is created with a unique ID.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attach the shop drawing files to the submittal package.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The relevant drawing files are uploaded and attached."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The relevant drawing files are uploaded and attached.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Forward the submittal package to the structural engineer for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The submittal is officially sent to the engineer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The submittal is officially sent to the engineer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the ground station's antenna is pointing correctly based on the satellite's predicted ephemeris data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the antenna pointing is accurate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the antenna pointing is accurate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of the ground station's transmitters and receivers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the primary transmitter is showing a fault code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the primary transmitter is showing a fault code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Switch to the backup transmitter and attempt to re-establish the link with the satellite.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully switches to the backup system and establishes a command link."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully switches to the backup system and establishes a command link.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

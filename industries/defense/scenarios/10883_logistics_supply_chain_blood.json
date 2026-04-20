@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the current inventory and expiration dates of blood products at the surgical team's location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer identifies that the team is low on Type O blood."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer identifies that the team is low on Type O blood.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Arrange for a resupply of Type O blood from the nearest blood bank.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer successfully orders the needed blood products."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer successfully orders the needed blood products.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Track the shipment in real-time, monitoring its temperature to ensure the cold chain is not broken.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer monitors the shipment and confirms it arrives safely and within temperature limits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer monitors the shipment and confirms it arrives safely and within temperature limits.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

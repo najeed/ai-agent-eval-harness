@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Look up the client's existing booking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the original booking for the June date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the original booking for the June date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check availability for the requested new date in September.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the ballroom is available on the new date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the ballroom is available on the new date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the booking in the system to the new date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully moves the event to the new date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully moves the event to the new date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate and send a contract addendum to the client reflecting the date change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the addendum for signature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the addendum for signature.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

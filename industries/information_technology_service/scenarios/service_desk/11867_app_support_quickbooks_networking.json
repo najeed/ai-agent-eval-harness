@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the user can ping the QuickBooks server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The server is reachable on the network."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The server is reachable on the network.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the QuickBooks Database Server Manager service on the server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician finds the service has stopped."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician finds the service has stopped.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Restart the QuickBooks Database Server Manager service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user is now able to open the company file successfully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user is now able to open the company file successfully.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

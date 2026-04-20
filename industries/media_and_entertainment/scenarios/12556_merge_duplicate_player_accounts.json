@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the two accounts belonging to the player.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates both the old and new accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates both the old and new accounts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the player's ownership of both accounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully verifies ownership via security questions for both accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully verifies ownership via security questions for both accounts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Transfer all items and progress from the old account to the new primary account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully runs the script to migrate all assets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully runs the script to migrate all assets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Deactivate the old account after the merge is complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent deactivates the redundant account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent deactivates the redundant account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the user's trial account and its expiration date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the account and sees the trial expires tomorrow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the account and sees the trial expires tomorrow.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ask the user why they need an extension to gauge their level of interest and engagement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent learns the user was on vacation but is very interested in the product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent learns the user was on vacation but is very interested in the product.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Grant a 7-day extension to the trial period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the trial expiration date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the trial expiration date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

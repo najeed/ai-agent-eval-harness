@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Read through the draft of the blog post.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the entire text."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the entire text.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a grammar and spell-checking tool to identify any errors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies and corrects all grammatical and spelling mistakes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies and corrects all grammatical and spelling mistakes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the post against the brand voice guidelines to ensure the tone is appropriate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that the writing style aligns with the brand's persona."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that the writing style aligns with the brand's persona.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

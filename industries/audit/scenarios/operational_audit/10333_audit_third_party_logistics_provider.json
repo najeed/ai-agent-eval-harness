@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the SLA in the 3PL contract, focusing on the metrics for on-time delivery and order accuracy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor understands the performance standards the vendor is supposed to meet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor understands the performance standards the vendor is supposed to meet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the 3PL's performance reports for the last 12 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor finds that on-time delivery has been below the SLA target of 98% for the last 4 months."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor finds that on-time delivery has been below the SLA target of 98% for the last 4 months.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate any penalties or service credits due to the company as a result of the SLA breach.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor determines the company is owed service credits and recommends they be claimed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor determines the company is owed service credits and recommends they be claimed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

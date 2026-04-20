@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Attach hundreds of accelerometers to strategic points on the aircraft's structure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures all sensors are correctly installed and connected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures all sensors are correctly installed and connected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use electrodynamic shakers to excite the structure at different frequencies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent operates the shakers to vibrate the aircraft according to the test plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent operates the shakers to vibrate the aircraft according to the test plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the accelerometer data to identify the aircraft's modal frequencies and damping ratios, and compare them to the FEA model.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent analyzes the data and confirms the structural model is accurate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent analyzes the data and confirms the structural model is accurate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Compile all actual CAM expenses for the property for the entire year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all relevant invoices and expense records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all relevant invoices and expense records.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate each tenant's pro-rata share of the actual expenses based on their leased square footage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates each tenant's share."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates each tenant's share.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the actual charges to the estimated CAM charges paid by each tenant and issue a credit or invoice for the difference.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates and sends correct reconciliation statements to all tenants."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates and sends correct reconciliation statements to all tenants.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

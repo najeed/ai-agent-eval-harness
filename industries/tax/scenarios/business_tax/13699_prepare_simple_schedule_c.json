@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Input the gross receipts from the freelance business.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly enters the total income earned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly enters the total income earned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Categorize and input business expenses such as software subscriptions and office supplies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly enters and categorizes all business expenses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly enters and categorizes all business expenses.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the net profit or loss for the business.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the final net profit, which will be subject to self-employment tax."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the final net profit, which will be subject to self-employment tax.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the sales order that has been shipped.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the sales order that was just processed for shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the sales order that was just processed for shipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the carrier name and tracking number for the shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the tracking information from the shipment record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the tracking information from the shipment record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the ASN to the customer, including the order details, carrier, and tracking number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the ASN email to the customer's registered contact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the ASN email to the customer's registered contact.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

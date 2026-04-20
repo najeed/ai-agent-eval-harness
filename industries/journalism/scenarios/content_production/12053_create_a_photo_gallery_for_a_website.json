@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Select the best 20-30 photos from the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A curated set of photos is chosen."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A curated set of photos is chosen.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Resize and optimize the photos for fast loading on the web.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The image files are web-ready."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The image files are web-ready.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload the photos to the CMS and arrange them in a gallery format.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new photo gallery is created in the CMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new photo gallery is created in the CMS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Write a title and introduction for the gallery and publish it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The photo gallery is live on the website."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The photo gallery is live on the website.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the high temperature alarm and retrieve the batch's current process parameters and recipe setpoints.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the specific reactor and the deviation magnitude."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the specific reactor and the deviation magnitude.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Consult the standard operating procedure (SOP) for high temperature excursions for this specific product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct SOP and identifies the initial corrective steps (e.g., increase cooling water flow)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct SOP and identifies the initial corrective steps (e.g., increase cooling water flow).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Execute the command to increase cooling water flow to the reactor jacket and monitor the temperature response.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adjusts the cooling flow, and the reactor temperature begins to trend down towards the setpoint."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adjusts the cooling flow, and the reactor temperature begins to trend down towards the setpoint.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

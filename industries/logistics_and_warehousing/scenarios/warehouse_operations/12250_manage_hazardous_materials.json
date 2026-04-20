@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "During receiving, scan an item that the system identifies as a hazardous material.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system flags the item as HAZMAT and displays its UN number and storage requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system flags the item as HAZMAT and displays its UN number and storage requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system directs the operator to a specific, segregated area of the warehouse designed for hazardous materials.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The put-away task directs the operator to the HAZMAT cage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The put-away task directs the operator to the HAZMAT cage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The operator moves the item to the designated area and confirms the put-away, completing the compliant storage process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The HAZMAT item is stored safely and correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The HAZMAT item is stored safely and correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

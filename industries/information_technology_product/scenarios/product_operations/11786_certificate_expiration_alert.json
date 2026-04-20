@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the certificate expiration alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent takes ownership of the task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent takes ownership of the task.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a new Certificate Signing Request (CSR) and purchase a new SSL certificate from a Certificate Authority.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully obtains a new certificate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully obtains a new certificate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Install the new certificate on the load balancers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully deploys the new certificate without causing downtime."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully deploys the new certificate without causing downtime.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

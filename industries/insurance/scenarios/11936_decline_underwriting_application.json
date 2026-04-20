@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review all application details, medical records, and exam results.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter confirms that the applicant's health history presents a risk outside of the company's guidelines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter confirms that the applicant's health history presents a risk outside of the company's guidelines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Document the specific reason for the declination in the underwriting file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter clearly and accurately documents the reasons for the adverse decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter clearly and accurately documents the reasons for the adverse decision.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a formal declination letter to the applicant that complies with all regulations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A legally compliant letter is sent to the applicant informing them of the decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A legally compliant letter is sent to the applicant informing them of the decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

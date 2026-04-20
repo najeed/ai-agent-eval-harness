@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the termination notification from HR, which triggers the automated deprovisioning workflow.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The workflow is triggered successfully upon receipt of the HR notification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The workflow is triggered successfully upon receipt of the HR notification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The workflow immediately disables the user's Active Directory account, preventing all logins.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user's primary account is disabled within seconds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user's primary account is disabled within seconds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The workflow revokes the user's access to all cloud applications (e.g., Salesforce, Slack) via the SSO provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user's access to all connected applications is successfully revoked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user's access to all connected applications is successfully revoked.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

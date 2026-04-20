@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Secure the player's consent and equip them with the microphone before the game.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The player is properly equipped with the audio equipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The player is properly equipped with the audio equipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Monitor the live audio feed during the game.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent listens to the audio in real time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent listens to the audio in real time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the game, review the audio and select the best, most broadcast-appropriate clips.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects several interesting and clean audio clips."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects several interesting and clean audio clips.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Edit the clips into a segment for the post-game show.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces the final 'mic'd up' segment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces the final 'mic'd up' segment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

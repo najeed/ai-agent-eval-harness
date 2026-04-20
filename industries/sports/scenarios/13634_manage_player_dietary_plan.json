@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the player's current weight, body composition, and any dietary restrictions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets all the baseline health data for the player."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets all the baseline health data for the player.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Based on the player's goals, generate a daily meal plan with specific calorie and macronutrient targets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed meal plan for the player."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed meal plan for the player.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the meal plan to the player and the team chef.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully distributes the plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully distributes the plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

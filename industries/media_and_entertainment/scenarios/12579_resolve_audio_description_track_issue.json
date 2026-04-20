@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the asset and verify the presence of an audio description track.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the file should have an audio description track, but it is missing or corrupt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the file should have an audio description track, but it is missing or corrupt.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request a corrected file with a valid audio description track from the content provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a re-delivery request for the accessible version of the content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a re-delivery request for the accessible version of the content.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once received, replace the faulty file on the streaming servers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ingests, QCs, and replaces the file, resolving the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ingests, QCs, and replaces the file, resolving the issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

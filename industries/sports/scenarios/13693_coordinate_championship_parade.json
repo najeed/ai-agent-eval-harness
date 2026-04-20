@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Work with city officials to plan and approve a parade route.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A final parade route is agreed upon."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A final parade route is agreed upon.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Secure all necessary permits from the city for street closures and security.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains all required permits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains all required permits.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Coordinate with local police for security and traffic management along the parade route.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive security plan is in place."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive security plan is in place.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Announce the details of the parade (date, time, route) to the public.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent releases the parade information to the media and fans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent releases the parade information to the media and fans.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

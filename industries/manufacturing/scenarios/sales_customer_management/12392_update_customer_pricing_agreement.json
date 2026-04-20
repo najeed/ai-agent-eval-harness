@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the customer's pricing agreement or contract in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the customer's current contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the customer's current contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create an amendment to the contract, updating the price for the specific product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts an amendment with the new pricing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts an amendment with the new pricing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the contract amendment to the customer for their signature to formalize the new pricing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the document for signature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the document for signature.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

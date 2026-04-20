@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge receipt of the journalist's email and inform them you are working on a response.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a prompt and professional initial reply."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a prompt and professional initial reply.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Share the journalist's questions with the relevant internal subject matter experts to get accurate answers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent routes the questions to the correct people within the company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent routes the questions to the correct people within the company.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Consolidate the answers into a single, approved statement and send it to the journalist before their deadline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a complete and approved response to the press."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a complete and approved response to the press.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

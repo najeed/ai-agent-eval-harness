@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Run a critical path analysis on the project schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The critical path is calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The critical path is calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a report of all tasks not on the critical path, sorted by the amount of total float.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is generated, showing 'Landscaping' has 15 days of float."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is generated, showing 'Landscaping' has 15 days of float.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

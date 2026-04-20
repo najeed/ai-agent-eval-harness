@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log the initial spill report, capturing the material, estimated quantity, location, and time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new incident report with all initial details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new incident report with all initial details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the Safety Data Sheet (SDS) for the spilled material to identify required PPE and cleanup procedures.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct SDS and identifies the proper handling precautions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct SDS and identifies the proper handling precautions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch the site's emergency response team to perform the cleanup and document the waste generated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent notifies the response team and updates the incident log with cleanup details and waste manifest information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent notifies the response team and updates the incident log with cleanup details and waste manifest information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

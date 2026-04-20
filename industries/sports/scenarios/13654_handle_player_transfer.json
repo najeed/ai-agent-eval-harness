@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Submit the official transfer request through the international governing body's transfer matching system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the transfer request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the transfer request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Arrange for the payment of the transfer fee to the player's old club.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes the international payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes the international payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply for the player's work visa and international transfer certificate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits all the necessary paperwork for the player's registration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits all the necessary paperwork for the player's registration.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

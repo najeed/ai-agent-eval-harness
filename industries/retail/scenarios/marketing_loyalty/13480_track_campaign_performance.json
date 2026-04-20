@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log into the marketing analytics platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analyst accesses the reporting tools."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analyst accesses the reporting tools.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Locate the specific email campaign and open its performance dashboard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analyst finds the report for the correct campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analyst finds the report for the correct campaign.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review key metrics such as open rate, click-through rate, and revenue generated from the campaign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analyst can measure the effectiveness and ROI of the marketing campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analyst can measure the effectiveness and ROI of the marketing campaign.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

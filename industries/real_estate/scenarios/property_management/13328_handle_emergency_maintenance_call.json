@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Instruct the tenant on how to shut off the main water valve to the property to mitigate damage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides immediate, actionable instructions to the tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides immediate, actionable instructions to the tenant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the 24/7 emergency plumber from the approved vendor list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An emergency plumber is dispatched to the property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An emergency plumber is dispatched to the property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority work order in the system to track the incident and subsequent repairs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The emergency is officially logged and tracked in the management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The emergency is officially logged and tracked in the management system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

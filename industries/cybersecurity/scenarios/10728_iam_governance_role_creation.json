@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Work with the business unit to define the specific, minimum-necessary permissions the new role requires.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst gathers a precise list of required permissions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst gathers a precise list of required permissions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Design a new role in the Identity Governance tool that aggregates the required permissions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully designs the new role."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully designs the new role.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the new role for approval from the data owners of the affected applications before making it available for assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst follows the governance process to get the new role approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst follows the governance process to get the new role approved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

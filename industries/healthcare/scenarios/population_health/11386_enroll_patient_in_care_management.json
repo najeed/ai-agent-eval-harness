@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the patient who has been recommended for care management.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Care manager finds the patient in their work queue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Care manager finds the patient in their work queue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the patient to explain the program and obtain their consent to enroll.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The patient agrees to participate in the program."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The patient agrees to participate in the program.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the patient's status in the system to 'Enrolled in Care Management' and assign them a primary care manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The patient is successfully enrolled, and their care can be actively managed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The patient is successfully enrolled, and their care can be actively managed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

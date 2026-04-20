@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a report of all foreign-owned railcars that were on the railroad's tracks for the previous month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of cars and the duration they were on the network."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of cars and the duration they were on the network.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each car, look up the daily car hire rate based on the car's owner and type.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct daily rate is found for each car."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct daily rate is found for each car.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the total car hire charges owed to each railroad.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The total payment due is calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The total payment due is calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate and send the car hire settlement statements and payments to the other railroads.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Payments are processed correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Payments are processed correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

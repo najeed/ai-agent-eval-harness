@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the guest's folio using their name or room number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the guest's bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the guest's bill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the specific minibar charge being disputed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the charge for '$8 - Sparkling Water'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the charge for '$8 - Sparkling Water'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "As a gesture of goodwill, remove the disputed charge from the guest's folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully voids the charge."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully voids the charge.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the invoice and the attached conditional lien waiver document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The documents are received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The documents are received.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the amount and 'through date' on the lien waiver match the invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the details on the waiver are correct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the details on the waiver are correct.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the received lien waiver in the project's lien tracking system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The lien waiver is successfully logged and filed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The lien waiver is successfully logged and filed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

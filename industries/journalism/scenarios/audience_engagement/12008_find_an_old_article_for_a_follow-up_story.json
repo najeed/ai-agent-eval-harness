@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search the digital archive using keywords and a date range.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully locates the original article."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully locates the original article.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the full text and original publication date of the article.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the necessary information for the follow-up story."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the necessary information for the follow-up story.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Find any related photos or videos that were published with the original story.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves associated multimedia assets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves associated multimedia assets.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

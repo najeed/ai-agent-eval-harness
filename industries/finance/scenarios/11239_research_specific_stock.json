@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the latest stock quote, market cap, and key financial ratios for the requested company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls the current market data for the stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls the current market data for the stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Pull the latest analyst ratings and price targets from third-party research providers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers consensus analyst ratings for the stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers consensus analyst ratings for the stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Summarize the findings in a concise report for the advisor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear, one-page summary of the company's financial health and market sentiment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear, one-page summary of the company's financial health and market sentiment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

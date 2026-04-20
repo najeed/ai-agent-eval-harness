@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new property profile in the management software with all relevant details (address, owner info, etc.).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new property record is successfully created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new property record is successfully created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set up the property's bank account and financial ledgers for rent collection and expenses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Financial accounts for the new property are established in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Financial accounts for the new property are established in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the property is tenanted, enter all existing lease information and tenant details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All current lease data, including rent, deposits, and lease end dates, is accurately entered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All current lease data, including rent, deposits, and lease end dates, is accurately entered.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

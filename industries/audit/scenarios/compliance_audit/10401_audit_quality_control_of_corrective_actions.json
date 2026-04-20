@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select a sample of recent customer complaints that resulted in a Corrective and Preventive Action (CAPA) being created.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A sample of CAPAs is selected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A sample of CAPAs is selected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each sampled CAPA, review the root cause analysis to ensure it was thorough.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms the root cause analysis was well-documented for each sampled CAPA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms the root cause analysis was well-documented for each sampled CAPA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the effectiveness of the corrective action was later checked to ensure it actually solved the problem.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor finds that for two of the CAPAs, there was no effectiveness check performed, meaning the company doesn't know if the fix actually worked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor finds that for two of the CAPAs, there was no effectiveness check performed, meaning the company doesn't know if the fix actually worked.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

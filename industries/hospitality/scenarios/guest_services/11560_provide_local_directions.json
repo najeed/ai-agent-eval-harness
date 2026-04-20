@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the attraction the guest wishes to visit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent understands the destination."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent understands the destination.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use an online mapping service to get driving or walking directions from the hotel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent gets accurate directions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent gets accurate directions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the directions to the guest, offering to print them out or send them to their phone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The guest receives clear directions in their preferred format."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The guest receives clear directions in their preferred format.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

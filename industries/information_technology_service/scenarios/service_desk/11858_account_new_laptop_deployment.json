@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Take a new laptop from stock and deploy the standard corporate operating system image to it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new laptop is set up with the base OS and software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new laptop is set up with the base OS and software.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a data transfer tool to copy the user's profile and data from their old hard drive (or backup) to the new laptop.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user's data is successfully migrated to the new machine."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user's data is successfully migrated to the new machine.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for the new laptop to be shipped to the user and the old one to be returned for secure disposal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user receives their new, fully configured laptop."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user receives their new, fully configured laptop.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

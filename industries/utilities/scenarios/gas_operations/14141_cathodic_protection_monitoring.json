@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the latest pipe-to-soil potential readings from remote test points along the pipeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System gathers the latest voltage readings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System gathers the latest voltage readings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the readings against the required protection levels (e.g., more negative than -850 mV).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System identifies a section where the potential is less negative than the required level, indicating under-protection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System identifies a section where the potential is less negative than the required level, indicating under-protection.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for a technician to investigate the issue, which could be a rectifier failure or a damaged anode.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System dispatches a technician to troubleshoot the cathodic protection system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System dispatches a technician to troubleshoot the cathodic protection system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

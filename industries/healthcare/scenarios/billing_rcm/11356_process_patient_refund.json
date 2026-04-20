@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify a patient account with a credit balance from a work queue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an account that is due a refund."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an account that is due a refund.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the reason for the credit balance and confirm no other outstanding balances exist for the patient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the credit is valid and a refund is due."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the credit is valid and a refund is due.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Request a refund check to be issued to the patient for the credit amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A request is sent to accounts payable to cut a check, and the patient's balance is zeroed out."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A request is sent to accounts payable to cut a check, and the patient's balance is zeroed out.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

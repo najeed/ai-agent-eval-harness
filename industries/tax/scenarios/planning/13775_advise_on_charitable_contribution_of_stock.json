@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the tax benefits of donating appreciated stock directly to a charity versus selling the stock and donating the cash.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains that donating the stock directly avoids capital gains tax."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains that donating the stock directly avoids capital gains tax.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the potential tax savings from avoiding the capital gains tax.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent quantifies the tax benefit of donating the stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent quantifies the tax benefit of donating the stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the client on the steps to transfer the stock to the charity and the documentation required for the deduction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear action plan for the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear action plan for the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

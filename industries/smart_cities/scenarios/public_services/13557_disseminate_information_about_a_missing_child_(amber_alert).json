@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the Amber Alert details from the state police, including child's description and vehicle information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the critical information for the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the critical information for the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the alert message for various platforms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares the message content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares the message content.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Broadcast the Amber Alert on all city-controlled dynamic message signs on highways, public transit screens, and social media.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pushes the alert to all available public-facing systems."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pushes the alert to all available public-facing systems.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

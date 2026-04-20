@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the CVE details to understand the affected software and the nature of the vulnerability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst understands the technical details of the new CVE."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst understands the technical details of the new CVE.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check threat intelligence feeds to see if the CVE is being actively exploited in the wild.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst confirms that multiple threat actors are already exploiting this CVE."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst confirms that multiple threat actors are already exploiting this CVE.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Combine the technical severity of the CVE with the evidence of active exploitation to assign it the highest possible internal priority for patching.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst makes an accurate risk-based decision to escalate the priority of the vulnerability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst makes an accurate risk-based decision to escalate the priority of the vulnerability.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

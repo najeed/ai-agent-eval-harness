@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the corresponding purchase order for the incoming shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct PO based on the supplier and packing slip."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct PO based on the supplier and packing slip.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the items and count them to verify the quantities match the purchase order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that the quantities of all items received match the PO."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that the quantities of all items received match the PO.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the inventory system to reflect the newly received stock.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully increases the on-hand inventory count for the received items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully increases the on-hand inventory count for the received items.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate putaway instructions for the warehouse staff to store the items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list telling staff which warehouse locations to store the new items in."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list telling staff which warehouse locations to store the new items in.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

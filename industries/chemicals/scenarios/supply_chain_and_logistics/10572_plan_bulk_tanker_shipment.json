@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the product's requirements for transportation (e.g., stainless steel, heated tanker).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that a heated, stainless steel tanker is required."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that a heated, stainless steel tanker is required.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact approved bulk carriers to check for availability of a compatible tanker for the required date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an available tanker with Carrier XYZ."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an available tanker with Carrier XYZ.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the shipment with the carrier and generate the bill of lading.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the shipment and creates the necessary shipping document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the shipment and creates the necessary shipping document.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

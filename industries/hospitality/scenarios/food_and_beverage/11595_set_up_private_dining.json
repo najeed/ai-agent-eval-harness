@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Book the private dining room in the event management system for the requested date and time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The room is reserved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The room is reserved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Work with the guest to create a custom, pre-set menu for their dinner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A custom menu is created and added to the event order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A custom menu is created and added to the event order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a BEO for the event, assigning a dedicated server and notifying the kitchen of the special menu.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A BEO is created and distributed to ensure flawless execution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A BEO is created and distributed to ensure flawless execution.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

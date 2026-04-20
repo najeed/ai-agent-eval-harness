@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the leave request and determine the employee's eligibility for FMLA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Leave specialist verifies the employee has worked the required hours and tenure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Leave specialist verifies the employee has worked the required hours and tenure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the employee with the required FMLA paperwork, including the medical certification form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist sends the official FMLA packet to the employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist sends the official FMLA packet to the employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the completed certification is returned, approve the leave in the HRIS and inform the employee and their manager of the terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist approves the leave and communicates the start and end dates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist approves the leave and communicates the start and end dates.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the complaint from the tenant, including the location and a description of the unauthorized vehicle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the details of the complaint."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the details of the complaint.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the property's parking log to see if the vehicle belongs to another tenant or guest.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the vehicle is not registered with the property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the vehicle is not registered with the property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Follow property policy, which may include placing a warning sticker on the vehicle and, if not moved, contacting a towing company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the standard procedure for parking violations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the standard procedure for parking violations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the patient's discharge medication list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pharmacist knows which medications to discuss with the patient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pharmacist knows which medications to discuss with the patient.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the purpose, dose, and major side effects of each new medication to the patient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pharmacist clearly communicates the important information for each drug."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pharmacist clearly communicates the important information for each drug.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document in the EHR that discharge counseling was provided.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The counseling session is documented, which is a key part of the discharge process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The counseling session is documented, which is a key part of the discharge process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

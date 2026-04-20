@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all vendors whose insurance certificates are set to expire in the next 30 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of vendors with expiring insurance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of vendors with expiring insurance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send an automated email request to each vendor for their updated certificate of insurance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends out reminder emails."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends out reminder emails.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive the new certificates, update the expiration date in the vendor's file, and flag any non-responsive vendors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates compliant vendor files and flags non-compliant ones for follow-up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates compliant vendor files and flags non-compliant ones for follow-up.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive and log the grant proposal from the investigator.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the proposal, including the study protocol and budget, into the grant management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the proposal, including the study protocol and budget, into the grant management system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Route the proposal to an internal review committee for scientific and medical merit assessment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent routes the proposal to the appropriate review board."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent routes the proposal to the appropriate review board.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive the committee's decision, which is to approve the grant with a reduced budget.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the committee's decision and the approved funding amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the committee's decision and the approved funding amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Communicate the decision to the investigator and initiate the contract and payment process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a formal notification to the investigator and creates a task for the legal team to draft a contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a formal notification to the investigator and creates a task for the legal team to draft a contract.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

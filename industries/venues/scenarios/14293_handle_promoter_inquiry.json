@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Gather information about the artist, their genre, and their typical attendance figures.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the basic details of the potential event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the basic details of the potential event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the venue's booking calendar for availability in the requested time frame.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies several open dates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies several open dates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the promoter with the venue's standard rental rates and technical specifications packet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the relevant information packet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the relevant information packet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Offer to place a temporary, no-obligation hold on a date for them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent places a hold to encourage the promoter to move forward."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent places a hold to encourage the promoter to move forward.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

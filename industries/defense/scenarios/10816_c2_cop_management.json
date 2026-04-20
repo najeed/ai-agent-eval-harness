@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor incoming data feeds from air, sea, land, and space sensors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator maintains constant situational awareness of all data feeds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator maintains constant situational awareness of all data feeds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify and resolve conflicting track information (e.g., two sensors reporting the same target in different locations).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator correctly identifies and merges duplicate tracks into a single, accurate track."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator correctly identifies and merges duplicate tracks into a single, accurate track.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the classification of tracks based on new intelligence or behavior.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator changes an 'unidentified' track to 'hostile' based on a new report, ensuring all users of the COP see the update."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator changes an 'unidentified' track to 'hostile' based on a new report, ensuring all users of the COP see the update.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

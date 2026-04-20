@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive fault data (current, voltage) from the operated recloser.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System ingests the fault data from the SCADA system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System ingests the fault data from the SCADA system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the fault data to calculate the distance to the fault from the substation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System calculates the fault is approximately 2.5 miles down the feeder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System calculates the fault is approximately 2.5 miles down the feeder.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify the specific line segment on the GIS map corresponding to the calculated distance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System highlights the faulted segment between two specific poles."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System highlights the faulted segment between two specific poles.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

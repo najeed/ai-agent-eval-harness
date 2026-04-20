@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the rush order and flag it with high priority in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is created and marked as urgent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is created and marked as urgent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately generate a pick list and send it to the warehouse floor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pick list is sent to a warehouse worker's handheld device."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pick list is sent to a warehouse worker's handheld device.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for an expedited shipping service (e.g., overnight air) and generate the label.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects an overnight shipping option."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects an overnight shipping option.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Ensure the order is picked, packed, and ready for the carrier pickup.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The warehouse team prepares the order in time for the final pickup of the day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The warehouse team prepares the order in time for the final pickup of the day.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

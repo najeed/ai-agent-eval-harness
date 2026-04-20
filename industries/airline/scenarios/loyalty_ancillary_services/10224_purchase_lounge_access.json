@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that the passenger is flying with the airline today.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the passenger has a valid same-day boarding pass."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the passenger has a valid same-day boarding pass.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the passenger of the price for a day pass.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the correct price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the correct price.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the passenger's payment and provide them with access to the lounge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent takes payment and grants access."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent takes payment and grants access.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

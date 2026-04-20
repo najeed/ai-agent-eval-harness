@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the client's current portfolio holdings and their target asset allocation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls the current holdings and the target (e.g., 70% equity, 30% fixed income)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls the current holdings and the target (e.g., 70% equity, 30% fixed income).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the current allocation to the target and identify any significant drift.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent's analysis shows the portfolio has drifted to 75% equity due to market performance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent's analysis shows the portfolio has drifted to 75% equity due to market performance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Present the findings to the advisor and suggest rebalancing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a summary of the allocation drift and recommends rebalancing trades."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a summary of the allocation drift and recommends rebalancing trades.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

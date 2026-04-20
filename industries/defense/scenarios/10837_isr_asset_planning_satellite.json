@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Submit a new collection request with the target coordinates and required image resolution.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst accurately fills out and submits the collection request form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst accurately fills out and submits the collection request form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for available satellite passes over the target area in the next 24 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst identifies a suitable satellite pass occurring in 3 hours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst identifies a suitable satellite pass occurring in 3 hours.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Task the satellite to take the image during the identified pass.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully sends the collection command to the satellite operations center."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully sends the collection command to the satellite operations center.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

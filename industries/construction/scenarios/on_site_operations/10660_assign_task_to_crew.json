@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Select the 'Install 1st Floor Windows' task from the work breakdown structure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct task is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct task is identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assign the task to 'Crew B' and set the status to 'In Progress'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The task is successfully assigned and its status updated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The task is successfully assigned and its status updated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

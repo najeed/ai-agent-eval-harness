@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Log the receipt of a new shipment of API from a supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new inventory record for the API lot, including quantity and supplier details, and assigns it a 'Quarantine' status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new inventory record for the API lot, including quantity and supplier details, and assigns it a 'Quarantine' status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request quality control testing for the new API lot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a sample and test request in the LIMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a sample and test request in the LIMS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Receive the testing results from QC, confirming the API meets all specifications.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the certificate of analysis from LIMS showing passing results."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the certificate of analysis from LIMS showing passing results.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Change the status of the API lot from 'Quarantine' to 'Released', making it available for use in manufacturing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the inventory status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the inventory status.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

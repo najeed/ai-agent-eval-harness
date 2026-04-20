@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the ad performance report for the last 7 days, filtered by content category.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a report showing the 'Documentary' category has a low fill rate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a report showing the 'Documentary' category has a low fill rate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the ad campaigns targeted at that category to see why they are not filling.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that the floor price for ads in the documentary category is set too high."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that the floor price for ads in the documentary category is set too high.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Lower the floor price for the documentary category to be more competitive and attract more bids.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the floor price in the ad management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the floor price in the ad management system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

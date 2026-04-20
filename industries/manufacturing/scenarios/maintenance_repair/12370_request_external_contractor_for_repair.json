@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the approved service provider for the specific piece of equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the OEM's service contact information in the supplier database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the OEM's service contact information in the supplier database.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a service request detailing the issue and the asset that needs repair.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts a formal service request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts a formal service request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the service request to the external contractor and await a proposed appointment time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully dispatches the service request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully dispatches the service request.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

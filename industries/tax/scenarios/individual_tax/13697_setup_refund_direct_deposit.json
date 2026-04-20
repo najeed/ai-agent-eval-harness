@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Finalize the tax return to confirm the refund amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the final refund value."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the final refund value.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the taxpayer's bank account information (routing and account number).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely collects the bank details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely collects the bank details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the direct deposit information into the tax return before filing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly inputs the banking information into the designated fields on the return."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly inputs the banking information into the designated fields on the return.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

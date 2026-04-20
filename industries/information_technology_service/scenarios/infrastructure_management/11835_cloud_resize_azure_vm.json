@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the performance metrics for the Azure VM and confirm it is CPU-constrained.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician verifies CPU usage is constantly over 90%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician verifies CPU usage is constantly over 90%.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Recommend upgrading the VM to the next size up to provide more CPU cores.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client approves the recommendation and the associated cost increase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client approves the recommendation and the associated cost increase.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "During a scheduled maintenance window, resize the Azure VM to the larger instance type.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The VM is successfully resized, and performance improves."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The VM is successfully resized, and performance improves.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

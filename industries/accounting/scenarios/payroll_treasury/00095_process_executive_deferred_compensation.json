@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the executive's deferral election form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the form specifying the deferral amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the form specifying the deferral amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "When processing the executive's bonus, reduce the cash payment by the deferred amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the net bonus payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the net bonus payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a journal entry to record the deferred amount, debiting 'Bonus Expense' and crediting 'Deferred Compensation Liability'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts the correct entry to record the long-term liability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts the correct entry to record the long-term liability.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

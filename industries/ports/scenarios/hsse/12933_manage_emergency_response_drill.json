@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Activate the port's emergency alert system with a 'DRILL' message.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The alert system is activated, notifying all port personnel of the drill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The alert system is activated, notifying all port personnel of the drill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Coordinate the response of the port's internal fire brigade and the local city fire department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager communicates with both teams, directing them to the scene as per the plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager communicates with both teams, directing them to the scene as per the plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log all actions and communications during the drill and conduct a debrief afterwards to assess performance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete log of the drill is created, and a debriefing meeting is scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete log of the drill is created, and a debriefing meeting is scheduled.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

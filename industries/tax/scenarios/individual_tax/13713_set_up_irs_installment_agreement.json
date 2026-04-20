@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Determine the total tax amount owed by the taxpayer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the final balance due."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the final balance due.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the taxpayer's eligibility for the Online Payment Agreement (OPA) program.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the taxpayer meets the criteria for a streamlined installment agreement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the taxpayer meets the criteria for a streamlined installment agreement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Complete and submit Form 9465, Installment Agreement Request, with the tax return.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully prepares and files the request for a payment plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully prepares and files the request for a payment plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

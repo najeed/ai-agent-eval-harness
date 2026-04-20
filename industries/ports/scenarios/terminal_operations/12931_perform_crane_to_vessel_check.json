@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The crane operator lowers the spreader onto the first container to be discharged.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The crane's spreader is positioned over the target container."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The crane's spreader is positioned over the target container.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The lashing gang on the ship confirms that all four corner twistlocks are unlocked and gives a 'clear to lift' signal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The checker gives a thumbs-up signal or confirms via radio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The checker gives a thumbs-up signal or confirms via radio.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The crane operator receives the signal and proceeds to lock the spreader and lift the container.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator safely lifts the container from the vessel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator safely lifts the container from the vessel.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Attach high-voltage generators to the test article (fuselage section).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures all test equipment is properly connected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures all test equipment is properly connected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apply a simulated lightning strike (a high-voltage, high-current pulse) to the test article.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent safely conducts the simulated strike."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent safely conducts the simulated strike.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inspect the test article for any structural damage and check the connected avionics systems for any electrical upset or damage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds no structural damage and confirms all systems are still operational."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds no structural damage and confirms all systems are still operational.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

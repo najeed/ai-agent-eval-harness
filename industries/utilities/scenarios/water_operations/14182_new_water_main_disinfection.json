@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a flushing plan to ensure all stagnant water is removed from the new pipe.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates a sequence of hydrant operations to achieve the required flushing velocity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates a sequence of hydrant operations to achieve the required flushing velocity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "After flushing, create a plan to inject a high concentration of chlorine into the main and let it sit for the required contact time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System calculates the required chlorine dosage and contact time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System calculates the required chlorine dosage and contact time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After disinfection, schedule the collection of water samples to be tested for bacteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates work orders for the sampling crew."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates work orders for the sampling crew.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

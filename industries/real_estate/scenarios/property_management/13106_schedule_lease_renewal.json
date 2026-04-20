@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all tenants whose leases are expiring in the next 90 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a report of all upcoming lease expirations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a report of all upcoming lease expirations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For a specific tenant, generate a lease renewal offer with the new rental rate based on market analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A lease renewal offer letter is created with a 5% rent increase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A lease renewal offer letter is created with a 5% rent increase.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the renewal offer to the tenant and create a follow-up task for 14 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The offer is emailed to the tenant and a task is created in the system to check for a response."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The offer is emailed to the tenant and a task is created in the system to check for a response.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

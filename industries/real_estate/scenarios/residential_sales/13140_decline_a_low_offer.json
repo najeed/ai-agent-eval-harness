@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm with the seller that they wish to reject the offer outright.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets clear instruction from the seller client to reject."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets clear instruction from the seller client to reject.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Formally reject the offer in writing by checking the 'rejected' box on the offer form and having the seller sign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The offer document is marked as rejected and signed by the seller."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The offer document is marked as rejected and signed by the seller.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Return the signed rejection to the buyer's agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The official rejection is sent to the buyer's agent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The official rejection is sent to the buyer's agent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Input the mission parameters, timings, and desired flight paths for all three assets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner accurately enters all required data into the planning system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner accurately enters all required data into the planning system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run the deconfliction tool to identify any potential conflicts in time, space, or altitude.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool correctly identifies several potential conflicts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool correctly identifies several potential conflicts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Adjust the flight paths, timings, or altitudes of the assets to resolve all identified conflicts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner creates a new plan where all assets can operate safely."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner creates a new plan where all assets can operate safely.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the individual income and deduction information for both partners.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all relevant financial data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all relevant financial data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate their tax liability as two single individuals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines their current combined tax burden."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines their current combined tax burden.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate their projected tax liability as a married couple filing jointly and compare the results.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares a comparative analysis showing the couple will receive a 'marriage bonus' (pay less tax combined)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares a comparative analysis showing the couple will receive a 'marriage bonus' (pay less tax combined).",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

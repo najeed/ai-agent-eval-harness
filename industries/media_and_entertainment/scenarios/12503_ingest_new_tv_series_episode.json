@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the new episode file and log it in the media asset management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully ingests the file and creates a new asset record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully ingests the file and creates a new asset record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run an automated QC check on the file for technical issues like video artifacts or audio sync problems.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The QC scan reports a minor audio sync issue in the last 5 minutes of the episode."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The QC scan reports a minor audio sync issue in the last 5 minutes of the episode.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Flag the episode for manual review by a QC operator and notify the production house of the issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a review task and sends an automated notification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a review task and sends an automated notification.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

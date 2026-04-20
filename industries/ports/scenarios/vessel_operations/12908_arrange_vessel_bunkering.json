@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the bunkering request, including the type and quantity of fuel required.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator logs the request for 500 metric tons of VLSFO."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator logs the request for 500 metric tons of VLSFO.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the licensed bunker barge supplier to confirm availability and schedule the service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator schedules the bunkering service with 'Port Fuel Supplies' for the requested time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator schedules the bunkering service with 'Port Fuel Supplies' for the requested time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the harbormaster and HSSE department of the scheduled bunkering operation for safety oversight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All relevant internal departments are informed of the operation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All relevant internal departments are informed of the operation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

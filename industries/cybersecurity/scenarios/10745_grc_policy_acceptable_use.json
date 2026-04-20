@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the current AUP for any needed updates related to new technologies or social media platforms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst identifies that the policy needs a new section on the acceptable use of generative AI tools."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst identifies that the policy needs a new section on the acceptable use of generative AI tools.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the updated AUP and submit it for approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst creates and gets approval for the updated policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst creates and gets approval for the updated policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Launch a campaign requiring all employees to read and electronically sign the updated AUP within 30 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully manages the annual acknowledgement campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully manages the annual acknowledgement campaign.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

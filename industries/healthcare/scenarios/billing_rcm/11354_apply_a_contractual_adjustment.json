@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the claim, the total charges, and the allowed amount from the explanation of benefits (EOB).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Biller has all the necessary financial figures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Biller has all the necessary financial figures.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the contractual adjustment amount (Total Charges - Allowed Amount).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Biller correctly calculates the amount that needs to be written off."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Biller correctly calculates the amount that needs to be written off.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post the payment and the contractual adjustment to the claim.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The payment is posted, the adjustment is applied, and the remaining balance is correctly identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The payment is posted, the adjustment is applied, and the remaining balance is correctly identified.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

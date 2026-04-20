@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Insert the borescope probe into the engine's inspection ports.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly navigates the probe into the engine."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly navigates the probe into the engine.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Visually inspect the compressor and turbine blades for any signs of foreign object damage (FOD), cracks, or distress.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent carefully inspects all visible surfaces."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent carefully inspects all visible surfaces.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Record images or video of any findings and create a report for the engineering team to review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds minor erosion on one blade, captures an image, and generates a report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds minor erosion on one blade, captures an image, and generates a report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

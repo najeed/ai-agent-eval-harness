@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'Perimeter Anomaly' alert from a camera at the 'City Reservoir'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the security alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the security alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the live and archived video of the incident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms a person is pacing back and forth along the fence line."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms a person is pacing back and forth along the fence line.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a police unit to perform a welfare check and investigate the suspicious activity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a patrol unit to the location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a patrol unit to the location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

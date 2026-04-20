@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the business case for the reorganization to identify the stated goals, such as 'reduce operating costs by 15%'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor understands the intended outcomes of the project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor understands the intended outcomes of the project.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the financial data from before and after the reorganization.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows that operating costs were only reduced by 5%, falling short of the goal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows that operating costs were only reduced by 5%, falling short of the goal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Interview senior leaders to understand the reasons for the shortfall and document lessons learned for future strategic projects.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The audit provides insights into why the project underdelivered on its financial goals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The audit provides insights into why the project underdelivered on its financial goals.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

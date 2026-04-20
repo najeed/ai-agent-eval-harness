@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Take several photos of the muckpile (the pile of blasted rock) from different angles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "High-resolution images of the muckpile are captured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "High-resolution images of the muckpile are captured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Upload the images to a fragmentation analysis software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The images are successfully uploaded for processing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The images are successfully uploaded for processing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The software analyzes the images and generates a particle size distribution curve, showing the percentage of fine and coarse rock.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is generated showing the P80 (80% passing) size is 30cm, which meets the target for efficient digging."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is generated showing the P80 (80% passing) size is 30cm, which meets the target for efficient digging.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

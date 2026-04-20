@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Look up the order using the customer's name or order number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully finds the customer's order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully finds the customer's order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the order's current status in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees the order status is 'Shipped'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees the order status is 'Shipped'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Retrieve the tracking number and provide it to the customer, along with a direct link to the carrier's tracking page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gives the customer all the necessary information to track their package themselves."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gives the customer all the necessary information to track their package themselves.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

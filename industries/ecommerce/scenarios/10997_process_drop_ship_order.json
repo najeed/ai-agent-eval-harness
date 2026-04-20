@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "When a drop-ship item is ordered, identify the correct supplier for that item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System identifies that the product is fulfilled by 'Supplier ABC'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System identifies that the product is fulfilled by 'Supplier ABC'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically send a purchase order or fulfillment request to the supplier with the customer's shipping information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully transmits the order details to the supplier's system via API or email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully transmits the order details to the supplier's system via API or email.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the supplier provides a tracking number, update the customer's order with that information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System ingests the tracking number from the supplier and updates the customer's order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System ingests the tracking number from the supplier and updates the customer's order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

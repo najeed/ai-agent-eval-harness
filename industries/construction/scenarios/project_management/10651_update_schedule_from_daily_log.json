@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Review the latest daily log to identify all tasks reported as 'completed'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies 'Install Windows - 3rd Floor' as completed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies 'Install Windows - 3rd Floor' as completed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the status of the identified task in the Gantt chart to '100% Complete'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The task's status is correctly updated in the project schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The task's status is correctly updated in the project schedule.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the dangerous goods declaration (DGD) for the container and verify its IMO class.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer confirms the container holds Class 3 flammable liquids."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer confirms the container holds Class 3 flammable liquids.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ensure the container is assigned to be stacked in the designated HAZMAT segregation zone in the yard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer verifies the yard plan places the container away from other incompatible goods."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer verifies the yard plan places the container away from other incompatible goods.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the terminal operations team of the container's arrival and handling requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An alert is sent to the operations team to ensure special care is taken during its movement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An alert is sent to the operations team to ensure special care is taken during its movement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

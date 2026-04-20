@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all required L/C application details: beneficiary, amount, expiry date, and terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately collects all necessary information for the L/C."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately collects all necessary information for the L/C.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a credit check and place a hold on the company's funds or credit line for the L/C amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the company has sufficient credit and places a hold on the facility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the company has sufficient credit and places a hold on the facility.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue the letter of credit and send it to the beneficiary via SWIFT.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully issues the L/C and provides the SWIFT confirmation to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully issues the L/C and provides the SWIFT confirmation to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze local zoning codes to determine the maximum number of units and building height allowed on the parcel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the development potential based on zoning."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the development potential based on zoning.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Research local market rents and vacancy rates for similar apartment complexes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers data to project potential income."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers data to project potential income.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a pro-forma financial model estimating development costs, potential income, and return on investment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a detailed financial projection to guide the purchase decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a detailed financial projection to guide the purchase decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

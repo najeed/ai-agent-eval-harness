@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a remote line test and modem diagnostic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The diagnostic tool returns 'MODEM_OFFLINE'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The diagnostic tool returns 'MODEM_OFFLINE'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the customer to perform a power cycle on their modem and router.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear, step-by-step instructions for a power cycle."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear, step-by-step instructions for a power cycle.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the power cycle, run the diagnostics again. If the line is now OK, close the case. If not, schedule a technician.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent re-runs diagnostics. The modem is still offline. Agent schedules a technician visit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent re-runs diagnostics. The modem is still offline. Agent schedules a technician visit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

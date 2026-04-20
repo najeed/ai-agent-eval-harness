@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain Form 1098-E, Student Loan Interest Statement, from the taxpayer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the necessary tax form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the necessary tax form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the amount of interest paid from Form 1098-E.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly inputs the interest amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly inputs the interest amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the allowable deduction, taking into account any income phase-out limitations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the final deduction amount to be reported on Schedule 1."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the final deduction amount to be reported on Schedule 1.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

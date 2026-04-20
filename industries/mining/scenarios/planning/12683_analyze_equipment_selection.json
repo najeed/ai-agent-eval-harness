@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather quotes for the new, larger haul trucks and their operating cost estimates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The capital and operating costs for the new fleet option are collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The capital and operating costs for the new fleet option are collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a haulage simulation to quantify the productivity benefits (e.g., lower cost per ton) of the larger trucks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The simulation shows a 15% reduction in cost per ton with the larger trucks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The simulation shows a 15% reduction in cost per ton with the larger trucks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform a financial analysis to compare the NPV of continuing with the current fleet versus investing in the new, larger fleet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows that despite the high capital cost, the NPV is higher with the new fleet, and a recommendation to purchase is made."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows that despite the high capital cost, the NPV is higher with the new fleet, and a recommendation to purchase is made.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

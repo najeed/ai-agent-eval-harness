@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the wet well level and the run times of the pumps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System is continuously collecting operational data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System is continuously collecting operational data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system detects that the wet well level is high, but the pumps are not running.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a critical alarm for a potential lift station failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a critical alarm for a potential lift station failure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a maintenance crew immediately to troubleshoot the issue (e.g., power failure, clogged pump) before a sewer overflow occurs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates a Priority 1 emergency work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates a Priority 1 emergency work order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

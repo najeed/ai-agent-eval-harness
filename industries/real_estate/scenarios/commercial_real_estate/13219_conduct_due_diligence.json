@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a due diligence checklist including items like reviewing all leases, service contracts, and financial statements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a comprehensive checklist for the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a comprehensive checklist for the transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request all necessary documents from the seller's agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a formal request for all checklist items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a formal request for all checklist items.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Track the received documents and follow up on outstanding items before the due diligence period expires.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent maintains an organized tracking system and ensures all documents are received on time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent maintains an organized tracking system and ensures all documents are received on time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

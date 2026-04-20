@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Authenticate the policyholder and retrieve their policy details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely identifies the policyholder and their active policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely identifies the policyholder and their active policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the new beneficiary's full name, date of birth, and relationship to the insured.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately captures the new beneficiary's information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately captures the new beneficiary's information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the beneficiary change request and send a confirmation letter to the policyholder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the beneficiary in the system and queues a confirmation letter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the beneficiary in the system and queues a confirmation letter.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

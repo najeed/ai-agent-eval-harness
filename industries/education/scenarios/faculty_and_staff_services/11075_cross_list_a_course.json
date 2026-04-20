@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the course information and the two departments that will be sharing it (e.g., 'SOCI350' and 'ANTH350').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the details of the cross-listing request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the details of the cross-listing request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that both department chairs have approved the cross-listing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the system for the required approvals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the system for the required approvals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the cross-listing in the SIS, linking the two course codes to the same class section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully configures the course in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully configures the course in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

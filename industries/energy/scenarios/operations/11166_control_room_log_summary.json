@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the digital control room log for the past 12 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes all log entries from the shift."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes all log entries from the shift.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify and extract all significant events, such as plant trips, curtailment orders, and safety incidents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies 3 major events."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies 3 major events.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Summarize the events in a clear, concise handover report, including the status of any ongoing issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a bulleted summary report ready for the shift change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a bulleted summary report ready for the shift change.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

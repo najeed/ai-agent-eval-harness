@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Gather all fuel purchase records for the fleet for the previous quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a list of all fuel transactions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a list of all fuel transactions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather all mileage data from the trucks' ELDs, broken down by state/province, for the quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves a report of all miles traveled in each jurisdiction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves a report of all miles traveled in each jurisdiction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use an IFTA calculation tool to determine the net fuel tax owed or to be refunded by each jurisdiction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system calculates the tax liability for each state."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system calculates the tax liability for each state.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate the final IFTA report and file it with the base jurisdiction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The quarterly IFTA report is successfully filed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The quarterly IFTA report is successfully filed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Identify that the customer is porting from a prepaid carrier and ask for the specific information required (e.g., phone's IMEI, not an account PIN).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the source carrier type and asks for the right information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the source carrier type and asks for the right information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit the port-in request using the prepaid-specific fields.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the port request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the port request.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

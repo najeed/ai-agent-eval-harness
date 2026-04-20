@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the main theme and keywords of the blog post.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the visual style needed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the visual style needed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search a stock photography website for relevant images using the identified keywords.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of potential images."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of potential images.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select and download 2-3 high-quality, on-brand images.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acquires the necessary visual assets for the blog post."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acquires the necessary visual assets for the blog post.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

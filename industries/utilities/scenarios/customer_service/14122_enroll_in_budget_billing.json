@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's usage history for the past 12 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully fetches the required historical data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully fetches the required historical data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the estimated monthly budget billing amount by averaging the past year's bills.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the customer with their calculated monthly payment amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the customer with their calculated monthly payment amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain how the program works, including the periodic settlement process, and enroll the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the terms and successfully enrolls the customer in the program."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the terms and successfully enrolls the customer in the program.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

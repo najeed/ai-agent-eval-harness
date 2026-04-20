@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the SSO configuration settings the customer entered into the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant has access to the customer's current settings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant has access to the customer's current settings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the customer's settings against the metadata from their Identity Provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant finds a typo in the 'Entity ID' field."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant finds a typo in the 'Entity ID' field.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the customer of the typo and have them correct it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer corrects the typo, and SSO begins working."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer corrects the typo, and SSO begins working.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

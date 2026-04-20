@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the patient on the ADC screen.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse correctly identifies the patient at the ADC."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse correctly identifies the patient at the ADC.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the 'override' function to search for and select the needed medication (e.g., 'Epinephrine').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse successfully uses the override feature to access a non-profiled medication."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse successfully uses the override feature to access a non-profiled medication.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter a reason for the override and retrieve the medication. The system logs the event for later review by pharmacy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse obtains the medication quickly, and the high-risk transaction is logged for audit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse obtains the medication quickly, and the high-risk transaction is logged for audit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

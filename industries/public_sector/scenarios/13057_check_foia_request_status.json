@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the journalist and their request using the tracking number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The records officer successfully locates the pending request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The records officer successfully locates the pending request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the current status from the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer finds the status is 'In Review' with the legal department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer finds the status is 'In Review' with the legal department.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a status update to the journalist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer informs the journalist that the request is still under review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer informs the journalist that the request is still under review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

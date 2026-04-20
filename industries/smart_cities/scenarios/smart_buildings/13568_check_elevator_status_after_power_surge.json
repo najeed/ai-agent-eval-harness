@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'Power Surge Detected' alert from the smart grid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the grid event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the grid event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the status of all elevators across all buildings managed by the central BMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of all elevators and their current status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of all elevators and their current status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify one elevator in the 'Public Library' that is reporting a 'Fault' status and is not on the ground floor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pinpoints a potential emergency situation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pinpoints a potential emergency situation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Dispatch the fire department to the library to check for trapped passengers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches emergency services to the specific location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches emergency services to the specific location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

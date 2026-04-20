@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather details of the customer's current vehicle: VIN, make, model, year, mileage, and general condition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all required vehicle information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all required vehicle information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the VIN to look up the vehicle's history report for accidents or damage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the history report and notes a minor accident from two years ago."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the history report and notes a minor accident from two years ago.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide an estimated trade-in value range based on market data, explaining that the final value requires a physical inspection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a realistic value range and clearly sets expectations for the final appraisal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a realistic value range and clearly sets expectations for the final appraisal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

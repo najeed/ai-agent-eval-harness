@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The housekeeper respects the sign and does not enter the room.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Guest privacy is respected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Guest privacy is respected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The housekeeper updates the room status in their device to 'Do Not Disturb'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The room status is accurately reflected in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The room status is accurately reflected in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The housekeeper continues to the next room on their list and will check back on the DND room later in their shift.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The workflow is adjusted according to policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The workflow is adjusted according to policy.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

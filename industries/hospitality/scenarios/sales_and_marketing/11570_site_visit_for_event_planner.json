@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Greet the client and review their event requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The sales manager understands the client's needs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The sales manager understands the client's needs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide a guided tour of the relevant spaces: ballroom, breakout rooms, and guest rooms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client is shown all relevant facilities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client is shown all relevant facilities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Answer any questions the client has and follow up with a formal proposal after the visit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The sales manager effectively showcases the hotel and follows up professionally."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The sales manager effectively showcases the hotel and follows up professionally.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

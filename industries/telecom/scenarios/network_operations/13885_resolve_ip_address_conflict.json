@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the duplicate IP address and the MAC addresses of the two devices involved from the alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the conflicting IP and MACs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the conflicting IP and MACs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify which of the two devices is the legitimate owner of the IP address based on system records.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines one device has a static assignment while the other should be using DHCP."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines one device has a static assignment while the other should be using DHCP.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Remotely force the non-legitimate device to release its IP and request a new one via DHCP.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends a DHCP release/renew command to the problematic device."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends a DHCP release/renew command to the problematic device.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

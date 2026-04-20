@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the guest's flight time, number of passengers, and luggage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary details for the transport booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary details for the transport booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the hotel's preferred car service vendor to book the transport.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books a sedan for the requested time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books a sedan for the requested time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the booking and price with the guest and offer to add the charge to their room folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all details and posts the charge to the guest's bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all details and posts the charge to the guest's bill.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the requested changes to the job description from the manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP receives the updated text for the job description."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP receives the updated text for the job description.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the changes to ensure they don't impact the job's classification (e.g., exempt/non-exempt status).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP reviews the changes and confirms the FLSA classification is still correct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP reviews the changes and confirms the FLSA classification is still correct.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the official job description in the HRIS job catalog.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP successfully updates the job description document in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP successfully updates the job description document in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

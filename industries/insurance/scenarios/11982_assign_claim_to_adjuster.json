@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the new claim to assess its complexity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A claims manager reviews the file and determines it requires an experienced adjuster."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A claims manager reviews the file and determines it requires an experienced adjuster.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the workload and specialty of available senior adjusters.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager reviews the team's current assignments to find an adjuster with capacity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager reviews the team's current assignments to find an adjuster with capacity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the claim to the selected adjuster.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager successfully assigns the new claim to the appropriate adjuster's queue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager successfully assigns the new claim to the appropriate adjuster's queue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

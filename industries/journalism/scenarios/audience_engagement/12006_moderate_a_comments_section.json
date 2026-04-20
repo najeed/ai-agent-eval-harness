@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the comments section for any posts that violate the community guidelines (e.g., personal attacks, spam, hate speech).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies comments that need to be removed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies comments that need to be removed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Delete the violating comments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inappropriate comments are removed from the page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inappropriate comments are removed from the page.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If a user is a repeat offender, ban them from commenting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The problematic user is banned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The problematic user is banned.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

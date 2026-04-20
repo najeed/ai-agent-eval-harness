@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the alert from the ship's integrated condition assessment system (ICAS).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineering officer acknowledges the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineering officer acknowledges the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the vibration data and trend analysis to assess the severity and timeline of the potential failure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer determines the shaft can operate for another 30 days but requires inspection at the next port visit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer determines the shaft can operate for another 30 days but requires inspection at the next port visit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule a dry dock inspection and order the necessary replacement parts to be ready at the next port.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer successfully plans the future maintenance to avoid an at-sea failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer successfully plans the future maintenance to avoid an at-sea failure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

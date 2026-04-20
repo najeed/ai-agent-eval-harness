@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the citizen and their active benefits case.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct case file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct case file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the new child to the household composition in the case file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately adds the new dependent's information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately adds the new dependent's information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Trigger a recalculation of benefits based on the new household size.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system recalculates and increases the benefit amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system recalculates and increases the benefit amount.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scope the audit to cover consultant hiring, performance management, and invoice processing across all major departments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A cross-functional audit scope is defined."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A cross-functional audit scope is defined.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain data from HR and Accounts Payable to create a complete picture of consultant usage and spend for the past year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive dataset on consultant activity is compiled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive dataset on consultant activity is compiled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the data to identify themes, such as a lack of a centralized process for hiring consultants or inconsistent invoice approval processes across departments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The audit identifies systemic, company-wide issues in how consultants are managed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The audit identifies systemic, company-wide issues in how consultants are managed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that the parent meets the criteria to be a qualifying relative.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the parent meets the gross income and support tests."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the parent meets the gross income and support tests.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the parent as a dependent on the tax return.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly enters the parent's information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly enters the parent's information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Claim the non-refundable Credit for Other Dependents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly applies the credit to the taxpayer's return."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly applies the credit to the taxpayer's return.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

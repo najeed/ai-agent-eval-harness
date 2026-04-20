@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a batch job to identify all patients with a balance greater than $0 that is older than 30 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a list of all accounts that need a statement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a list of all accounts that need a statement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the patient statements for the identified accounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system creates individual statement files for each patient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system creates individual statement files for each patient.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the statements to the printing vendor for mailing or transmit them to the patient portal for electronic delivery.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The statements are successfully sent to patients."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The statements are successfully sent to patients.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

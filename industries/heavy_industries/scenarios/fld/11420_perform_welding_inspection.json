@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the welding procedure specification (WPS) for the weld being inspected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the WPS, which specifies the required weld size and quality criteria."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the WPS, which specifies the required weld size and quality criteria.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a visual inspection of the weld, checking for defects like cracks, porosity, or undercut.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspector visually examines the weld."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspector visually examines the weld.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the result of the inspection as 'Pass' in the quality management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the successful inspection, and the weld is now approved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the successful inspection, and the weld is now approved.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

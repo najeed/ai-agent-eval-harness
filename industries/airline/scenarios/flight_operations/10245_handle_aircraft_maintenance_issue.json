@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the pilot's report and get details on the maintenance issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the nature of the technical problem."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the nature of the technical problem.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the airport's maintenance team and dispatch a technician to the aircraft.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully dispatches a technician."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully dispatches a technician.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the technician's diagnosis, decide whether to accept a delay for the repair or swap to a different aircraft.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician reports a quick fix is possible. Agent accepts a 30-minute delay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician reports a quick fix is possible. Agent accepts a 30-minute delay.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

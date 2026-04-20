@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Identify orders that were delivered 7 days ago.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates a list of eligible orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates a list of eligible orders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each order, generate a personalized email that includes direct links to the review pages for the purchased products.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates and sends personalized review request emails."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates and sends personalized review request emails.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

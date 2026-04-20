@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a report of all open purchase order lines where goods have been received but an invoice has not been posted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the GRNI report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the GRNI report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total value of the items on the GRNI report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the total accrual amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the total accrual amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create and post a journal entry to debit the relevant expense/inventory accounts and credit 'AP Accruals'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts the correct month-end accrual entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts the correct month-end accrual entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

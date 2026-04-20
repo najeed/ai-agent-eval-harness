@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Make an announcement to direct passengers' attention to the briefing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Crew gets the passengers' attention."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Crew gets the passengers' attention.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Demonstrate the use of safety equipment, including seatbelts, oxygen masks, and life vests.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Crew performs the safety demonstration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Crew performs the safety demonstration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Point out the emergency exits and ensure the exit rows are clear.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Crew completes the briefing and performs a final cabin check."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Crew completes the briefing and performs a final cabin check.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

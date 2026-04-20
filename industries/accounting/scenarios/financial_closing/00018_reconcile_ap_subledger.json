@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run the Accounts Payable aging report as of the last day of the month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the report showing a total AP balance of $550,123."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the report showing a total AP balance of $550,123.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the month-end balance for the Accounts Payable account from the general ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the GL balance is $550,123."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the GL balance is $550,123.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the two totals and confirm that they match.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the sub-ledger reconciles to the general ledger."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the sub-ledger reconciles to the general ledger.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

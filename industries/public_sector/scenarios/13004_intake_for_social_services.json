@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new case file for the family.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The social worker creates a new case in the case management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The social worker creates a new case in the case management system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Conduct a needs assessment, gathering information on housing, employment, health, and other challenges.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The social worker documents the family's situation and identifies key areas of need."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The social worker documents the family's situation and identifies key areas of need.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify and refer the family to relevant internal and external support programs (e.g., housing assistance, job training).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The social worker provides the family with a list of concrete resources and makes initial referrals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The social worker provides the family with a list of concrete resources and makes initial referrals.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

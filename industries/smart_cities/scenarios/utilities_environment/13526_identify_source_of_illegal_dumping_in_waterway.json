@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'Chemical Anomaly' alert from a water quality sensor in the 'City River'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the high-priority environmental alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the high-priority environmental alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review camera feeds from upstream storm drains and industrial outfalls near the sensor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews footage from several cameras."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews footage from several cameras.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify a truck illegally dumping liquid into a storm drain from one of the camera feeds.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds visual evidence of the illegal dumping, including the truck's license plate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds visual evidence of the illegal dumping, including the truck's license plate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a report and dispatch an environmental enforcement team to investigate the company associated with the truck.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent escalates the incident to the appropriate enforcement agency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent escalates the incident to the appropriate enforcement agency.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

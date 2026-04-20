@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Collect access logs from all relays, meters, and controllers in the substation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System gathers all relevant security logs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System gathers all relevant security logs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the logs for any failed login attempts or access from unrecognized IP addresses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analysis shows no anomalous access attempts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analysis shows no anomalous access attempts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the firmware on all devices is up to date and patched for known vulnerabilities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System confirms all devices are running the latest approved firmware."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System confirms all devices are running the latest approved firmware.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

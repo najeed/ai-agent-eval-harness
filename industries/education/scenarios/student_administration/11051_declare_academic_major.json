@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and confirm they have met the requirements to declare a major (e.g., completed enough credits).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student is eligible."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student is eligible.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the student with the official 'Declaration of Major' form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the form to the student's email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the form to the student's email.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the process for getting the form signed by the department head and submitting it to the registrar's office.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly outlines the required steps and signatures."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly outlines the required steps and signatures.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

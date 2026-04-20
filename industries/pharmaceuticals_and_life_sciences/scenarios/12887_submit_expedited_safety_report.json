@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Verify that the case has been fully processed and medically reviewed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the case is quality checked and ready for submission."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the case is quality checked and ready for submission.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the electronic submission file (e.g., an E2B XML file).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the E2B file from the safety database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the E2B file from the safety database.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the file to the health authority via the electronic submission gateway.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the file to the FDA gateway."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the file to the FDA gateway.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Receive and archive the electronic acknowledgement from the health authority.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the acknowledgement (MDN) and attaches it to the case record as proof of submission."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the acknowledgement (MDN) and attaches it to the case record as proof of submission.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

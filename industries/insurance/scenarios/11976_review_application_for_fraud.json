@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the fraud alert details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter sees the system flagged a mismatch between the stated income and third-party data sources."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter sees the system flagged a mismatch between the stated income and third-party data sources.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request additional financial documentation from the applicant to verify their income.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter sends a request back to the agent for the applicant's tax returns."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter sends a request back to the agent for the applicant's tax returns.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place the application on hold pending receipt and review of the documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The underwriter updates the application status to 'Pending-Additional Information'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The underwriter updates the application status to 'Pending-Additional Information'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

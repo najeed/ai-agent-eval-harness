@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the diminished value claim from the third party.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster logs the new demand in the claim file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster logs the new demand in the claim file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the state's laws regarding diminished value claims.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster confirms that diminished value claims are permissible in the relevant state."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster confirms that diminished value claims are permissible in the relevant state.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the claim and make a reasonable settlement offer based on the vehicle's type, age, and damage severity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster analyzes the case and makes a settlement offer, which may be less than the original demand."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster analyzes the case and makes a settlement offer, which may be less than the original demand.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

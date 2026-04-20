@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the updated ETA for the delayed vessel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Scheduler logs the new ETA, which is 12 hours later than planned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Scheduler logs the new ETA, which is 12 hours later than planned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the vessel's currently assigned berth is still available at the new ETA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Scheduler finds the original berth is now occupied by another vessel at the new time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Scheduler finds the original berth is now occupied by another vessel at the new time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Find a new available berth or reschedule the conflicting vessel, then update and re-confirm the plan with all parties.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Scheduler finds a different available berth, reallocates the vessel, re-books services, and sends an updated confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Scheduler finds a different available berth, reallocates the vessel, re-books services, and sends an updated confirmation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

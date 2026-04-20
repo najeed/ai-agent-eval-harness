@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all active assets from the fixed asset register, including asset ID, description, and location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces the complete asset listing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces the complete asset listing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide a mobile interface for employees to scan the barcode on each physical asset and confirm its location and condition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a tool that allows for efficient physical counting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a tool that allows for efficient physical counting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the physical count data against the asset register to identify any missing or misplaced assets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a reconciliation report showing 5 missing laptops."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a reconciliation report showing 5 missing laptops.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Draft the necessary adjustments to write off the missing assets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent proposes the journal entry to write off the cost and accumulated depreciation of the missing assets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent proposes the journal entry to write off the cost and accumulated depreciation of the missing assets.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Generate a guest list of all fans who purchased the VIP package.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls the list from the ticketing system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls the list from the ticketing system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set up a check-in station at the designated meet and greet location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent coordinates the setup of the check-in area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent coordinates the setup of the check-in area.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check in guests against the list as they arrive.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent manages the check-in process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent manages the check-in process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Coordinate with the artist's security to manage the flow of guests and ensure the event runs smoothly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent works with the tour manager to execute the meet and greet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent works with the tour manager to execute the meet and greet.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

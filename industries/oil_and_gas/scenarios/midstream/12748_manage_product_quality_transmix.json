@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Predict the arrival time and volume of the transmix batch at the downstream terminal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system provides an accurate estimate of the transmix arrival and size."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system provides an accurate estimate of the transmix arrival and size.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Instruct the terminal to line up the incoming stream to a dedicated transmix storage tank.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The terminal confirms it is ready to receive the interface into the correct tank."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The terminal confirms it is ready to receive the interface into the correct tank.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the volume of transmix received for accounting and reprocessing purposes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The received transmix volume is accurately logged in the inventory system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The received transmix volume is accurately logged in the inventory system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

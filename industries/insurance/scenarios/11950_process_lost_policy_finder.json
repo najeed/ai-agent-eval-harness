@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Collect the deceased person's information (full name, date of birth, SSN).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately captures the information needed to search the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately captures the information needed to search the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the policy administration system for any policies under the deceased's name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs a search and finds an active policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs a search and finds an active policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If a policy is found, inform the caller and begin the standard claim process, starting with verifying they are a beneficiary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs the caller that a policy was found and proceeds to the first step of the claims process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs the caller that a policy was found and proceeds to the first step of the claims process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

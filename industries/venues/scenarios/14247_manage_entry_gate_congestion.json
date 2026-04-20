@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the congestion alert from the CCTV monitoring system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the problem at the main gate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the problem at the main gate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status of other entry gates to see if they have spare capacity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees that the East and West gates have minimal lines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees that the East and West gates have minimal lines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch staff with megaphones to the main gate to direct guests to the less congested East and West gates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches staff to redirect the crowd."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches staff to redirect the crowd.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the venue's social media and mobile app with a message advising guests to use the alternate gates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts a public message to help manage the crowd flow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts a public message to help manage the crowd flow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

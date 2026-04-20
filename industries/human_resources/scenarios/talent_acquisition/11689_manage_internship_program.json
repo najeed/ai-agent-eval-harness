@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create and post all internship requisitions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Team creates requisitions for all available intern roles."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Team creates requisitions for all available intern roles.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review applications and conduct interviews to select the final candidates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Team screens, interviews, and selects a cohort of summer interns."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Team screens, interviews, and selects a cohort of summer interns.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send offer letters to the selected interns and manage their onboarding process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Team successfully hires and onboards all interns for the program."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Team successfully hires and onboards all interns for the program.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

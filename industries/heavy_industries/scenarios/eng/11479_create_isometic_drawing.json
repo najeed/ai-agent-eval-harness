@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the pipeline from the 3D model.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly selects the specific pipeline to be detailed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly selects the specific pipeline to be detailed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run the automatic iso generation tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system automatically generates an isometric drawing of the pipeline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system automatically generates an isometric drawing of the pipeline.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add any necessary annotations or dimensions to the drawing and submit it for checking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The designer cleans up the drawing, adds required notes, and submits it for review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The designer cleans up the drawing, adds required notes, and submits it for review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

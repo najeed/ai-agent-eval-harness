@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select a relevant safety topic for the day's work (e.g., 'Working at Heights').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent chooses an appropriate topic from a list of safety modules."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent chooses an appropriate topic from a list of safety modules.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Present the key points of the safety topic to the crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supervisor effectively communicates the safety information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supervisor effectively communicates the safety information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Record the topic, date, and attendees in the safety management system to document that the training occurred.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully logs the toolbox talk and the crew members who attended."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully logs the toolbox talk and the crew members who attended.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

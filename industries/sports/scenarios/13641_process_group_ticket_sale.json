@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check for the availability of a block of 50 seats together for the desired game.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an available block of seats in a specific section."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an available block of seats in a specific section.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide a quote for the group sale, including any applicable group discounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a quote with a 10% group discount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a quote with a 10% group discount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the sale and issue the block of tickets to the company representative.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully completes the sale and delivers the tickets digitally."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully completes the sale and delivers the tickets digitally.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

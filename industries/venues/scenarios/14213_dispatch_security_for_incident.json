@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the report and confirm the location of the incident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the location (e.g., Section 112, Row G) from the usher."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the location (e.g., Section 112, Row G) from the usher.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the nearest two security guards on the security dispatch map.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the two closest available guards."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the two closest available guards.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch the two guards to the location to de-escalate the situation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the dispatch order to the guards' devices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the dispatch order to the guards' devices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Log the incident in the security log, including the report time, location, and responding units.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new incident record in the security system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new incident record in the security system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

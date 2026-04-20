@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the student and explain the process for a legal name change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent explains the need for official documentation (e.g., court order, marriage certificate)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent explains the need for official documentation (e.g., court order, marriage certificate).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the student with a secure link to upload their legal documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a secure upload link to the student's email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a secure upload link to the student's email.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once documentation is received and verified, update the student's name in the SIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "After verification, the agent updates the student's name in the primary system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "After verification, the agent updates the student's name in the primary system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

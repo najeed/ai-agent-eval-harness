@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the HVAC unit in the asset management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager locates the correct asset record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager locates the correct asset record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the manufacturer's recommended maintenance schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager confirms the required annual maintenance tasks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager confirms the required annual maintenance tasks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a work order for the internal maintenance crew to perform the service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager successfully creates and assigns the preventive maintenance work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager successfully creates and assigns the preventive maintenance work order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

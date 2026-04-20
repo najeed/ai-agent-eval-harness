@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The pilot flying immediately and manually disconnects the autopilot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot takes manual control of the aircraft."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot takes manual control of the aircraft.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The pilot follows the TCAS RA by initiating a climb at the required rate, even if it conflicts with ATC instructions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot prioritizes the TCAS command over ATC instructions to avoid a collision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot prioritizes the TCAS command over ATC instructions to avoid a collision.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the conflict is resolved and the TCAS announces 'Clear of conflict', the pilot informs ATC of the deviation and returns to their assigned altitude.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The crew safely manages the conflict and communicates with ATC."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The crew safely manages the conflict and communicates with ATC.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

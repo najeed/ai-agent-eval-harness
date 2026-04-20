@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Request permission from airport ground control to tow the aircraft along a specific route.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives clearance from ground control."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives clearance from ground control.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attach the towbar and tug to the aircraft's nose gear.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures the equipment is securely attached."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures the equipment is securely attached.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Tow the aircraft to the designated gate, ensuring wing walkers are present to prevent collisions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The aircraft is safely towed to the gate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The aircraft is safely towed to the gate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

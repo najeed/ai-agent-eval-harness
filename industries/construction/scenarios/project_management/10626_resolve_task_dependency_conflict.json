@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Scan the project schedule for logical dependency errors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a finish-to-start dependency violation between 'drywall finishing' and 'painting'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a finish-to-start dependency violation between 'drywall finishing' and 'painting'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Adjust the start date of the 'painting' task to be the day after the 'drywall finishing' task is scheduled to complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The schedule is corrected to reflect the proper task sequence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The schedule is corrected to reflect the proper task sequence.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

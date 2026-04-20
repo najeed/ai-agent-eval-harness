@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the grant account to be audited.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the grant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the grant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a list of all personnel who have received salary payments from this grant in the last fiscal year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pulls a list of 5 employees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pulls a list of 5 employees.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Cross-reference this list with the effort reporting system to check for completion status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that 4 out of 5 employees have completed their effort reports and flags the non-compliant individual."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that 4 out of 5 employees have completed their effort reports and flags the non-compliant individual.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Calibrate the ultrasonic inspection equipment according to the established procedure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully calibrates the equipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully calibrates the equipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the entire surface of the fuselage panel with the ultrasonic probe.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the scan of the designated area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the scan of the designated area.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the scan data for any anomalies that could indicate delamination or voids, and generate a report of the findings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent analyzes the data, finds no defects, and generates a 'pass' report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent analyzes the data, finds no defects, and generates a 'pass' report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

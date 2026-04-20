@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the API documentation to ensure it does not expose sensitive information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The documentation review is completed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The documentation review is completed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that all APIs require authentication, such as an API key or OAuth token.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms authentication is enforced on all API endpoints."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms authentication is enforced on all API endpoints.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that rate limiting is implemented to prevent denial-of-service attacks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor sends a high volume of test requests and confirms they are throttled correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor sends a high volume of test requests and confirms they are throttled correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

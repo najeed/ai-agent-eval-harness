@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all transactions in the GR/IR clearing account for the month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of all debits (goods receipts) and credits (invoice receipts)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of all debits (goods receipts) and credits (invoice receipts).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify any items that have a goods receipt but no matching invoice receipt (and vice versa) that are causing the account to have a non-zero balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds several old items for which goods were received but an invoice was never processed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds several old items for which goods were received but an invoice was never processed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a task for the AP department to investigate the old items and either chase the vendor for an invoice or reverse the goods receipt if it was made in error.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates actionable tasks to clear the reconciling items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates actionable tasks to clear the reconciling items.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

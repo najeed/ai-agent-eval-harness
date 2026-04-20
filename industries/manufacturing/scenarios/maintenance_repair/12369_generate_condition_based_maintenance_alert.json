@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the real-time sensor alert with the vibration reading.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system automatically receives the alert from the condition monitoring sensor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system automatically receives the alert from the condition monitoring sensor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Automatically generate a medium-priority maintenance work order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system creates a new work order to investigate the high vibration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system creates a new work order to investigate the high vibration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the work order to the technician responsible for that area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The work order is automatically assigned to the correct technician's queue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The work order is automatically assigned to the correct technician's queue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the batch record and process parameters for the low-yield batch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls the data from the MES."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls the data from the MES.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the process parameters of the low-yield batch to those of several historical high-yield batches.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs a comparison and finds that the drying time for the low-yield batch was 2 hours shorter than normal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs a comparison and finds that the drying time for the low-yield batch was 2 hours shorter than normal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Formulate a hypothesis for the root cause.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent hypothesizes that the reduced drying time led to incomplete solvent removal, causing material to be rejected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent hypothesizes that the reduced drying time led to incomplete solvent removal, causing material to be rejected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Open a formal investigation to confirm the root cause and implement a corrective action.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates a quality investigation to address the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates a quality investigation to address the issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

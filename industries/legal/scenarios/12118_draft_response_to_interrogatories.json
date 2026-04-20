@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the interrogatories and identify the information being sought.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands each question being asked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands each question being asked.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Consult with the client and review case documents to gather the information needed to answer the questions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the factual basis for the answers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the factual basis for the answers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft responses to each interrogatory, including any valid objections (e.g., 'vague and ambiguous', 'seeks privileged information').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a set of draft responses and objections for attorney review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a set of draft responses and objections for attorney review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the image to identify the pest causing the damage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the pest as the European Corn Borer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the pest as the European Corn Borer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the economic threshold for the identified pest at the current crop growth stage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct economic threshold for the V10 growth stage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct economic threshold for the V10 growth stage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend an appropriate pesticide and application rate based on the infestation level and local regulations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends a suitable pesticide and the correct application rate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends a suitable pesticide and the correct application rate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

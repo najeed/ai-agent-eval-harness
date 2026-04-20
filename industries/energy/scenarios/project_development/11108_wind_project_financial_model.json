@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Input project parameters: CAPEX, OPEX, capacity factor, expected PPA price, and debt financing terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly populates the financial model with the provided inputs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly populates the financial model with the provided inputs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the project's Levelized Cost of Energy (LCOE), Net Present Value (NPV), and Internal Rate of Return (IRR).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent computes the key financial metrics accurately."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent computes the key financial metrics accurately.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run a sensitivity analysis by varying the PPA price and capacity factor by +/- 10%.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a table showing the impact of key variables on IRR and NPV."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a table showing the impact of key variables on IRR and NPV.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

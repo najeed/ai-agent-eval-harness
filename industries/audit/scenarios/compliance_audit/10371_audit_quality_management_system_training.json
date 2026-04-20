@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain a list of all employees in manufacturing roles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor has the list of in-scope employees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor has the list of in-scope employees.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain the training records for the 'Good Manufacturing Practices (GMP)' course from the LMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor has the training completion data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor has the training completion data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the two lists to identify any employees who have not completed the mandatory training.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The comparison identifies 5 employees who are delinquent on their training."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The comparison identifies 5 employees who are delinquent on their training.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

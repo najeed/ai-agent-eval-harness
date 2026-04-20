@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the precise location of the open hydrant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately records the location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately records the location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ask if there is any fire department activity nearby to determine if the use is authorized.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Caller reports no fire department activity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Caller reports no fire department activity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority service order for a water crew to go and shut off the hydrant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches a crew to address the water waste."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches a crew to address the water waste.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

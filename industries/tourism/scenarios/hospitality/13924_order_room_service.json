@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the guest by their room number and confirm their name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the guest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the guest.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Take the guest's order and confirm the items and price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly records the order for one club sandwich and one soda."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly records the order for one club sandwich and one soda.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place the order with the kitchen and post the charge to the guest's folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the order and updates the guest's bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the order and updates the guest's bill.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

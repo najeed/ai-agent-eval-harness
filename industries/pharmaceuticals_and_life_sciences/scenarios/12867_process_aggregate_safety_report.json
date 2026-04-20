@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Gather all relevant data for the reporting period, including clinical trial exposure data and all serious adverse events.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully queries multiple systems to get the required data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully queries multiple systems to get the required data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a benefit-risk assessment based on the cumulative data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent analyzes the data and writes a summary concluding that the benefit-risk profile remains favorable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent analyzes the data and writes a summary concluding that the benefit-risk profile remains favorable.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Author the main body of the DSUR, incorporating the data and the benefit-risk assessment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts the complete DSUR document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts the complete DSUR document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Route the DSUR for internal approval before submitting to health authorities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent routes the document for review and signature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent routes the document for review and signature.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

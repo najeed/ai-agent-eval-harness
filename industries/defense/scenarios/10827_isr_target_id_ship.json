@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the warship's radar cross-section (RCS) signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly characterizes the RCS of the target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly characterizes the RCS of the target.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the ship's electronic emissions (e.g., radar type) collected by ESM.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the type of radar systems the ship is using."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the type of radar systems the ship is using.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Fuse the RCS and ESM data and compare against a database to identify the specific class of warship.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst makes a high-confidence identification of the warship class."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst makes a high-confidence identification of the warship class.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

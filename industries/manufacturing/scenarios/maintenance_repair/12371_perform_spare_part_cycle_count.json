@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the system's expected quantity for the specified spare part.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees the system shows a quantity of one."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees the system shows a quantity of one.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a physical count of the part in the storeroom.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager physically locates and counts the part."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager physically locates and counts the part.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter the physical count, note that it is zero, and flag the discrepancy for investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the count of zero, and the system flags a significant inventory variance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the count of zero, and the system flags a significant inventory variance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

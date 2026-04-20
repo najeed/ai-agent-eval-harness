@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the firm's or court's model protective order template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent starts with a standard, approved form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent starts with a standard, approved form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Define the different tiers of confidentiality (e.g., 'Confidential', 'Attorneys' Eyes Only').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent defines the rules for who can see what information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent defines the rules for who can see what information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Circulate the draft to opposing counsel for their review and comment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent shares the draft to get agreement from the other side."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent shares the draft to get agreement from the other side.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

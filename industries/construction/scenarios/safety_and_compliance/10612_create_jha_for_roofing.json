@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Identify the primary hazards associated with roofing work, such as 'Falls from height', 'Material handling', and 'Heat exposure'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent lists the key hazards for the JHA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent lists the key hazards for the JHA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For the 'Falls from height' hazard, specify the preventative measure as 'Mandatory use of personal fall arrest systems (PFAS) for all workers'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A specific, actionable control measure is documented for a key hazard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A specific, actionable control measure is documented for a key hazard.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

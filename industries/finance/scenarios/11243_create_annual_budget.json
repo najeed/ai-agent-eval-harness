@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new budget version for the upcoming fiscal year in the planning tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new, blank budget for the next fiscal year."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new, blank budget for the next fiscal year.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Pre-populate the budget template with historical data from the previous year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent populates the new budget with last year's actuals as a baseline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent populates the new budget with last year's actuals as a baseline.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Distribute the budget templates to all department heads to begin their input.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends notifications and links to the budget templates to the relevant managers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends notifications and links to the budget templates to the relevant managers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

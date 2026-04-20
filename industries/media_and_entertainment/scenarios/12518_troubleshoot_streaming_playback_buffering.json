@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the user and retrieve their recent playback session data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up logs showing low download bandwidth and multiple bitrate switches."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up logs showing low download bandwidth and multiple bitrate switches.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a diagnostic on the user's home network from the client-side app.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The diagnostic confirms a slow internet connection speed, insufficient for 4K streaming."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The diagnostic confirms a slow internet connection speed, insufficient for 4K streaming.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the user to check their internet speed, restart their router, or select a lower streaming quality.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear, actionable troubleshooting steps to the user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear, actionable troubleshooting steps to the user.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify policies where the insured is deceased but no claim has been filed after a significant period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system identifies a policy where the death benefit remains unpaid for over 5 years."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system identifies a policy where the death benefit remains unpaid for over 5 years.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a final due diligence search for any beneficiaries.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent performs a search but is unable to locate any living beneficiaries."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent performs a search but is unable to locate any living beneficiaries.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the escheatment of the funds to the appropriate state's unclaimed property division.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully transfers the funds to the state and closes the file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully transfers the funds to the state and closes the file.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

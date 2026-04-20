@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Identify the specific power saw by its asset ID number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct asset ID is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct asset ID is identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log in the equipment tracking system that the saw has been checked out by the specified carpenter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The checkout is successfully logged, assigning the tool to the carpenter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The checkout is successfully logged, assigning the tool to the carpenter.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

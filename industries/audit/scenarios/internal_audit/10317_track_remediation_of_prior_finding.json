@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the prior audit finding and the agreed-upon management action plan, including the implementation date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor retrieves the details of the finding and the promised fix."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor retrieves the details of the finding and the promised fix.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the business owner responsible for the action plan to get an update on the status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The business owner states that the fix has been implemented."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The business owner states that the fix has been implemented.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform testing to independently verify that the corrective action has been implemented and is effective.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor's testing confirms the control is now working, allowing the finding to be officially closed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor's testing confirms the control is now working, allowing the finding to be officially closed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

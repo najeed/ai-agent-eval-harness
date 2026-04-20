@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the top 10 most historically congested transmission paths in the market.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a ranked list of congested paths."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a ranked list of congested paths.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each path, compare the historical auction price of the CRR to its actual payout (the congestion rent).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the historical profitability of holding CRRs on each path."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the historical profitability of holding CRRs on each path.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend the most historically profitable CRRs to bid on in the next auction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a list of the top 3 CRRs to target."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a list of the top 3 CRRs to target.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

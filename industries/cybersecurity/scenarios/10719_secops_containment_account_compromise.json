@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the 'impossible travel' alert and verify the two login locations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder confirms the anomalous login activity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder confirms the anomalous login activity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately force a password reset for the user's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder successfully resets the password, locking the attacker out."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder successfully resets the password, locking the attacker out.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Terminate all active sessions for the user account to ensure the attacker is fully disconnected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder successfully terminates all sessions associated with the compromised account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder successfully terminates all sessions associated with the compromised account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

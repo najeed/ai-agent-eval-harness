@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate the passenger manifest for the flight based on crew change schedules.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete list of passengers for the flight is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete list of passengers for the flight is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total weight of passengers and cargo to ensure it is within the helicopter's operational limits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The weight and balance calculation is completed and confirmed to be safe."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The weight and balance calculation is completed and confirmed to be safe.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the flight with the helicopter operator and send the final manifest and schedule to all parties.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The flight is officially booked and confirmed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The flight is officially booked and confirmed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the variable rate seeding prescription map that was sent to the planter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the original prescription map."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the original prescription map.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the as-applied map from the planter's controller, which shows the actual seeding rates applied.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the map of the actual rates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the map of the actual rates.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the prescription map to the as-applied map to identify any significant deviations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a difference map and confirms that the planter applied the rates with over 98% accuracy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a difference map and confirms that the planter applied the rates with over 98% accuracy.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

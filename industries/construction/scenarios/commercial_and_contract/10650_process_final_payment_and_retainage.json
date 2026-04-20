@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that the project has reached 'Final Completion' and all punch list items for the subcontractor are closed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all contractual obligations are met."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all contractual obligations are met.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the final amount due, including the accumulated 10% retainage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The final payment amount is correctly calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The final payment amount is correctly calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the final payment for the next payment cycle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The final payment is approved and scheduled in the accounting system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The final payment is approved and scheduled in the accounting system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

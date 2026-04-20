@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the table's order from the POS system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The server pulls up the correct check."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The server pulls up the correct check.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the 'Split Check' function in the POS to divide the total by four.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system correctly calculates the amount due for each person."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system correctly calculates the amount due for each person.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process each of the four payments separately.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The server successfully processes four separate credit card payments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The server successfully processes four separate credit card payments.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The system detects the vehicle has crossed the pre-defined geofence boundary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system's location monitoring service triggers an event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system's location monitoring service triggers an event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send an automated notification (SMS or push notification) to the primary account holder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system successfully sends an alert to the customer's phone."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system successfully sends an alert to the customer's phone.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the event in the vehicle's location history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The geofence breach event is logged with a timestamp and location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The geofence breach event is logged with a timestamp and location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

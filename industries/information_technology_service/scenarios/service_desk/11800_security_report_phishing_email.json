@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the user's report and praise them for reporting it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reinforces positive security behavior."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reinforces positive security behavior.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the email headers and content to confirm it is a phishing attempt.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the email is from an external, malicious source."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the email is from an external, malicious source.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Use the security tools to search all mailboxes for the same email and delete it, then block the sender's domain.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The malicious email is purged from the client's environment, and the sender is blocked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The malicious email is purged from the client's environment, and the sender is blocked.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

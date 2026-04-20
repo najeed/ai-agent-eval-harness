@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive an alert that the escalator has malfunctioned.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the system alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the system alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch a maintenance technician to investigate the escalator.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends an elevator/escalator technician to the location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends an elevator/escalator technician to the location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch staff to the top and bottom of the escalator to direct guests to the nearest stairs or elevators.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends staff to manage crowd flow around the hazard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends staff to manage crowd flow around the hazard.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the venue's digital signage to indicate the escalator is out of service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts a notice on nearby digital signs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts a notice on nearby digital signs.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the predictive failure alert from the tank.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Maintenance officer acknowledges the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Maintenance officer acknowledges the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the specific sensor readings to confirm the high probability of failure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer verifies the data indicates a critical problem."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer verifies the data indicates a critical problem.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Order the tank crew to return to base for maintenance and schedule a 'power pack' (engine and transmission) replacement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer issues the correct orders to prevent failure in the field and schedules the major repair."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer issues the correct orders to prevent failure in the field and schedules the major repair.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

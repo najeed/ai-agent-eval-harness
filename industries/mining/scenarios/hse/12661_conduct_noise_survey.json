@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the areas and roles to be included in the noise survey, focusing on high-risk areas like the grinding mills.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A survey plan is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A survey plan is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a dosimeter to measure the personal noise exposure of a mill operator over their full shift.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A full-shift noise dose measurement is collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A full-shift noise dose measurement is collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the measured noise dose to the regulated occupational exposure limit. If it exceeds the limit, recommend additional controls (e.g., better hearing protection).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis confirms the exposure is within limits, but recommends new noise-dampening enclosures as a proactive measure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis confirms the exposure is within limits, but recommends new noise-dampening enclosures as a proactive measure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

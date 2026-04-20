@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a request from a developer for SSH access to a specific server, including their public SSH key.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst receives the complete access request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst receives the complete access request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the PAM tool to grant the developer's SSH key access to the server for a limited time (e.g., 4 hours).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The PAM tool temporarily adds the developer's public key to the server's authorized_keys file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The PAM tool temporarily adds the developer's public key to the server's authorized_keys file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the time expires, the PAM tool automatically removes the developer's key from the server, revoking access.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Access is automatically and securely revoked without manual intervention."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Access is automatically and securely revoked without manual intervention.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Extract key soil properties (e.g., soil type, bearing capacity, liquefaction potential) from the uploaded survey report PDF.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly extracts and tabulates the specified soil parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly extracts and tabulates the specified soil parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the site's soil bearing capacity against the turbine manufacturer's foundation requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the native soil meets the minimum requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the native soil meets the minimum requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend the most suitable foundation type (e.g., gravity, monopile) based on the analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a justified recommendation for the foundation design."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a justified recommendation for the foundation design.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

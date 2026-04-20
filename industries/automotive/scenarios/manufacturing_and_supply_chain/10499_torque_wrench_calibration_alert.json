@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The tool management system sends an alert that the wrench is due for calibration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the alert for the specific tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the alert for the specific tool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The agent takes the tool out of service and provides the assembly worker with a calibrated replacement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tools are swapped to ensure no uncalibrated tool is used."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tools are swapped to ensure no uncalibrated tool is used.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The agent sends the out-of-service tool to the calibration lab.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool is sent for recalibration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool is sent for recalibration.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

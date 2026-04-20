@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use specialized tools to bypass the phone's password and create a forensic image of its internal memory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully gains access to the phone's data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully gains access to the phone's data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Extract and analyze call logs, text messages, photos, and location history from the image.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst extracts all relevant data from the phone."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst extracts all relevant data from the phone.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate an intelligence report based on the extracted data, identifying other enemy combatants, locations, and plans.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst produces a valuable intelligence product from the forensic analysis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst produces a valuable intelligence product from the forensic analysis.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

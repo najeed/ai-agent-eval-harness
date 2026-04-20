@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the homeowner's information and property details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the necessary information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the necessary information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the homeowner meets the eligibility criteria (e.g., it is their primary residence).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the homeowner is eligible for the exemption."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the homeowner is eligible for the exemption.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the application for the homestead exemption.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the exemption to the property record, which will lower future tax bills."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the exemption to the property record, which will lower future tax bills.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Filter all pending orders to select a group for the next wave (e.g., all 'Expedited Shipping' orders).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully selects a batch of high-priority orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully selects a batch of high-priority orders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the wave planning tool to create a new wave from the selected orders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new wave is created in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new wave is created in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system automatically breaks the wave down into individual picking tasks, optimized by pick path.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates efficient picking assignments for multiple operators."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates efficient picking assignments for multiple operators.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Release the wave, making the picking tasks available to operators on the floor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The picking tasks appear on the operators' handheld scanners."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The picking tasks appear on the operators' handheld scanners.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

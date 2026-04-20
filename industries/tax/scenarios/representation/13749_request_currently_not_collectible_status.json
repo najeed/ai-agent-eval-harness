@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather detailed financial information from the taxpayer to prove financial hardship.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary income, expense, and asset information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary income, expense, and asset information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the IRS to request that the account be placed in Currently Not Collectible (CNC) status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates with the IRS collections department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates with the IRS collections department.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the required financial documentation to the IRS to support the CNC request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the financial forms, and the IRS agrees to place the account in CNC status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the financial forms, and the IRS agrees to place the account in CNC status.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the user and the location (rec center) and specific piece of equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the details of the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the details of the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a maintenance work order for the facilities team to inspect the equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a work order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the recreation center front desk staff to put an 'Out of Order' sign on the machine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calls or messages the gym staff to take the machine out of service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calls or messages the gym staff to take the machine out of service.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

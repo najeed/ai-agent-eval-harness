@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the logic for the new carousel: a mix of content from the user's favorite genres and highly-rated new releases.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent defines the content selection criteria for the recommendation algorithm."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent defines the content selection criteria for the recommendation algorithm.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apply the new logic to a user's profile to generate a list of recommended titles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of 10 titles for the user's carousel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of 10 titles for the user's carousel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deploy the new carousel to the homepage for all users.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the UI configuration to include the new carousel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the UI configuration to include the new carousel.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

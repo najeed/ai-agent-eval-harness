@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the restaurant the citizen is asking about.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the name and address of the restaurant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the name and address of the restaurant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the public database for the restaurant's inspection history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the inspection records for the restaurant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the inspection records for the restaurant.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the date and results of the most recent inspection, including the score and any violations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the results of the last inspection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the results of the last inspection.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

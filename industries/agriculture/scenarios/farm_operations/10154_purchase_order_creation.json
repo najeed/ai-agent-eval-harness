@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Look up the required part numbers in the tractor's service manual.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct part numbers for the required filters and belts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct part numbers for the required filters and belts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check inventory at preferred local dealerships for the required parts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds one dealership has all parts in stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds one dealership has all parts in stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a purchase order for the parts from the selected dealership.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a formal PO with the correct parts, quantities, and prices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a formal PO with the correct parts, quantities, and prices.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all evidence related to the failure, including the broken parts, maintenance records, and operator interviews.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All relevant information and data about the failure is collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All relevant information and data about the failure is collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Facilitate an RCA session with the team using a method like the '5 Whys' or a fishbone diagram.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team works through the analysis and identifies the physical, human, and latent root causes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team works through the analysis and identifies the physical, human, and latent root causes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the findings and create corrective actions to address the root causes (e.g., 'update lubrication procedure', 'improve alignment standard').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A set of actionable recommendations is created and assigned for implementation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A set of actionable recommendations is created and assigned for implementation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

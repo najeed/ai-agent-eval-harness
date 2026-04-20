@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the solution application rate and cyanide concentration being pumped to the leach pad.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator confirms the current operating parameters are as per the plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator confirms the current operating parameters are as per the plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the gold concentration in the pregnant leach solution (PLS) coming from the pad.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows the gold grade in the PLS is starting to decrease."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows the gold grade in the PLS is starting to decrease.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Decide to switch the solution application to a new, fresh area of the leach pad to maintain a high gold recovery rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator adjusts the irrigation system to start leaching a new cell of ore."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator adjusts the irrigation system to start leaching a new cell of ore.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

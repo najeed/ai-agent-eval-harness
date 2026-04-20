@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search for available dinner cruise packages on the desired date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds several dinner cruise options with different menus and prices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds several dinner cruise options with different menus and prices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Present the options to the customer and help them select a package.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Customer selects the 'Prestige Menu' dinner cruise."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Customer selects the 'Prestige Menu' dinner cruise.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the selected dinner cruise package and process the payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the package and provides a voucher."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the package and provides a voucher.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

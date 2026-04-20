@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the barcode on the specimen container.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The LIS identifies the patient and the pending lab orders associated with the specimen."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The LIS identifies the patient and the pending lab orders associated with the specimen.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Mark the specimen as 'Received' in the LIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system timestamps the receipt of the sample in the lab."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system timestamps the receipt of the sample in the lab.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Place the specimen in the appropriate rack for testing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician physically stages the sample for the analyzer, and the LIS tracks its location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician physically stages the sample for the analyzer, and the LIS tracks its location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather data on the farm's acreage, location, soil type, and number of years under no-till practice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all the necessary parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all the necessary parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use an approved carbon sequestration model to calculate the estimated tons of CO2 equivalent sequestered per year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the estimated carbon sequestration amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the estimated carbon sequestration amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide an estimate of the potential financial value based on current carbon market prices.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gives an estimated monetary value of the generated credits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gives an estimated monetary value of the generated credits.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the vehicle is on-site, has passed its pre-delivery inspection (PDI), and is ready for handover.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the vehicle status is 'Ready for Delivery'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the vehicle status is 'Ready for Delivery'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Coordinate with the customer to find a suitable date and time for the delivery appointment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the delivery appointment in the dealership calendar."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the delivery appointment in the dealership calendar.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the appointment with the customer and remind them to bring necessary items like their driver's license and proof of insurance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a confirmation email with all necessary details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a confirmation email with all necessary details.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

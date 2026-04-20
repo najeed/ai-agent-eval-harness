@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the airline's official policy for unaccompanied minors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct policy document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct policy document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the age restrictions, eligible flights (e.g., no connections), and the UM service fee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains all rules and fees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains all rules and fees.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the drop-off and pick-up procedures, including the requirement for the designated adults to show ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a comprehensive overview of the process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a comprehensive overview of the process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

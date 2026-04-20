@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's loyalty program balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the customer has 1,500 points."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the customer has 1,500 points.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the redemption options (e.g., 500 points = $5 discount).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates how the points can be used."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates how the points can be used.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

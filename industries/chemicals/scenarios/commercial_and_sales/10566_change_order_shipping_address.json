@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the sales order and verify its status is not 'Shipped'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the order and confirms it is still in the 'Processing' stage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the order and confirms it is still in the 'Processing' stage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Take the new shipping address from the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly records the new address details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly records the new address details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the shipping address on the sales order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully changes the address, and the updated information is sent to the logistics system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully changes the address, and the updated information is sent to the logistics system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "A system process identifies online carts that have been inactive for a set amount of time (e.g., 2 hours).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system flags the customer's cart as abandoned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system flags the customer's cart as abandoned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically sends an email to the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The email is sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The email is sent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The email shows the items left in their cart and provides a convenient link to return and complete their purchase.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A targeted, automated email is sent to encourage the customer to complete the sale."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A targeted, automated email is sent to encourage the customer to complete the sale.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

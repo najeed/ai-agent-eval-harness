@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ask the citizen for their residential address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the necessary information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the necessary information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the address to look up the citizen's assigned polling station in the voter registration database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system returns the name and address of the correct polling location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system returns the name and address of the correct polling location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the citizen with the polling station's address and hours of operation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the requested information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the requested information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

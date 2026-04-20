@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a new safety plan using the company's standard template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new plan is created with standard company safety policies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new plan is created with standard company safety policies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify site-specific hazards, such as proximity to an active school, and add a section for managing this risk.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new section is added to the plan detailing procedures for working near the school."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new section is added to the plan detailing procedures for working near the school.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add contact information for the nearest hospital and local emergency services to the plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The emergency contact information in the plan is updated and verified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The emergency contact information in the plan is updated and verified.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

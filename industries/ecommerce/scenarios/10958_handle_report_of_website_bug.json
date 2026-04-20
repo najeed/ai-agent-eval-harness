@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Thank the customer for the report and gather details (product, browser, device).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary information to reproduce the bug."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary information to reproduce the bug.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Attempt to reproduce the error based on the customer's description.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that the button is unresponsive on the specified page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that the button is unresponsive on the specified page.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority ticket for the web development team, including all details and steps to reproduce.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a clear and actionable bug report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a clear and actionable bug report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

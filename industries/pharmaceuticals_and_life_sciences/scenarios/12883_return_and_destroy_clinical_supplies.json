@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Perform a final reconciliation of all investigational product shipped, dispensed, and remaining at each site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a final accountability log for each clinical site."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a final accountability log for each clinical site.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Arrange for the return shipment of all unused product from the sites to a central depot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent coordinates with a logistics vendor to schedule the return shipments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent coordinates with a logistics vendor to schedule the return shipments.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once received, verify the returned quantities against the accountability logs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that all unused product has been returned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that all unused product has been returned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Arrange for the final destruction of the product and obtain a certificate of destruction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent schedules the destruction with a certified vendor and files the certificate of destruction in the TMF."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent schedules the destruction with a certified vendor and files the certificate of destruction in the TMF.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

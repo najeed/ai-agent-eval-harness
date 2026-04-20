@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an alert that passenger wait times on 'Route 12' are exceeding the 15-minute target.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the service level alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the service level alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Instruct the drivers on 'Route 12' to decrease their headway (time between buses) from 15 minutes to 10 minutes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the new operational instruction to the drivers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the new operational instruction to the drivers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the route's wait times to confirm they drop to the new, lower target.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that the operational change had the desired effect."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that the operational change had the desired effect.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

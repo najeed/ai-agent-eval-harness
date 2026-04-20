@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the exact area on the fuselage to be inspected, as defined in the maintenance manual.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly locates the inspection area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly locates the inspection area.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform the eddy current inspection on the specified area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the inspection according to procedure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the inspection according to procedure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the results. If a crack is found, create a non-conformance report and notify engineering for a repair disposition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a small crack, creates an NCR, and escalates to engineering."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a small crack, creates an NCR, and escalates to engineering.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

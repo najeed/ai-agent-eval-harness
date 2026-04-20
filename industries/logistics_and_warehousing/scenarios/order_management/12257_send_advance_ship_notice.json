@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The system detects that a shipment has been marked as 'Shipped'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A trigger is fired to initiate the ASN process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A trigger is fired to initiate the ASN process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system gathers all required data for the ASN, including PO number, item details, quantities, and SSCC codes for each pallet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All necessary data for the EDI document is compiled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All necessary data for the EDI document is compiled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system constructs and sends the EDI 856 document to the trading partner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The ASN is successfully transmitted to the retail partner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The ASN is successfully transmitted to the retail partner.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

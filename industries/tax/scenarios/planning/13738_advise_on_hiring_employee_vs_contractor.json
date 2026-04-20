@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the key differences in tax obligations (e.g., payroll taxes, withholding).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly outlines the employer's responsibilities for an employee versus a contractor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly outlines the employer's responsibilities for an employee versus a contractor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the nature of the work to be performed to determine the correct worker classification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent helps the client classify the worker correctly based on IRS guidelines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent helps the client classify the worker correctly based on IRS guidelines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a comparative cost analysis showing the total financial impact of each option.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a report comparing the total cost, including taxes and benefits, for both scenarios."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a report comparing the total cost, including taxes and benefits, for both scenarios.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

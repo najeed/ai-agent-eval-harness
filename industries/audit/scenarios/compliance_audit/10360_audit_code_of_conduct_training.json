@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain a list of all employees hired in the last 6 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor has the list of new hires."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor has the list of new hires.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain the training completion report from the Learning Management System (LMS).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor has the list of all employees who completed the training."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor has the list of all employees who completed the training.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the two lists to ensure all new hires completed the training within 30 days of their start date, as required by policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The comparison shows that 15 new hires are overdue for the training."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The comparison shows that 15 new hires are overdue for the training.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

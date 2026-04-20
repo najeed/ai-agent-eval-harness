@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Estimate the future cost to dismantle and dispose of the equipment in today's dollars.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The accountant estimates a future cost of $200,000."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The accountant estimates a future cost of $200,000.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Estimate the useful life of the asset and select an appropriate discount rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The useful life is determined to be 20 years with a discount rate of 5%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The useful life is determined to be 20 years with a discount rate of 5%.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the present value of the future disposal cost, which is the ARO to be recorded on the balance sheet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the ARO and records the corresponding journal entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the ARO and records the corresponding journal entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

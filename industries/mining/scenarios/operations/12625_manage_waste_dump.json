@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the waste dump design, which specifies the sequence of lifts and the required slope angles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator is familiar with the current stage of the dump design."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator is familiar with the current stage of the dump design.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use GPS on the dozers to monitor that they are pushing the dumped rock to the correct location and creating the designed slope.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Real-time data confirms the dozers are building the dump to specification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Real-time data confirms the dozers are building the dump to specification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Conduct a drone survey at the end of the week to create a 3D surface of the dump and compare it against the design.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The survey confirms the dump is being constructed according to the plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The survey confirms the dump is being constructed according to the plan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

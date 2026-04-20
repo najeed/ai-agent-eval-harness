@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Calculate the new estimated time of arrival (ETA) based on the delay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the new ETA is 15 minutes after the curfew begins."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the new ETA is 15 minutes after the curfew begins.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if it's possible to request an exemption from the curfew from the destination airport authority.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent contacts the airport and is denied an exemption."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent contacts the airport and is denied an exemption.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Since landing is not possible, divert the flight to a nearby 24-hour airport.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes the decision to divert the flight and notifies the crew."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes the decision to divert the flight and notifies the crew.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

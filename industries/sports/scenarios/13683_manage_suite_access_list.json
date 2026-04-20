@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the guest list from the suite holder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the list of names for the suite."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the list of names for the suite.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Upload the guest list to the venue's access control system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the guests to the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the guests to the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the suite holder with instructions on how their guests can check in on game day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends clear instructions to the suite holder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends clear instructions to the suite holder.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

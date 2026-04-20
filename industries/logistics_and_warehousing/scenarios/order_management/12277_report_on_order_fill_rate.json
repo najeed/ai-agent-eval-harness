@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Generate a report of all orders shipped in the previous month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves a list of last month's orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves a list of last month's orders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to count the total number of orders and the number of orders that were shipped complete (no splits or backorders).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly counts the total and complete orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly counts the total and complete orders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the fill rate percentage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The fill rate is calculated to be 97%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The fill rate is calculated to be 97%.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the monthly operations dashboard with the new fill rate metric.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dashboard is updated with the latest performance data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dashboard is updated with the latest performance data.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

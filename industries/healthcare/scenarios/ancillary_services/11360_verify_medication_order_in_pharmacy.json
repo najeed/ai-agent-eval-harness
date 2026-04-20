@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the pharmacy queue and select a pending medication order for verification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pharmacist selects an order to review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pharmacist selects an order to review.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the order for appropriateness, checking the patient's allergies, other medications for interactions, and lab values.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pharmacist performs a clinical check and determines the order is safe and appropriate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pharmacist performs a clinical check and determines the order is safe and appropriate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Electronically verify the order, which releases it to be filled by a pharmacy technician.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is successfully verified and moves to the next step in the pharmacy workflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is successfully verified and moves to the next step in the pharmacy workflow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

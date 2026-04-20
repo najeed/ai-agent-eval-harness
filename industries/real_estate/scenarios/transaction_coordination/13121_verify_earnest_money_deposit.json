@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the transaction timeline for the earnest money deposit deadline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that the deadline is within 3 days of acceptance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that the deadline is within 3 days of acceptance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the escrow officer to confirm receipt of the deposit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates with the escrow officer who confirms the funds have been received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates with the escrow officer who confirms the funds have been received.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload the receipt of deposit to the transaction file and mark the contingency as complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The TC uploads the receipt document and updates the checklist in the transaction system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The TC uploads the receipt document and updates the checklist in the transaction system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

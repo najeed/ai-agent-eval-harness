@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Create a new train ID for the scheduled departure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new train record is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new train record is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assign two locomotives from the available power pool to the train.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Two locomotives are correctly assigned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Two locomotives are correctly assigned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add a list of 85 railcars to the train consist in the correct sequence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All railcars are added to the train record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All railcars are added to the train record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Validate the train consist for length and weight against track restrictions for the planned route.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms the train is within the limits for its route."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms the train is within the limits for its route.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

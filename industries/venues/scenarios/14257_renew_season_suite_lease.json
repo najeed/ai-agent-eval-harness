@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Look up the suite holder's account and their current lease details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the account and notes the lease expires in 60 days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the account and notes the lease expires in 60 days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the client to discuss renewal and inform them of the new season's pricing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calls the client and presents the renewal offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calls the client and presents the renewal offer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the renewal agreement and send it to the client for signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the renewal contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the renewal contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Once signed, process the deposit for the new season.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes the payment and confirms the renewal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes the payment and confirms the renewal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

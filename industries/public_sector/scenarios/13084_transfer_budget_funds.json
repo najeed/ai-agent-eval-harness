@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the source and destination budget line items and the amount to be transferred.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager specifies the details of the transfer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager specifies the details of the transfer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the department head is authorized to make such a transfer and that sufficient funds are available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms the user's permissions and the available balance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms the user's permissions and the available balance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the budget transfer in the financial system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system successfully moves the funds between the two budget lines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system successfully moves the funds between the two budget lines.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

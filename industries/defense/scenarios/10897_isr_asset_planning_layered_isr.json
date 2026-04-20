@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the surveillance area and the required level of coverage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner accurately defines the mission parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner accurately defines the mission parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule satellite passes for periodic, wide-area coverage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner schedules regular satellite imagery to get the big picture."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner schedules regular satellite imagery to get the big picture.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule overlapping shifts of high-altitude and medium-altitude drones to provide persistent, 24/7 video coverage of the area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner creates a detailed and continuous surveillance schedule using multiple drone assets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner creates a detailed and continuous surveillance schedule using multiple drone assets.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

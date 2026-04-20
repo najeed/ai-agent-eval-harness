@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate customs declaration forms for all shipping containers of equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer accurately completes all required customs paperwork."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer accurately completes all required customs paperwork.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Brief all personnel on prohibited items they cannot bring back in their personal baggage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer effectively communicates the customs rules to all personnel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer effectively communicates the customs rules to all personnel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Coordinate with customs officials to schedule inspections of the equipment and baggage upon arrival.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer successfully coordinates with external agencies to ensure a smooth customs process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer successfully coordinates with external agencies to ensure a smooth customs process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

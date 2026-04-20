@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Take recorded statements from your insured driver and the third-party claimant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster obtains detailed, recorded accounts from both parties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster obtains detailed, recorded accounts from both parties.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain and review the police report for the accident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster gets the police report, which includes a diagram and officer's notes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster gets the police report, which includes a diagram and officer's notes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on all evidence, make a liability determination and communicate it to all parties.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster analyzes the evidence and determines liability is 70% on the third party and 30% on the insured, and clearly explains this decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster analyzes the evidence and determines liability is 70% on the third party and 30% on the insured, and clearly explains this decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

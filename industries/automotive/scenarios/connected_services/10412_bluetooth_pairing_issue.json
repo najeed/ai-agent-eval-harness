@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the vehicle model and the customer's smartphone model.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a 2022 Mach-E and an iPhone 15."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a 2022 Mach-E and an iPhone 15.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the customer to delete the old phone profile from the car and the old car profile from the phone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear step-by-step instructions for deleting previous connections."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear step-by-step instructions for deleting previous connections.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Walk the customer through the pairing process again, ensuring the car is in discovery mode.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer successfully pairs their phone with the car."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer successfully pairs their phone with the car.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

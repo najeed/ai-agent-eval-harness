@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Listen patiently to the caller's complaints without interrupting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The caller feels heard."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The caller feels heard.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ask the caller to specify which parts of the story they believe are factually inaccurate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The editor focuses the conversation on specific, verifiable facts rather than general anger."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The editor focuses the conversation on specific, verifiable facts rather than general anger.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Promise to review their claims of inaccuracy with the reporter and check the source material.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The editor commits to a review process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The editor commits to a review process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "If an error is found, initiate the corrections process. If not, politely stand by the story.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An informed decision is made and communicated to the caller."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An informed decision is made and communicated to the caller.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

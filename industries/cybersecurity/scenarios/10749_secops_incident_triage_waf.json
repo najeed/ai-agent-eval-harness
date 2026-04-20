@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the WAF alert details, including the source IP and the malicious payload.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly retrieves the alert data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly retrieves the alert data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Confirm that the WAF successfully blocked the malicious request and the XSS payload was not processed by the server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst verifies that the security control worked as intended."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst verifies that the security control worked as intended.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the reputation of the source IP and, finding it is a known malicious actor, add it to a temporary blocklist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst takes a proactive step to block the attacker from making further attempts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst takes a proactive step to block the attacker from making further attempts.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the CAD software and start a new P&ID drawing using the company's standard template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully opens the correct template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully opens the correct template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the required equipment symbols to the diagram (e.g., tank, pump, valves).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent places the correct symbols from the standard library onto the drawing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent places the correct symbols from the standard library onto the drawing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draw the pipelines connecting the equipment and add instrument bubbles (e.g., for pressure and level transmitters), then submit for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the diagram according to standard P&ID conventions and submits it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the diagram according to standard P&ID conventions and submits it.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

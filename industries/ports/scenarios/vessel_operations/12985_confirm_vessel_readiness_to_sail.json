@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the TOS to confirm cargo operations are complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator verifies the vessel status is 'Cargo Complete'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator verifies the vessel status is 'Cargo Complete'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the customs system to confirm the vessel has received 'outward clearance'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator verifies the vessel has clearance to depart."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator verifies the vessel has clearance to depart.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once both are confirmed, contact the vessel agent to begin arranging the departure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "With all prerequisites met, the operator starts the departure scheduling process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "With all prerequisites met, the operator starts the departure scheduling process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

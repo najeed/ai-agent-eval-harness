@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the project plan, paying attention to dependencies, assumptions, and timeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly reads and understands the project plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly reads and understands the project plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify at least five potential risks (e.g., 'key stakeholder unavailability', 'data access delays').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of relevant and plausible project risks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of relevant and plausible project risks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each risk, propose a potential mitigation strategy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent suggests a reasonable mitigation for each identified risk (e.g., 'confirm stakeholder schedule in advance')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent suggests a reasonable mitigation for each identified risk (e.g., 'confirm stakeholder schedule in advance').",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

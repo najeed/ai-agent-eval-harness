@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new 'Return to Vendor' transaction in the inventory system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The RTV process is initiated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The RTV process is initiated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the damaged items and enter the reason for the return ('Damaged in Transit').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All items to be returned are accurately recorded on the RTV."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All items to be returned are accurately recorded on the RTV.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Finalize the RTV, which generates shipping documentation and adjusts the store's inventory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The items are removed from inventory and prepared for shipment back to the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The items are removed from inventory and prepared for shipment back to the vendor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

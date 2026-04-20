@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Set up a landing page for students to pre-register for the event.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter creates an event registration page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter creates an event registration page.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "At the event, use a tablet to have students sign in and upload their resumes directly into the ATS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiters at the event successfully capture candidate information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiters at the event successfully capture candidate information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the event, review all collected resumes and tag them with the 'Career Fair' source code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiting team processes all leads from the event, ensuring they are correctly tracked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiting team processes all leads from the event, ensuring they are correctly tracked.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the candidate's counter-offer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter receives the candidate's request for a higher salary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter receives the candidate's request for a higher salary.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Consult with the hiring manager and compensation team to see if there is room to increase the offer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter discusses the request internally and gets approval for a revised offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter discusses the request internally and gets approval for a revised offer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Present the revised, final offer to the candidate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Recruiter communicates the new offer to the candidate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Recruiter communicates the new offer to the candidate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather information from the third-party claimant and identify your insured's policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster creates a new claim and links it to the correct policyholder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster creates a new claim and links it to the correct policyholder.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the insured policyholder to get their statement about the incident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster speaks with the insured, who confirms they did back into the other car."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster speaks with the insured, who confirms they did back into the other car.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Accept liability and arrange for an appraiser to inspect the claimant's vehicle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The adjuster accepts liability and schedules an inspection of the third-party's vehicle."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The adjuster accepts liability and schedules an inspection of the third-party's vehicle.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

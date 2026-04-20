@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Check the equipment schedule for the availability of an excavator.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that 'Excavator #2' is available for the required period."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that 'Excavator #2' is available for the required period.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assign 'Excavator #2' to the 'Foundation Excavation' task in the project plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The resource allocation in the project plan is updated successfully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The resource allocation in the project plan is updated successfully.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

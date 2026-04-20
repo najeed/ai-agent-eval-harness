@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the personnel file for the scheduled crane operator.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator's file is retrieved from the HR system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator's file is retrieved from the HR system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the expiration date of their crane operator certification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the certification is valid for another 6 months."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the certification is valid for another 6 months.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

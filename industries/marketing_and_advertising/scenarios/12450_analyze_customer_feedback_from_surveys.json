@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Export the survey responses, focusing on the open-ended feedback question.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a list of all the text responses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a list of all the text responses.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use natural language processing (NLP) to perform sentiment analysis and topic modeling on the responses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool categorizes responses as positive/negative/neutral and identifies key topics like 'price', 'customer service', and 'shipping speed'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool categorizes responses as positive/negative/neutral and identifies key topics like 'price', 'customer service', and 'shipping speed'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Summarize the findings in a report, highlighting the most common points of praise and complaint.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a report that clearly summarizes the qualitative feedback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a report that clearly summarizes the qualitative feedback.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

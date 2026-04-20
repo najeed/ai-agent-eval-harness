@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the original invoice that corresponds to the returned product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the original invoice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the original invoice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify in the inventory system that the returned goods have been received and are in good condition.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the return receipt has been processed by the warehouse."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the return receipt has been processed by the warehouse.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a credit memo for the value of the returned items, which the customer can apply to a future payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the credit memo and applies it to the customer's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the credit memo and applies it to the customer's account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

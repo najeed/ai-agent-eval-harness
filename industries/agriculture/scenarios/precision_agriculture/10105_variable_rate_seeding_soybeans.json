@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the last 3 years of yield maps for the specified field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves all requested yield maps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves all requested yield maps.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the soil type map for the field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct soil map."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct soil map.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create management zones based on a combination of yield potential and soil type.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a map with 3-5 distinct management zones."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a map with 3-5 distinct management zones.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a variable rate seeding prescription file compatible with a John Deere planter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a downloadable prescription file in the correct format."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a downloadable prescription file in the correct format.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

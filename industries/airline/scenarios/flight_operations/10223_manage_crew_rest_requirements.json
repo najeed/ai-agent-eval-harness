@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the original and new estimated departure and arrival times for the flight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the length of the delay."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the length of the delay.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the crew's new total duty period based on the delay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the new duty time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the new duty time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the new duty period to the legal limits. If it exceeds the limit, find a replacement crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the crew will exceed their legal duty time and initiates a search for a reserve crew."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the crew will exceed their legal duty time and initiates a search for a reserve crew.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

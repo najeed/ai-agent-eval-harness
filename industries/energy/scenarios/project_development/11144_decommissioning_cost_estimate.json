@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify all required decommissioning activities, including turbine disassembly, foundation removal, and site restoration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a comprehensive list of decommissioning tasks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a comprehensive list of decommissioning tasks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Estimate the cost for each activity based on industry benchmarks and the number of turbines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a line-item cost breakdown."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a line-item cost breakdown.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Estimate the potential salvage value from recycling steel and other components.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates a potential revenue offset from salvage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates a potential revenue offset from salvage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Calculate the net decommissioning cost and the amount that needs to be set aside in a bond or fund.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the final net cost estimate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the final net cost estimate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

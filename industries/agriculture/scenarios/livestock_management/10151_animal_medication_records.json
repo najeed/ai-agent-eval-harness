@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the specific animal that was treated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the correct animal from the herd database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the correct animal from the herd database.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Record the details of the treatment: medication name, dosage, date, and administering veterinarian.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly enters all treatment details into the animal's health record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly enters all treatment details into the animal's health record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Automatically calculate and record the meat and/or milk withdrawal period based on the medication's label.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the correct withdrawal date and flags the animal in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the correct withdrawal date and flags the animal in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the subscriber and confirm their subscription is at risk due to a failed payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the subscriber and the payment failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the subscriber and the payment failure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Securely collect the new credit card information from the subscriber.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses a secure form to capture the new payment details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses a secure form to capture the new payment details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the payment method on the subscriber's account and re-run the failed charge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the payment info and processes the payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the payment info and processes the payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

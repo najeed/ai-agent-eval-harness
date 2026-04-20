@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Contact the client to inquire about the source of the large deposit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely contacts the client, who states the funds are from the sale of a property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely contacts the client, who states the funds are from the sale of a property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request supporting documentation for the stated source of wealth (e.g., property sale agreement).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent requests the specific documentation needed for verification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent requests the specific documentation needed for verification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the provided documentation and approve the transaction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the sale agreement, finds it satisfactory, and adds a note to the client's file clearing the deposit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the sale agreement, finds it satisfactory, and adds a note to the client's file clearing the deposit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

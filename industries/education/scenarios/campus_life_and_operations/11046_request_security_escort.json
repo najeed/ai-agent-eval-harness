@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the student's name, current location (library), and destination (dorm building).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary logistical information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary logistical information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch a student safety patrol member or a security officer to the student's location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches an available unit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches an available unit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the student with an estimated arrival time for the escort.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs the student that the escort will arrive in 5-10 minutes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs the student that the escort will arrive in 5-10 minutes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

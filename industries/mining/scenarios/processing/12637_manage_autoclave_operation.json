@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the key operating parameters of the autoclave: temperature, pressure, and oxygen level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator confirms that the autoclave is running stably within its safe operating envelope."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator confirms that the autoclave is running stably within its safe operating envelope.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the lab results for the autoclave discharge to check the sulfide oxidation rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Lab results show that the oxidation rate is 98%, meeting the target for good gold recovery downstream."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Lab results show that the oxidation rate is 98%, meeting the target for good gold recovery downstream.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Make a small adjustment to the oxygen injection rate to optimize performance and reduce operating costs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The oxygen flow is slightly trimmed without affecting oxidation performance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The oxygen flow is slightly trimmed without affecting oxidation performance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

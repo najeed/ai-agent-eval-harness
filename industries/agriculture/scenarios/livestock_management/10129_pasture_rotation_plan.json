@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the farm map with all pasture boundaries and their acreage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the farm layout."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the farm layout.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Estimate the forage availability in each pasture based on recent satellite imagery.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a biomass estimate for each pasture."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a biomass estimate for each pasture.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the grazing days available in each pasture based on the herd size and forage availability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates how long the herd can stay in each pasture."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates how long the herd can stay in each pasture.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a rotational grazing schedule for the next 3 months, ensuring adequate rest periods for each pasture.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a schedule detailing which pasture to use and for how long."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a schedule detailing which pasture to use and for how long.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

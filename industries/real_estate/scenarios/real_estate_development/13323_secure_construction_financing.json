@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Prepare a comprehensive loan package, including the project pro-forma, architectural plans, and developer's resume.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete and professional loan request package is assembled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete and professional loan request package is assembled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit the loan package to multiple commercial banks and lenders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The loan request is sent to at least five potential lenders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The loan request is sent to at least five potential lenders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare loan term sheets from interested lenders and negotiate the final loan terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The developer accepts a term sheet and moves toward closing the construction loan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The developer accepts a term sheet and moves toward closing the construction loan.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

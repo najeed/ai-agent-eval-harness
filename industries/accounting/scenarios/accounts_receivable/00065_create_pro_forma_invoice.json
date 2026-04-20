@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the request for a pro forma invoice, including the list of products and quantities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the details of the proposed order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the details of the proposed order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a pro forma invoice document, which looks like a real invoice but is clearly marked 'Pro Forma' and is not posted to accounts receivable.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the pro forma invoice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the pro forma invoice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the pro forma invoice to the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully emails the document to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully emails the document to the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

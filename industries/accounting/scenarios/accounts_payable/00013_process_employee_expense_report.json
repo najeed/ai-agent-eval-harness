@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the submitted expense report and attached receipts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews all line items and receipts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews all line items and receipts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that all expenses comply with the company's travel and expense policy (e.g., meal per diems, approved hotels).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all expenses are within policy limits."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all expenses are within policy limits.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve the expense report and schedule the reimbursement for the next payment run.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent approves the report and schedules the payment to the employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent approves the report and schedules the payment to the employee.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

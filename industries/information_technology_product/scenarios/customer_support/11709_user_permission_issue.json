@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the user and their assigned user role within the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the user has a 'Standard User' role."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the user has a 'Standard User' role.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the permission settings for the 'Standard User' role.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that the feature the user wants to access is restricted to the 'Admin User' role."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that the feature the user wants to access is restricted to the 'Admin User' role.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain to the user that they need to contact their account administrator to request a role change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly explains the permission structure and directs the user to the appropriate internal contact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly explains the permission structure and directs the user to the appropriate internal contact.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

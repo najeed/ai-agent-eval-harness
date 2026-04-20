@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log the oil sample in the lab system, linking it to the specific gearbox asset.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new sample record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new sample record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform the oil analysis using an ICP spectrometer to measure the concentration of various metals (e.g., iron, copper).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analyst performs the test and gets the results."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analyst performs the test and gets the results.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the results to the alarm limits for this type of asset. The iron level is high, indicating accelerated wear.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compares the results to limits and identifies a high iron level, triggering an alert for the reliability engineer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compares the results to limits and identifies a high iron level, triggering an alert for the reliability engineer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

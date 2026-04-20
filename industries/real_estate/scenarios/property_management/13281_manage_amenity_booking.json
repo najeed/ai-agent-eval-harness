@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the tenant's request to book the party room for a specific date and time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the tenant and their request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the tenant and their request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the amenity booking calendar to see if the room is available at the requested time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the party room is available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the party room is available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the room for the tenant, charge any applicable reservation fee to their ledger, and send them a confirmation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reserves the room and communicates with the tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reserves the room and communicates with the tenant.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

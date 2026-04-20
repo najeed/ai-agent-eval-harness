@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the settlement term sheet to understand the key terms (e.g., settlement amount, release of claims).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has all the agreed-upon terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has all the agreed-upon terms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the firm's standard settlement agreement template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft the agreement, incorporating the specific settlement terms and including standard clauses like confidentiality and no admission of liability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a comprehensive draft settlement agreement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a comprehensive draft settlement agreement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

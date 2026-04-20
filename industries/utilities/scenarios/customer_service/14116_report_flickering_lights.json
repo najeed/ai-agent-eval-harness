@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer's account and service location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the OMS and SCADA systems for any voltage fluctuations or alerts on the local circuit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds no widespread outage but sees minor voltage alarms on the feeder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds no widespread outage but sees minor voltage alarms on the feeder.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a non-emergency service order for a crew to investigate the issue, possibly caused by a loose neutral or vegetation on the line.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a trouble ticket with all relevant details for a field crew."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a trouble ticket with all relevant details for a field crew.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

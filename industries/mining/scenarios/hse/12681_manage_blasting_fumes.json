@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "After the blast is fired, monitor the gas sensors in the affected area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Real-time gas concentration data is displayed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Real-time gas concentration data is displayed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Wait for the gas concentrations to fall below the mandated re-entry limits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms when all gas levels are safe."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms when all gas levels are safe.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once clear, give the 'all clear' signal, allowing personnel and equipment to re-enter the blast area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The all-clear is given, and normal operations resume."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The all-clear is given, and normal operations resume.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the property's address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the subject property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the subject property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Access the city or county planning department's website to find the zoning map and regulations for that address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully finds the property's zoning designation (e.g., R1)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully finds the property's zoning designation (e.g., R1).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the ADU regulations for that zoning designation and provide a summary to the buyer, advising them to verify with the city.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides an accurate summary of the rules while including a disclaimer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides an accurate summary of the rules while including a disclaimer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

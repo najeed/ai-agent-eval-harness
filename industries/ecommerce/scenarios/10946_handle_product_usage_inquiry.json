@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the product the customer is asking about.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the product in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the product in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find the product's user manual or setup guide in the knowledge base.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Walk the customer through the first few steps of the setup process or email them the guide.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear, actionable instructions to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear, actionable instructions to the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

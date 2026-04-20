@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the patient account that meets the criteria for being sent to collections (e.g., >120 days old).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the delinquent account in a work queue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the delinquent account in a work queue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the proper number of statements and letters have been sent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the account has been through the standard internal collections cycle."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the account has been through the standard internal collections cycle.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the account to the external collections agency in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The account is electronically transferred to the collections agency, and the balance is moved to a 'collections' financial class."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The account is electronically transferred to the collections agency, and the balance is moved to a 'collections' financial class.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

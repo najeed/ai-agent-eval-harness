@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log into the system and take control of a semi-autonomous dozer at the mine site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator establishes a secure connection and has control of the dozer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator establishes a secure connection and has control of the dozer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Using video feeds and sensor data, operate the dozer to clean up the area around a shovel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dozer task is completed efficiently and safely from the remote location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dozer task is completed efficiently and safely from the remote location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After completing the task, park the dozer in a safe location and hand control back to the autonomous system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The remote operation is completed, and the equipment is returned to autonomous mode."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The remote operation is completed, and the equipment is returned to autonomous mode.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

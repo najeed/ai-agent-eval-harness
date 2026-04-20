@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Ask the user to verify all cables are securely plugged in and the projector/TV is on the correct input source.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user confirms all basic connections are correct."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user confirms all basic connections are correct.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the user to check their laptop's display settings (e.g., press Windows Key + P) and select 'Duplicate' or 'Extend'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "This action resolves the issue, and the presentation appears on the screen."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "This action resolves the issue, and the presentation appears on the screen.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

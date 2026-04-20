@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Determine the amount the taxpayer wishes to convert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the conversion amount from the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the conversion amount from the client.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain that the converted amount will be treated as taxable income in the current year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the tax implications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the tax implications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the additional income tax that will be due as a result of the conversion based on the taxpayer's marginal tax rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a precise estimate of the tax cost of the conversion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a precise estimate of the tax cost of the conversion.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

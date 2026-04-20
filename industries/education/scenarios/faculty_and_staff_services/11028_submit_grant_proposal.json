@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the researcher and the grant proposal details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the pending proposal in the administration system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the pending proposal in the administration system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a final review of the proposal against the funding agency's requirements checklist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies that all required sections and signatures are present."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies that all required sections and signatures are present.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Officially submit the grant proposal through the federal government's online portal on behalf of the university.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the proposal and logs the confirmation number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the proposal and logs the confirmation number.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

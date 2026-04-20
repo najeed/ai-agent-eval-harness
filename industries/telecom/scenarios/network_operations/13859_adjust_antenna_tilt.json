@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the correct antenna and retrieve its current tilt settings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the antenna's current tilt is 4 degrees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the antenna's current tilt is 4 degrees.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Execute the command to change the electrical tilt to 2 degrees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the command to adjust the tilt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the command to adjust the tilt.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the new tilt setting has been applied successfully.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent queries the antenna again and confirms the new tilt is 2 degrees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent queries the antenna again and confirms the new tilt is 2 degrees.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

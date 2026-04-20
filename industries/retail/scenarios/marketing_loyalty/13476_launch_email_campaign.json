@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the email template for 'New Arrivals'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager chooses the correct email design."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager chooses the correct email design.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the target audience (e.g., 'All Subscribed Customers').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager defines the recipient list for the campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager defines the recipient list for the campaign.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the email to be sent at the desired date and time and activate the campaign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The email campaign is successfully scheduled for delivery."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The email campaign is successfully scheduled for delivery.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

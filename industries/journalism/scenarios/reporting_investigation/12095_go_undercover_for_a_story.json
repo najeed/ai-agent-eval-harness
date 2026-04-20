@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Develop a detailed proposal for the undercover assignment, including the goals, risks, and a cover story.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive plan is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive plan is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit the proposal to senior editors and legal counsel for ethical and legal review and approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The high-risk assignment is approved through the proper channels."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The high-risk assignment is approved through the proper channels.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Establish secure communication methods to be used while undercover to protect the reporter and the investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Secure communication protocols are in place."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Secure communication protocols are in place.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

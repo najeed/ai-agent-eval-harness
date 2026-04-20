@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify that annual HVAC service is due based on the property's maintenance schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is alerted by the system that maintenance is due."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is alerted by the system that maintenance is due.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create work orders for HVAC servicing and gutter cleaning and assign them to approved vendors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Work orders are created and dispatched."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Work orders are created and dispatched.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the tenant of the upcoming maintenance appointments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Tenant is informed of the date and time of the service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Tenant is informed of the date and time of the service.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive alerts that a specific feature is failing for all users.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the alerts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the alerts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the health of external dependencies and identify that the third-party API is not responding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the root cause is external."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the root cause is external.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the status page to inform customers of the issue with the third-party provider and that functionality will be restored once the provider fixes their issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides transparent communication."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides transparent communication.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

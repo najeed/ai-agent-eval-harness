@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and their current plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the customer and their current service plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the customer and their current service plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the customer's average monthly usage (data, calls, texts) over the last 6 months.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the customer's typical usage profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the customer's typical usage profile.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Present suitable downgrade options that still meet their average usage, explaining the cost savings and feature differences.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent recommends 2-3 appropriate lower-tier plans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent recommends 2-3 appropriate lower-tier plans.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Process the plan change selected by the customer and confirm the date it becomes effective.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the plan and informs the customer of the activation date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the plan and informs the customer of the activation date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

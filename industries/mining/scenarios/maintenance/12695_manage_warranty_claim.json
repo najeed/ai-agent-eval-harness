@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that the failed component (e.g., a final drive) is still within its warranty period based on its operating hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system confirms the component is still under warranty."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system confirms the component is still under warranty.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather all required documentation for the claim, including the failure report, maintenance records, and photos of the failed part.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A complete package of supporting documentation is compiled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A complete package of supporting documentation is compiled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the warranty claim to the OEM through their online portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The claim is successfully submitted, and a claim number is received for tracking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The claim is successfully submitted, and a claim number is received for tracking.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

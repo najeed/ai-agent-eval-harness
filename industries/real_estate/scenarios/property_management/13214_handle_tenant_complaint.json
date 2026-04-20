@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive and document the noise complaint, including the date, time, and nature of the noise.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately logs the complaint in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately logs the complaint in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the lease agreements for both the complaining tenant and the accused tenant regarding quiet hours and nuisance clauses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the relevant lease clauses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the relevant lease clauses.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a formal warning notice to the tenant accused of making noise, referencing the lease terms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a standardized, professional warning."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a standardized, professional warning.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

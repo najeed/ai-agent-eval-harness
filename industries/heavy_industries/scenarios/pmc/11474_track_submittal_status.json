@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the submittal in the document control system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the specific submittal record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the specific submittal record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check its current status and who the current reviewer is.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system shows the status is 'Under Review' and it is currently assigned to the lead electrical engineer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system shows the status is 'Under Review' and it is currently assigned to the lead electrical engineer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a reminder notification to the reviewer, as the review is almost due.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a reminder to the lead engineer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a reminder to the lead engineer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

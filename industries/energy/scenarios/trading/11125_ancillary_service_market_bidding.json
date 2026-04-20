@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze historical clearing prices for frequency regulation services in the target market.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies price patterns, such as higher prices during morning and evening ramps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies price patterns, such as higher prices during morning and evening ramps.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine the battery's available capacity for regulation up/down, considering its current state of charge and any energy arbitrage commitments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the MW capacity available for bidding in each hour."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the MW capacity available for bidding in each hour.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Formulate and submit hourly bids into the ancillary service market based on price forecasts and opportunity cost.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits a set of competitive bids."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits a set of competitive bids.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

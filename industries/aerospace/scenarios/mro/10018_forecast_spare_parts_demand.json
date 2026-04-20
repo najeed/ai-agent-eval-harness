@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the historical consumption data for the brake assembly for the past 5 years.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all historical usage data for the part."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all historical usage data for the part.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data along with the future flight schedules for the fleet to create a demand forecast.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a forecast predicting the need for 50 brake assemblies over the next 12 months."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a forecast predicting the need for 50 brake assemblies over the next 12 months.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Adjust inventory reorder points based on the new forecast to ensure parts availability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the inventory management system with new reorder points."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the inventory management system with new reorder points.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

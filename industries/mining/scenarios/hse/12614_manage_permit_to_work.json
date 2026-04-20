@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new permit to work request for confined space entry.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A draft permit is created in the digital permit system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A draft permit is created in the digital permit system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that all safety prerequisites are met, including isolating the tank, performing gas testing, and assigning a standby person.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system's checklist confirms all safety controls are in place."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system's checklist confirms all safety controls are in place.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Approve and issue the electronic permit, making it active for the work crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The permit is issued and becomes active, allowing work to commence safely."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The permit is issued and becomes active, allowing work to commence safely.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

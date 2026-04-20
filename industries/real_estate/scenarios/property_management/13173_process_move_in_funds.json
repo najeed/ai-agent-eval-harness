@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the amounts for the first month's rent and security deposit from the lease.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the correct amounts to be collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the correct amounts to be collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Record the receipt of the payment in the tenant's ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The payment is posted to the tenant's account, with separate line items for rent and deposit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The payment is posted to the tenant's account, with separate line items for rent and deposit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deposit the security deposit portion into the separate, interest-bearing trust account as required by law.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The deposit funds are correctly transferred to the security deposit trust account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The deposit funds are correctly transferred to the security deposit trust account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the VIP notification in the booking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is aware of the VIP's travel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is aware of the VIP's travel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Arrange for a special services agent to meet the passenger kerbside and escort them through a private check-in and security line.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent arranges for an escort."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent arranges for an escort.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Allow the VIP to pre-board the aircraft before other passengers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent facilitates pre-boarding for the VIP."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent facilitates pre-boarding for the VIP.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

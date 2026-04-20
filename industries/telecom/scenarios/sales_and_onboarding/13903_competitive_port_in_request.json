@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Collect the necessary information for the port-in request (old account number, PIN, phone number).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly gathers all required details from the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly gathers all required details from the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit the port-in request to the national number portability database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the porting request using the system tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the porting request using the system tool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the status of the port-in request and inform the customer of the expected completion time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent queries the system and informs the customer the port will complete in 1-2 hours."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent queries the system and informs the customer the port will complete in 1-2 hours.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

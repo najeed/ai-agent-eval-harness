@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Identify the waste management vendor for the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies 'ABC Waste Services' as the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies 'ABC Waste Services' as the vendor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the vendor to schedule a swap-out of the full 40-yard dumpster for an empty one.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A dumpster swap is successfully scheduled for the next morning."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A dumpster swap is successfully scheduled for the next morning.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

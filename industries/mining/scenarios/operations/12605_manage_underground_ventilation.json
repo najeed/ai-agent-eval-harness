@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The VOD system detects that a diesel loader has entered a previously empty section of the mine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system automatically identifies the need for more ventilation in that area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system automatically identifies the need for more ventilation in that area.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically sends a command to increase the speed of the auxiliary fan that supplies air to that section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The fan speed is increased to ensure air quality is maintained for the loader operator."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The fan speed is increased to ensure air quality is maintained for the loader operator.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the loader leaves the area, the system automatically reduces the fan speed to save energy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The fan speed is reduced, minimizing power consumption without compromising safety."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The fan speed is reduced, minimizing power consumption without compromising safety.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

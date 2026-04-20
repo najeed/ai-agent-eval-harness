@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the reporting module in the TOS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Supervisor logs into the reporting system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Supervisor logs into the reporting system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run the 'Daily Operations Summary' report for the specified date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system queries the database for all operational data for that day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system queries the database for all operational data for that day.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the report (e.g., total moves, vessels handled, truck turn time) and email it to the terminal management team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supervisor reviews the KPIs and distributes the report to stakeholders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supervisor reviews the KPIs and distributes the report to stakeholders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the MEL item and its operational restrictions (e.g., flight cannot exceed a certain altitude).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dispatcher understands the limitations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dispatcher understands the limitations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a flight plan that respects the operational restriction, even if it's less efficient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dispatcher creates a compliant flight plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dispatcher creates a compliant flight plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Brief the flight crew on the MEL item and the required operational procedures before they depart.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Dispatcher ensures the crew is aware of the situation and limitations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Dispatcher ensures the crew is aware of the situation and limitations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

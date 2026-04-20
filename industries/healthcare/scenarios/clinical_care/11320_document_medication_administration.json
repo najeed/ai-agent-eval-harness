@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the barcode on the patient's wristband.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system correctly identifies the patient and opens their Medication Administration Record (MAR)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system correctly identifies the patient and opens their Medication Administration Record (MAR).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the barcode on the medication packaging.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system verifies that the scanned medication matches an active order for that patient."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system verifies that the scanned medication matches an active order for that patient.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Administer the medication and sign the MAR to document that the dose was given.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse successfully documents the administration, and the MAR is updated with the time and date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse successfully documents the administration, and the MAR is updated with the time and date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

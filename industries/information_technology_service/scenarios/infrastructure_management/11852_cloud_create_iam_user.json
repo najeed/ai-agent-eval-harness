@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Clarify the exact permissions the developer needs (e.g., read-only access to S3 and full access to EC2).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician has a clear list of required permissions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician has a clear list of required permissions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new IAM policy with the specified permissions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new, least-privilege IAM policy is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new, least-privilege IAM policy is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create the new IAM user and attach the newly created policy to it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The developer user account is created with the correct permissions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The developer user account is created with the correct permissions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

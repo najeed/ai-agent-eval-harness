@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's latest invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the correct bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the correct bill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the prorated charges for the plan upgrade.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the line items corresponding to the proration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the line items corresponding to the proration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Clearly explain how prorated charges are calculated and that their next bill will be for the normal, expected amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully educates the customer about prorated billing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully educates the customer about prorated billing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

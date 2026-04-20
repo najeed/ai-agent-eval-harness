@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the disputed invoice and the container's history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Clerk finds the invoice and the container's movement history in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Clerk finds the invoice and the container's movement history in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the dates of the customs hold and compare them to the storage (demurrage) charge period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Clerk confirms the storage charges were for the same period the container was on customs hold."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Clerk confirms the storage charges were for the same period the container was on customs hold.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on port policy that storage is not charged during a customs hold, waive the fee and issue a corrected invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The disputed charge is credited, and a new invoice is generated and sent to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The disputed charge is credited, and a new invoice is generated and sent to the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

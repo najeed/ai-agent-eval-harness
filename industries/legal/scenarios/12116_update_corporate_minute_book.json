@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all relevant documents from the annual meeting: agenda, signed minutes, and any resolutions passed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has all the necessary documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has all the necessary documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the new documents to the corporate minute book in the correct section and chronological order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly files the new records."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly files the new records.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the index of the minute book to reflect the newly added documents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The minute book's index is now current."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The minute book's index is now current.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the autonomous haulage system dashboard, which shows the location and status of all autonomous trucks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator has full visibility of the autonomous fleet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator has full visibility of the autonomous fleet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive an alert that an autonomous truck has stopped because its sensors have detected an unknown obstacle on the haul road (e.g., a fallen rock).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator is alerted to the exception."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator is alerted to the exception.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a manned vehicle to remove the obstacle. Once clear, remotely instruct the autonomous truck to resume its mission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The exception is safely managed, and the autonomous truck resumes its task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The exception is safely managed, and the autonomous truck resumes its task.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

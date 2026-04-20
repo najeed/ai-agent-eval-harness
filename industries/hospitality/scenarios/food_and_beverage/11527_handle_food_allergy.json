@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the allergy and assure the guest that precautions will be taken.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The server communicates understanding and care."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The server communicates understanding and care.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "When entering the order in the POS, use the special 'Allergy Alert' modifier and add a note specifying 'Severe Nut Allergy'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is entered with a highly visible allergy alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is entered with a highly visible allergy alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verbally inform the kitchen manager of the allergy to ensure no cross-contamination occurs during preparation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The kitchen staff is made aware of the allergy to ensure safe food handling."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The kitchen staff is made aware of the allergy to ensure safe food handling.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

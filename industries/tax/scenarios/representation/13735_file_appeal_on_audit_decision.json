@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the final audit report (Revenue Agent Report) and the client's objections.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the points of disagreement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the points of disagreement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Prepare a formal protest letter outlining the client's position and the laws that support it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts a detailed legal and factual argument."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts a detailed legal and factual argument.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "File the protest letter with the IRS Appeals Office within the specified time limit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the appeal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the appeal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

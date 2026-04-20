@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify key areas for digital transformation in manufacturing (e.g., 'Smart Factory (IoT)', 'Digital Supply Chain', 'E-commerce Platform').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent brainstorms relevant transformation initiatives."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent brainstorms relevant transformation initiatives.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Organize these initiatives into a phased roadmap (Phase 1: Foundational, Phase 2: Growth, Phase 3: Optimization).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a logical, phased plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a logical, phased plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each initiative, list the key expected benefits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly articulates the value proposition of each part of the strategy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly articulates the value proposition of each part of the strategy.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

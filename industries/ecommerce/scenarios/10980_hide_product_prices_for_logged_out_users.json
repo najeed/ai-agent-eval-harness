@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Apply a rule to the product template that checks the user's authentication status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly configures the display logic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly configures the display logic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "If the user is logged out, display a 'Log in to see price' message instead of the price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The rule is correctly implemented to hide the price and show a message."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The rule is correctly implemented to hide the price and show a message.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the user is logged in, display the price as normal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The rule correctly shows the price for authenticated users."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The rule correctly shows the price for authenticated users.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Notify residents in the test area that they may see non-toxic smoke coming from manholes or their roof vents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates and distributes door-hanger notifications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates and distributes door-hanger notifications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The crew pumps smoke into the sewer system through a manhole.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Crew follows the standard procedure for smoke testing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Crew follows the standard procedure for smoke testing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The crew observes where the smoke escapes (e.g., from a storm drain catch basin) and logs these locations as sources of illegal connections.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Crew documents the locations of inflow sources with GPS coordinates and photos."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Crew documents the locations of inflow sources with GPS coordinates and photos.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Determine the value of the asset at risk (e.g., a customer database with 1 million records).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies the asset and its size."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies the asset and its size.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Estimate the likelihood of a data breach occurring in a given year based on historical data and threat intelligence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst estimates a 10% chance of a breach per year."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst estimates a 10% chance of a breach per year.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the Annualized Loss Expectancy (ALE) by multiplying the potential loss per breach (e.g., $5M) by the likelihood (10%), to arrive at an ALE of $500,000.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly performs the quantitative risk calculation to inform security investment decisions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly performs the quantitative risk calculation to inform security investment decisions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

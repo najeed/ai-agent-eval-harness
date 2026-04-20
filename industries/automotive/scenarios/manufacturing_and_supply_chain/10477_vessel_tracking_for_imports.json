@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the container number or bill of lading for the shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the shipment identifier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the shipment identifier.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use an international freight tracking system to find the vessel's name and current location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the shipment is on the 'MSC Isabella' and its current location is in the mid-Atlantic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the shipment is on the 'MSC Isabella' and its current location is in the mid-Atlantic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the manager with the vessel's estimated date of arrival at the port.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gives the manager the ETA for port arrival."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gives the manager the ETA for port arrival.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

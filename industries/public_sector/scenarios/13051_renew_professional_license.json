@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the engineer by their license number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the engineer's license record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the engineer's license record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the engineer has completed the required number of continuing education credits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the continuing education requirements have been met."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the continuing education requirements have been met.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the renewal fee and update the license expiration date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent takes payment and successfully renews the license."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent takes payment and successfully renews the license.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

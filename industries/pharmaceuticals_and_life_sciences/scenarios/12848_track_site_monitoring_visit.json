@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Schedule a routine monitoring visit with the site coordinator in the CTMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent schedules the visit and generates a confirmation letter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent schedules the visit and generates a confirmation letter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the visit, perform source data verification (SDV) by comparing the EDC data against the hospital's source records.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "CRA verifies 100% of critical data points and finds no discrepancies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "CRA verifies 100% of critical data points and finds no discrepancies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft the monitoring visit report within 5 business days of the visit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a comprehensive report detailing the visit's findings and any action items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a comprehensive report detailing the visit's findings and any action items.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Submit the report for review and track any follow-up items to closure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the report and ensures all action items are resolved before the next visit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the report and ensures all action items are resolved before the next visit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

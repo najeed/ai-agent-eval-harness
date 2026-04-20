@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use camera analytics to scan for 'mid-block crossing' events along a major road over the past month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a list of locations with frequent jaywalking events."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a list of locations with frequent jaywalking events.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify one specific location with a particularly high number of unsafe crossings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pinpoints a hotspot for unsafe pedestrian behavior."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pinpoints a hotspot for unsafe pedestrian behavior.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a report for the transportation department recommending a study for a new marked crosswalk at that location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a data-driven recommendation to improve pedestrian safety."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a data-driven recommendation to improve pedestrian safety.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

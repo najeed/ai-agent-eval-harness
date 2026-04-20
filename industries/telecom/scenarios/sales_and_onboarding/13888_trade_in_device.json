@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the model and condition of the customer's old device to determine its trade-in value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uses the trade-in tool to provide a quote for the old device."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uses the trade-in tool to provide a quote for the old device.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the trade-in process: how the credit will be applied and how to ship the old device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the full process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the full process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the trade-in and generate a shipping label for the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the trade-in and sends the shipping label."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the trade-in and sends the shipping label.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

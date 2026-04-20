@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the concrete mix design specification for the current pour.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the spec, which calls for a slump between 3 and 5 inches."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the spec, which calls for a slump between 3 and 5 inches.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform the physical slump test on a sample from the truck.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspector performs the test according to ASTM standards."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspector performs the test according to ASTM standards.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Measure the slump, record the result (e.g., '4.5 inches') in the daily inspection log, and approve the truck for pouring.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the passing result and notifies the site supervisor that the pour can begin."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the passing result and notifies the site supervisor that the pour can begin.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

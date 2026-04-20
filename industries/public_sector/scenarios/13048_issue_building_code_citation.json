@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the property and the specific code violation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspector correctly identifies the property and the violation details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspector correctly identifies the property and the violation details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a formal citation document, including the code reference, a description of the violation, and the required corrective action.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspector creates a complete and accurate citation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspector creates a complete and accurate citation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue the citation to the property owner and log it in the enforcement system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspector delivers the citation and records it in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspector delivers the citation and records it in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the sepsis screening alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse sees and acknowledges the recommendation from the CDS system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse sees and acknowledges the recommendation from the CDS system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Launch the sepsis screening tool/flowsheet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse opens the specific documentation tool for sepsis screening."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse opens the specific documentation tool for sepsis screening.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Complete the screening questions. The tool calculates a score indicating high risk for sepsis and advises notifying the provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Nurse completes the screening, and the system's logic correctly identifies the high-risk patient and provides an action step."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Nurse completes the screening, and the system's logic correctly identifies the high-risk patient and provides an action step.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

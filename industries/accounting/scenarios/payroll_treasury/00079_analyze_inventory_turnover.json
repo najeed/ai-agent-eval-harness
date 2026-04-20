@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the total Cost of Goods Sold (COGS) for the year from the income statement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the annual COGS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the annual COGS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the beginning and ending inventory balances for the year from the balance sheets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the inventory values."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the inventory values.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the average inventory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the average inventory."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the average inventory.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Calculate the inventory turnover ratio by dividing COGS by the average inventory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the final ratio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the final ratio.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Finalize the room layout, including table arrangement and dance floor location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the event's floor plan in the planning software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the event's floor plan in the planning software.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Confirm the final guest count and update the catering order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the final guest count and sends the revised order to the catering partner."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the final guest count and sends the revised order to the catering partner.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a detailed event timeline, including vendor arrival times, start time, and end time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and shares a comprehensive timeline with the client and all vendors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and shares a comprehensive timeline with the client and all vendors.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

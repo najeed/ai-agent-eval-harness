@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the PO and check its status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the supplier has acknowledged the PO but has not yet shipped it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the supplier has acknowledged the PO but has not yet shipped it.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the supplier to request the change in quantity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a formal change request to the supplier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a formal change request to the supplier.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The supplier agrees to the change. Update the PO in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully modifies the PO with the new quantity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully modifies the PO with the new quantity.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all software requirements, design documents, and test results for the avionics system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles all necessary supporting documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles all necessary supporting documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a template to generate the compliance report, mapping each requirement to its corresponding design and test case.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a complete traceability matrix and compliance report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a complete traceability matrix and compliance report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the report to the internal certification authority for review before sending it to the FAA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the correct procedure for internal review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the correct procedure for internal review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

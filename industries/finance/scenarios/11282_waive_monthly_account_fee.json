@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and the monthly fee charge on their statement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the $15 monthly fee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the $15 monthly fee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the customer's account history and tenure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer has been with the bank for 10 years with no prior fee waivers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer has been with the bank for 10 years with no prior fee waivers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Waive the fee for the current month as a one-time courtesy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies a credit for the fee amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies a credit for the fee amount.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

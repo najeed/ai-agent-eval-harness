@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the container has a 'Customs Hold' status in the TOS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Clerk confirms the system shows a hold and the container cannot be released."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Clerk confirms the system shows a hold and the container cannot be released.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the driver that the container is on hold and cannot be picked up.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Clerk clearly explains the situation to the driver."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Clerk clearly explains the situation to the driver.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the driver to contact the cargo's customs broker to resolve the hold.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Clerk provides the correct instructions for the driver/broker to clear the hold with customs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Clerk provides the correct instructions for the driver/broker to clear the hold with customs.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

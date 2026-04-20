@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load the VIP's pre-planned motorcade route into the monitoring system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent inputs the route into the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent inputs the route into the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dedicate a set of traffic and security cameras along the route to a special 'VIP Watch' dashboard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a custom monitoring view for the event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a custom monitoring view for the event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the live feeds during the motorcade, reporting any suspicious activity (e.g., drones, unauthorized vehicles) to police.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides real-time situational awareness to the security detail."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides real-time situational awareness to the security detail.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

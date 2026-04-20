@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the taxpayer's foreign income information and convert it to U.S. dollars.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly converts the income using the proper exchange rate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly converts the income using the proper exchange rate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine eligibility for the Foreign Earned Income Exclusion using Form 2555.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the taxpayer meets the bona fide residence or physical presence test."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the taxpayer meets the bona fide residence or physical presence test.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Alternatively, calculate the Foreign Tax Credit on Form 1116 to see which provides a better tax outcome.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compares the two methods and chooses the one that results in lower tax."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compares the two methods and chooses the one that results in lower tax.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

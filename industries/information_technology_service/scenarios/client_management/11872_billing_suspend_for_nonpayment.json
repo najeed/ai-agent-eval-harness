@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the client's overdue balance and that multiple payment reminders have been sent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager confirms the account is severely delinquent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager confirms the account is severely delinquent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a final notice to the client informing them that services will be suspended in 48 hours if payment is not received.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A final warning is sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A final warning is sent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After 48 hours with no payment, place the client's account and services into a suspended state.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client's services are suspended pending payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client's services are suspended pending payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

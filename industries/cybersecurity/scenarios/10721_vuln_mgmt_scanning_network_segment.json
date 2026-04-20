@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Configure the vulnerability scanner to scan the DMZ IP range using stored credentials.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly sets up the scan target and credentials."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly sets up the scan target and credentials.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Launch the scan and monitor its progress, troubleshooting any hosts that fail to scan correctly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The scan completes successfully across the entire IP range."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The scan completes successfully across the entire IP range.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the results, compare them to the previous quarter's scan to identify new vulnerabilities, and generate a report for the system owners.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst produces a clear report detailing new, resolved, and existing vulnerabilities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst produces a clear report detailing new, resolved, and existing vulnerabilities.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

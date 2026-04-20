@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "A technician requests a specific tool. Check the tool out to the technician in the inventory system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully logs the tool as checked out to the specific technician."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully logs the tool as checked out to the specific technician.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "When the technician returns the tool, inspect it for damage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent inspects the tool and finds it in good condition."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent inspects the tool and finds it in good condition.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the tool back into the inventory system and return it to its designated storage location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the tool's status to 'Available' and logs its return."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the tool's status to 'Available' and logs its return.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

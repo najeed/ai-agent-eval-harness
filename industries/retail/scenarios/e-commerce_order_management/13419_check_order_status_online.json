@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log into their account on the retail website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer successfully logs in."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer successfully logs in.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Navigate to the 'Order History' section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer sees a list of their past and current orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer sees a list of their past and current orders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Click on the specific order to view its status, which is currently 'Processing'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer is able to self-serve and find the current status of their order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer is able to self-serve and find the current status of their order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

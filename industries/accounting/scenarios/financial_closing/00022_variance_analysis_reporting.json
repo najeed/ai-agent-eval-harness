@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify that the Travel Expense account has a 50% unfavorable variance against budget.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent flags the significant variance from the income statement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent flags the significant variance from the income statement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Drill down into the general ledger detail for the Travel Expense account for the month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves all transactions posted to the account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves all transactions posted to the account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the transactions to identify the root cause of the overspend.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent discovers that the entire sales team attended an unscheduled conference, causing the variance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent discovers that the entire sales team attended an unscheduled conference, causing the variance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Write a concise explanation of the variance to be included in the monthly management report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts a clear explanation for the variance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts a clear explanation for the variance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

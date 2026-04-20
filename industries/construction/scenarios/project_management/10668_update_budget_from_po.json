@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the value of the newly issued purchase order for structural steel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the PO value of $150,000."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the PO value of $150,000.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the 'Structural Steel' budget line item by moving $150,000 from 'budgeted' to 'committed cost'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The budget is updated to accurately reflect that the funds are now committed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The budget is updated to accurately reflect that the funds are now committed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

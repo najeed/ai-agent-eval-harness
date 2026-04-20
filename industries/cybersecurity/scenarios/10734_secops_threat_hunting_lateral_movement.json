@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Formulate a hypothesis: 'An attacker is using PsExec to move from workstation to workstation'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst defines a clear, testable hypothesis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst defines a clear, testable hypothesis.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query endpoint logs for the creation of the 'PSEXESVC.exe' service on any host, which is a key indicator of PsExec usage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst writes an effective query to find the specific artifact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst writes an effective query to find the specific artifact.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify a pattern of PsExec usage between non-administrator workstations, which is highly anomalous, and begin an investigation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst discovers an active breach by identifying anomalous use of a legitimate tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst discovers an active breach by identifying anomalous use of a legitimate tool.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

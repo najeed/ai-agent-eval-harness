@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Ingest the GPS and heart rate data from the players' wearable devices after a training session.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads the data for all players."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads the data for all players.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the data to calculate each player's total distance covered, high-speed running distance, and time spent in high heart rate zones.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a performance summary for each player."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a performance summary for each player.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Flag any players whose training load is significantly higher than their weekly average.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies two players who are at high risk of fatigue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies two players who are at high risk of fatigue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Send a report to the head coach recommending a lighter training day for the flagged players.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and sends a report with actionable recommendations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and sends a report with actionable recommendations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

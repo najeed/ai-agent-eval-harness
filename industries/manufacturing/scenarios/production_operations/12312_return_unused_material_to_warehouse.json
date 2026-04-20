@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the part number and quantity of the unused material.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the material and counts the remaining quantity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the material and counts the remaining quantity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a 'Return to Stock' transaction in the inventory system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a transaction to move the inventory from the production line back to the main warehouse."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a transaction to move the inventory from the production line back to the main warehouse.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm that the line-side inventory has been cleared and the warehouse inventory has increased.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the inventory levels have been correctly adjusted in both locations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the inventory levels have been correctly adjusted in both locations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

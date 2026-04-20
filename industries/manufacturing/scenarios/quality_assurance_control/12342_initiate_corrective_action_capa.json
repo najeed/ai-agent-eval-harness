@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new CAPA record, referencing the internal audit finding.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new CAPA and links it to the specific audit report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new CAPA and links it to the specific audit report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Define the problem statement and assign a cross-functional team to investigate the root cause.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a clear problem statement and assigns the investigation to the appropriate personnel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a clear problem statement and assigns the investigation to the appropriate personnel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set a due date for the root cause analysis phase of the CAPA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets a deadline for the investigation team to report its findings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets a deadline for the investigation team to report its findings.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

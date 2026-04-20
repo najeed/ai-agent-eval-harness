@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the event's overall value, including F&B spend and meeting room rental, to determine how much flexibility exists on the room rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent analyzes the total potential revenue from the event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent analyzes the total potential revenue from the event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the hotel's occupancy forecast for the event dates to see if there is a high demand.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees that demand is moderate, allowing for some flexibility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees that demand is moderate, allowing for some flexibility.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Offer a revised, slightly lower rate and present it as a final offer to secure the business.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a counter-offer to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a counter-offer to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

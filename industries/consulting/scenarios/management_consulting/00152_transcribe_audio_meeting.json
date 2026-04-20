@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Process the provided audio file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully ingests the audio file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully ingests the audio file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Transcribe the audio to text.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a text transcript of the meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a text transcript of the meeting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Optionally, identify different speakers in the transcript.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent labels the text with 'Speaker 1', 'Speaker 2', etc."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent labels the text with 'Speaker 1', 'Speaker 2', etc.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the client's information and the tax professional's information (including CAF number).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary data for the form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary data for the form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Specify the tax matters and years for which representation is authorized.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly defines the scope of the representation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly defines the scope of the representation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prepare Form 2848, obtain signatures from both the client and the professional, and file it with the IRS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully prepares and files the Power of Attorney."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully prepares and files the Power of Attorney.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

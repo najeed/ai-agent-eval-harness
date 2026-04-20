@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the calibration procedure and specifications for the digital caliper from the document management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the standard operating procedure (SOP) for calibration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the standard operating procedure (SOP) for calibration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform the calibration using gauge blocks and record the 'as-found' and 'as-left' measurements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician performs the physical procedure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician performs the physical procedure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the calibration event in the asset management system, update the next calibration due date, and print a new calibration sticker.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully logs the event, and the system shows the new due date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully logs the event, and the system shows the new due date.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

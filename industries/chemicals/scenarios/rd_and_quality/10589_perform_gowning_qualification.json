@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Observe the employee perform the gowning procedure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A qualified trainer observes the employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A qualified trainer observes the employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the employee's technique against the official SOP for gowning.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The trainer confirms the employee followed all steps correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The trainer confirms the employee followed all steps correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the successful completion of the gowning qualification in the employee's training file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The trainer signs off on the qualification record in the training management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The trainer signs off on the qualification record in the training management system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

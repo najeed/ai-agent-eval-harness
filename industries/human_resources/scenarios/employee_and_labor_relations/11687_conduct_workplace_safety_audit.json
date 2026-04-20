@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the plant's safety records and past incidents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "EHS manager reviews the safety logs for the past year."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "EHS manager reviews the safety logs for the past year.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Conduct a physical walkthrough of the plant using a safety checklist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager inspects the facility and documents any potential hazards (e.g., blocked fire exits, unlabeled chemicals)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager inspects the facility and documents any potential hazards (e.g., blocked fire exits, unlabeled chemicals).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a corrective action plan based on the audit findings and assign owners for each item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager creates a report with required actions and assigns them to the plant manager."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager creates a report with required actions and assigns them to the plant manager.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

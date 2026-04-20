@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify a common, recurring customer question that is not yet documented.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that many users ask how to set up two-factor authentication."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that many users ask how to set up two-factor authentication.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write a clear, step-by-step guide with screenshots explaining how to set up 2FA.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts a high-quality help article."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts a high-quality help article.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Publish the article to the public knowledge base and add relevant keywords for searchability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully publishes the article, making it available to all users."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully publishes the article, making it available to all users.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

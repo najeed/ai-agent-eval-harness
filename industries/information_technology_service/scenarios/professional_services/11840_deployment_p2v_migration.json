@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Install a P2V conversion tool on the source physical server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool is successfully installed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool is successfully installed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run the conversion tool to create a virtual machine image of the physical server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A VMDK or VHDX file is successfully created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A VMDK or VHDX file is successfully created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Import the VM image into the new hypervisor, boot it up, and test for functionality.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new VM is online and operational, and the old physical server can be decommissioned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new VM is online and operational, and the old physical server can be decommissioned.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain a user listing with their assigned permission levels directly from the SaaS application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor has a complete list of users and their roles."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor has a complete list of users and their roles.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a periodic access review by sending a list of users to the business data owner to certify that their access is still required.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The business owner reviews the list and identifies 5 users who have changed roles and no longer need access."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The business owner reviews the list and identifies 5 users who have changed roles and no longer need access.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the access for the 5 identified users was removed promptly after certification.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor confirms that the unnecessary access was revoked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor confirms that the unnecessary access was revoked.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

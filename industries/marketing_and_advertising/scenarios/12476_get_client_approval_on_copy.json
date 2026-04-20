@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Place the ad copy into a shared document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The copy is in a format that is easy for the client to review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The copy is in a format that is easy for the client to review.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Share the document with the client and request their feedback.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends an email to the client with a link to the document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends an email to the client with a link to the document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once feedback is received, make any necessary revisions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the copy based on the client's feedback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the copy based on the client's feedback.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

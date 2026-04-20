@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "In the e-discovery platform, select all documents tagged as 'Responsive' and not tagged as 'Privileged'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the set of documents to be produced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the set of documents to be produced.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Export the selected documents as text-searchable PDFs with their original metadata.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the production set in the correct format."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the production set in the correct format.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Share the production set with opposing counsel via a secure file transfer link.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The documents are successfully and securely produced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The documents are successfully and securely produced.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

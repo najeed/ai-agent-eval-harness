@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Guide the user to the parental control settings in their account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions for navigating to the settings page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions for navigating to the settings page.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain how to create a child's profile and set a content rating limit (e.g., PG).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the process of setting a rating restriction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the process of setting a rating restriction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify from the backend that the new profile and its restrictions have been saved correctly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the system and confirms the parental controls are active."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the system and confirms the parental controls are active.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

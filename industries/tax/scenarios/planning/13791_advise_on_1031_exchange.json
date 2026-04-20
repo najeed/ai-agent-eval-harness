@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the strict rules and timelines for a 1031 exchange (e.g., 45-day identification period, 180-day closing period).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the critical deadlines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the critical deadlines.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Advise the client on the need for a qualified intermediary to facilitate the exchange.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent explains the role of the intermediary and recommends finding one."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent explains the role of the intermediary and recommends finding one.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review potential replacement properties to ensure they meet the 'like-kind' requirement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent helps the client ensure the transaction will qualify for tax deferral."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent helps the client ensure the transaction will qualify for tax deferral.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

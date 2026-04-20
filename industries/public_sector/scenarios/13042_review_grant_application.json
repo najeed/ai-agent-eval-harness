@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the submitted grant application and all its attachments.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer has the complete application package for review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer has the complete application package for review.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Score the application against the program's official scoring rubric (e.g., project impact, budget reasonableness, organizational capacity).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer systematically scores each section of the application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer systematically scores each section of the application.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the score and any comments into the grant management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The officer saves their review and score, moving the application to the next stage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The officer saves their review and score, moving the application to the next stage.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Physically rack and cable the new server in the client's server rack.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The server is securely installed and connected to power and network."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The server is securely installed and connected to power and network.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Configure the server's remote management (iLO/iDRAC) and BIOS settings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The server hardware is configured correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The server hardware is configured correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Install the hypervisor (e.g., VMware ESXi) and configure it according to the project plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The server operating system is installed and ready for use."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The server operating system is installed and ready for use.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

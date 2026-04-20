@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify top-tier loyalty members attending the next game.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of eligible fans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of eligible fans.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for unsold premium seats for that game.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds two available seats in a premium section."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds two available seats in a premium section.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a notification to an eligible fan offering them the complimentary upgrade.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the offer via the team's mobile app."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the offer via the team's mobile app.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "If the fan accepts, automatically reissue their tickets with the new seat location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The fan accepts, and the agent's tool automatically updates their tickets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The fan accepts, and the agent's tool automatically updates their tickets.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

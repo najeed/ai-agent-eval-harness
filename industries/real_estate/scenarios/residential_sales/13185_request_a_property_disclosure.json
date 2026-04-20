@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the listing agent for the property from the MLS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the name and contact email for the listing agent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the name and contact email for the listing agent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft and send an email to the listing agent formally requesting a copy of the Seller's Disclosure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A professional request email is sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A professional request email is sent.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once received, forward the disclosure document to the buyer client for their review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The document is promptly sent to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The document is promptly sent to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

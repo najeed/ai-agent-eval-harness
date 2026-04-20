@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Regularly and safely browse known dark web forums and marketplaces where stolen data is sold.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst maintains situational awareness of the dark web landscape."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst maintains situational awareness of the dark web landscape.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for any mentions of the company's name or employee email domains.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst runs regular searches for company-specific keywords."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst runs regular searches for company-specific keywords.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Discover a newly posted database of credentials from a third-party site breach that includes several company email addresses and passwords, and then trigger an internal incident response.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst proactively discovers a data breach and initiates a response to mitigate the risk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst proactively discovers a data breach and initiates a response to mitigate the risk.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

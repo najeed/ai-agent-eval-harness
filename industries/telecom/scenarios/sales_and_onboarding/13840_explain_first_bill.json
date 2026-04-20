@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and retrieve their first billing statement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the correct customer and bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the correct customer and bill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Clearly explain the different parts of the bill: the prorated charge for the partial first month and the charge for the next full month in advance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a simple and clear explanation of prorated billing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a simple and clear explanation of prorated billing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the customer understands and is satisfied with the explanation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures customer satisfaction before ending the call."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures customer satisfaction before ending the call.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

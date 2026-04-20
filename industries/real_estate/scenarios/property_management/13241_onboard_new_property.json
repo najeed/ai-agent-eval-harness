@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all property and owner information, including property details, owner contact info, and bank account details for distributions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary onboarding data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary onboarding data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new property profile and owner profile in the property management software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately sets up the new property and owner in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately sets up the new property and owner in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the property is tenanted, enter all existing lease information into the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly abstracts and enters data for existing tenants."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly abstracts and enters data for existing tenants.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

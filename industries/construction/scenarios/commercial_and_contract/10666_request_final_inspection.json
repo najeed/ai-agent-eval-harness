@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Verify that all other required inspections (plumbing, electrical, mechanical, fire) have passed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms all prerequisite inspections are complete and passed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms all prerequisite inspections are complete and passed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit a 'Final Inspection Request' through the city's online portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The request is successfully submitted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The request is successfully submitted.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Immediately restrict access to the untagged scaffold.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The area around the scaffold is cordoned off."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The area around the scaffold is cordoned off.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Locate the competent person responsible for scaffolding inspections on site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The responsible person is located."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The responsible person is located.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Request an immediate inspection of the scaffold and proper tagging before allowing use.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A competent person inspects the scaffold and applies the correct safety tag."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A competent person inspects the scaffold and applies the correct safety tag.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

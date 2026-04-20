@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the current project schedule and the baseline schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Both schedules are retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Both schedules are retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a schedule variance report comparing the finish dates of major milestones between the two schedules.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is generated showing that the project is currently running 15 days behind the baseline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is generated showing that the project is currently running 15 days behind the baseline.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

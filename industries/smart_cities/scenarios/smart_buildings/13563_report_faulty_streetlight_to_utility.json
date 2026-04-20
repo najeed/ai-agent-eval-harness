@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an alert for a streetlight that is repeatedly turning on and off.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the 'flapping' light alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the 'flapping' light alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a diagnostic on the light, which shows the bulb and controller are healthy, but input voltage is unstable.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly diagnoses the issue as a power supply problem."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly diagnoses the issue as a power supply problem.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a trouble ticket and send it to the electric utility company, as the fault lies in their infrastructure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reports the issue to the external utility."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reports the issue to the external utility.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

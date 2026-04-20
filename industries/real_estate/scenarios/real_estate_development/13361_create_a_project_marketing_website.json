@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use a website template to create a new project website.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A basic website structure is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A basic website structure is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add content to the website, including project renderings, floor plans, pricing, and a community map.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The website is populated with all relevant project information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The website is populated with all relevant project information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a lead capture form on the website that integrates with the sales team's CRM.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A functional lead form is created that automatically sends new leads to the CRM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A functional lead form is created that automatically sends new leads to the CRM.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

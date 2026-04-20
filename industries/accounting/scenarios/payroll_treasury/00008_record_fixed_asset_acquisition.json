@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the purchase invoice for the new machinery.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the invoice showing a cost of $50,000."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the invoice showing a cost of $50,000.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new asset record in the fixed asset sub-ledger, including details like description, asset class, purchase date, and cost.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new asset record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new asset record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set up the depreciation schedule for the new asset according to company policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets up a 7-year straight-line depreciation schedule for the asset."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets up a 7-year straight-line depreciation schedule for the asset.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

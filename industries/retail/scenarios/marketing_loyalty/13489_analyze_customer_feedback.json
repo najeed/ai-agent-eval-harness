@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the survey analytics dashboard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager accesses the feedback reporting tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager accesses the feedback reporting tool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Filter for all survey responses from the last month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dashboard displays data for the selected time period."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dashboard displays data for the selected time period.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the keyword analysis tool, which shows that 'long checkout lines' is a frequently mentioned negative term.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager identifies a key area for operational improvement based on customer feedback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager identifies a key area for operational improvement based on customer feedback.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

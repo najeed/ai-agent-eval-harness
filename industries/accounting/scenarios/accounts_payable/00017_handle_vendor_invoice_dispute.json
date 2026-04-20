@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the invoice status for the vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the invoice is on hold and finds the reason code is 'Price Mismatch'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the invoice is on hold and finds the reason code is 'Price Mismatch'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the details of the mismatch, showing the invoice price is higher than the purchase order price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the PO price was $10/unit, but the invoice price was $11/unit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the PO price was $10/unit, but the invoice price was $11/unit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the vendor of the specific discrepancy and request they submit a corrected invoice or a credit memo for the difference.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the issue and the required action to the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the issue and the required action to the vendor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The gate system flags the container for having no VGM.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The gate clerk receives a 'Missing VGM' alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The gate clerk receives a 'Missing VGM' alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Instruct the truck driver to proceed to the port's weighbridge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver is directed to the weighing station."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver is directed to the weighing station.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Weigh the container, generate a VGM certificate, bill the service to the shipper, and update the container's status in the TOS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The container is weighed, the VGM is recorded in the system, a charge is created, and the container is now compliant for loading."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The container is weighed, the VGM is recorded in the system, a charge is created, and the container is now compliant for loading.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

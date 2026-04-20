@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all the samples to be included in the shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A sample manifest is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A sample manifest is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a dispatch form in the system, which includes the manifest and the shipping details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal dispatch request is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal dispatch request is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Package the samples and the paperwork and hand them over to the logistics contractor for shipping. Track the shipment until it is received by the lab.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The samples are shipped, and their chain of custody is tracked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The samples are shipped, and their chain of custody is tracked.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

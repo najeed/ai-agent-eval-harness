@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the caller and the room they stayed in.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the guest's previous stay details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the guest's previous stay details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the digital lost and found log for any items found in that room.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent searches the log and finds an entry for a 'white iPhone charger' found in that room."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent searches the log and finds an entry for a 'white iPhone charger' found in that room.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the item with the guest and arrange for it to be mailed to their home address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the item belongs to the guest and processes a shipping request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the item belongs to the guest and processes a shipping request.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

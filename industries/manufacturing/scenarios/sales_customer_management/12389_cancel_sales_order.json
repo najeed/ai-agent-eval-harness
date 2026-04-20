@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the customer's sales order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct sales order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct sales order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the linked work order has not yet started.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the work order status and confirms it is still 'Scheduled', not 'In Progress'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the work order status and confirms it is still 'Scheduled', not 'In Progress'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Cancel the sales order and the associated work order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully cancels both records in the system and informs the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully cancels both records in the system and informs the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

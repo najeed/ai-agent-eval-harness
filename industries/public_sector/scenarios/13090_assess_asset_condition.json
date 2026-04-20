@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the bridge in the asset management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer finds the correct asset record for the bridge."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer finds the correct asset record for the bridge.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a visual inspection and enter the condition rating for various components (deck, supports, etc.) into a mobile device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer documents the current condition of the bridge components."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer documents the current condition of the bridge components.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the asset record with the new condition assessment data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer syncs their findings, updating the central asset database."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer syncs their findings, updating the central asset database.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

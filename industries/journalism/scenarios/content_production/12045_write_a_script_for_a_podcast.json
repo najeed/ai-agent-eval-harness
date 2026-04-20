@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Outline the structure of the podcast episode.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear outline with all segments is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear outline with all segments is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Write a compelling introduction to hook the listener and introduce the topic and guest.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An engaging intro is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An engaging intro is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Write a list of questions for the interview segment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A comprehensive list of interview questions is prepared."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A comprehensive list of interview questions is prepared.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Write a concluding outro that summarizes the key takeaways and includes a call to action (e.g., 'subscribe to our podcast').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear and effective outro is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear and effective outro is drafted.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

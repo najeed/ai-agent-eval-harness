@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the exact terms of the counter offer with the seller (e.g., new price).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has clear instructions on the new price to propose."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has clear instructions on the new price to propose.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the counter offer form with the new price, referencing the original purchase agreement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The counter offer document is accurately filled out."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The counter offer document is accurately filled out.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the counter offer to the seller for signature, and then forward the signed copy to the buyer's agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The counter offer is signed and delivered to the other party."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The counter offer is signed and delivered to the other party.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

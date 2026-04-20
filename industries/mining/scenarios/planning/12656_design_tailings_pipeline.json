@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Determine the required throughput of the pipeline based on the plant's production rate and the slurry's density.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The required flow rate for the pipeline is calculated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The required flow rate for the pipeline is calculated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform a hydraulic analysis to determine the optimal pipe diameter and the pressure required from the pumps.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pipe size and pump specifications are determined."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pipe size and pump specifications are determined.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Design the pipeline route from the plant to the TSF, minimizing length and elevation changes where possible.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A final pipeline design and layout is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A final pipeline design and layout is created.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

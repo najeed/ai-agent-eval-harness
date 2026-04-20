@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the discharge list (BAPLIE file) for the incoming vessel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner successfully imports the file and identifies container types (standard, reefer, OOG) and weights."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner successfully imports the file and identifies container types (standard, reefer, OOG) and weights.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the yard inventory and identify empty slots in appropriate zones (e.g., reefer racks, export block).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner identifies sufficient space in the appropriate yard blocks for all container types."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner identifies sufficient space in the appropriate yard blocks for all container types.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign a specific yard location (block, bay, row, tier) to each container on the discharge list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Every container is assigned a yard position in the Terminal Operating System (TOS) to optimize future movements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Every container is assigned a yard position in the Terminal Operating System (TOS) to optimize future movements.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

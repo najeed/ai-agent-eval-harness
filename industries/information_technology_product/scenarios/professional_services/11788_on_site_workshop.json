@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Coordinate travel logistics and workshop requirements (e.g., meeting room, projector) with the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All logistics are planned and confirmed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All logistics are planned and confirmed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Facilitate the two-day workshop, guiding the customer's team through hands-on configuration and setup exercises.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The workshop is successfully delivered, and the customer's team is empowered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The workshop is successfully delivered, and the customer's team is empowered.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a summary report of the workshop outcomes and next steps for the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The consultant provides a clear path forward for the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The consultant provides a clear path forward for the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

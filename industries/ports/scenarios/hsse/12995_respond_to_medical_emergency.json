@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a radio call reporting an injured worker and their location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The control room operator receives the call and logs the emergency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The control room operator receives the call and logs the emergency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch the on-site paramedic team to the location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The port's first responders are dispatched."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The port's first responders are dispatched.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Call the city's ambulance service and provide them with an escort to the scene.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An ambulance is called, and a security vehicle is sent to the gate to escort it, ensuring a rapid response."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An ambulance is called, and a security vehicle is sent to the gate to escort it, ensuring a rapid response.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

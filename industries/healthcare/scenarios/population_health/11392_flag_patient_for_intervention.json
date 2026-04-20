@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "A nightly batch job runs the risk stratification model on all patients.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system recalculates risk scores."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system recalculates risk scores.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system detects a patient whose risk score has crossed the 'high-risk' threshold.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system's logic correctly identifies a change in patient status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system's logic correctly identifies a change in patient status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Automatically create a task in a care manager's work queue to review the patient's chart.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A human is prompted to review the high-risk patient, ensuring timely intervention."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A human is prompted to review the high-risk patient, ensuring timely intervention.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

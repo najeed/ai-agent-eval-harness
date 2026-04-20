@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the Bill of Materials (BOM) and routing information for the specified product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly pulls the complete BOM and routing from the ERP system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly pulls the complete BOM and routing from the ERP system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new work order, specifying the quantity, due date, and associated BOM/routing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the work order with all required details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the work order with all required details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Release the work order to the production floor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent changes the work order status to 'Released'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent changes the work order status to 'Released'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

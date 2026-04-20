@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the re-entry policy to the visitor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs the visitor that re-entry is allowed on the same day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs the visitor that re-entry is allowed on the same day.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the visitor with a hand stamp or re-entry pass.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gives the visitor the necessary credential for re-entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gives the visitor the necessary credential for re-entry.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the visitor on which entrance to use when they return.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions for re-entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions for re-entry.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

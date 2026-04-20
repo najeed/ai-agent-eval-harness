@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the property address and the preferred real estate photographer from the vendor list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the correct property and photographer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the correct property and photographer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the photographer to check their availability and schedule the photoshoot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the photographer for a specific date and time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the photographer for a specific date and time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the appointment with the seller and add it to their calendar.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent coordinates with the seller and updates their calendar."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent coordinates with the seller and updates their calendar.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

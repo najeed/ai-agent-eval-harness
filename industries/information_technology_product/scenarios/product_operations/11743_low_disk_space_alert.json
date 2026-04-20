@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the low disk space alert for the specific server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent takes ownership of the alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent takes ownership of the alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "SSH into the server and find which directory is consuming the most space.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that old log files are consuming 90% of the disk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that old log files are consuming 90% of the disk.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Archive and delete log files older than 30 days to free up space.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully resolves the immediate issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully resolves the immediate issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a ticket to implement a log rotation policy to prevent the issue from recurring.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent ensures a long-term fix is put in place."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent ensures a long-term fix is put in place.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

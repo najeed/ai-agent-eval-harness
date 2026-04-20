@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the work order in the system and check its current status and position in the queue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the work order and sees it is scheduled to start in two days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the work order and sees it is scheduled to start in two days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the impact of changing the job's priority on other scheduled jobs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies which other orders will be delayed if this one is expedited."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies which other orders will be delayed if this one is expedited.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the priority of the work order and regenerate the schedule for the affected work center.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully increases the order's priority and confirms the new schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully increases the order's priority and confirms the new schedule.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

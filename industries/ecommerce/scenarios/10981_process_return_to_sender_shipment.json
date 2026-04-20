@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Scan the returned package to identify the original order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System retrieves the order details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System retrieves the order details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Process a refund for the cost of the items, but not the original shipping fee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent issues a partial refund for the product value only."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent issues a partial refund for the product value only.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Restock the returned items into inventory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the inventory levels for the returned products."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the inventory levels for the returned products.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Send an email to the customer informing them of the return and refund due to the invalid address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the situation to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the situation to the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

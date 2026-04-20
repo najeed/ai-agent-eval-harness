@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the EOL test failure alert and identify the specific DTC.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives alert for VIN ending in 12345 with DTC C1155 - 'Wheel Speed Sensor LF Input Circuit Failure'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives alert for VIN ending in 12345 with DTC C1155 - 'Wheel Speed Sensor LF Input Circuit Failure'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log the defect and route the vehicle to the on-site rectification center.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the defect and updates the vehicle's routing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the defect and updates the vehicle's routing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign a technician to diagnose and repair the fault.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a repair order and assigns it to a technician in the rectification center."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a repair order and assigns it to a technician in the rectification center.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

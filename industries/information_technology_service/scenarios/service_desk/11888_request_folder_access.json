@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the folder in question and find its designated owner in the documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician finds the data owner for the folder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician finds the data owner for the folder.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Forward the access request to the data owner for approval.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An approval request is sent to the correct person."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An approval request is sent to the correct person.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once approval is received, add the user to the appropriate Active Directory security group to grant them access.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user is granted access after approval is obtained."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user is granted access after approval is obtained.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

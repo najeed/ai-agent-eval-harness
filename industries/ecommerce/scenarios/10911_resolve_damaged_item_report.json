@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the customer's order and identify the damaged item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the order and the specific product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the order and the specific product.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apologize for the damage and offer the customer a choice between a full refund or a free replacement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides effective customer service options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides effective customer service options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The customer chooses a replacement. Process a new, no-charge order for the same item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a replacement order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a replacement order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the ITP, which specifies that this weld requires 100% UT inspection.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The NDT technician confirms the testing requirement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The NDT technician confirms the testing requirement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform the ultrasonic test on the weld according to the approved procedure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician performs the scan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician performs the scan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the UT results, which show no defects. Log the passing result and generate the NDT report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent analyzes the scan data, finds it acceptable, and creates the formal NDT report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent analyzes the scan data, finds it acceptable, and creates the formal NDT report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

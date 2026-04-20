@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Import the latest sales data into the financial planning model.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully imports the new data, which shows higher-than-expected sales."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully imports the new data, which shows higher-than-expected sales.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Rerun the revenue forecast calculation in the planning tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the forecast, which now projects a 5% increase in quarterly revenue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the forecast, which now projects a 5% increase in quarterly revenue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Publish the updated forecast and notify stakeholders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent saves the new forecast version and sends a notification to the management team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent saves the new forecast version and sends a notification to the management team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

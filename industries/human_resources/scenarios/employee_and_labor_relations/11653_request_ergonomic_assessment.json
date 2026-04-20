@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the employee's request for an assessment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR representative logs the employee's request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR representative logs the employee's request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule a virtual or in-person assessment with the company's ergonomics specialist.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR schedules the assessment for the employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR schedules the assessment for the employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the specialist's recommendations, coordinate with facilities to provide any needed equipment (e.g., monitor stand, footrest).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HR facilitates the procurement of recommended equipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HR facilitates the procurement of recommended equipment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

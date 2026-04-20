@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the web analytics platform and navigate to the 'Acquisition' or 'Referral Traffic' report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accesses the correct report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accesses the correct report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set the date range for the last 30 days.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report is filtered for the correct time period."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report is filtered for the correct time period.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the report to identify the top 5 social media referral sources by number of sessions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a ranked list of the most effective social platforms for driving traffic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a ranked list of the most effective social platforms for driving traffic.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

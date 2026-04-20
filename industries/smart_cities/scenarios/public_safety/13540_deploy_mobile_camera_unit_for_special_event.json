@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a request from the police department for temporary video surveillance at the 'Summer Fest' location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch a public works crew to tow and set up the mobile camera trailer at the specified location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a work order for the deployment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a work order for the deployment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once deployed, add the camera trailer's feeds to the main surveillance dashboard for monitoring.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully integrates the new camera feeds into the monitoring system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully integrates the new camera feeds into the monitoring system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

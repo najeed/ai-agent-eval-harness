@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the original order using information from the gift receipt or the purchaser's name/email.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully locates the original transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully locates the original transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain that, per policy, refunds can only be issued to the original payment method, but a store credit can be issued to the gift recipient.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the return policy for gifts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the return policy for gifts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Issue a store credit to the gift recipient's account for the value of the returned item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates and applies the store credit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates and applies the store credit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

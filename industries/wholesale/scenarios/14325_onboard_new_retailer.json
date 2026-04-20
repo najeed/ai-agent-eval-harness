@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Gather the new retailer's business information and credit application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all the necessary documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all the necessary documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a credit check and establish a credit limit for the new retailer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The credit check is approved, and a credit limit is set."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The credit check is approved, and a credit limit is set.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a new customer account in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Provide the retailer with access to the online ordering portal and send them a welcome packet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets up the portal login and sends the welcome information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets up the portal login and sends the welcome information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

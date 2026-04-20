@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the target audience for the ad based on demographics, interests (e.g., luxury goods), and location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A specific target audience profile is created for the ad campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A specific target audience profile is created for the ad campaign.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create compelling ad copy and select the best photos or a video for the ad creative.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All components for the ad are prepared."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All components for the ad are prepared.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Launch the ad campaign with a set budget and duration, and monitor its performance (reach, clicks, leads).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The ad campaign is live and its analytics are being tracked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The ad campaign is live and its analytics are being tracked.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

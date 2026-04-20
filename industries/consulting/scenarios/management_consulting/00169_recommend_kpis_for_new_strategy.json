@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the 'customer centricity' strategy to understand its core goals.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies goals like 'improve satisfaction' and 'reduce churn'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies goals like 'improve satisfaction' and 'reduce churn'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Brainstorm a list of potential KPIs relevant to the strategy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of relevant KPIs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of relevant KPIs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend the top 5 most impactful KPIs, such as 'Net Promoter Score (NPS)', 'Customer Lifetime Value (CLV)', and 'Churn Rate'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a concise and relevant list of recommended KPIs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a concise and relevant list of recommended KPIs.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

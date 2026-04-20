@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Import the new ISO 27001 control framework into the GRC tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new framework is successfully loaded into the tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new framework is successfully loaded into the tool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each ISO 27001 control, identify and map the corresponding internal company control that satisfies it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully creates a comprehensive mapping between the external framework and internal controls."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully creates a comprehensive mapping between the external framework and internal controls.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify any gaps where an ISO 27001 control is not covered by an existing internal control and create a plan to remediate the gap.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst uses the mapping exercise to identify and plan the remediation of compliance gaps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst uses the mapping exercise to identify and plan the remediation of compliance gaps.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

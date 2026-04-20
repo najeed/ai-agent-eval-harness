@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review all documents authored or received by the witness that have been produced in the case.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all relevant documents for the witness prep session."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all relevant documents for the witness prep session.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft an outline of likely topics and questions the opposing counsel will ask.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed preparation outline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed preparation outline.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a binder (physical or electronic) for the witness containing the key documents and the preparation outline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent assembles a complete witness prep binder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent assembles a complete witness prep binder.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

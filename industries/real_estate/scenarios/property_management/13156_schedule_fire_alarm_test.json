@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Contact the certified fire safety vendor to schedule a date for the inspection and test.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An appointment is scheduled with 'SafeGuard Fire Co.' for the test."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An appointment is scheduled with 'SafeGuard Fire Co.' for the test.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a notice to all building tenants informing them of the date and time of the alarm test.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A building-wide notice is sent out at least 48 hours in advance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A building-wide notice is sent out at least 48 hours in advance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the test, obtain the certificate of compliance from the vendor and save it to the property's file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The compliance certificate is received and filed correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The compliance certificate is received and filed correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

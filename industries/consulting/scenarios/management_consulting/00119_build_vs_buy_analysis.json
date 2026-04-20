@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Research and list the pros and cons of building a custom CRM system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent lists relevant pros (e.g., 'custom features') and cons (e.g., 'high upfront cost', 'long development time')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent lists relevant pros (e.g., 'custom features') and cons (e.g., 'high upfront cost', 'long development time').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Research and list the pros and cons of buying an off-the-shelf CRM system (e.g., Salesforce).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent lists relevant pros (e.g., 'fast implementation') and cons (e.g., 'subscription fees', 'less customization')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent lists relevant pros (e.g., 'fast implementation') and cons (e.g., 'subscription fees', 'less customization').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a summary table comparing the two options and provide a high-level recommendation based on the client's stated preference for speed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a comparison table and recommends the 'Buy' option due to the need for speed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a comparison table and recommends the 'Buy' option due to the need for speed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

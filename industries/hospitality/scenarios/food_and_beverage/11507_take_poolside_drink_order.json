@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Take the guest's order using a handheld POS device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the order for two margaritas into the POS system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the order for two margaritas into the POS system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ask for the guest's room number to charge the order to their folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent links the order to the guest's room folio."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent links the order to the guest's room folio.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The order is automatically sent to the bar's printer for preparation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system correctly routes the order to the bar."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system correctly routes the order to the bar.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

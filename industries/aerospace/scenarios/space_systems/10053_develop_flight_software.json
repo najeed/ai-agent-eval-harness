@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Write software code to read data from the satellite's sensors (star trackers, gyros).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes compliant and efficient code to interface with the sensors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes compliant and efficient code to interface with the sensors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Implement a control algorithm (e.g., a Kalman filter) to process the sensor data and determine the satellite's orientation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly implements the complex control algorithm."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly implements the complex control algorithm.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Test the software in a hardware-in-the-loop simulation to verify its performance before uploading it to the satellite.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the simulation and confirms the software can accurately and stably control the satellite's attitude."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the simulation and confirms the software can accurately and stably control the satellite's attitude.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

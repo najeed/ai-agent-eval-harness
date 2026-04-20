@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify the overdue invoice and confirm it is approved for payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the approved but unpaid invoice in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the approved but unpaid invoice in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a single-item payment proposal for the urgent invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates an ad-hoc payment proposal outside of the normal weekly run."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates an ad-hoc payment proposal outside of the normal weekly run.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Execute the payment via wire transfer to ensure the vendor receives the funds same-day.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the wire payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the wire payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Send proof of payment to the vendor to get the shipping hold released.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent emails the wire transfer confirmation to the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent emails the wire transfer confirmation to the vendor.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

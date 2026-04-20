@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Place an order for the A1c lab test.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician selects the correct lab test from the catalog."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician selects the correct lab test from the catalog.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set the order to be 'Future' and specify the earliest date it can be drawn (e.g., three months from today).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician correctly designates the order as a future lab draw."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician correctly designates the order as a future lab draw.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Sign the order. The order will remain pending and will automatically activate on the specified date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The future order is successfully placed and will become active at the appropriate time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The future order is successfully placed and will become active at the appropriate time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

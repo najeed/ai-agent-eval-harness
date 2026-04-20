@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the inspection order from customs for a specific container.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner receives the notification for container ZZZZ1122334."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner receives the notification for container ZZZZ1122334.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find the container's current location in the yard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner locates the container in the TOS, noting it is at the bottom of a stack."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner locates the container in the TOS, noting it is at the bottom of a stack.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a series of work orders to 'dig out' the container and move it to the Customs Examination Station.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Work orders are created for a yard crane to remove the containers on top and then move the target container to the inspection area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Work orders are created for a yard crane to remove the containers on top and then move the target container to the inspection area.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

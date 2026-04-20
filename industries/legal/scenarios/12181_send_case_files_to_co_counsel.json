@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the key case documents that need to be shared (e.g., all pleadings, major discovery responses).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a list of essential documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a list of essential documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compile the selected documents into a single, organized folder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all the files."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all the files.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Share the folder with the co-counsel via a secure file sharing portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The files are securely transferred to the new legal team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The files are securely transferred to the new legal team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

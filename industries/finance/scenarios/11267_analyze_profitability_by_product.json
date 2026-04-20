@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather sales revenue and cost of goods sold (COGS) data for each product line.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves all necessary financial data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves all necessary financial data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the gross profit and gross margin for each product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the profitability metrics for all products."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the profitability metrics for all products.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a report ranking the products from most to least profitable based on gross margin.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a clear report identifying Product A as most profitable and Product D as least profitable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a clear report identifying Product A as most profitable and Product D as least profitable.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

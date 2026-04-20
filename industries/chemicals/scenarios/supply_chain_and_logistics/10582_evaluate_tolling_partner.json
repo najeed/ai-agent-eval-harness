@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the tolling fee (cost per kg) from the potential partner.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains the pricing from the toller."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains the pricing from the toller.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total 'toll and return' cost, including the tolling fee, freight to the toller, and freight back.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the total landed cost for the tolled product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the total landed cost for the tolled product.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the total tolling cost to the internal manufacturing cost for the same product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compares the two costs and finds that tolling is 15% more expensive but necessary to meet demand."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compares the two costs and finds that tolling is 15% more expensive but necessary to meet demand.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

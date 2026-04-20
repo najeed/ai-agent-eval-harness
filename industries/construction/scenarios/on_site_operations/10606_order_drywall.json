@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Calculate the required quantity of drywall based on the project blueprints for the third floor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates that 250 sheets of 4x8 drywall are needed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates that 250 sheets of 4x8 drywall are needed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a purchase order for 250 sheets of drywall from the primary supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A purchase order is successfully created and sent to the supplier."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A purchase order is successfully created and sent to the supplier.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

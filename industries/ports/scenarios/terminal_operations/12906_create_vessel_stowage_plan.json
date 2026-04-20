@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the list of all containers to be loaded, including their size, weight, and destination port.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner imports the load list into the planning software."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner imports the load list into the planning software.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Using the vessel's profile, plan the placement of containers, considering vessel stability, stress, and destination port sequence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Planner uses software to assign each container to a specific slot (bay, row, tier) on the vessel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Planner uses software to assign each container to a specific slot (bay, row, tier) on the vessel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Finalize the plan and send it to the vessel's Chief Officer and the terminal operations team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The final stowage plan (BAPLIE file) is generated and distributed to all parties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The final stowage plan (BAPLIE file) is generated and distributed to all parties.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

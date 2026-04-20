@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Continuously monitor real-time voltage data from sensors across the feeder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System gathers live voltage readings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System gathers live voltage readings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the optimal voltage setpoint at the substation that lowers overall voltage without causing a low-voltage violation for any customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System determines the target voltage can be lowered by 2%."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System determines the target voltage can be lowered by 2%.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send commands to the substation's load tap changer and downstream voltage regulators to implement the new setpoint.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System successfully adjusts the field devices to the new voltage profile."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System successfully adjusts the field devices to the new voltage profile.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

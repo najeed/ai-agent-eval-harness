@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The system detects that the quantity in a primary pick location has dropped below its minimum level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A replenishment alert is automatically triggered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A replenishment alert is automatically triggered.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system generates a replenishment task, directing an operator to a bulk storage location with the same item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A task is created with 'from' and 'to' locations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A task is created with 'from' and 'to' locations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "An operator accepts the task, moves a pallet from bulk to the pick face, and confirms completion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator completes the task, and the system shows the pick face inventory has been increased."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator completes the task, and the system shows the pick face inventory has been increased.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

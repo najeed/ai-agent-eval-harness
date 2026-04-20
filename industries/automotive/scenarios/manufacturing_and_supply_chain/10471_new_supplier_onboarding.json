@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all necessary information for the new supplier (company name, address, contact info, banking details, tax ID).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all required data points."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all required data points.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new vendor profile in the master supplier database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new supplier record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new supplier record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Configure the logistics system with the supplier's shipping location and lead times to enable automated parts ordering.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sets up the supplier in the logistics platform."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sets up the supplier in the logistics platform.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

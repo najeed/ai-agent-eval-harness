@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the final, official statistics for the game.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the complete box score."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the complete box score.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a post-game infographic template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent chooses the appropriate template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent chooses the appropriate template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Automatically populate the infographic with the key stats, such as the final score and top performers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the final infographic image."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the final infographic image.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Post the infographic to the team's website and social media.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully publishes the graphic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully publishes the graphic.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

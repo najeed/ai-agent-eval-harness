@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Confirm the closing date, time, and location with the title company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the final appointment details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the final appointment details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule the final walkthrough for the buyer the day before closing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An appointment for the final walkthrough is scheduled with all parties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An appointment for the final walkthrough is scheduled with all parties.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a 'Closing Confirmation' email to the client with the appointment details and a reminder to bring their ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear, instructional email is sent to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear, instructional email is sent to the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

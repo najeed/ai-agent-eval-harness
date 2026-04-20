@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Work with the vendors to map the data fields between the HRIS and the LMS (e.g., employee ID, name, manager).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The HRIS analyst defines the data mapping for the integration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The HRIS analyst defines the data mapping for the integration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Configure the API or file transfer process to sync employee data from the HRIS to the LMS daily.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst sets up the scheduled data feed between the two systems."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst sets up the scheduled data feed between the two systems.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run a test sync and validate that employee data appears correctly in the LMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst performs a test run and confirms that a test employee's data is synced correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst performs a test run and confirms that a test employee's data is synced correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

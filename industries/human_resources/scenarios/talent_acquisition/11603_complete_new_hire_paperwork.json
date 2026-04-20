@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the new hire in the HRIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the new employee's record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the new employee's record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send the new hire a link to the onboarding portal to complete their paperwork electronically.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the welcome email with the portal link."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the welcome email with the portal link.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that all forms have been completed and submitted correctly in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the portal and confirms that the I-9 and W-4 are complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the portal and confirms that the I-9 and W-4 are complete.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

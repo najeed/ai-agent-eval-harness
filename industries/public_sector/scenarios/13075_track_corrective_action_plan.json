@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the original audit finding and the associated CAP.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor pulls up the relevant files in the audit management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor pulls up the relevant files in the audit management system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the CAP to see the promised actions and deadlines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor reviews the steps the department promised to take."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor reviews the steps the department promised to take.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check for evidence that the corrective actions have been completed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor verifies that the department has submitted evidence of completing the required actions, allowing the finding to be closed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor verifies that the department has submitted evidence of completing the required actions, allowing the finding to be closed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

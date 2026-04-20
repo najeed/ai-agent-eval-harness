@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all shipping records from the previous day from the warehouse management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of all shipments, including customer, products, and quantities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of all shipments, including customer, products, and quantities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each shipment, create a customer invoice, pulling pricing from the customer's master record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates invoices for all shipments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates invoices for all shipments.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Email the generated invoices to the respective customers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends out all the invoices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends out all the invoices.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

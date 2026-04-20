@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an automated alert that a piece of equipment is due for maintenance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the alert for the specific forklift."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the alert for the specific forklift.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a work order for the maintenance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is created in the maintenance system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is created in the maintenance system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the maintenance with the on-site technician or an external vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The service is scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The service is scheduled.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

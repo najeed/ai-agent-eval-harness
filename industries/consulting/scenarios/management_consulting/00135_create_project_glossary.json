@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Process all documents in a specified project folder.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reads all documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reads all documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify all acronyms and technical terms used in the documents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent extracts a list of potential glossary terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent extracts a list of potential glossary terms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For each term, find its definition or first usage context within the documents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a definition or context for each term."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a definition or context for each term.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Format the findings into a two-column glossary table (Term | Definition).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a well-structured glossary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a well-structured glossary.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

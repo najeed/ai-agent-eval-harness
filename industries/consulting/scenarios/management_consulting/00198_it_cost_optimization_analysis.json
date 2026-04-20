@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load a dataset of IT expenditures, categorized by area (e.g., 'Hardware', 'Software Licenses', 'Cloud Services').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads the data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads the data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the top 3 spending categories.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the largest areas of IT spend."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the largest areas of IT spend.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "For the top category ('Cloud Services'), suggest specific optimization strategies (e.g., 'use reserved instances', 'identify and terminate unused resources').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides actionable and relevant cost-saving recommendations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides actionable and relevant cost-saving recommendations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

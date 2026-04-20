@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the product the customer wants by scanning a similar item or looking it up by name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate finds the correct product SKU."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate finds the correct product SKU.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the inventory lookup tool to check stock levels for that item at other stores.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool shows that a nearby store has five units in stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool shows that a nearby store has five units in stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the customer of the nearby store's location and offer to call them to hold the item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate provides a solution for the customer to get the out-of-stock item."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate provides a solution for the customer to get the out-of-stock item.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

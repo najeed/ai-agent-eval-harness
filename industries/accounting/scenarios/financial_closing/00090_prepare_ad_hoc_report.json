@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the ad-hoc report request.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the user needs expense data for a specific department and timeframe."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the user needs expense data for a specific department and timeframe.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the general ledger for all transactions matching the specified department and date range.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves all the relevant transactions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves all the relevant transactions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Summarize the data by GL account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pivots the data to show total spend for each expense account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pivots the data to show total spend for each expense account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate and send the report to the manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a spreadsheet with the requested data and emails it to the manager."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a spreadsheet with the requested data and emails it to the manager.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

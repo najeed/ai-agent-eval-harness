@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Upload the text from the paper ICF into an eConsent authoring tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully imports the text."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully imports the text.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enhance the form with interactive elements, such as videos explaining procedures and embedded comprehension quizzes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds multimedia and interactive elements to the form."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds multimedia and interactive elements to the form.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Configure the electronic signature workflow for the patient and the investigator.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets up the required signature fields and routing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets up the required signature fields and routing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Publish the eConsent form for use in the clinical trial.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes the final eConsent form available to the clinical sites."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes the final eConsent form available to the clinical sites.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

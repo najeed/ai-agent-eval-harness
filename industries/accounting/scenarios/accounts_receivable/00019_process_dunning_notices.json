@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all customers with invoices that are more than 30 days past due.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a list of delinquent accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a list of delinquent accounts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each customer on the list, generate the appropriate dunning letter based on the age of the oldest invoice (e.g., 30-day gentle reminder, 60-day firm notice).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the correct level of dunning letter for each customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the correct level of dunning letter for each customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the dunning letters to the customers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully emails or queues the letters for mailing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully emails or queues the letters for mailing.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

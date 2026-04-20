@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Advise the buyer to document the issue thoroughly with photos and repair estimates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The buyer gathers evidence of the defect and its repair cost."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The buyer gathers evidence of the defect and its repair cost.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the seller's property disclosure statement to see if the issue should have been disclosed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines if there was a potential failure to disclose."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines if there was a potential failure to disclose.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the buyer on their potential recourse, such as contacting the seller to request they cover the repair cost, and recommend they consult with a real estate attorney.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent provides guidance and recommends legal counsel for a post-closing dispute."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent provides guidance and recommends legal counsel for a post-closing dispute.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

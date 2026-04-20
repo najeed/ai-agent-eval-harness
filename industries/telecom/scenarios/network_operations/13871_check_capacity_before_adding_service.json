@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the bandwidth requirements for the new service from the service catalog.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the new service requires 10 Gbps of dedicated bandwidth."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the new service requires 10 Gbps of dedicated bandwidth.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the current utilization of the edge router that will serve the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the router has 20 Gbps of available capacity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the router has 20 Gbps of available capacity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm that there is sufficient capacity and notify the sales team that they can proceed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a confirmation to the sales team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a confirmation to the sales team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the scheduled campaign in the marketing platform.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager locates the campaign that needs to be stopped."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager locates the campaign that needs to be stopped.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the 'Pause' or 'Unschedule' option.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The campaign's status is changed to 'Paused'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The campaign's status is changed to 'Paused'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Correct the error in the email and then reschedule the campaign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A potential error is averted, and the corrected campaign is ready to be sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A potential error is averted, and the corrected campaign is ready to be sent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The housekeeper brings the item to the housekeeping office.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The item is secured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The item is secured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The supervisor logs the item in the lost and found system, noting the item description, room number, and date found.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new entry is accurately created in the lost and found log."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new entry is accurately created in the lost and found log.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The physical item is tagged with the log number and placed in secure storage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The item is properly tagged and stored according to policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The item is properly tagged and stored according to policy.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the high volume of user complaints about playback errors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a spike in playback error reports."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a spike in playback error reports.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the status dashboards of all primary CDN providers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that a major CDN provider is reporting a partial outage in North America."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that a major CDN provider is reporting a partial outage in North America.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Execute a command to reroute all North American traffic to the secondary CDN provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the CDN traffic management configuration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the CDN traffic management configuration.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

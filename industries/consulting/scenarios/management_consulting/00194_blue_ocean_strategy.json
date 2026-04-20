@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze documents describing the current state of the 'fast food' industry, identifying the key factors of competition (e.g., 'price', 'speed', 'menu variety').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the industry's standard competitive factors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the industry's standard competitive factors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Using the Eliminate-Reduce-Raise-Create framework, propose changes to these factors. For example, 'Eliminate complex menus', 'Raise food quality'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent applies the framework to suggest strategic shifts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent applies the framework to suggest strategic shifts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Synthesize these changes into a new value proposition for a 'fast-casual, high-quality burger' restaurant, representing a new market space.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent describes a coherent new business concept."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent describes a coherent new business concept.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

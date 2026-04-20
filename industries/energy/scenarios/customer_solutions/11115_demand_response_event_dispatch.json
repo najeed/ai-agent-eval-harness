@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Identify all enrolled commercial and industrial customers within the specified grid zone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent lists all eligible participants for the demand response event."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent lists all eligible participants for the demand response event.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total available load reduction from the identified customers based on their pre-committed levels.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms there is 7 MW of available load reduction capacity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms there is 7 MW of available load reduction capacity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send dispatch signals to the participating customers' building management systems to achieve the 5 MW target.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the curtailment signals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the curtailment signals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Monitor the real-time load reduction to ensure the 5 MW target is met and sustained for the 2-hour period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides real-time updates on the event's performance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides real-time updates on the event's performance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

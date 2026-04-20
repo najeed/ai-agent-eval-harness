@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Run a validation check in the EDC system that flags an error.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a patient's reported birth year as 1890, which is inconsistent with their enrollment date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a patient's reported birth year as 1890, which is inconsistent with their enrollment date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a data query for the clinical site staff.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a clear, concise query: 'Please verify patient's date of birth. The reported year of 1890 seems unlikely.'"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a clear, concise query: 'Please verify patient's date of birth. The reported year of 1890 seems unlikely.'",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the query to the specific site and responsible user in the EDC system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly routes the query to the site's Clinical Research Coordinator."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly routes the query to the site's Clinical Research Coordinator.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Monitor the query status until it is resolved by the site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent tracks the query until the site responds with a correction (e.g., to 1980) and closes the query."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent tracks the query until the site responds with a correction (e.g., to 1980) and closes the query.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

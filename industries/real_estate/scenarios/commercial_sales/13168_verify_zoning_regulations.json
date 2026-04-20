@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the address of the property.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the correct property address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the correct property address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the city's online zoning map or planning department portal to find the property's zoning designation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the property is zoned 'C-1' (Commercial)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the property is zoned 'C-1' (Commercial).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Look up the permitted uses for the 'C-1' zone to confirm that 'Restaurant' or 'Cafe' is allowed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reviews the zoning code and confirms that a cafe is a permitted use in the C-1 zone."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reviews the zoning code and confirms that a cafe is a permitted use in the C-1 zone.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

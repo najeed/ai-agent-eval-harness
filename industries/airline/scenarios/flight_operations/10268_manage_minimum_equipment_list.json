@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the inoperative system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot identifies the broken coffee maker."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot identifies the broken coffee maker.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Consult the aircraft's Minimum Equipment List (MEL) to see if dispatch is permitted with this item inoperative.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot finds the MEL entry for the coffee maker, which allows dispatch."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot finds the MEL entry for the coffee maker, which allows dispatch.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Follow any required procedures in the MEL (e.g., placarding the item as 'inoperative') and record the MEL item in the aircraft's technical log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Pilot applies the placard and makes the logbook entry, allowing the flight to depart."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Pilot applies the placard and makes the logbook entry, allowing the flight to depart.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

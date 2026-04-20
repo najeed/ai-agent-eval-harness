@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Capture a live memory image (RAM dump) from the running suspect host.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Investigator successfully acquires the memory image without crashing the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Investigator successfully acquires the memory image without crashing the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the memory image for signs of malicious processes or injected code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Investigator identifies a suspicious process that has no corresponding file on disk."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Investigator identifies a suspicious process that has no corresponding file on disk.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dump the suspicious process from memory and perform reverse engineering on it to understand its capabilities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Investigator confirms the process is a malicious implant and understands its function."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Investigator confirms the process is a malicious implant and understands its function.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

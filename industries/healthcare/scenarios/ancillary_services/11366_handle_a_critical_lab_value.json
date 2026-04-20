@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify a lab result that has been flagged by the LIS as a critical value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician sees a prominent alert for the critical result."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician sees a prominent alert for the critical result.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Follow the hospital's critical value protocol by calling the ordering provider or the nurse on the patient's unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician makes a phone call to communicate the result directly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician makes a phone call to communicate the result directly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Document the critical value notification in the LIS, including who they spoke to and the time of the call (read-back).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The communication is documented, providing an audit trail that the critical result was properly communicated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The communication is documented, providing an audit trail that the critical result was properly communicated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Configure the DAST scanner with the target application's URL and authentication credentials.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly configures the scan parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly configures the scan parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Launch the authenticated scan and monitor its progress.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The scan runs to completion without errors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The scan runs to completion without errors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the scan results, identifying a critical SQL Injection vulnerability, and create a high-priority ticket for the development team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly identifies, prioritizes, and reports the critical finding."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly identifies, prioritizes, and reports the critical finding.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

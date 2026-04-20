@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the ACH rejection notification from the bank.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the notification, which includes the vendor name and reason code 'Invalid Account Number'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the notification, which includes the vendor name and reason code 'Invalid Account Number'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Reverse the payment posting in the ERP system to reopen the vendor invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reverses the payment transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reverses the payment transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the vendor to obtain the correct banking information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent contacts the vendor and gets the updated details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent contacts the vendor and gets the updated details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the vendor master file and re-process the payment in the next payment run.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the vendor record and reschedules the payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the vendor record and reschedules the payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

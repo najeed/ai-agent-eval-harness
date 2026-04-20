@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The technician documents the signs of tampering (e.g., broken seal, meter upside down) and takes photos.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician logs the details and evidence in their mobile work management app."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician logs the details and evidence in their mobile work management app.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically flags the account for investigation by the revenue protection department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates a new investigation case."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates a new investigation case.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the customer's historical usage for sudden, unexplained drops in consumption.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System analysis shows a 70% drop in recorded consumption starting 3 months ago."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System analysis shows a 70% drop in recorded consumption starting 3 months ago.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

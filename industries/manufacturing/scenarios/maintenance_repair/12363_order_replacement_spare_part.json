@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the part number and supplier for the motor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct part and supplier information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct part and supplier information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a purchase requisition for the motor, specifying the reorder quantity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a purchase requisition for approval by the maintenance manager."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a purchase requisition for approval by the maintenance manager.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the requisition to the purchasing department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the request into the procurement workflow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the request into the procurement workflow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

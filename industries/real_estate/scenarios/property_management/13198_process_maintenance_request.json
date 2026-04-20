@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the tenant's maintenance request from the portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the request, tenant, and property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the request, tenant, and property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new work order, categorizing the issue as 'Plumbing - Non-Emergency'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a correctly categorized work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a correctly categorized work order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the work order to an approved plumbing vendor and notify the tenant that a vendor has been dispatched.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully assigns the job to a qualified vendor and communicates with the tenant."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully assigns the job to a qualified vendor and communicates with the tenant.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

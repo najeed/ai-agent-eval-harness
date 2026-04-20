@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Calculate the total purchases for the customer for the year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the customer's total sales volume."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the customer's total sales volume.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the rebate amount based on the tiered rebate program rules (e.g., 2% rebate on sales over $1M).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the total rebate earned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the total rebate earned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a credit memo on the customer's account for the rebate amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the rebate credit memo."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the rebate credit memo.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The customer can then either apply this credit to open invoices or request a cash payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the customer with the options for their rebate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the customer with the options for their rebate.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze historical congestion patterns and costs on the transmission path from the power plant to the main load center.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that the path is frequently congested during summer months."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that the path is frequently congested during summer months.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Forecast the likely clearing price for the FTR in the upcoming auction based on historical auction results.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides an estimated price for the FTR."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides an estimated price for the FTR.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Develop a bidding strategy and submit a bid for the required amount of FTRs into the ISO's auction system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the bid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the bid.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the farm's standard operating procedure (SOP) for new animal quarantine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the 30-day quarantine protocol document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the 30-day quarantine protocol document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a schedule of tasks based on the protocol, including initial health checks, vaccinations, and diagnostic testing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a checklist of tasks with due dates for the new animals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a checklist of tasks with due dates for the new animals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set a reminder for the end of the 30-day quarantine period to clear the animals for introduction to the main herd.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sets a calendar reminder."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sets a calendar reminder.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

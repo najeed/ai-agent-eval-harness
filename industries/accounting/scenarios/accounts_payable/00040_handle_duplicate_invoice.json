@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the duplicate invoice alert from the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent notes the system has flagged an invoice based on having the same vendor and invoice number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent notes the system has flagged an invoice based on having the same vendor and invoice number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve and compare the details of the newly submitted invoice and the one already in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that both the invoice number and amount are identical."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that both the invoice number and amount are identical.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reject the new invoice as a duplicate and notify the person who submitted it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent cancels the processing of the duplicate invoice and sends a notification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent cancels the processing of the duplicate invoice and sends a notification.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

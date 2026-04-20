@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the actor's contract and the syndication agreement for the TV show.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the actor's residual payment terms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the actor's residual payment terms.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the residual payment owed based on the terms and the recent syndication revenue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the correct payment amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the correct payment amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a payment statement and schedule the payment to the actor's agent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the statement and queues the payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the statement and queues the payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

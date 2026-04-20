@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Customize the standard end-user training deck to include screenshots and examples from the customer's own configured environment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant tailors the training to be highly relevant to the audience."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant tailors the training to be highly relevant to the audience.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Deliver the training session in a 'train-the-trainer' format to a group of the customer's team leads.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant effectively enables the customer's champions to train their own teams."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant effectively enables the customer's champions to train their own teams.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a Q&A document and a recording of the session for future reference.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant provides lasting training assets to the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant provides lasting training assets to the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

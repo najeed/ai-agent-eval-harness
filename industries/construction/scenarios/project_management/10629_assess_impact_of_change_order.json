@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the details of the approved change order, noting the 10-day duration for the added scope.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the duration of the new work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the duration of the new work.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Incorporate the new tasks into the project schedule and analyze the impact on the critical path.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the schedule and finds that the project completion date is delayed by 10 days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the schedule and finds that the project completion date is delayed by 10 days.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

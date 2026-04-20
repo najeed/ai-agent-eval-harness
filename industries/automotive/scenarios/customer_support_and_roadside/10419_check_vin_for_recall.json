@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ask the customer for their Vehicle Identification Number (VIN).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly collects the 17-digit VIN."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly collects the 17-digit VIN.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the VIN against the national recall database and the manufacturer's internal records.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an open recall for 'Takata Airbag Inflator Replacement' for this VIN."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an open recall for 'Takata Airbag Inflator Replacement' for this VIN.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the customer about the recall, explain that the repair is free, and help them schedule the service at their nearest dealership.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the recall and successfully books the required service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the recall and successfully books the required service.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

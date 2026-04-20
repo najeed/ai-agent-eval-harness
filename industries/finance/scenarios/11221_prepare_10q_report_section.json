@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather financial statements and variance reports for the quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects the income statement, balance sheet, and budget vs. actual reports."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects the income statement, balance sheet, and budget vs. actual reports.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the financial results and identify key trends and drivers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that revenue growth was driven by a new product launch."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that revenue growth was driven by a new product launch.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a narrative for the MD&A section explaining the quarterly performance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a draft of the MD&A section incorporating the key findings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a draft of the MD&A section incorporating the key findings.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

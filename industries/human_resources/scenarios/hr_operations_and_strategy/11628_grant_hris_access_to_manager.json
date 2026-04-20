@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the access request for the new manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRIS admin receives a ticket to grant access."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRIS admin receives a ticket to grant access.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the employee's record in the HRIS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin locates the correct employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin locates the correct employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the 'Manager' security role to the employee's user profile.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Admin successfully updates the user's permissions in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Admin successfully updates the user's permissions in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

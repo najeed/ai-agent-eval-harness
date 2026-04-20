@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all documents that require a signature from each specific party.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a list of required signatures for each person."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a list of required signatures for each person.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each signatory, compile their required documents into a single PDF.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a separate PDF packet for each person."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a separate PDF packet for each person.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add 'Sign Here' flags to all the signature lines in each packet to make signing easier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The signature packets are prepared and user-friendly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The signature packets are prepared and user-friendly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

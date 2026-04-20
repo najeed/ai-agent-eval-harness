@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log a new ticket using the 'New Hire' template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new ticket with a checklist of new-hire tasks is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new ticket with a checklist of new-hire tasks is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new user account in the client's Active Directory and Microsoft 365 tenant.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user account, email, and basic group memberships are created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user account, email, and basic group memberships are created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Configure a new laptop for the user by deploying the standard client image.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new laptop is prepared with all standard company software and settings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new laptop is prepared with all standard company software and settings.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

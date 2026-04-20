@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and the specific address where calls are dropping.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer's account and logs the problem address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer's account and logs the problem address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the network coverage map and known issues for the reported location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds no known outages but notes the area has borderline coverage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds no known outages but notes the area has borderline coverage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Instruct the customer to enable Wi-Fi Calling on their device as a solution.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions for enabling Wi-Fi Calling on iOS and Android."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions for enabling Wi-Fi Calling on iOS and Android.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

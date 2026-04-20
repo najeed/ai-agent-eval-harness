@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the task management application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supervisor accesses the task assignment tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supervisor accesses the task assignment tool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new task for 'Restock beverage cooler' and assign it to a specific associate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The task is created and assigned to the correct employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The task is created and assigned to the correct employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the list of all assigned tasks for the shift to ensure workload is balanced.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The supervisor confirms that tasks are distributed evenly among the available staff."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The supervisor confirms that tasks are distributed evenly among the available staff.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

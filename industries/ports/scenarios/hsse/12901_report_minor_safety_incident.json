@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather details of the incident: time, location, equipment involved, and a description of what happened.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer collects all relevant facts about the near-miss."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer collects all relevant facts about the near-miss.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new incident report in the safety management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new report is created with all the gathered details, classified as 'Near-Miss'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new report is created with all the gathered details, classified as 'Near-Miss'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign an action item to the terminal manager to conduct a toolbox talk on safe lifting procedures with crane operators.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A corrective action is assigned to the relevant manager to prevent recurrence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A corrective action is assigned to the relevant manager to prevent recurrence.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

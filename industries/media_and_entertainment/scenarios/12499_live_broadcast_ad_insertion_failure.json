@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the ad insertion failure alert and identify the failed ad creative and the scheduled time slot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the specific ad and commercial break that was affected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the specific ad and commercial break that was affected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the ad server logs for an error code related to the failure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an error code indicating 'Creative Not Found'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an error code indicating 'Creative Not Found'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Immediately insert a backup 'house ad' into the next available slot to meet broadcast time requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules a backup ad to play."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules a backup ad to play.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Create a ticket for the ad operations team to investigate the missing creative file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed ticket and assigns it to the correct team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed ticket and assigns it to the correct team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

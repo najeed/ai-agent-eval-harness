@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the customer's request and review the original SOW to confirm the feature is out of scope.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant validates that the request constitutes a scope change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant validates that the request constitutes a scope change.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Estimate the additional effort (hours) required for the new feature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant provides an accurate estimate for the extra work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant provides an accurate estimate for the extra work.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a change order document outlining the new scope, timeline impact, and additional cost.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Consultant creates a formal change order for the customer to approve."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Consultant creates a formal change order for the customer to approve.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

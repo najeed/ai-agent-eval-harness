@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Inspect the damage to the bag and take photos for the record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent documents the damage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent documents the damage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a damaged baggage report in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new claim file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new claim file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the airline's liability and offer the passenger the option of a future travel voucher or having the airline arrange for the bag to be repaired.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the compensation options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the compensation options.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

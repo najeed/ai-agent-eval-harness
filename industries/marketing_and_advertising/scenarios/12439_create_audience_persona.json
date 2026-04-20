@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Synthesize data from surveys, analytics, and market research about the target audience.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all available data about the target customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all available data about the target customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a persona document that includes a fictional name, photo, demographics, goals, and pain points.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed, empathetic representation of the target customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed, empathetic representation of the target customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Share the persona document with the marketing and creative teams to ensure everyone is aligned.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent distributes the persona for team-wide use."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent distributes the persona for team-wide use.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

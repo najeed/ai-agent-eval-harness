@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the candidate and the interviewers who participated in the panel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coordinator identifies the correct candidate and interviewers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coordinator identifies the correct candidate and interviewers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the ATS to see which interviewers have not yet submitted their feedback scorecard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coordinator finds that one of the three interviewers has not submitted feedback."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coordinator finds that one of the three interviewers has not submitted feedback.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a reminder notification to the interviewer who has not submitted their feedback.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coordinator sends a polite reminder email or system notification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coordinator sends a polite reminder email or system notification.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

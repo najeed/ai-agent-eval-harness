@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the full file path and name from the user.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Technician has the exact location of the file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Technician has the exact location of the file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Right-click the file and use the 'Previous Versions' tab (VSS) to find yesterday's version.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician finds a version from the previous day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician finds a version from the previous day.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Restore yesterday's version of the file to a different location (e.g., the user's desktop) so they can verify it's the correct one before overwriting the current version.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The user receives the older version of the file and can recover their lost work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The user receives the older version of the file and can recover their lost work.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

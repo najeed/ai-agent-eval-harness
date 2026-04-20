@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather job details from the hiring manager (title, department, job description, salary range).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary information for the new role."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary information for the new role.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new job requisition in the Applicant Tracking System (ATS) using the collected details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a draft requisition in the ATS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a draft requisition in the ATS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the requisition for approval from the department head and finance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly initiates the approval workflow in the ATS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly initiates the approval workflow in the ATS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

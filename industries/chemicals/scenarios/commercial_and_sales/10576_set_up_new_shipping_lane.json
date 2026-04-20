@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get rate tables from several approved LTL carriers for the new lane (e.g., from California to Nevada).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains pricing information from freight carriers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains pricing information from freight carriers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the new freight pricing into the system, so it can be automatically calculated on future sales orders to that state.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the freight pricing matrix."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the freight pricing matrix.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run a test quote for an order to the new state to verify the freight cost is calculated correctly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a test quote and confirms the new freight logic is working."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a test quote and confirms the new freight logic is working.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

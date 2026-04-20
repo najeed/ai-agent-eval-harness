@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log the date and time of the concrete pour.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pour is logged in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pour is logged in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the 7-day and 28-day concrete cylinder break test results from the testing agency.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The strength test results are retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The strength test results are retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the 28-day strength meets the specified psi required by the structural engineer before clearing the slab for heavy loads.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the concrete has reached its required strength."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the concrete has reached its required strength.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

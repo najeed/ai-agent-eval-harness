@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Collect the new employee's details.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately captures the employee's name and information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately captures the employee's name and information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Issue a new card under the company's commercial card program.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a new card number for the employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a new card number for the employee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Set the spending controls for the new card, such as a monthly limit and merchant category code restrictions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent applies a $5,000 monthly limit and blocks categories like gambling."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent applies a $5,000 monthly limit and blocks categories like gambling.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze bathymetric (seabed topography) data to identify potential cable routes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies routes that avoid major obstacles and steep gradients."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies routes that avoid major obstacles and steep gradients.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify and map exclusion zones, such as shipping lanes, other subsea cables, and marine protected areas.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a map overlaying the exclusion zones on the potential routes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a map overlaying the exclusion zones on the potential routes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the shortest possible route that avoids all exclusion zones and minimizes technical challenges.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent proposes a final, optimized cable route."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent proposes a final, optimized cable route.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

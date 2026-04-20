@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the active ingredient and FRAC group of the planned fungicide.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the chemical and its mode of action group."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the chemical and its mode of action group.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query a regional pesticide resistance database for any reported resistance to that FRAC group for the target disease.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds reports of moderate resistance in the farmer's county."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds reports of moderate resistance in the farmer's county.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Recommend an alternative fungicide from a different FRAC group to ensure effectiveness and manage resistance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent suggests a suitable alternative product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent suggests a suitable alternative product.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

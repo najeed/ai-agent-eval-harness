@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the technical specification document for windows.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The 'Section 085113 - Aluminum Windows' spec is retrieved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The 'Section 085113 - Aluminum Windows' spec is retrieved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Physically check the model number on one of the installed windows.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The model number on the window is noted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The model number on the window is noted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the installed model number with the one required in the specification document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the installed windows match the specification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the installed windows match the specification.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive the PO acknowledgement from the supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the supplier's confirmation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the supplier's confirmation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the acknowledged details with the original PO.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent notices the delivery date has been pushed back by two weeks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent notices the delivery date has been pushed back by two weeks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the expected delivery date for the PO in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the ETA for the PO."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the ETA for the PO.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Decide whether to accept the new date or try to negotiate a better one with the supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accepts the new date as it does not critically impact any customer orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accepts the new date as it does not critically impact any customer orders.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

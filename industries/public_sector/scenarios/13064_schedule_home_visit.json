@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the client and their case.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker pulls up the correct case file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker pulls up the correct case file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the client to coordinate a suitable date and time for the visit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker and client agree on a time for the home visit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker and client agree on a time for the home visit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the visit in the case management system and the worker's calendar.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The worker successfully books the appointment in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The worker successfully books the appointment in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

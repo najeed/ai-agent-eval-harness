@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Guide the farmer on how to perform a plant stand count in several representative areas of the field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear instructions for conducting a stand count."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear instructions for conducting a stand count.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the average plants per acre based on the farmer's counts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the current plant population."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the current plant population.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the current population to an economic model that considers the cost of replanting, the potential yield of the current stand, and the potential yield of a later-planted crop.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The model shows that keeping the current stand is more profitable than replanting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The model shows that keeping the current stand is more profitable than replanting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Provide a recommendation against replanting based on the model's output.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent advises the farmer to keep the existing crop."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent advises the farmer to keep the existing crop.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

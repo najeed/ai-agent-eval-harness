@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the product in question and retrieve its reimbursement guide.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the official reimbursement guide for the drug."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the official reimbursement guide for the drug.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the correct J-code for the product to be used for billing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly provides the J-code from the guide."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly provides the J-code from the guide.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the coverage status with major payers (e.g., Medicare, UnitedHealthcare).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent summarizes the coverage policies for the top 3 payers in the region."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent summarizes the coverage policies for the top 3 payers in the region.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

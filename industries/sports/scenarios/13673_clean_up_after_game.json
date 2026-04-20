@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a detailed post-game cleaning checklist for all areas of the stadium (seating bowl, concourses, restrooms, suites).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a comprehensive checklist."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a comprehensive checklist.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assign cleaning crews to different sections of the stadium.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and distributes the work assignments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and distributes the work assignments.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Monitor the progress of the cleaning crews and log the completion of each task.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent tracks the cleanup progress in real time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent tracks the cleanup progress in real time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Search for available one-way flights from JFK to LAX on the specified date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent returns a list of available flights with times and prices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent returns a list of available flights with times and prices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the flight chosen by the customer and confirm the total price.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the selection and total cost."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the selection and total cost.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Complete the booking with the traveler's details and issue the e-ticket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the flight and provides a booking reference."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the flight and provides a booking reference.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

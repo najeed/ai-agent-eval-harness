@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The operator accepts a 'Put-Away' task on their vehicle-mounted terminal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The task details (item, quantity, from/to locations) are displayed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The task details (item, quantity, from/to locations) are displayed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The operator drives to the 'from' location (receiving lane) and scans the pallet's license plate to confirm they have the right pallet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system verifies the correct pallet is being moved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system verifies the correct pallet is being moved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The operator drives to the 'to' location (bulk storage) and scans the location's barcode.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system verifies the destination location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system verifies the destination location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The operator deposits the pallet and confirms the task completion on their terminal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The task is marked as complete, and the system inventory now shows the pallet in the new location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The task is marked as complete, and the system inventory now shows the pallet in the new location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

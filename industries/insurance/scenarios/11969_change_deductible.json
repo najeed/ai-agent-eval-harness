@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the policyholder and their current deductible amounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the customer's policy and notes their current deductibles."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the customer's policy and notes their current deductibles.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Present the premium savings for different, higher deductible options.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent shows the customer how much they would save by increasing their deductible from $500 to $1000."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent shows the customer how much they would save by increasing their deductible from $500 to $1000.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the policy with the new deductible chosen by the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the policy and confirms the new premium."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the policy and confirms the new premium.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

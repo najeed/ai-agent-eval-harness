@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the provider's progress note for the patient encounter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coder reads the clinical documentation to understand the services provided."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coder reads the clinical documentation to understand the services provided.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the appropriate Evaluation and Management (E&M) code based on the complexity of the visit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coder correctly assigns the E&M level for the office visit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coder correctly assigns the E&M level for the office visit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add charges for any additional procedures performed (e.g., an injection) and link the appropriate diagnosis codes to each charge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Coder accurately captures all billable services and ensures they are medically justified by a diagnosis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Coder accurately captures all billable services and ensures they are medically justified by a diagnosis.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Query the accounting system for all vendor invoices meeting the specified criteria (>$50k, last fiscal year).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the query and gets a list of 25 matching invoices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the query and gets a list of 25 matching invoices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compile the invoice documents into a single, secure package.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all 25 invoice PDFs into a zip file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all 25 invoice PDFs into a zip file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the secure package to the auditor via the approved secure portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully uploads the document package to the audit portal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully uploads the document package to the audit portal.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

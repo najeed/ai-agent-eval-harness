@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "When an age-restricted item is added to the cart, prompt the user for their date of birth.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System displays an age verification prompt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System displays an age verification prompt.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a third-party service to verify that the customer's name and date of birth indicate they are of legal age.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The verification service returns a 'pass' status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The verification service returns a 'pass' status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If verification passes, allow the checkout to proceed. If it fails, block the purchase and display a message.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System correctly allows or blocks the transaction based on the verification result."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System correctly allows or blocks the transaction based on the verification result.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

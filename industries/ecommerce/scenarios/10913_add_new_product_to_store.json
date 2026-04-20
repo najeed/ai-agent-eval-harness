@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new product entry with its SKU, name, description, price, and specifications.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully populates all required fields for the new product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully populates all required fields for the new product.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Upload product images and assign them to the new product entry.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent uploads and correctly links images to the product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent uploads and correctly links images to the product.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the product to the appropriate categories and set its initial inventory level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly categorizes the product and sets its stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly categorizes the product and sets its stock.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

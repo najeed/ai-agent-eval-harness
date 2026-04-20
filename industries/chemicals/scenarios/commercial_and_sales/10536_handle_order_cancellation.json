@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the customer's sales order and check its current status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the order and sees its status is 'Sent to Warehouse', but not yet 'Shipped'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the order and sees its status is 'Sent to Warehouse', but not yet 'Shipped'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Since the order has not yet shipped, cancel the order in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully changes the order status to 'Cancelled'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully changes the order status to 'Cancelled'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the cancellation with the customer and notify the warehouse to halt the shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the cancellation and a notification is automatically sent to the warehouse."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the cancellation and a notification is automatically sent to the warehouse.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

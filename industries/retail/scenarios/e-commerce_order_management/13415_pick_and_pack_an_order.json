@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve a new order from the fulfillment queue on a handheld device.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate is assigned a new order to fulfill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate is assigned a new order to fulfill.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Follow the optimized picking path provided by the device to gather all items for the order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate efficiently collects all correct items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate efficiently collects all correct items.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Scan each item to verify accuracy, pack the items into a box, and generate a shipping label.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is correctly packed and labeled, and its status is updated to 'Ready to Ship'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is correctly packed and labeled, and its status is updated to 'Ready to Ship'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

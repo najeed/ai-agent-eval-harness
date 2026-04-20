@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Stitch the aerial images into a single orthomosaic map of the pasture.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a complete map of the area."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a complete map of the area.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run an object detection model on the map to identify and count all the cattle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The model identifies and counts 148 cattle in the pasture."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The model identifies and counts 148 cattle in the pasture.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the count to the expected number of cattle in that pasture from farm records and report any discrepancy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reports that the count of 148 matches the 150 expected, within a reasonable margin of error."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reports that the count of 148 matches the 150 expected, within a reasonable margin of error.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The associate marks the original item as 'out of stock' in their picking application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system is aware the item cannot be fulfilled as ordered."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system is aware the item cannot be fulfilled as ordered.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The application suggests an approved substitute item based on pre-defined rules.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A suitable replacement item is suggested to the associate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A suitable replacement item is suggested to the associate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The associate picks the substitute item and the system notifies the customer of the substitution.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is completed with a substitution, and the customer is informed of the change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is completed with a substitution, and the customer is informed of the change.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

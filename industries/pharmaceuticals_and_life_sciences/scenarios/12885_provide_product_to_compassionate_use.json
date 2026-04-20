@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive and log the compassionate use request from the physician.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the request in the appropriate system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the request in the appropriate system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Route the request to an internal review committee to assess the medical rationale and ethical considerations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent routes the request for review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent routes the request for review.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If approved, submit the request to the appropriate regulatory authority (e.g., as a single-patient IND to the FDA).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares and submits the required regulatory paperwork."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares and submits the required regulatory paperwork.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Once approved by regulators, coordinate the shipment of the drug to the physician.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a shipment order for the investigational drug."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a shipment order for the investigational drug.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

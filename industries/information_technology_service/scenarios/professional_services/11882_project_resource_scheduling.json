@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the project plan to identify the required skills and hours for each task.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The PM has a clear list of resource requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The PM has a clear list of resource requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the resource scheduling tool for technician availability and skill sets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The PM identifies which technicians are available and have the right skills (e.g., networking, server admin)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The PM identifies which technicians are available and have the right skills (e.g., networking, server admin).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign technicians to the project tasks in the scheduling tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The project is fully resourced, and technicians can see their assigned tasks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The project is fully resourced, and technicians can see their assigned tasks.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

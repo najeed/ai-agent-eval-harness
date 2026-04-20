@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Locate the customer's active subscription.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct subscription."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct subscription.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the subscription status to 'Paused' and set a reactivation date for three months in the future.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully pauses the subscription for the specified duration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully pauses the subscription for the specified duration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm with the customer the dates the subscription will be paused and when it will automatically resume.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the start and end dates of the pause."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the start and end dates of the pause.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

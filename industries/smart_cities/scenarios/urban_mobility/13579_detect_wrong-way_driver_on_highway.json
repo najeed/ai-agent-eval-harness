@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'Wrong-Way Driver' alert from the highway monitoring system, including video evidence.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the critical safety alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the critical safety alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately activate all dynamic message signs on the highway to warn oncoming traffic.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent posts a warning message on the signs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent posts a warning message on the signs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch all available state police units to intercept the vehicle.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches law enforcement with the vehicle's last known location and direction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches law enforcement with the vehicle's last known location and direction.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

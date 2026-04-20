@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Calculate the client's RMD for the year based on their age and prior year-end account balance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the required distribution amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the required distribution amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Discuss tax withholding options with the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent explains the options, and the client elects to have federal taxes withheld."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent explains the options, and the client elects to have federal taxes withheld.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the distribution from the client's IRA to their bank account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the withdrawal, less the specified tax withholding."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the withdrawal, less the specified tax withholding.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

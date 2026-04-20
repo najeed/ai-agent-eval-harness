@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an automated alert that a specific bus is running 15 minutes behind schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the delay alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the delay alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the estimated time of arrival (ETA) for all subsequent stops on the bus's route.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system recalculates and pushes updated ETAs to station signs and the mobile app."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system recalculates and pushes updated ETAs to station signs and the mobile app.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Post a general service alert message explaining the delay (e.g., 'Route 5 experiencing delays due to heavy traffic').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A public-facing alert is successfully published."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A public-facing alert is successfully published.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

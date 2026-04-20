@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a maintenance work order for a faulty thermostat/HVAC unit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch a technician to the room.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A technician is assigned to investigate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A technician is assigned to investigate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Proactively offer the guest extra blankets while the issue is being looked at.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent shows empathy and provides a temporary solution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent shows empathy and provides a temporary solution.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

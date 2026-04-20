@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The system flags an order with an unverifiable address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is placed on hold."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is placed on hold.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the customer to confirm the correct shipping address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calls the customer and gets the corrected address."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calls the customer and gets the corrected address.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the address on the order and release it from hold.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent corrects the address, and the order proceeds to fulfillment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent corrects the address, and the order proceeds to fulfillment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the work order that was being processed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the active work order for their station."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the active work order for their station.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the total quantity of 'good' units produced during the shift.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the correct count of completed parts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the correct count of completed parts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the transaction and verify that the work order's completed quantity has been updated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the system has accepted the entry and the work order shows the new total."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the system has accepted the entry and the work order shows the new total.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

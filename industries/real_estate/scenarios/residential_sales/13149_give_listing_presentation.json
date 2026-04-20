@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Prepare a Comparative Market Analysis (CMA) for the seller's property.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A detailed CMA report is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A detailed CMA report is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Prepare a marketing plan outlining how the property will be advertised (e.g., online, social media, print).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A customized marketing plan is created for the specific property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A customized marketing plan is created for the specific property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Combine the CMA, marketing plan, and agent's resume into a single presentation deck.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A professional slide deck is assembled, ready for the client meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A professional slide deck is assembled, ready for the client meeting.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

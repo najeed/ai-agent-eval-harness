@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the tenant with the overdue balance from the system alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the tenant's name, unit, and overdue amount."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the tenant's name, unit, and overdue amount.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apply the standard late fee to the tenant's ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct late fee, as specified in the lease, is posted to the tenant's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct late fee, as specified in the lease, is posted to the tenant's account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a formal 'Late Rent Notice' to the tenant via email.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The standard legal notice is generated and sent to the tenant, and the communication is logged in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The standard legal notice is generated and sent to the tenant, and the communication is logged in the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

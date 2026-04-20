@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze a description of the requested scope change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly understands the new requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly understands the new requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Describe the impact of the change on the project timeline and budget.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a reasonable estimate of the impact (e.g., '2-week timeline extension', '$10,000 budget increase')."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a reasonable estimate of the impact (e.g., '2-week timeline extension', '$10,000 budget increase').",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Populate a standard change order template with the scope change description and its impact.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a formal change order document ready for client review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a formal change order document ready for client review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Schedule the factory audit with the supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A date for the audit is agreed upon."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A date for the audit is agreed upon.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "An auditor visits the factory and uses a digital checklist to assess compliance with labor laws, safety standards, and environmental regulations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor completes the audit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor completes the audit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate an audit report with the findings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is created, noting any areas of non-compliance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is created, noting any areas of non-compliance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "If issues are found, work with the supplier on a corrective action plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A plan is created to address the issues found in the audit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A plan is created to address the issues found in the audit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "At the final 'Place Order' step, re-verify inventory for all items in the cart.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System checks stock levels one last time before processing payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System checks stock levels one last time before processing payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "If an item is now out of stock, block the order from completing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System prevents the order from being placed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System prevents the order from being placed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Display a clear message to the customer explaining which item is no longer available and automatically remove it from their cart.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Customer is clearly informed of the issue and can proceed to purchase the remaining items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Customer is clearly informed of the issue and can proceed to purchase the remaining items.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

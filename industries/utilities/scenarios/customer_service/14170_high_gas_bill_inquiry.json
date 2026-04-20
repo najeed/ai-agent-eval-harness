@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's gas usage history and compare it with the heating degree days (HDD) for the billing period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that usage increased, and it correlates with a much colder than average month."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that usage increased, and it correlates with a much colder than average month.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the relationship between colder weather and higher heating usage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates why the bill was higher."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates why the bill was higher.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Offer the customer information on energy conservation tips and the budget billing program to help manage seasonal bill swings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides helpful information on savings and bill management programs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides helpful information on savings and bill management programs.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

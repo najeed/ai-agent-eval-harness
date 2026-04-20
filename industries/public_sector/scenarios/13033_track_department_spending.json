@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the department head and their department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the user and their associated department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the user and their associated department.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a budget vs. actuals report for the department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the financial report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the financial report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the report to the department head, highlighting any areas of over- or under-spending.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent delivers the report with a summary of key variances."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent delivers the report with a summary of key variances.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

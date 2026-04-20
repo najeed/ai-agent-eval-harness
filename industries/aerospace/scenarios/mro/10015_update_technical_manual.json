@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the service bulletin from the manufacturer detailing the changes to the procedure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the document and the affected AMM section."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the document and the affected AMM section.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Revise the text and diagrams in the specified AMM section to reflect the new procedure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately updates the content in the technical manual."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately updates the content in the technical manual.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Publish the revised manual and notify all maintenance personnel of the update.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully publishes the new version and sends a notification to all relevant staff."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully publishes the new version and sends a notification to all relevant staff.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

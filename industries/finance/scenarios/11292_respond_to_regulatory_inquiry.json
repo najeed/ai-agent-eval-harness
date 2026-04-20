@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Parse the regulator's request to identify the exact data and time period required.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the scope of the data request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the scope of the data request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the trade database to pull all relevant trade records.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully extracts the requested trade data from the archive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully extracts the requested trade data from the archive.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Format the data according to the regulator's specifications and submit it through the secure portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares and submits the data package to the regulator."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares and submits the data package to the regulator.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a notification that a labeling update requires a change to the product carton.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the required text change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the required text change.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new artwork change request in the artwork management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates a new request, linking it to the parent change control."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates a new request, linking it to the parent change control.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the request to the graphic design vendor to create the new version of the artwork.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the redlined text to the vendor."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the redlined text to the vendor.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Receive the proof from the vendor and route it for internal review and approval before ordering new cartons.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the proof and routes it for sign-off."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the proof and routes it for sign-off.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

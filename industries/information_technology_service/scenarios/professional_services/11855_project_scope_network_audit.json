@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Hold a discovery call to understand the size of the network (number of sites, switches, firewalls) and the specific goals of the audit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The consultant understands the scope and objectives."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The consultant understands the scope and objectives.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a detailed Statement of Work (SOW) that outlines the audit methodology, the specific areas to be reviewed, and the format of the final deliverable report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear and comprehensive SOW is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear and comprehensive SOW is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a fixed-fee quote for the audit project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client receives a quote for the work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client receives a quote for the work.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

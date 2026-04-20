@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the rehire notification from HR.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly processes the request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly processes the request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find the employee's old, disabled account in Active Directory and re-enable it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully re-enables the existing account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully re-enables the existing account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review and update the user's group memberships to ensure they align with their new role, removing any old, unnecessary access.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly provisions access for the new role while ensuring old permissions are revoked."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly provisions access for the new role while ensuring old permissions are revoked.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

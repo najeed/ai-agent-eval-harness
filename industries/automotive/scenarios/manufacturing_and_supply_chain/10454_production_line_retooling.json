@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the official project plan for the model year changeover, noting the required downtime.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the project requires a 72-hour shutdown."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the project requires a 72-hour shutdown.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a detailed shutdown schedule, coordinating with maintenance, robotics, and logistics teams.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates and distributes a minute-by-minute schedule for the retooling process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates and distributes a minute-by-minute schedule for the retooling process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Adjust the master production schedule to account for the planned downtime, ensuring production targets are met before the shutdown.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent increases the production rate in the weeks leading up to the shutdown to build up a buffer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent increases the production rate in the weeks leading up to the shutdown to build up a buffer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

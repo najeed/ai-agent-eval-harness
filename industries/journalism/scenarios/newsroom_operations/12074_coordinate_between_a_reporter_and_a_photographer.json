@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a shared calendar event for the assignment with the exact address and time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Both team members have the correct logistical information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Both team members have the correct logistical information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a group chat for the editor, reporter, and photographer for real-time communication on the day of the assignment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A dedicated communication channel is established."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A dedicated communication channel is established.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "On the day, monitor the group chat to ensure the team members connect successfully at the location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The editor confirms the team has met up and is starting the assignment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The editor confirms the team has met up and is starting the assignment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

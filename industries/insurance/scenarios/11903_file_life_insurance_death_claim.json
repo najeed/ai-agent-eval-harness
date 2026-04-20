@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Express sympathy and gather the insured's information (name, policy number) and the date of death.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent handles the call with empathy and collects the necessary initial information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent handles the call with empathy and collects the necessary initial information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the caller is a listed beneficiary on the policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the caller is the primary beneficiary."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the caller is the primary beneficiary.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the claims process and send the required claim forms and a list of needed documents (e.g., certified death certificate) to the beneficiary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the process and successfully sends the claims packet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the process and successfully sends the claims packet.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

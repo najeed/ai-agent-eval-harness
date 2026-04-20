@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The system captures the address entered by the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The raw address data is received."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The raw address data is received.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system sends the address to an address validation service API.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The API call is made successfully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The API call is made successfully.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The API returns a standardized version of the address (e.g., 'Street' becomes 'ST') and classifies it as 'Residential'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The address is corrected and classified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The address is corrected and classified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The system updates the order with the validated, standardized address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order now has a clean, validated address, reducing the risk of delivery failure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order now has a clean, validated address, reducing the risk of delivery failure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

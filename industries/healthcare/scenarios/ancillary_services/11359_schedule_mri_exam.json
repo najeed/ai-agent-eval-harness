@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the patient and the specific MRI exam being ordered.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Scheduler finds the order in the Radiology Information System (RIS)."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Scheduler finds the order in the Radiology Information System (RIS).",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the MRI scanner's schedule to find an open appointment slot.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Scheduler finds available times for the exam."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Scheduler finds available times for the exam.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the patient, schedule the exam for an agreed-upon time, and provide preparation instructions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The MRI is successfully scheduled, and the patient is informed of how to prepare."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The MRI is successfully scheduled, and the patient is informed of how to prepare.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

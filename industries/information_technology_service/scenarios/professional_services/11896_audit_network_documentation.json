@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather all existing network diagrams, IP schemas, and device configurations from the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer has all the client's current documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer has all the client's current documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the documentation against the actual live configuration of the network by logging into devices.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer identifies multiple discrepancies, such as undocumented firewall rules and incorrect VLAN assignments."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer identifies multiple discrepancies, such as undocumented firewall rules and incorrect VLAN assignments.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a report detailing the documentation gaps and inaccuracies as a key finding of the audit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A formal report is created, recommending a project to update all network documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A formal report is created, recommending a project to update all network documentation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

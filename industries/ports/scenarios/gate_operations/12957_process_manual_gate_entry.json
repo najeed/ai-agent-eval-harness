@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the system failure and switch to manual processing mode.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Clerk is aware of the failure and prepared to handle manual entry."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Clerk is aware of the failure and prepared to handle manual entry.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ask the driver for the container number and truck license plate and manually enter them into the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The clerk accurately types the required information into the gate system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The clerk accurately types the required information into the gate system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform all standard checks (appointment, customs) and issue the ticket.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Despite the system failure, the truck is processed correctly and allowed to enter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Despite the system failure, the truck is processed correctly and allowed to enter.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

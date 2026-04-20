@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an alert for an e-scooter that has been stationary for more than 72 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the 'stale vehicle' alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the 'stale vehicle' alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the scooter's last known GPS location and battery level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the location and sees the battery is dead."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the location and sees the battery is dead.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a field technician to retrieve the abandoned scooter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a task for the micromobility provider's field team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a task for the micromobility provider's field team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

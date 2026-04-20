@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Scan the websites of the FDA, EMA, and PMDA for new documents published in the last 24 hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully scrapes the websites for new publications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully scrapes the websites for new publications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Filter the results for keywords relevant to the company's therapeutic areas (e.g., 'oncology', 'gene therapy').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent filters the list and identifies a new draft guidance on gene therapy from the FDA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent filters the list and identifies a new draft guidance on gene therapy from the FDA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform an initial impact assessment of the new draft guidance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a summary of the guidance and notes that it will affect one of the company's pipeline products."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a summary of the guidance and notes that it will affect one of the company's pipeline products.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Distribute an alert with the summary and a link to the guidance document to the relevant internal teams.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends a notification to the gene therapy development team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends a notification to the gene therapy development team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

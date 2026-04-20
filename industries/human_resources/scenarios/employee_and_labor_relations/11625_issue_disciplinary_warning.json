@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the employee's attendance record and prior warnings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP confirms the employee has had multiple unexcused absences and a prior verbal warning."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP confirms the employee has had multiple unexcused absences and a prior verbal warning.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the formal written warning document, citing the specific policy violation and outlining expectations for improvement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP drafts a clear and fact-based warning letter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP drafts a clear and fact-based warning letter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Coach the manager on how to deliver the warning and document the conversation in the employee's HR file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP provides guidance to the manager and logs the delivered warning in the HRIS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP provides guidance to the manager and logs the delivered warning in the HRIS.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

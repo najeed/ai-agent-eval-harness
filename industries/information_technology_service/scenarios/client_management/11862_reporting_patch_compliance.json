@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use the RMM tool to generate a patch compliance report for all the client's servers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A report is generated showing which patches are installed or missing on each server."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A report is generated showing which patches are installed or missing on each server.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the report to calculate the overall compliance percentage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis shows that 98% of all applicable patches are installed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis shows that 98% of all applicable patches are installed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide the report to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client receives the compliance report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client receives the compliance report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

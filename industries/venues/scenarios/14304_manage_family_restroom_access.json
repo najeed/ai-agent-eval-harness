@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the request from the guest.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the guest's need."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the guest's need.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provide the guest with the location of the nearest family restroom.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent directs the guest to the correct location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent directs the guest to the correct location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "If the restroom is locked for security, dispatch a staff member to unlock it for the guest.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends an usher to provide access."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends an usher to provide access.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

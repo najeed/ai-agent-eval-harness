@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The worker reports the incident and the damaged items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An incident report is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An incident report is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Move the damaged items to a designated quarantine area in the warehouse.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The items are physically moved."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The items are physically moved.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Adjust the inventory record, moving the damaged quantity from 'sellable' to 'quarantined/damaged' status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the inventory status for the items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the inventory status for the items.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

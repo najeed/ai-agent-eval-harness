@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the ending balance and transaction detail for the loan receivable from Subsidiary A's books.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the loan receivable details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the loan receivable details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the ending balance and transaction detail for the loan payable from Subsidiary B's books.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the loan payable details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the loan payable details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the balances and transactions, including accrued interest, to identify any discrepancies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that Subsidiary B has not yet accrued for the current month's interest, causing a mismatch."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that Subsidiary B has not yet accrued for the current month's interest, causing a mismatch.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Instruct Subsidiary B to post the interest accrual entry so the accounts will match for consolidation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends an instruction to the accountant at Subsidiary B."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends an instruction to the accountant at Subsidiary B.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the benefits of the FirstNet plan, including network priority and preemption.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the unique features."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the unique features.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the customer's status as a first responder using a verification portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent guides the customer through the verification process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent guides the customer through the verification process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create the new account and process the order for the FirstNet plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the specialized account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the specialized account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

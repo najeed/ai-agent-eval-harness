@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft a co-brokerage agreement that clearly defines each broker's roles, responsibilities, and the agreed-upon commission split.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear and comprehensive agreement is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear and comprehensive agreement is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send the agreement to the other broker for review and signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agreement is sent for execution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agreement is sent for execution.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once the transaction closes, ensure the title company is aware of the agreement and disburses the commission checks correctly to each brokerage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The commission is paid out correctly according to the agreement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The commission is paid out correctly according to the agreement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

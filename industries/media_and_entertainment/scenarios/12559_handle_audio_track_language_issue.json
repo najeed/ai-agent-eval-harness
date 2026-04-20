@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the movie asset and check its available audio tracks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the asset metadata lists a Spanish audio track, but the file itself does not contain one."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the asset metadata lists a Spanish audio track, but the file itself does not contain one.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Temporarily remove the 'Spanish audio' label from the movie's description to avoid further user confusion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the public-facing metadata."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the public-facing metadata.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Request the correct file with the Spanish audio track from the content provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a re-delivery request to the provider."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a re-delivery request to the provider.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

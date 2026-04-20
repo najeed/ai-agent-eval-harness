@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a formal request from the police department for video footage from '5th and Pine' between 2 PM and 3 PM yesterday.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the specific time, date, and location for the footage request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the specific time, date, and location for the footage request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the archived video from the specified traffic camera.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully locates and downloads the correct video file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully locates and downloads the correct video file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Securely transfer the video file to the police department's digital evidence portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent completes the evidence transfer according to protocol."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent completes the evidence transfer according to protocol.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

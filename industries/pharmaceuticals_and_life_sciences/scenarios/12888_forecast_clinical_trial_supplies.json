@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Input the key trial parameters into a forecasting tool (e.g., number of patients, number of sites, treatment duration, dosage).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately enters all parameters from the protocol."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately enters all parameters from the protocol.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a simulation to model the supply needs over the life of the study, accounting for variables like patient recruitment rates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the simulation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the simulation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the output to determine the total number of kits to manufacture.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent analyzes the report and determines the total required quantity, including overage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent analyzes the report and determines the total required quantity, including overage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a report to inform the manufacturing and packaging plan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a formal report that will be used to schedule the manufacturing of the clinical trial material."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a formal report that will be used to schedule the manufacturing of the clinical trial material.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

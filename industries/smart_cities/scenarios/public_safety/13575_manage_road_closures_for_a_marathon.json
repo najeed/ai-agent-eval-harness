@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load the official marathon route and closure schedule into the traffic management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully inputs the event plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully inputs the event plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "On race day, automatically update the status of all affected roads to 'Closed' in public navigation systems.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the road statuses."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the road statuses.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "As the race progresses, reopen roads behind the last runner based on their real-time location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dynamically reopens roads, minimizing disruption."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dynamically reopens roads, minimizing disruption.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

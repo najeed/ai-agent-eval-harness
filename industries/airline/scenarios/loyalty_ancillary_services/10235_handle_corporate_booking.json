@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the company's corporate travel account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct corporate account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct corporate account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new booking under the employee's name but link it to the corporate account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly creates the booking and links it."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly creates the booking and links it.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the company's negotiated fare and use the company's central credit card for payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent applies the correct fare and bills the company account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent applies the correct fare and bills the company account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

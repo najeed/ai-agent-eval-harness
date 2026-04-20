@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the data from the fixed dust monitors around the mine site.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The data shows that dust levels on the main haul road are increasing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The data shows that dust levels on the main haul road are increasing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the location of the water trucks in the Fleet Management System.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system shows no water truck has been on the main haul road for the last hour."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system shows no water truck has been on the main haul road for the last hour.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a water truck to the main haul road to spray it with water.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A water truck is dispatched, and subsequent dust monitor readings show levels have decreased."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A water truck is dispatched, and subsequent dust monitor readings show levels have decreased.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

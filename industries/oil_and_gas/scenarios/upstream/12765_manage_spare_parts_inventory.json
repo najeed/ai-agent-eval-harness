@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Look up the inventory level for 'Pump Seal P-101' in the platform's inventory management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system shows only one unit is in stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system shows only one unit is in stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the minimum required stock level for this critical part.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system shows the minimum stock level should be three units."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system shows the minimum stock level should be three units.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a purchase requisition to order two more units to bring the stock up to the required level.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A purchase request is created and sent to the onshore procurement team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A purchase request is created and sent to the onshore procurement team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

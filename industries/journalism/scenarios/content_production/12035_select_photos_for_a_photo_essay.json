@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Review all 200 photos, giving each a preliminary rating for technical quality and emotional impact.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All photos are reviewed and rated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All photos are reviewed and rated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a short list of the 30-40 strongest images.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pool of photos is narrowed down."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pool of photos is narrowed down.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange the shortlisted photos into a sequence that creates a compelling visual narrative with a beginning, middle, and end.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The final selection of photos tells a story."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The final selection of photos tells a story.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Write a short caption for each of the final photos.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All selected photos have descriptive captions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All selected photos have descriptive captions.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the employee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the employee's identity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the employee's identity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Guide the employee to the payroll self-service portal where they can access all their past pay stubs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides instructions for the employee to retrieve the document themselves."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides instructions for the employee to retrieve the document themselves.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the employee was able to find and download the correct pay stub.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Employee confirms they have the document they need."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Employee confirms they have the document they need.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the IR plan documentation to ensure it includes key components like roles and responsibilities, communication protocols, and escalation procedures.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms the plan is well-documented and comprehensive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms the plan is well-documented and comprehensive.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the logs from the last tabletop IR exercise to see how the team performed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor identifies that the exercise revealed a weakness in the communication plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor identifies that the exercise revealed a weakness in the communication plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the issues identified in the tabletop exercise have been remediated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms that the IR plan was updated based on the lessons learned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms that the IR plan was updated based on the lessons learned.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

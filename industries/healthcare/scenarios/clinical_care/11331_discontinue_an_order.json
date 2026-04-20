@@ -12,38 +12,46 @@
       {
         "id": "task-0",
         "task_description": "Verify clinician access and patient identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Identity verified/authorized"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Identity verified/authorized",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-1",
         "task_description": "Open the patient's chart and view their active orders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician finds the list of current medication orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician finds the list of current medication orders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select the medication order that needs to be stopped.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician correctly identifies the medication causing the reaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician correctly identifies the medication causing the reaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the 'Discontinue' action, provide a reason ('Adverse reaction'), and sign the order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is immediately inactivated on the MAR and in the pharmacy system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is immediately inactivated on the MAR and in the pharmacy system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The server asks for the guest's last name and room number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The server collects the necessary information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The server collects the necessary information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The server uses the POS system to look up the guest and verify their identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The POS system confirms the guest is currently in-house."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The POS system confirms the guest is currently in-house.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The server posts the check total to the guest's room folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The charge is successfully added to the guest's main hotel bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The charge is successfully added to the guest's main hotel bill.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

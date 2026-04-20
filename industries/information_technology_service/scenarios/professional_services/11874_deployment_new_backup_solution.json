@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Deploy the new BCDR appliance on the client's network.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new appliance is installed and configured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new appliance is installed and configured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Install the new backup agent on all servers and configure the backup jobs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All servers are configured to be backed up by the new system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All servers are configured to be backed up by the new system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run initial full backups for all servers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The first backups complete successfully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The first backups complete successfully.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "After a week of successful backups, decommission the old backup system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client is fully transitioned to the new, more reliable backup solution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client is fully transitioned to the new, more reliable backup solution.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

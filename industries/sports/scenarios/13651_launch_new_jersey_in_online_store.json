@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new product page for the jersey in the e-commerce system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets up the product page with images, description, and pricing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets up the product page with images, description, and pricing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Upload the inventory levels for each size.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent inputs the stock levels for the new jersey."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent inputs the stock levels for the new jersey.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the product page to go live at the designated launch time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent schedules the page to become visible to the public at the correct time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent schedules the page to become visible to the public at the correct time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

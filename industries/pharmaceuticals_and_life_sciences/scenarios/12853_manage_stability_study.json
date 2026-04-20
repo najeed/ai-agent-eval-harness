@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the stability study protocol, which defines the storage conditions and pull schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the protocol, noting that samples need to be pulled at 3, 6, and 9 months."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the protocol, noting that samples need to be pulled at 3, 6, and 9 months.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive an alert that the 6-month time point is due.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the system-generated alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the system-generated alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Pull the required number of samples from the stability chamber.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent physically pulls the samples and documents the activity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent physically pulls the samples and documents the activity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Submit the samples to the lab for testing via the LIMS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a test request in the LIMS for the stability samples."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a test request in the LIMS for the stability samples.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the employee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the employee's identity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the employee's identity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Direct the employee to the payroll self-service portal where they can electronically update their W-4.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear self-service instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear self-service instructions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the employee to consult a tax professional for questions about how to fill out the form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly states that HR cannot give tax advice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly states that HR cannot give tax advice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

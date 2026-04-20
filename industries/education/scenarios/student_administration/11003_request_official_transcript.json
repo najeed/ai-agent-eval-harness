@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the identity of the alumnus using their student ID and other personal information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully authenticates the alumnus."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully authenticates the alumnus.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the recipient's information (e.g., employer's email address) and explain any associated fees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary details for the transcript order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary details for the transcript order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the official transcript request through the university's secure portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully submits the request for electronic delivery."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully submits the request for electronic delivery.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

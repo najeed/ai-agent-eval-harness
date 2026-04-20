@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Navigate to the checkout page with items in the cart.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer is ready to complete their purchase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer is ready to complete their purchase.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter a valid promo code into the designated field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer enters the code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer enters the code.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system validates the code and applies the discount to the order total.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order total is updated to reflect the discount, and the customer can complete the purchase at the lower price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order total is updated to reflect the discount, and the customer can complete the purchase at the lower price.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

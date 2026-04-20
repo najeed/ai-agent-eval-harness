@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Import the mine production schedule for the next year, showing the location and tonnage of all material to be moved.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The production data is loaded into the haulage simulation tool."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The production data is loaded into the haulage simulation tool.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Model the haulage network, including all roads and their characteristics (e.g., length, gradient).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A digital twin of the mine's haulage network is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A digital twin of the mine's haulage network is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run a simulation to calculate the required truck hours for each month and determine the optimal number of trucks needed in the fleet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The simulation provides a forecast of the required truck fleet size, identifying a need for two additional trucks in Q3."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The simulation provides a forecast of the required truck fleet size, identifying a need for two additional trucks in Q3.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

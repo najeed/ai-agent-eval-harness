@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and their recently cancelled policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the cancelled policy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the cancelled policy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the policy is eligible for reinstatement without a lapse in coverage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer is within the reinstatement eligibility window."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer is within the reinstatement eligibility window.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Take the back-payment for the overdue premium and process the reinstatement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent takes the payment and successfully reinstates the policy with no lapse."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent takes the payment and successfully reinstates the policy with no lapse.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

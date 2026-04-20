@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the structural drawing showing the rebar layout.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspector gets the correct drawing."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspector gets the correct drawing.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Visually inspect the placed rebar, checking for correct size, spacing, and clearance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspector performs the physical check."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspector performs the physical check.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the successful inspection in the quality system, which releases the hold on the concrete pour.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the passing inspection, and the supervisor is notified they can proceed with the pour."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the passing inspection, and the supervisor is notified they can proceed with the pour.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

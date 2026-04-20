@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The forklift's terminal displays a 'Low Battery' warning and directs the operator to the nearest battery charging station.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator is proactively notified and guided."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator is proactively notified and guided.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The operator scans their forklift ID at the battery station.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system logs that this forklift is beginning a battery swap."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system logs that this forklift is beginning a battery swap.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The operator removes the depleted battery, places it in a charging slot, and takes a fully charged battery.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The physical battery swap is performed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The physical battery swap is performed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The operator scans the new battery's ID, and the system logs the completion of the swap, updating the forklift's status to 'Active'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system records the new battery association and shows the forklift is ready for work."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system records the new battery association and shows the forklift is ready for work.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Guide the user to the admissions website's tour scheduling page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the correct URL."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the correct URL.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the different tour options available (e.g., general campus tour, engineering department tour).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the available choices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the available choices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assist the user in selecting a date and time and completing the registration form.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent helps the family successfully book their tour."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent helps the family successfully book their tour.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

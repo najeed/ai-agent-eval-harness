@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a spreadsheet from HR with the names and details of all 50 interns.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst has the source data for the bulk request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst has the source data for the bulk request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a PowerShell script to parse the spreadsheet and create all 50 user accounts in Active Directory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All 50 accounts are created successfully and consistently."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All 50 accounts are created successfully and consistently.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add all new accounts to the 'Interns' security group to grant them the standard, limited access for interns.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All interns are assigned the correct, least-privilege access role."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All interns are assigned the correct, least-privilege access role.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Announce the planned disaster recovery test to all internal stakeholders.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All teams are aware of the upcoming DR test."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All teams are aware of the upcoming DR test.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Execute the script to fail over production traffic and services to the secondary data center.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The failover script runs successfully."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The failover script runs successfully.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Run a series of health checks to verify that the application is fully functional in the secondary data center.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All health checks pass, confirming the DR site is operational."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All health checks pass, confirming the DR site is operational.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "After the test, fail back to the primary data center.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Normal operations are restored."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Normal operations are restored.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

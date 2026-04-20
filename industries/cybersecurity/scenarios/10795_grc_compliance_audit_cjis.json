@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that all personnel with access to CJIS data have undergone the required background checks and security training.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst confirms that all authorized users meet the personnel security requirements."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst confirms that all authorized users meet the personnel security requirements.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Audit the advanced authentication controls to ensure that MFA is required for all access to CJIS data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst confirms that MFA is correctly implemented and enforced."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst confirms that MFA is correctly implemented and enforced.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review network diagrams and firewall rules to ensure the systems housing CJIS data are in a secure, isolated network segment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst verifies that the required network segmentation is in place."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst verifies that the required network segmentation is in place.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the project requirements to determine the needed skill sets (e.g., 'Financial Analyst', 'Data Scientist').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the required roles for the project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the required roles for the project.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review a list of available consultants, their skills, and their availability.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly processes the list of available resources."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly processes the list of available resources.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign specific consultants to the required roles, creating a staffed project team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a logical team structure, matching skills to roles."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a logical team structure, matching skills to roles.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

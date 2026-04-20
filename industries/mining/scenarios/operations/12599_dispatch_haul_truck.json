@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an automated 'Ready to Load' signal from Shovel SH-101 in the Fleet Management System (FMS).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The dispatcher is alerted that the shovel is ready for a truck."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The dispatcher is alerted that the shovel is ready for a truck.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the nearest available haul truck (HT-55) that is currently empty.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The optimal truck is selected to minimize shovel wait time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The optimal truck is selected to minimize shovel wait time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a dispatch instruction to the operator of HT-55 to proceed to Shovel SH-101 for loading.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The truck driver receives and accepts the dispatch instruction on their in-cab screen."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The truck driver receives and accepts the dispatch instruction on their in-cab screen.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

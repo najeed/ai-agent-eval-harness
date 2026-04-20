@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive an alert from camera analytics identifying a 'stopped vehicle' in the 'Market Street' bus-only lane.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the automated traffic anomaly alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the automated traffic anomaly alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify the incident with the live camera feed, confirming it is a two-car accident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent visually confirms the cause of the blockage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent visually confirms the cause of the blockage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the public transit operations center of the blockage so they can begin rerouting buses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a notification to the transit team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a notification to the transit team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

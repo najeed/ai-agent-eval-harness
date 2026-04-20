@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Review the clinical study report (CSR) to understand the key findings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the primary and key secondary endpoint results from the CSR."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the primary and key secondary endpoint results from the CSR.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the abstract following the standard IMRAD (Introduction, Methods, Results, and Discussion) structure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a draft abstract that correctly follows the IMRAD format."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a draft abstract that correctly follows the IMRAD format.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Ensure the abstract adheres to the word count limit of the target journal (e.g., 250 words).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent edits the abstract to meet the length requirement without losing key information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent edits the abstract to meet the length requirement without losing key information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Route the draft abstract for internal review and approval before submission.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the draft to the study authors for their review and approval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the draft to the study authors for their review and approval.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

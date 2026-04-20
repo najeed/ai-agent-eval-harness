@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Generate a CSR shell document using an ICH E3 compliant template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new CSR document with all the required sections and headings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new CSR document with all the required sections and headings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Import the final tables, listings, and figures (TLFs) from the biostatistics department.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully embeds the statistical outputs into the CSR."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully embeds the statistical outputs into the CSR.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Write the narrative sections of the report, interpreting the results and summarizing the study's conclusions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes a clear and accurate interpretation of the study data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes a clear and accurate interpretation of the study data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Route the draft CSR for review by the cross-functional study team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent circulates the draft for review and comment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent circulates the draft for review and comment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

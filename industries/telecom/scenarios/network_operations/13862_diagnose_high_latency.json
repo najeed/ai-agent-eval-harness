@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the two routers from the alerts and retrieve their performance metrics.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies the routers and their current CPU and memory load."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies the routers and their current CPU and memory load.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a traceroute between the two routers to identify the specific hop causing the delay.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the traceroute and identifies a specific intermediate router with high latency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the traceroute and identifies a specific intermediate router with high latency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority ticket for the core networking team, specifying the problematic router and attaching the traceroute logs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed and actionable trouble ticket."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed and actionable trouble ticket.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

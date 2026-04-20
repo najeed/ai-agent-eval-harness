@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that the new address is serviceable for fiber.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the address has fiber coverage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the address has fiber coverage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Present the different fiber speed tiers (e.g., 300 Mbps, 1 Gbps) and their prices.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the available fiber plans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the available fiber plans.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the order for the 1 Gbps plan and schedule a professional installation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the order and books a technician."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the order and books a technician.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

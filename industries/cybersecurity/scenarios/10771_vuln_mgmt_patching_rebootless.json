@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify all servers that require the live kernel patch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst has a complete list of target servers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst has a complete list of target servers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a live patching tool (e.g., kpatch, KernelCare) to deploy the patch to all affected servers in memory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully deploys the patch without requiring a system reboot."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully deploys the patch without requiring a system reboot.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the patch is active on all servers and that they are no longer vulnerable.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst confirms the live patch has successfully remediated the vulnerability across the fleet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst confirms the live patch has successfully remediated the vulnerability across the fleet.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

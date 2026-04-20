@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The agent identifies the error after the guest from the wrong room calls to dispute the charge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The error is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The error is identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The agent reverses the incorrect charge from the first guest's folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The incorrect charge is removed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The incorrect charge is removed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The agent posts the charge to the correct guest's folio and adds a note explaining the correction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The charge is moved to the correct room, and the action is documented."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The charge is moved to the correct room, and the action is documented.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the purchase order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct PO."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct PO.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that all line items have been fully received and the corresponding supplier invoice has been paid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms a '3-way match' between the PO, receipt, and invoice is complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms a '3-way match' between the PO, receipt, and invoice is complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Change the status of the purchase order to 'Closed'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully closes the PO."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully closes the PO.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

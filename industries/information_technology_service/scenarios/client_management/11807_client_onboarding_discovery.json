@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the signed SOW to understand the agreed-upon services.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team is fully aware of the contract scope."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team is fully aware of the contract scope.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Conduct the kickoff meeting, introducing the team and walking through the onboarding process and timeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client understands the process and expectations are set."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client understands the process and expectations are set.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Gather critical information from the client, such as existing administrator credentials, network diagrams, and a list of key vendors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The team collects the necessary information to begin the technical onboarding."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The team collects the necessary information to begin the technical onboarding.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

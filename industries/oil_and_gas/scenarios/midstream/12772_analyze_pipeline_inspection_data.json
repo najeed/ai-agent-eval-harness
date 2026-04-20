@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load the raw data from the inline inspection (ILI) tool into the analysis software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The large dataset from the pig run is successfully loaded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The large dataset from the pig run is successfully loaded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run an algorithm to automatically detect and size potential metal loss features (corrosion).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The software identifies hundreds of potential corrosion features."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The software identifies hundreds of potential corrosion features.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Classify the most severe defects and calculate their remaining strength. Flag any defects that require immediate repair.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of actionable defects is generated, with one being flagged for immediate excavation and repair."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of actionable defects is generated, with one being flagged for immediate excavation and repair.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

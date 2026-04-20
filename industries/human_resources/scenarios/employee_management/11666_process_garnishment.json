@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive and validate the legal garnishment order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Payroll specialist confirms the order is legally valid."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Payroll specialist confirms the order is legally valid.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Enter the garnishment details (e.g., amount, recipient) into the payroll system for the specified employee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist correctly sets up the recurring deduction in the HRIS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist correctly sets up the recurring deduction in the HRIS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send a notification to the employee informing them that the company has received the order and will begin deductions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Specialist sends the required legal notification to the employee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Specialist sends the required legal notification to the employee.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

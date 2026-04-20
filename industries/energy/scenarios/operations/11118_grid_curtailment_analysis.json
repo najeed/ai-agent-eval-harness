@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the curtailment order details from the ISO/RTO portal, including the reason code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the curtailment was due to 'Local Congestion'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the curtailment was due to 'Local Congestion'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the amount of lost generation by comparing actual output to the potential generation during the curtailment period.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates that 50 MWh of generation was lost."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates that 50 MWh of generation was lost.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the lost revenue based on the spot price of electricity at the time of the curtailment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the financial impact was $2,500."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the financial impact was $2,500.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the lead's details to understand their industry and needs to tailor the demo.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares a demo script focused on the lead's specific use case."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares a demo script focused on the lead's specific use case.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Conduct a live, personalized demo of the product, focusing on the features most relevant to the lead.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully demonstrates the value of the product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully demonstrates the value of the product.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Follow up after the demo with a summary email and a quote.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a timely and professional follow-up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a timely and professional follow-up.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

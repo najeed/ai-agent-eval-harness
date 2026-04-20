@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Assess the condition of the field after the concert flooring has been removed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the condition of the turf, noting areas of compaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the condition of the turf, noting areas of compaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a turf recovery plan, including aeration, watering, and mowing schedules.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a detailed, hour-by-hour plan for the grounds crew."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a detailed, hour-by-hour plan for the grounds crew.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the necessary grounds crew staff and equipment for the recovery work.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules all required resources."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules all required resources.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the instructions for the new promotional display in the task management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate finds the task which includes a picture and instructions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate finds the task which includes a picture and instructions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather the necessary product and signage from the backroom.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The associate collects all materials needed for the display."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The associate collects all materials needed for the display.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assemble the display at the designated end-cap location according to the instructions and mark the task as complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The promotional display is correctly set up to attract customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The promotional display is correctly set up to attract customers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

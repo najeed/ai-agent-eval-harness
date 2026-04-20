@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the customer's decision to decline the recommended coolant flush.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the customer's choice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the customer's choice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the potential risks of not performing the service, without being pushy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent briefly explains that old coolant can be less effective at preventing corrosion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent briefly explains that old coolant can be less effective at preventing corrosion.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the repair order and the customer's service record to show that the service was recommended but declined.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately documents the declined service for future reference and liability purposes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately documents the declined service for future reference and liability purposes.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

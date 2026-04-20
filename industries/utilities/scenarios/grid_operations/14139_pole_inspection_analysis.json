@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Process and categorize a large batch of pole inspection images.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System ingests and organizes the imagery."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System ingests and organizes the imagery.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Run a computer vision model on the images to detect and classify defects like rot, woodpecker damage, and cracked crossarms.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "AI model flags 50 poles with potential defects requiring review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "AI model flags 50 poles with potential defects requiring review.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Prioritize the flagged poles for follow-up physical inspection based on the severity of the detected defects.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System creates a prioritized list of poles for field crews to inspect."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System creates a prioritized list of poles for field crews to inspect.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

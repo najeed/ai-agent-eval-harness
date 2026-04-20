@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Request the complete HOA package from the listing agent or HOA management company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the HOA bylaws, budget, and meeting minutes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the HOA bylaws, budget, and meeting minutes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the HOA's financial health by analyzing the budget and reserve study.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines if the HOA is financially stable or if a special assessment is likely."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines if the HOA is financially stable or if a special assessment is likely.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Summarize key rules and financial findings for the buyer and advise them on whether to approve the documents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The buyer makes an informed decision to move forward or terminate based on the HOA review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The buyer makes an informed decision to move forward or terminate based on the HOA review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

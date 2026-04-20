@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the 'Workshop Inspection Checklist' on the tablet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The correct digital inspection form is loaded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The correct digital inspection form is loaded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Walk through the workshop and complete the checklist, inspecting items like fire extinguishers, machine guarding, and housekeeping.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspection is completed, and a few minor issues are identified, such as a blocked fire exit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspection is completed, and a few minor issues are identified, such as a blocked fire exit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log a corrective action for the blocked fire exit and assign it to the workshop supervisor for immediate resolution.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A corrective action is created and tracked in the safety management system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A corrective action is created and tracked in the safety management system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

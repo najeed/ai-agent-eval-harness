@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the anonymous report from the ethics hotline system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The compliance officer receives the case details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The compliance officer receives the case details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate a confidential investigation, partnering with internal audit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer creates a new investigation case and engages the internal audit team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer creates a new investigation case and engages the internal audit team.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the manager's expense reports for the last year to look for anomalies.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The investigation team analyzes the expense reports for policy violations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The investigation team analyzes the expense reports for policy violations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

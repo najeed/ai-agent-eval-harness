@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Review a newly created case for completeness and validity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the case has the four minimum elements for a valid report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the case has the four minimum elements for a valid report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Assess the case for seriousness (e.g., results in death, hospitalization, disability).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the event as 'serious' because the patient was hospitalized."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the event as 'serious' because the patient was hospitalized.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Determine if the case qualifies for expedited reporting to health authorities (e.g., within 7 or 15 days).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the case is a serious, unexpected event and must be reported within 15 days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the case is a serious, unexpected event and must be reported within 15 days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Assign the case to the appropriate workflow for data entry and medical assessment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent routes the case to the high-priority work queue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent routes the case to the high-priority work queue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

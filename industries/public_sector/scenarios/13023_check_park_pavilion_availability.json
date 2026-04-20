@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the park and pavilion the citizen is interested in.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the details of the desired location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the details of the desired location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the reservation calendar for the requested date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent checks the calendar and finds that the pavilion is available on that date."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent checks the calendar and finds that the pavilion is available on that date.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the citizen of the availability and provide instructions on how to officially reserve and pay for it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear answer and guides the citizen to the next step."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear answer and guides the citizen to the next step.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

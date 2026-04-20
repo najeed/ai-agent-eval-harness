@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that the produced quantity matches the ordered quantity on the work order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that 100 out of 100 units are marked as complete."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that 100 out of 100 units are marked as complete.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for any outstanding labor or material transactions that need to be recorded.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that all labor and materials have been fully accounted for."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that all labor and materials have been fully accounted for.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Change the work order status to 'Closed'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully closes the work order, and the system calculates final costs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully closes the work order, and the system calculates final costs.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

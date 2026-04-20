@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a request from a customer to store 10 of their railcars.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent understands the customer's needs."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent understands the customer's needs.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check for available storage track space in the yard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent confirms there is enough space."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent confirms there is enough space.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a storage agreement, log the arrival of the cars, and move them to a designated storage track.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The cars are received and stored."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The cars are received and stored.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The system automatically bills the customer a daily storage fee for each car.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Billing for the storage service is initiated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Billing for the storage service is initiated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

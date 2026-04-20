@@ -12,38 +12,46 @@
       {
         "id": "task-0",
         "task_description": "Verify clinician access and patient identity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Identity verified/authorized"
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Identity verified/authorized",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-1",
         "task_description": "Open the patient's chart and navigate to order entry.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician accesses the ordering module."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician accesses the ordering module.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for and select the 'Community-Acquired Pneumonia Admission' order set.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician opens the order set, which contains pre-selected medications, lab tests, and nursing orders."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician opens the order set, which contains pre-selected medications, lab tests, and nursing orders.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the pre-checked orders, make any necessary modifications, and sign the order set.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Physician efficiently places multiple evidence-based orders at once, improving quality and saving time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Physician efficiently places multiple evidence-based orders at once, improving quality and saving time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

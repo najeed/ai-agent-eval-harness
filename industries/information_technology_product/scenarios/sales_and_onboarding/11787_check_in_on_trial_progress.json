@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify a trial user who has shown high engagement (e.g., invited team members, created projects).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a promising trial user."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a promising trial user.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a personalized email to the user, offering assistance and asking if they have any questions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent initiates a proactive, helpful conversation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent initiates a proactive, helpful conversation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the user's response, schedule a brief call to provide tips or answer questions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent nurtures the lead and increases the likelihood of conversion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent nurtures the lead and increases the likelihood of conversion.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

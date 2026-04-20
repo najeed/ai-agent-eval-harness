@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the claim in the billing system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Biller locates the specific claim they want to check."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Biller locates the specific claim they want to check.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit an electronic claim status request (276 query) to the payer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Biller sends an electronic inquiry to the insurance company."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Biller sends an electronic inquiry to the insurance company.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the claim status response (277), which indicates the claim has been 'pended' for review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Biller receives an update on the claim's status and knows that no further action is needed at this time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Biller receives an update on the claim's status and knows that no further action is needed at this time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

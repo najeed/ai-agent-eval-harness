@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the discovery requests that are in dispute.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has a clear list of the disputed items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has a clear list of the disputed items.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the opposing party's objections and responses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the other side's position."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the other side's position.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft a letter or outline with talking points for the meet and confer, proposing a compromise on the disputed issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares a structured plan for the negotiation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares a structured plan for the negotiation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a radio call from a driver reporting a breakdown and their location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the breakdown event, including the vehicle number and location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the breakdown event, including the vehicle number and location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Dispatch a road supervisor and a maintenance crew to the bus's location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Support staff are successfully dispatched."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Support staff are successfully dispatched.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify a spare bus and dispatch it to the location to pick up the stranded passengers and continue the route (a 'bus bridge').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A replacement bus is dispatched to maintain service."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A replacement bus is dispatched to maintain service.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

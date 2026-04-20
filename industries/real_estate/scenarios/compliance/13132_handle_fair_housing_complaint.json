@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Listen to the complaint without admitting fault and express empathy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent maintains a professional and calm demeanor while acknowledging the caller's frustration."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent maintains a professional and calm demeanor while acknowledging the caller's frustration.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the applicant's file and the documented, non-discriminatory reason for their denial (e.g., poor credit score).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up the application file and confirms the denial was based on standard rental criteria."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up the application file and confirms the denial was based on standard rental criteria.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Escalate the call to the brokerage's legal counsel or senior manager and document the incident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent does not attempt to resolve the legal complaint themselves but escalates it to the proper channel and creates a detailed incident report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent does not attempt to resolve the legal complaint themselves but escalates it to the proper channel and creates a detailed incident report.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

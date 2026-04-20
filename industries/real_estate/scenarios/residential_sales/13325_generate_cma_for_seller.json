@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find 3-5 comparable properties that are currently for sale, pending, and recently sold in the same neighborhood.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a list of relevant comparable properties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a list of relevant comparable properties.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the comps, making adjustments for key differences (e.g., square footage, condition, upgrades).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines an adjusted value range for the subject property."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines an adjusted value range for the subject property.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a CMA report that visually presents the data and suggests a strategic listing price range.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A professional and persuasive CMA report is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A professional and persuasive CMA report is created.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

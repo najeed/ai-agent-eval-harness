@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of customers who have purchased items from the 'Outdoor Gear' category.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a target audience segment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a target audience segment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Load the promotional email template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct email content."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct email content.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Schedule the email to be sent to the generated customer list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the email campaign."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the email campaign.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

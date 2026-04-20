@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Travel to the affected area and establish a safe base of operations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Reporter is safely on location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Reporter is safely on location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Interview affected residents, first responders, and officials to gather personal stories and official information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers a mix of anecdotal and official information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers a mix of anecdotal and official information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Capture photos and videos of the damage to provide visual context.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Compelling visual evidence is captured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Compelling visual evidence is captured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "File stories back to the newsroom using a satellite phone or other backup communication method due to likely power outages.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Stories are successfully filed despite infrastructure challenges."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Stories are successfully filed despite infrastructure challenges.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

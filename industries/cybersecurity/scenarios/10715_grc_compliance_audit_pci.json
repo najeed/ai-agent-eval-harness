@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the specific evidence required for PCI DSS Requirement 8.2 (related to user identification and authentication).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly lists the required evidence, such as password policy documents and screenshots of system settings."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly lists the required evidence, such as password policy documents and screenshots of system settings.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather the required evidence from policy repositories and by taking screenshots of the Active Directory configuration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully collects all necessary evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully collects all necessary evidence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Organize the evidence and upload it to the audit management portal for the auditor to review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst correctly prepares and submits the evidence for the audit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst correctly prepares and submits the evidence for the audit.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that all traffic has been migrated from the old service to the new one.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the old service is receiving zero traffic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the old service is receiving zero traffic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Delete the deployment configuration for the old service from the orchestration tool (e.g., Kubernetes).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent removes the service from the cluster."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent removes the service from the cluster.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Remove the old service's code repository and CI/CD pipeline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent cleans up all related assets to prevent accidental redeployment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent cleans up all related assets to prevent accidental redeployment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a report on the 'Diabetic Eye Exam' quality measure for the current year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager generates the performance report for the measure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager generates the performance report for the measure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the current performance rate to the rate from the previous quarter, before the outreach campaign began.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager compares the two data points."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager compares the two data points.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Note that the performance rate has increased by 10%, indicating the campaign was successful.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The manager is able to measure the impact of their population health intervention."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The manager is able to measure the impact of their population health intervention.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

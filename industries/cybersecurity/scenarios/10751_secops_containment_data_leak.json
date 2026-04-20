@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the DLP alert and identify the user, file, and destination URL.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder correctly identifies the key details of the data leak."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder correctly identifies the key details of the data leak.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately block the URL of the public cloud storage site at the network proxy to prevent further uploads.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder successfully blocks the destination site."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder successfully blocks the destination site.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Contact the user to understand the context of the upload and have them delete the public file immediately.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Responder coordinates with the user to have the leaked file removed from the public site."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Responder coordinates with the user to have the leaked file removed from the public site.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

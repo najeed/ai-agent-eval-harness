@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the guest's upcoming reservation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent locates the booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent locates the booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a room service order for the requested items, scheduled for the guest's arrival date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A future-dated room service order is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A future-dated room service order is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the charge for the amenity to the guest's reservation folio.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The charge is pre-posted to the guest's bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The charge is pre-posted to the guest's bill.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

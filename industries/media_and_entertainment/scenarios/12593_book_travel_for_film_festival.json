@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the travel dates and the list of attendees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the required travel details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the required travel details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search for flights and hotels that meet the company's travel policy and budget.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds suitable flight and hotel options."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds suitable flight and hotel options.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the selected flights and hotels and send the itineraries to the attendees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully completes all bookings and sends confirmations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully completes all bookings and sends confirmations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

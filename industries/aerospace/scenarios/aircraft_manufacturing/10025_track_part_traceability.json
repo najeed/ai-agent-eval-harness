@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the serial number of the installed turbine blade.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly captures the serial number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly captures the serial number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Query the manufacturing execution system (MES) to retrieve the blade's full production history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the complete history, including all manufacturing steps and inspections."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the complete history, including all manufacturing steps and inspections.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify that the history includes the certificate of conformance for the raw material batch used to forge the blade.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the linked certificate and confirms the material's origin and quality."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the linked certificate and confirms the material's origin and quality.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

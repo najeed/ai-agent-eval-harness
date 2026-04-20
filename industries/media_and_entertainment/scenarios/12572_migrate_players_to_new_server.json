@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Place the old server in 'maintenance mode' to prevent new logins.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully puts the old server in maintenance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully puts the old server in maintenance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a complete backup of the old server's player database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a full data backup."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a full data backup.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Restore the backup onto the new server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully restores all player data to the new server."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully restores all player data to the new server.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the game's server list to point players to the new server's IP address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the configuration so players will connect to the new server."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the configuration so players will connect to the new server.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain a list of all user roles and their associated permissions within the ERP system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor has the complete role-permission matrix."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor has the complete role-permission matrix.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Obtain a list of all users and their assigned roles.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor has the user-role mapping."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor has the user-role mapping.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Analyze the data to find users who are assigned roles that allow them to both create a vendor and approve an invoice, a known toxic combination.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The analysis identifies three users with this conflicting access."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The analysis identifies three users with this conflicting access.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

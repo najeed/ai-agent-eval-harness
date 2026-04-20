@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Import and process the raw magnetic data from the airborne survey.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clean, processed magnetic map of the survey area is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clean, processed magnetic map of the survey area is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the magnetic map to identify linear features that could represent faults or dykes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Major structural features are interpreted from the data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Major structural features are interpreted from the data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Integrate the interpretation with the known geology to generate new exploration targets where favorable structures intersect prospective rock types.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A set of new exploration targets is generated and prioritized for follow-up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A set of new exploration targets is generated and prioritized for follow-up.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

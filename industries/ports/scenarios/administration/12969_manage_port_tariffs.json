@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the current port tariff document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The clerk has the current version of the tariff."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The clerk has the current version of the tariff.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apply a 3% increase to all service rates listed in the document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All rates are correctly recalculated with the approved increase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All rates are correctly recalculated with the approved increase.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Publish the new tariff on the port's website and notify all customers of the change, effective from the new fiscal year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The new document is uploaded, and a notification is sent to all registered customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The new document is uploaded, and a notification is sent to all registered customers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

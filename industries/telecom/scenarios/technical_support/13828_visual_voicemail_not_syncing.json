@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the customer's device and plan support Visual Voicemail.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the feature is supported and provisioned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the feature is supported and provisioned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the customer has a stable cellular data connection, as it is required for syncing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent guides the customer to confirm they have an active data connection."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent guides the customer to confirm they have an active data connection.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Reset the Visual Voicemail feature for the customer's line from the backend.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully uses the tool to reprovision the feature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully uses the tool to reprovision the feature.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

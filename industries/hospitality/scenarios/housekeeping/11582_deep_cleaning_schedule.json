@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify rooms that are due for deep cleaning.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of rooms is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of rooms is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find a vacant day for one of the rooms and place it 'Out of Order' in the PMS to block it from being sold.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The room is blocked for maintenance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The room is blocked for maintenance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a detailed work order for the deep cleaning task, which includes services like carpet shampooing and curtain washing.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order with a detailed checklist is created for the housekeeping team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order with a detailed checklist is created for the housekeeping team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

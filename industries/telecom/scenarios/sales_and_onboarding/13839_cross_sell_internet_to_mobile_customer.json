@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the customer's comment and check if their address is serviceable for internet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pivots the conversation and confirms serviceability."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pivots the conversation and confirms serviceability.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Present home internet plans, highlighting any bundling discounts available for existing mobile customers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the plans and the 'Save $20/month' bundle offer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the plans and the 'Save $20/month' bundle offer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the order for the new internet service, applying the bundle discount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adds the internet service to the customer's account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adds the internet service to the customer's account.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

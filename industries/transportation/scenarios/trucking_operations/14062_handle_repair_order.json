@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Select a repair order from the queue in the maintenance system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Mechanic retrieves the work order for a specific truck."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Mechanic retrieves the work order for a specific truck.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "After diagnosing the issue, add the required parts from inventory to the repair order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system deducts the parts from inventory and adds them to the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system deducts the parts from inventory and adds them to the order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the labor hours spent on the repair.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Labor time is correctly added to the order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Labor time is correctly added to the order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Mark the repair order as complete.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The repair is finished, and the truck's status is updated to 'Available'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The repair is finished, and the truck's status is updated to 'Available'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

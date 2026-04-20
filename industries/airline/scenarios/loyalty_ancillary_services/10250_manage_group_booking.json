@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the group booking record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct group booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct group booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive the list of names from the group leader.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the passenger list."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the passenger list.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add each passenger's name to the booking record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the booking with all the names."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the booking with all the names.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

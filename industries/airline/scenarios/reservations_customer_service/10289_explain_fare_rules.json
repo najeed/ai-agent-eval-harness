@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the detailed fare rules for the selected fare type.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the rules for 'Basic Economy'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the rules for 'Basic Economy'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Clearly explain the key restrictions, such as no changes, no refunds, no seat selection, and limits on carry-on baggage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear and accurate summary of the restrictions."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear and accurate summary of the restrictions.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm that the customer understands and accepts the restrictions before proceeding with the booking.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets confirmation from the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets confirmation from the customer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

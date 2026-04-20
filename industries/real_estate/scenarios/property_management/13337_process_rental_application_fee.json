@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Send the applicant a secure online link to pay the application fee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Applicant receives a payment link."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Applicant receives a payment link.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive confirmation that the payment has been successfully processed.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Payment confirmation is received and logged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Payment confirmation is received and logged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once payment is confirmed, initiate the tenant screening process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The screening workflow is triggered after payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The screening workflow is triggered after payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

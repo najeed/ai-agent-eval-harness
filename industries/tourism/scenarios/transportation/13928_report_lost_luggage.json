@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the passenger's booking and baggage claim information using their ticket number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the passenger's details and the tag number for the missing bag."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the passenger's details and the tag number for the missing bag.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect a description of the bag and the passenger's contact information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all necessary details for the report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all necessary details for the report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a new lost baggage report in the system and provide the passenger with a file reference number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully files the report and gives the customer a reference for tracking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully files the report and gives the customer a reference for tracking.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

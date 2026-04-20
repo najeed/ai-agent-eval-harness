@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Immediately contact the IRS agent assigned to the case to request a temporary hold on the levy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes contact with the IRS to begin negotiations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes contact with the IRS to begin negotiations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather financial information to demonstrate that the levy is causing an economic hardship.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles evidence of the hardship."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles evidence of the hardship.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Negotiate a release of the levy in exchange for setting up an installment agreement or other payment arrangement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully gets the levy released and establishes a payment plan for the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully gets the levy released and establishes a payment plan for the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

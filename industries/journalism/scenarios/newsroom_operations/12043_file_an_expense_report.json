@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Gather all receipts from the trip.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All physical and digital receipts are collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All physical and digital receipts are collected.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Open the company's expense reporting software and create a new report.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new expense report is started."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new expense report is started.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Enter each expense as a line item, attaching a digital copy of the corresponding receipt.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All expenses are logged with proper documentation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All expenses are logged with proper documentation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Submit the completed report to the accounting department for approval and reimbursement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report is submitted through the proper channels."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report is submitted through the proper channels.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

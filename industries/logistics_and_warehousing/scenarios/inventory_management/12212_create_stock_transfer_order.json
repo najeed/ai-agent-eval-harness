@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check inventory levels for the item at all distribution centers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms DC A is low and DC B has a surplus."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms DC A is low and DC B has a surplus.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a stock transfer order (STO) to move 500 units from DC B to DC A.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the STO in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the STO in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The STO automatically generates an outbound order for DC B and an inbound notification for DC A.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system correctly creates linked transactions for both facilities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system correctly creates linked transactions for both facilities.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

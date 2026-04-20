@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the part number for the required hydraulic pump.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the part number from the equipment's BOM."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the part number from the equipment's BOM.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the inventory system for the part number to check stock levels and location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that there are two pumps in stock in the main storeroom."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that there are two pumps in stock in the main storeroom.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a request to withdraw one pump from inventory for the repair job.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reserves one pump against the maintenance work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reserves one pump against the maintenance work order.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

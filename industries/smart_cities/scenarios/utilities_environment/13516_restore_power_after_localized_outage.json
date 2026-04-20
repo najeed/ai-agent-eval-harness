@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive an alert from a smart meter indicating a power outage at a specific address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the initial outage report."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the initial outage report.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The FLISR (Fault Location, Isolation, and Service Restoration) system automatically identifies the faulted grid section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system pinpoints the outage to a specific transformer and the homes it serves."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system pinpoints the outage to a specific transformer and the homes it serves.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Authorize the FLISR system to remotely reroute power from an adjacent circuit, restoring power to most affected homes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent approves the automated action, and power is restored to 90% of customers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent approves the automated action, and power is restored to 90% of customers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Dispatch a repair crew to replace the failed transformer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a work order for the physical repair."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a work order for the physical repair.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

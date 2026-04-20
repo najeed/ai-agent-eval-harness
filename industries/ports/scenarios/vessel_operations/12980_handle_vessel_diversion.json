@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive notification from the vessel agent that the vessel will no longer be calling at the port.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The scheduler receives the cancellation notice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The scheduler receives the cancellation notice.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Cancel the vessel's berth allocation in the scheduling system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The berth previously assigned to the vessel is now shown as available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The berth previously assigned to the vessel is now shown as available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Cancel all associated pilot, tug, and mooring services to avoid cancellation fees.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All booked services for the vessel call are successfully cancelled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All booked services for the vessel call are successfully cancelled.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

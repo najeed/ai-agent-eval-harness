@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the latest schedule update, cost report, and safety statistics for the month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the required data from various systems."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the required data from various systems.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use a reporting template to populate the data into a standard format.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully populates the monthly report template."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully populates the monthly report template.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the final report as a PDF and distribute it to the project stakeholder mailing list.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the final PDF and emails it to the correct recipients."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the final PDF and emails it to the correct recipients.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

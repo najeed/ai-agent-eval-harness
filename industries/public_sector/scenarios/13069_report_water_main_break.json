@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather the exact location of the break.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the address and cross-street of the break."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the address and cross-street of the break.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Recognize the urgency of the situation and escalate it immediately.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent flags the service request as an emergency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent flags the service request as an emergency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create an emergency work order and dispatch the on-call crew.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a work order and immediately dispatches a crew to the location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a work order and immediately dispatches a crew to the location.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

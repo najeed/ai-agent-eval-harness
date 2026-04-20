@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the user and review their account's onboarding checklist status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees the user is stuck on the 'Import Data' step."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees the user is stuck on the 'Import Data' step.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the user's import file and identify a formatting error in the date column.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly diagnoses the import problem."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly diagnoses the import problem.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Explain the formatting error and provide a link to the knowledge base article with correct import templates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent helps the user fix their file and successfully complete the import."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent helps the user fix their file and successfully complete the import.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

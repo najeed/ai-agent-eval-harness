@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the interface point in the project's interface register (e.g., 'Power supply for Pump P-101').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the correct interface point."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the correct interface point.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The electrical engineer determines the power requirements and enters the data into the interface system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The electrical engineer provides the required data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The electrical engineer provides the required data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system automatically notifies the mechanical engineer that the interface information is now available for them to use.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The mechanical engineer receives a notification and can now complete their design for the pump."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The mechanical engineer receives a notification and can now complete their design for the pump.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

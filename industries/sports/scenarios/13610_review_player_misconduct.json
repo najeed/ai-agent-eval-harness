@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the official referee's report and video of the incident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the primary evidence for the case."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the primary evidence for the case.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the league's disciplinary code for precedents involving similar offenses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds that similar tackles have typically resulted in a 3-game suspension."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds that similar tackles have typically resulted in a 3-game suspension.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the evidence and precedents, issue a 3-game suspension to the player.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent formally issues the suspension."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent formally issues the suspension.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Notify the player's team of the disciplinary action.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a formal notification to the team."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a formal notification to the team.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

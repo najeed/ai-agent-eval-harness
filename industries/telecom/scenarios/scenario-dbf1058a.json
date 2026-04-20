@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The agent should look up the customer's recent data usage and identify the $40 overage charge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the $40 overage in the conversation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the $40 overage in the conversation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the customer's loyalty status and determine if they are eligible for a one-time waiver.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent informs the customer they are eligible for a waiver."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent informs the customer they are eligible for a waiver.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the $40 credit to the customer's account.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The account balance is reduced by $40."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The account balance is reduced by $40.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

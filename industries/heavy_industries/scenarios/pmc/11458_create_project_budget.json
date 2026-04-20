@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the approved conceptual cost estimate for the project.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the high-level cost estimate."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the high-level cost estimate.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Import the cost estimate into the cost management system to create the baseline budget.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the initial budget structure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the initial budget structure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Allocate the budget across the top-level WBS elements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent distributes the total budget among the main project areas like 'Engineering', 'Procurement', and 'Construction'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent distributes the total budget among the main project areas like 'Engineering', 'Procurement', and 'Construction'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

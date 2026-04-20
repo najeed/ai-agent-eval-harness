@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the L&D department's budget for the current fiscal year.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager pulls up the approved budget."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager pulls up the approved budget.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a report of all training-related expenditures for the quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager generates a spend report from the financial system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager generates a spend report from the financial system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the actual spend to the prorated quarterly budget to determine if they are on track.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Manager calculates the variance and confirms they are currently under budget."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Manager calculates the variance and confirms they are currently under budget.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

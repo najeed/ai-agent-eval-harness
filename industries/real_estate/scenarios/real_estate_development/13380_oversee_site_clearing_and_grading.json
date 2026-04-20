@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify that all necessary erosion control measures are in place before work begins, as required by local regulations.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The site is compliant with environmental regulations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The site is compliant with environmental regulations.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Monitor the work of the excavation contractor to ensure they are clearing the site and grading it according to the approved civil engineering plans.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The site work is proceeding according to plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The site work is proceeding according to plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review and approve the contractor's invoices for the site work.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Invoices are approved for payment after verifying the work was completed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Invoices are approved for payment after verifying the work was completed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

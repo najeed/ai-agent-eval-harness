@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the transaction checklist for the upcoming and completed tasks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that the inspection is complete and the appraisal is scheduled for next week."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that the inspection is complete and the appraisal is scheduled for next week.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft a summary email outlining the current status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A clear, concise email is written summarizing what has been done and what is next."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A clear, concise email is written summarizing what has been done and what is next.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the summary email to the client, agent, and lender.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The status update email is sent to all relevant parties."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The status update email is sent to all relevant parties.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

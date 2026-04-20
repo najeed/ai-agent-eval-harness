@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the product details using its SKU.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly pulls the existing product information for 'Laptop-XG-123'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly pulls the existing product information for 'Laptop-XG-123'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Update the product's description and specifications fields with the new text provided.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the product information in the PIM system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the product information in the PIM system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Verify the changes by previewing the product page.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the new description and specs are live on the storefront."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the new description and specs are live on the storefront.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the contact record in the CRM and review past communication and search history.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the contact's history, noting they were looking for a 3-bed, 2-bath under $500k."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the contact's history, noting they were looking for a 3-bed, 2-bath under $500k.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find a current, active listing that matches the lead's old criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a suitable active property on the MLS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a suitable active property on the MLS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft and send a personalized follow-up email referencing a past conversation and suggesting the new property.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A personalized email is sent to the lead to re-engage them."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A personalized email is sent to the lead to re-engage them.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

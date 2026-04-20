@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The RA completes a room condition report upon move-out and documents damages.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "RA logs a broken window in the housing system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "RA logs a broken window in the housing system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The housing office assesses a repair fee based on the documented damage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Housing office determines a $150 repair fee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Housing office determines a $150 repair fee.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The housing office posts the damage charge to the student's account in the university's main billing system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A $150 charge is successfully added to the student's tuition bill."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A $150 charge is successfully added to the student's tuition bill.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

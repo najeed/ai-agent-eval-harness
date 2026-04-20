@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load employee data, including department, tenure, and last promotion date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads the data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads the data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each department, calculate the average employee tenure and the percentage of employees who haven't been promoted in over 3 years.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the required metrics for each department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the required metrics for each department.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Identify the top 3 departments with the lowest tenure and highest percentage of overdue promotions as 'high-risk'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly flags the at-risk departments based on the data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly flags the at-risk departments based on the data.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

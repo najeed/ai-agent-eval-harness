@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Scan the door number where the truck is parked to get the list of shipments assigned to it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the manifest for the truck at Dock 4."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the manifest for the truck at Dock 4.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Scan the first pallet in the staging lane, and the system confirms it belongs to the correct shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System validates the pallet is correct for this load."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System validates the pallet is correct for this load.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Load the pallet onto the truck and repeat the process for all staged pallets.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent loads all pallets for the shipment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent loads all pallets for the shipment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Finalize the loading process, which marks the shipment as 'Shipped' and notifies the carrier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the load is complete, and the system updates the shipment status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the load is complete, and the system updates the shipment status.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

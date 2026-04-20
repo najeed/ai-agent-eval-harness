@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Analyze the provided SWOT analysis.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly ingests the SWOT data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly ingests the SWOT data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Formulate a 'Growth' strategy that uses Strengths to capitalize on Opportunities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent proposes a relevant growth strategy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent proposes a relevant growth strategy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Formulate a 'Defensive' strategy that uses Strengths to mitigate Threats.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent proposes a relevant defensive strategy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent proposes a relevant defensive strategy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Formulate a 'Turnaround' strategy that addresses Weaknesses to mitigate Threats.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent proposes a relevant turnaround strategy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent proposes a relevant turnaround strategy.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the schedule of values and the percentage of completion for each line item as of the end of the month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the necessary data for the pay application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the necessary data for the pay application.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate the total amount earned for the period, apply the 10% retainage, and generate the pay application document.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A correctly calculated and formatted pay application is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A correctly calculated and formatted pay application is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the pay application to the client.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The pay application is sent to the client for review and payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The pay application is sent to the client for review and payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

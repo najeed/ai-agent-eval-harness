@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Answer the emergency call, reassure the guest, and confirm which elevator they are in.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent calmly communicates with the guest and identifies their location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent calmly communicates with the guest and identifies their location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Immediately contact the hotel's on-call elevator maintenance company.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent successfully contacts the maintenance vendor and reports the issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent successfully contacts the maintenance vendor and reports the issue.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a hotel engineer to the elevator to maintain communication with the guest until help arrives.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A staff member is sent to the scene to provide support."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A staff member is sent to the scene to provide support.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

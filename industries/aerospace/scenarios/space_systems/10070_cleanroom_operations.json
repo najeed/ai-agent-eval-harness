@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Monitor the cleanroom's particle counters, temperature, and humidity levels to ensure they remain within the specified limits (e.g., ISO 8).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent observes all environmental parameters are nominal."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent observes all environmental parameters are nominal.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Perform regular wipe-downs of surfaces with approved cleaning solutions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent follows the standard cleaning procedure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent follows the standard cleaning procedure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log all environmental data and cleaning activities in the cleanroom logbook.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent maintains a complete and accurate log."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent maintains a complete and accurate log.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

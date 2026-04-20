@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Obtain the Supplemental Type Certificate (STC) and installation kit for the new internet system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all the required engineering data and parts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all the required engineering data and parts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a detailed work package that includes step-by-step instructions for the structural modification (installing the antenna) and the avionics work (installing the routers and wiring).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent authors a complete and detailed work package."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent authors a complete and detailed work package.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Plan the logistics, including the required downtime for each aircraft and the necessary tooling and ground support equipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a comprehensive plan for modifying the entire fleet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a comprehensive plan for modifying the entire fleet.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

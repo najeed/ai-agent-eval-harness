@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Document the initial complaint from the employee in the case management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP creates a new investigation case with all the initial details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP creates a new investigation case with all the initial details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Schedule and conduct confidential interviews with the complainant, the accused, and any witnesses.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "HRBP conducts and documents all interviews."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "HRBP conducts and documents all interviews.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review relevant evidence (e.g., emails, chat logs) and make a recommendation based on the findings.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "After a thorough review, the HRBP concludes the claim is substantiated and recommends disciplinary action."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "After a thorough review, the HRBP concludes the claim is substantiated and recommends disciplinary action.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

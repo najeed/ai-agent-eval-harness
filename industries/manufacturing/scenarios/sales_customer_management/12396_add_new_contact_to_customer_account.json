@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the customer's account in the CRM.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the correct customer account."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the correct customer account.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Add the new contact's name, title, email, and phone number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent enters the new contact's details accurately."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent enters the new contact's details accurately.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the 'Technical Contact' role to the new person.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sets the role for the new contact, ensuring they receive technical bulletins."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sets the role for the new contact, ensuring they receive technical bulletins.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

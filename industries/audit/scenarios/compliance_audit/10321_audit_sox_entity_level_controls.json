@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the company's Code of Conduct and verify that all employees have completed their annual ethics training.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms a 98% completion rate for ethics training."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms a 98% completion rate for ethics training.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the minutes from the Board of Directors' Audit Committee meetings to ensure they are meeting regularly and discussing financial risks.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms the committee met quarterly and minutes show discussion of key risks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms the committee met quarterly and minutes show discussion of key risks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Interview senior management to assess the 'tone at the top' regarding ethics and internal controls.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The auditor documents management's commitment to a strong control environment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The auditor documents management's commitment to a strong control environment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

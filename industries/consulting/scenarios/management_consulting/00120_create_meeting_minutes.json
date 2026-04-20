@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the transcript to identify the attendees, agenda items discussed, and key decisions made.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly extracts the key components of the meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly extracts the key components of the meeting.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify all action items mentioned, including who is responsible and the due date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly identifies and assigns all action items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly identifies and assigns all action items.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Format the extracted information into a standard meeting minutes template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a well-structured document with sections for attendees, decisions, and action items."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a well-structured document with sections for attendees, decisions, and action items.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

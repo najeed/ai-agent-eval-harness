@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the latest soil moisture readings from in-field sensors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves data from all active sensors."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves data from all active sensors.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Get the 7-day weather forecast, focusing on temperature, humidity, and precipitation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent retrieves the relevant weather forecast data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent retrieves the relevant weather forecast data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the crop's evapotranspiration (ETc) and recommend an irrigation duration and frequency for the next week.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a precise irrigation schedule in hours and days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a precise irrigation schedule in hours and days.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

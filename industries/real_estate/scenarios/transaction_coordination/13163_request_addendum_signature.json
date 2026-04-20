@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Draft the final repair addendum, listing the agreed-upon repair items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new addendum is created listing the specific repairs the seller has agreed to make."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new addendum is created listing the specific repairs the seller has agreed to make.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send the addendum to the buyer for their signature, then route it to the seller for their signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The document is sent through an e-signature platform in the correct signing order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The document is sent through an e-signature platform in the correct signing order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Once fully executed, upload the signed addendum to the transaction file.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The final, executed document is saved to the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The final, executed document is saved to the system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

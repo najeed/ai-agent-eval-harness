@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Initiate the drill by triggering a simulated fire alarm in the control room.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The drill is started, and the site's emergency alarm is sounded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The drill is started, and the site's emergency alarm is sounded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Observe and time the response of the emergency team, including their muster time and how they approach the simulated fire.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The response is observed and key performance indicators (like response time) are recorded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The response is observed and key performance indicators (like response time) are recorded.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Conduct a debrief after the drill to discuss what went well and identify areas for improvement. Log these in a tracking system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A list of improvement actions is created and logged for tracking to completion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A list of improvement actions is created and logged for tracking to completion.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

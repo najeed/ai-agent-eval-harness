@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Provide the buyer with a list of 3-4 trusted home inspectors.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a list of approved vendors to the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a list of approved vendors to the client.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Once the buyer chooses an inspector, coordinate a time for the inspection that works for the buyer, inspector, and sellers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully finds a mutually agreeable time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully finds a mutually agreeable time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Confirm the appointment with all parties and add it to the transaction calendar.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent books the inspection and updates the calendar."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent books the inspection and updates the calendar.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

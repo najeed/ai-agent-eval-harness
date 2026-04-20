@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The system creates a batch of 8 small, single-line orders and assigns them to the operator's smart cart.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator's cart terminal shows 8 order slots."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator's cart terminal shows 8 order slots.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system directs the operator to a pick location. The operator scans the item.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator is guided along an optimized pick path."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator is guided along an optimized pick path.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The lights on the smart cart illuminate for the two orders that require this item, indicating where the operator should place them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The operator is visually guided to place the correct item in the correct order totes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The operator is visually guided to place the correct item in the correct order totes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The operator repeats the process until all orders in the batch are complete and delivers the cart to the packing area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Multiple orders are picked efficiently in a single trip."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Multiple orders are picked efficiently in a single trip.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

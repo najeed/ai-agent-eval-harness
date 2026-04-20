@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Determine the home's cost basis (purchase price + improvements).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the cost basis."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the cost basis.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the couple meets the ownership and use tests to qualify for the Section 121 exclusion.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the couple has lived in the home as their main residence for at least 2 of the last 5 years."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the couple has lived in the home as their main residence for at least 2 of the last 5 years.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the gain on the sale and apply the maximum exclusion ($500,000 for a married couple) to determine if any gain is taxable.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the entire gain is excluded from income and no tax is due."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the entire gain is excluded from income and no tax is due.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

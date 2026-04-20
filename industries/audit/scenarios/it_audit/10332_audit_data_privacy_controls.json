@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Submit a test request through the company's public privacy portal to have a test user's data deleted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A data deletion request is submitted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A data deletion request is submitted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Track the request through the internal ticketing system to ensure it is handled within the 30-day requirement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms the request is processed within the required timeframe."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms the request is processed within the required timeframe.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the request is closed, perform a search of the production databases to ensure the test user's data has actually been deleted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Auditor confirms the data has been successfully purged from all systems."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Auditor confirms the data has been successfully purged from all systems.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

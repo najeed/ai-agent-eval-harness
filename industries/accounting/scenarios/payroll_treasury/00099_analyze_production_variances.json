@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the production variance report for the month.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the report showing the total material variance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the report showing the total material variance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Break down the total material variance into its price and quantity components.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates that the variance is primarily due to a price variance, not a usage variance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates that the variance is primarily due to a price variance, not a usage variance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Drill down to find which specific raw materials had the largest price variances by comparing actual purchase prices to standard costs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent discovers that the price of a key raw material increased by 15% during the month, causing most of the variance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent discovers that the price of a key raw material increased by 15% during the month, causing most of the variance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

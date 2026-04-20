@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use Google Tag Assistant or a similar browser extension to check the homepage for the GA tracking code.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The tool shows the tag is present and firing correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The tool shows the tag is present and firing correctly.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Navigate to several other key pages on the site (e.g., product page, contact page) and verify the tag is present on them as well.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the tag is installed site-wide."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the tag is installed site-wide.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the real-time report in Google Analytics to see if your own visit is being recorded.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees 1 active user in the real-time report, confirming data is being collected."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees 1 active user in the real-time report, confirming data is being collected.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

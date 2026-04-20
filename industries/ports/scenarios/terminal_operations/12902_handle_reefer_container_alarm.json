@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Acknowledge the alarm and identify the reefer container's ID and location.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator identifies the container and its location in the reefer racks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator identifies the container and its location in the reefer racks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the container's required temperature settings from the cargo documentation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator confirms the required temperature is -18\u00b0C, but the current reading is -10\u00b0C."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator confirms the required temperature is -18\u00b0C, but the current reading is -10\u00b0C.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Dispatch a reefer technician to the container's location to diagnose and fix the issue.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A work order is created and dispatched to the on-duty technician."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A work order is created and dispatched to the on-duty technician.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

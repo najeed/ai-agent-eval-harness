@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Download the day's inspection route to a handheld data collector.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician gets the list of assets and the required readings for the day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician gets the list of assets and the required readings for the day.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Go to the first asset on the route and collect the required data (e.g., temperature reading, vibration data).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician collects the data using the handheld device."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician collects the data using the handheld device.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Upload the collected data to the maintenance system. The system automatically flags any readings that are outside normal operating limits.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician uploads the data, and the system generates an alert for one asset with a high temperature reading."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician uploads the data, and the system generates an alert for one asset with a high temperature reading.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

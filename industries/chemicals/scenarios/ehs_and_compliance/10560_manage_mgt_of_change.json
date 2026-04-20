@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new MOC request, detailing the proposed change.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully initiates the MOC record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully initiates the MOC record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Route the MOC to the EHS department for a formal hazard review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent assigns the MOC to the EHS manager for review and approval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent assigns the MOC to the EHS manager for review and approval.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After EHS review, document any required safety actions (e.g., 'Update P&ID diagram') before the MOC can be fully approved.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent adds the required actions to the MOC record based on the EHS review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent adds the required actions to the MOC record based on the EHS review.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

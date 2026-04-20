@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the recording or transcript of the board meeting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes the meeting recording."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes the meeting recording.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify all formal motions, votes, and official actions taken during the meeting.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent extracts all key decisions and votes."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent extracts all key decisions and votes.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Draft the minutes in a formal, structured format, including the date, attendees, and a summary of the actions taken.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a set of draft minutes that accurately reflect the meeting."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a set of draft minutes that accurately reflect the meeting.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

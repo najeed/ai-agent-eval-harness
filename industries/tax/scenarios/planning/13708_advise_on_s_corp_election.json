@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Analyze the LLC's net income and the owner's current tax situation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the business's profitability and the owner's financial picture."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the business's profitability and the owner's financial picture.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Determine a reasonable salary for the owner if they were an S-Corp employee.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent researches and sets a reasonable compensation figure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent researches and sets a reasonable compensation figure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the total tax liability (income + payroll) as an LLC vs. an S-Corp and provide a recommendation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent prepares a comparative analysis showing potential tax savings and advises the client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent prepares a comparative analysis showing potential tax savings and advises the client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

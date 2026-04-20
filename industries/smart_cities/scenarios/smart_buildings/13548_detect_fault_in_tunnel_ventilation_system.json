@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a 'Fan Failure' alert from the 'Downtown Tunnel' monitoring system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent acknowledges the critical infrastructure alert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent acknowledges the critical infrastructure alert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the air quality sensors within the tunnel to ensure CO levels are still safe.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms that air quality is still within acceptable limits due to redundant fans."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms that air quality is still within acceptable limits due to redundant fans.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a high-priority work order for an engineering team to repair the faulty fan.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent dispatches a repair crew."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent dispatches a repair crew.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the NSF notification from the bank.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the tenant and the bounced payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the tenant and the bounced payment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Reverse the rent payment on the tenant's ledger.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly removes the credited payment, making the rent outstanding again."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly removes the credited payment, making the rent outstanding again.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the NSF fee and any applicable late fees to the tenant's ledger and send them a notice to pay the new balance in certified funds.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent charges all applicable fees and sends a formal demand notice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent charges all applicable fees and sends a formal demand notice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

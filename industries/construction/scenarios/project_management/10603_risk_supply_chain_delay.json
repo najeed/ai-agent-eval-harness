@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the project tasks dependent on the delivery of the custom windows.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent lists 'Window Installation' and 'Interior Drywall' as dependent tasks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent lists 'Window Installation' and 'Interior Drywall' as dependent tasks.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Log the supply chain issue in the project's risk register, classifying it as 'High Impact, Medium Probability'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new entry is created in the risk register with the correct details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new entry is created in the risk register with the correct details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Develop a mitigation plan, such as identifying an alternative supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent proposes a viable mitigation strategy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent proposes a viable mitigation strategy.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

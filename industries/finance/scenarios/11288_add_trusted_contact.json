@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Explain the role of a trusted contact (i.e., they can be contacted about potential financial exploitation but cannot transact).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the permissions and limitations of the role."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the permissions and limitations of the role.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Collect the trusted contact's name and contact information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately records the information for the designated person."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately records the information for the designated person.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the trusted contact to the client's account profile.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the client's record with the trusted contact information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the client's record with the trusted contact information.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

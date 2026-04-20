@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Access the warehouse's receiving dock calendar.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent opens the scheduling tool for the receiving department."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent opens the scheduling tool for the receiving department.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Find an available time slot for the specified date and shipment size.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies an open 2-hour slot on the requested day."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies an open 2-hour slot on the requested day.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Book the appointment and send a confirmation to the supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully schedules the appointment and a confirmation email is sent."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully schedules the appointment and a confirmation email is sent.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

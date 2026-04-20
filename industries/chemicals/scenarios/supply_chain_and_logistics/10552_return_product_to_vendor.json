@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the quarantined, off-spec lot of material in the inventory system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the correct batch that needs to be returned."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the correct batch that needs to be returned.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the supplier to obtain a Return Material Authorization (RMA) number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates with the supplier and receives an RMA number."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates with the supplier and receives an RMA number.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a return shipment in the logistics system using the RMA number and schedule a pickup.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully processes the return order and arranges for the carrier to pick it up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully processes the return order and arranges for the carrier to pick it up.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

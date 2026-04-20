@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new tournament event in the event management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the event container."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the event container.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Set the tournament parameters, including date, time, game mode, and prize pool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly configures all tournament details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly configures all tournament details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Open tournament registration to players.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes the tournament visible and open for sign-ups in the game client."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes the tournament visible and open for sign-ups in the game client.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify which game servers are experiencing high player load and long login queues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that the EU and US-East servers are at 100% capacity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that the EU and US-East servers are at 100% capacity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Provision and deploy new temporary game server instances in the affected regions from the cloud provider.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully spins up 10 new server instances for the EU region."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully spins up 10 new server instances for the EU region.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the new instances to the matchmaking pool to alleviate player load.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent updates the server pool configuration, and login queues begin to decrease."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent updates the server pool configuration, and login queues begin to decrease.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

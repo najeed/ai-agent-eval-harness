@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a predictive outage model based on the hurricane's forecast track and intensity to estimate the potential number of customer outages.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Model predicts up to 500,000 outages."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Model predicts up to 500,000 outages.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Secure external resources by activating mutual assistance agreements with other utilities to bring in extra line crews.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System sends requests and tracks responses from 10 neighboring utilities."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System sends requests and tracks responses from 10 neighboring utilities.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Pre-position crews and materials at staging areas just outside the storm's expected impact zone.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System generates plans for optimal staging area locations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System generates plans for optimal staging area locations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

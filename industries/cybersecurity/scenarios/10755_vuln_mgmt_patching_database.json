@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Coordinate with the application owners to schedule a maintenance window for the database server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully negotiates and schedules a maintenance window."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully negotiates and schedules a maintenance window.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Before the window, take a snapshot of the database server so it can be rolled back in case of issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully creates a backup snapshot."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully creates a backup snapshot.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "During the maintenance window, apply the security patch and reboot the server, then verify with the application owners that the application is functioning correctly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The patch is applied successfully, and the application is confirmed to be working, completing the maintenance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The patch is applied successfully, and the application is confirmed to be working, completing the maintenance.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the specific attraction (main roller coaster) and the query (height restriction).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the user's request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the user's request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the attraction's details from the information system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the ride details, which include a minimum height requirement of 54 inches."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the ride details, which include a minimum height requirement of 54 inches.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Clearly communicate the height restriction to the parent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately states the minimum height requirement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately states the minimum height requirement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

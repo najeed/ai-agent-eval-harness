@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the crew size, location, and required dates from the production schedule.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has all the necessary logistical details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has all the necessary logistical details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Request quotes from several approved transportation vendors for bus rental.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives quotes from three different bus companies."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives quotes from three different bus companies.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Select the most cost-effective vendor and book the transportation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully books the required buses for the shoot dates."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully books the required buses for the shoot dates.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

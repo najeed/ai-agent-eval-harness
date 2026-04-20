@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather details from the guest, including their room number and the location of the leak.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the issue for the correct room and notes it's the bathroom sink."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the issue for the correct room and notes it's the bathroom sink.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new maintenance work order in the system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a work order with the issue description."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a work order with the issue description.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Assign the work order to an available maintenance technician and inform the guest that someone is on their way.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A technician is dispatched, and the guest is given an ETA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A technician is dispatched, and the guest is given an ETA.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

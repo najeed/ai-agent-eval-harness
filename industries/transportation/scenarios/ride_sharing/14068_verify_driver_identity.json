@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "When a driver attempts to go online, the system randomly triggers an identity check.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver is prompted to take a selfie."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver is prompted to take a selfie.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The driver takes a selfie using the app.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The image is captured."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The image is captured.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system uses facial recognition to compare the selfie with the driver's stored profile photo.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system calculates a match score."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system calculates a match score.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The match score is high, the identity is verified, and the driver is allowed to go online.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The driver successfully passes the check and can start working."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The driver successfully passes the check and can start working.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the material that is below the reorder point and its primary supplier.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies the part number and the approved supplier from the ERP system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies the part number and the approved supplier from the ERP system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new purchase order with the correct part number, quantity, and pricing based on the supplier contract.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully drafts a PO with all required information."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully drafts a PO with all required information.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the purchase order to the supplier via the supplier portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully sends the PO and its status changes to 'Submitted'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully sends the PO and its status changes to 'Submitted'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

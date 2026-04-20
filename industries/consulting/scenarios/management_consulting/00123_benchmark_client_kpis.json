@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Load the client's KPI data and a separate file with industry benchmark data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully loads both datasets."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully loads both datasets.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each KPI, calculate the variance between the client's performance and the industry benchmark.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly calculates the percentage difference for each KPI."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly calculates the percentage difference for each KPI.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a table highlighting the KPIs where the client is underperforming the most.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a sorted table that clearly shows the biggest performance gaps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a sorted table that clearly shows the biggest performance gaps.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

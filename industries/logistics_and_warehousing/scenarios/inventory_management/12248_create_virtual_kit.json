@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new SKU for the product bundle (the 'parent' item).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new product SKU is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new product SKU is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Define a Bill of Materials (BOM) for the new parent SKU, linking it to the component SKUs and their required quantities.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully defines the relationship between the parent kit and its children components."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully defines the relationship between the parent kit and its children components.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Activate the kit. Now, when an order for the parent SKU is placed, the system will automatically check and reserve inventory for the component SKUs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The virtual kit is now live and sellable."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The virtual kit is now live and sellable.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

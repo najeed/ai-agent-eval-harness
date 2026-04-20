@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Monitor local online forums (e.g., Reddit, neighborhood Facebook groups) for trending topics.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent is aware of what the community is talking about."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent is aware of what the community is talking about.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify a recurring complaint or issue that is gaining traction.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent spots a potential story lead."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent spots a potential story lead.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Write a brief summary of the issue and the public sentiment around it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A story pitch is drafted."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A story pitch is drafted.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Submit the story idea to the editorial team for consideration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The potential story lead is passed to the newsroom."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The potential story lead is passed to the newsroom.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

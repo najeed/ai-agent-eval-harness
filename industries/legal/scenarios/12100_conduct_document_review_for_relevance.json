@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Open the assigned batch of documents in the e-discovery tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully accesses the document batch."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully accesses the document batch.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "For each document, read its content and determine if it is responsive to the litigation's discovery requests.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent makes a relevance determination for each document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent makes a relevance determination for each document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the appropriate tag ('Responsive' or 'Not Responsive') to each document in the batch.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All documents in the batch are correctly coded."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All documents in the batch are correctly coded.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

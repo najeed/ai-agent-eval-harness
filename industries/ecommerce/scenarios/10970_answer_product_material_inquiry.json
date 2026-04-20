@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the jewelry product in question.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the product details for the 'Silver Heart Necklace'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the product details for the 'Silver Heart Necklace'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the product's material composition in the specifications.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the material is '925 Sterling Silver, Nickel-Free'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the material is '925 Sterling Silver, Nickel-Free'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the customer of the exact materials, specifically mentioning that it is nickel-free.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear and accurate answer that addresses the customer's allergy concern."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear and accurate answer that addresses the customer's allergy concern.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

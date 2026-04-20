@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the customer's travel credit voucher using the voucher number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the voucher and confirms its value."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the voucher and confirms its value.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a new booking for the customer's desired flight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the new booking."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the new booking.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the travel credit as a form of payment. If there's a remaining balance, collect it from the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the credit and processes any remaining payment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the credit and processes any remaining payment.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

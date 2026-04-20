@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the two accounts the user wants to merge.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates both user accounts in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates both user accounts in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Explain the merge process, including which email address will become the primary and that data will be combined.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets clear expectations for the merge process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets clear expectations for the merge process.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Execute the account merge tool, selecting one account as the primary and the other to be merged and deactivated.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully merges the two accounts into one."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully merges the two accounts into one.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

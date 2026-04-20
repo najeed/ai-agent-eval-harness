@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the passenger's booking and view the seat map for their flight.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the booking and sees available extra legroom seats."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the booking and sees available extra legroom seats.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Inform the passenger of the cost to upgrade to a selected extra legroom seat.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides the correct price for the seat upgrade."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides the correct price for the seat upgrade.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Process the seat change and collect payment for the upgrade.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully updates the passenger's seat assignment and issues a new boarding pass."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully updates the passenger's seat assignment and issues a new boarding pass.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

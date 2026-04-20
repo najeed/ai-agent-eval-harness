@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Coordinate a maintenance window with the application owner and the third-party vendor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully schedules the key rotation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully schedules the key rotation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a new, strong, random API key.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new secure key is generated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new secure key is generated.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "During the maintenance window, update the key in both the internal application's configuration and the third-party vendor's portal, then test the integration.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The key is successfully rotated without causing a lasting service outage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The key is successfully rotated without causing a lasting service outage.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

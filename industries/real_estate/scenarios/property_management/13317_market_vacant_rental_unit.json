@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Determine the optimal market rent for the unit by analyzing current listings for comparable units.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sets a competitive rental price."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sets a competitive rental price.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a high-quality rental listing with professional photos and a detailed description.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A compelling listing is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A compelling listing is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Syndicate the listing to multiple rental websites like Zillow, Trulia, and Apartments.com.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The listing is published across all major rental platforms."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The listing is published across all major rental platforms.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

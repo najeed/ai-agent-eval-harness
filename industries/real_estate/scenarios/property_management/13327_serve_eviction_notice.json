@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the tenant's payment history and confirm the total amount of unpaid rent.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has accurate records of the delinquency."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has accurate records of the delinquency.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate the appropriate legal notice for non-payment of rent as required by state law (e.g., '3-Day Pay or Quit').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A legally compliant eviction notice is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A legally compliant eviction notice is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Arrange for the notice to be legally served to the tenant by a professional process server.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The notice is served and proof of service is obtained."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The notice is served and proof of service is obtained.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

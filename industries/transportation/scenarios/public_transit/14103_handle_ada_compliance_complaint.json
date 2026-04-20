@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Receive a high-priority ADA complaint.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A new complaint case is opened and flagged as high-priority."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A new complaint case is opened and flagged as high-priority.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the driver and review the on-board video footage of the incident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The video is retrieved for review."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The video is retrieved for review.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The video confirms the passenger's account. The driver violated ADA policy.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The complaint is substantiated by evidence."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The complaint is substantiated by evidence.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The driver is immediately removed from service pending a disciplinary hearing and mandatory ADA retraining.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Immediate and appropriate action is taken in response to the serious violation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Immediate and appropriate action is taken in response to the serious violation.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

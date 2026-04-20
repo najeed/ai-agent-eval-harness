@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the list of pending patches for the client's servers in the RMM tool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The technician identifies the list of approved critical patches for deployment."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The technician identifies the list of approved critical patches for deployment.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "During the maintenance window, execute the patch deployment job.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The RMM tool begins deploying the patches to the servers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The RMM tool begins deploying the patches to the servers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After deployment, reboot the servers and verify they come back online and that the patches are installed successfully.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The servers are successfully patched and operational."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The servers are successfully patched and operational.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

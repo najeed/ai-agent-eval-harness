@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve all separated audio tracks (dialogue, effects, music) for the specified scene.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all the individual audio stems."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all the individual audio stems.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Package the audio tracks into a standardized format (e.g., AAF) for the mixing software.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully exports an AAF file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully exports an AAF file.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Deliver the AAF package to the sound mixer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent securely transfers the file."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent securely transfers the file.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Upload the final contract document to an e-signature platform like DocuSign.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully uploads the document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully uploads the document.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Place signature and date blocks for all required signatories.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly tags the document for signature."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly tags the document for signature.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the document to all parties for signature.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The signing process is initiated."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The signing process is initiated.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

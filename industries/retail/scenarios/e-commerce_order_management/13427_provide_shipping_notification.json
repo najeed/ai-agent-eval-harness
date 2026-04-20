@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "The shipping carrier scans the package, and the data is sent to the retailer's order management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system receives a status update that the order is now in transit."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system receives a status update that the order is now in transit.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system automatically updates the order status to 'Shipped'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order's status is changed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order's status is changed.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system automatically sends a 'Your order has shipped!' email to the customer, including the tracking number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer is proactively notified and can track their package."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer is proactively notified and can track their package.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive the 'Troops in Contact' report and the urgent request for CAS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator acknowledges the high-priority request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator acknowledges the high-priority request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the closest available CAS aircraft and confirm its fuel and weapons status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator finds a suitable aircraft and confirms it can support the request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator finds a suitable aircraft and confirms it can support the request.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Abort the aircraft's current mission and provide it with a new tasking to support the ground unit, including the unit's location and radio frequency.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Operator successfully re-tasks the aircraft, providing immediate support to the troops in contact."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Operator successfully re-tasks the aircraft, providing immediate support to the troops in contact.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

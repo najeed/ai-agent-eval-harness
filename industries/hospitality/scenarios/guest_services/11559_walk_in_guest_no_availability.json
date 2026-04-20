@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the PMS to confirm the hotel is sold out.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies there are no rooms available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies there are no rooms available.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Politely inform the guest that the hotel is full.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent communicates the situation clearly and courteously."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent communicates the situation clearly and courteously.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "As a courtesy, call a nearby partner hotel to check for their availability and offer to help the guest make a reservation there.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent assists the guest in finding alternative accommodation, providing excellent service despite being unable to accommodate them."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent assists the guest in finding alternative accommodation, providing excellent service despite being unable to accommodate them.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

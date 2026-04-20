@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the complete submission package, including all correspondence with the health authority.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the original submission, all amendments, and all approval letters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the original submission, all amendments, and all approval letters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Transfer the complete package to the long-term electronic archive.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully moves the files to the archival system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully moves the files to the archival system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the correct metadata and retention policy to the archived record.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent tags the record with the product name, approval date, and sets the retention period as required by regulations."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent tags the record with the product name, approval date, and sets the retention period as required by regulations.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

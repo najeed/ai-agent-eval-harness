@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive and analyze the stress gauge data from the aircraft's maintenance logs.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Maintenance officer confirms the data shows stress levels exceeding safety thresholds."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Maintenance officer confirms the data shows stress levels exceeding safety thresholds.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Ground the aircraft and schedule it for a detailed, non-destructive inspection of the landing gear assembly.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer takes proactive steps to prevent a landing gear collapse."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer takes proactive steps to prevent a landing gear collapse.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the inspection, create a work order to replace the specific high-stress components.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Officer ensures the correct repair is performed to return the jet to service safely."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Officer ensures the correct repair is performed to return the jet to service safely.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

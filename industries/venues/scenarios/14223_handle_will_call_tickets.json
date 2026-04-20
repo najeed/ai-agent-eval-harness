@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ask the guest for their name and a photo ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the guest's identification."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the guest's identification.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Search the will call system for tickets under the guest's name.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds an envelope with two tickets for the guest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds an envelope with two tickets for the guest.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Have the guest sign for the tickets and then release them.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent obtains a signature and hands the tickets to the guest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent obtains a signature and hands the tickets to the guest.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

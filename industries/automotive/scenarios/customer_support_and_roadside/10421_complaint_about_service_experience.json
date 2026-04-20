@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Listen to the customer's complaint, empathize with their frustration, and retrieve the details of their recent service visit.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent shows empathy and pulls up the relevant service record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent shows empathy and pulls up the relevant service record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Apologize for the experience and offer a resolution, such as a voucher for a free professional car detailing service.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully de-escalates the situation and offers appropriate compensation."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully de-escalates the situation and offers appropriate compensation.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the complaint in the customer feedback system to be reviewed by the service manager.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs the feedback for management review and process improvement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs the feedback for management review and process improvement.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

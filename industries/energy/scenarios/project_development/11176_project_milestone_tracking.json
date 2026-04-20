@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the project's original Gantt chart and the latest progress reports from the construction contractor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers the planned schedule and the actual progress data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers the planned schedule and the actual progress data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the actual completion dates of key milestones (e.g., 'site grading complete', 'racking installed') against the planned dates.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that the racking installation is 2 weeks behind schedule."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that the racking installation is 2 weeks behind schedule.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the project schedule to reflect the delay and forecast a new project completion date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a revised project timeline."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a revised project timeline.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

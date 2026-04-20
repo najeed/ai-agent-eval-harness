@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a payment from a customer with remittance advice listing the invoice numbers being paid.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent has the payment details and the list of invoices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent has the payment details and the list of invoices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve all the specified open invoices for the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent pulls up all the correct invoices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent pulls up all the correct invoices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Apply the payment across the multiple invoices, closing them out.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the payment and marks all the specified invoices as 'paid'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the payment and marks all the specified invoices as 'paid'.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

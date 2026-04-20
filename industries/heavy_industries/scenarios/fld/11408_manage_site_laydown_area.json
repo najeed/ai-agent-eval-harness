@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Check the laydown yard management system for available space.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent views a map of the yard and identifies an open, suitable space."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent views a map of the yard and identifies an open, suitable space.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Reserve the selected space for the incoming pressure vessel.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reserves the space, and it now shows as 'Occupied' in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reserves the space, and it now shows as 'Occupied' in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the field supervisor and the transport company of the assigned location for unloading.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends a notification with a map and coordinates for the unloading spot."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends a notification with a map and coordinates for the unloading spot.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

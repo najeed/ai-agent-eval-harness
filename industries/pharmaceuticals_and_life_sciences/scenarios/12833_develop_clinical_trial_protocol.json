@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Create a new protocol document from a company template.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a new protocol document with standard sections."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a new protocol document with standard sections.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the study design and methodology sections, including objectives, endpoints, and patient population.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent writes the core scientific sections of the protocol."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent writes the core scientific sections of the protocol.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Collaborate with a biostatistician to develop the statistical analysis plan section.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent incorporates the statistical plan provided by the statistician into the protocol."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent incorporates the statistical plan provided by the statistician into the protocol.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Route the draft protocol for review and approval by the cross-functional team.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent circulates the document for review, collects feedback, and finalizes the protocol."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent circulates the document for review, collects feedback, and finalizes the protocol.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

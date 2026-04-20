@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the vendor and the contract in question.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the vendor's bid for the specified contract."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the vendor's bid for the specified contract.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the current status of the procurement process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees that the contract is still in the 'Under Review' stage."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees that the contract is still in the 'Under Review' stage.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the vendor that a decision has not yet been made.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides a clear status update."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides a clear status update.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

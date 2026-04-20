@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Contact the concrete supplier to schedule a delivery of 50 cubic yards for a specific date and time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A concrete delivery is successfully scheduled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A concrete delivery is successfully scheduled.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the third-party testing agency to schedule a technician to be on-site to perform slump tests during the pour.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A testing technician is successfully booked for the same date and time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A testing technician is successfully booked for the same date and time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Use property ownership databases and local knowledge to create a list of all properties that meet the investor's criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A target list of properties is created."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A target list of properties is created.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Initiate a direct outreach campaign (letters, calls) to the owners of the target properties to see if they have any interest in selling.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent makes contact with property owners to gauge their interest."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent makes contact with property owners to gauge their interest.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "When an owner expresses potential interest, begin preliminary negotiations and analysis to see if a deal is feasible.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A potential off-market deal is identified and pursued."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A potential off-market deal is identified and pursued.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

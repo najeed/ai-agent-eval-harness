@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Process a folder of 20 documents (news articles, reports).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully reads all documents."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully reads all documents.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify the most frequently mentioned concepts and technologies across all documents.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies recurring keywords like 'AI', 'sustainability', and 'personalization'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies recurring keywords like 'AI', 'sustainability', and 'personalization'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Summarize the top 3 trends and provide a brief explanation for each.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a concise summary of the key industry trends."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a concise summary of the key industry trends.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

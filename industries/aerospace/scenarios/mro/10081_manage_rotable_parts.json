@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a broken component from an aircraft and update its status to 'unserviceable, awaiting repair'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly logs the incoming broken part."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly logs the incoming broken part.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send the component to a repair shop and track its progress.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sends the part for repair and monitors its status."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sends the part for repair and monitors its status.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "When the repaired component returns, update its status to 'serviceable' and place it back into the rotable inventory pool, ready for use.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the repaired part, verifies its certification, and updates its status to available."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the repaired part, verifies its certification, and updates its status to available.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

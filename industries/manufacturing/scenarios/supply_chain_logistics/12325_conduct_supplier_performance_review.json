@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Select the supplier and the date range for the review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects the correct supplier and the previous quarter."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects the correct supplier and the previous quarter.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve key performance indicators (KPIs) such as on-time delivery, quality acceptance rate, and cost variance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates a report showing 95% on-time delivery, 99.5% quality rate, and +1% cost variance."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates a report showing 95% on-time delivery, 99.5% quality rate, and +1% cost variance.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compile the data into a standardized performance scorecard.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent populates the QBR scorecard template with the retrieved data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent populates the QBR scorecard template with the retrieved data.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

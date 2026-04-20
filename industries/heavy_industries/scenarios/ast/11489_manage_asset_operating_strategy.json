@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the asset's current maintenance plan, spare parts list, and operating procedures.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gathers all the documents that define the current strategy."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gathers all the documents that define the current strategy.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Analyze the asset's failure history and performance data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer reviews the historical data for trends."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer reviews the historical data for trends.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Based on the analysis, create a recommendation to update the strategy, such as moving from time-based maintenance to condition-based maintenance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The engineer proposes a change to the overall strategy and submits it for approval."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The engineer proposes a change to the overall strategy and submits it for approval.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Research and summarize the key information about the disease state in plain language.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent drafts a summary avoiding medical jargon."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent drafts a summary avoiding medical jargon.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Draft the content for the brochure using the summary.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates the full text for the brochure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates the full text for the brochure.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Submit the draft brochure for internal medical and regulatory review to ensure accuracy and compliance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits the document to the promotional review committee."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits the document to the promotional review committee.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

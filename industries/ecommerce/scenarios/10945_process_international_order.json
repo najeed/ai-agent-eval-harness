@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Receive a new order with an international shipping address.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System identifies the order as international."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System identifies the order as international.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Calculate international shipping costs and any applicable duties or taxes.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System correctly calculates the total cost for the customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System correctly calculates the total cost for the customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate the necessary customs declaration forms (e.g., CN22) with product information and value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully generates the required customs paperwork."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully generates the required customs paperwork.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

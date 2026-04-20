@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the freight invoice and the original rate confirmation for the specified shipment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly pulls both the invoice and the rate agreement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly pulls both the invoice and the rate agreement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the invoiced amount, including linehaul and fuel surcharge, against the amounts on the rate confirmation.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies that the carrier has overcharged for the fuel surcharge."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies that the carrier has overcharged for the fuel surcharge.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Short-pay the invoice with a note explaining the discrepancy and approve the corrected amount for payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully adjusts the payment amount and adds a clear reason code."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully adjusts the payment amount and adds a clear reason code.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

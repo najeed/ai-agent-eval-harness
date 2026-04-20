@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the work order using its ID.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully retrieves the details for the specified work order."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully retrieves the details for the specified work order.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Review the completed operations and the current location of the work order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent reports that 3 of 5 operations are complete and the job is at the 'Assembly' work center."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent reports that 3 of 5 operations are complete and the job is at the 'Assembly' work center.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Estimate the completion time based on the remaining operations and standard cycle times.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides an estimated completion date and time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides an estimated completion date and time.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

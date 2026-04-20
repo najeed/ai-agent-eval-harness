@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Research the local zoning code and the process for obtaining a variance.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent understands the specific requirements and steps for a variance application."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent understands the specific requirements and steps for a variance application.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Refer the client to a specialized land-use attorney to handle the application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The client is connected with a legal expert."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The client is connected with a legal expert.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide supporting documentation for the application, such as market data showing a need for a new restaurant in the area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent provides data to help justify the variance request."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent provides data to help justify the variance request.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

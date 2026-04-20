@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a user account for the new attorney in the time and billing system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The attorney can now record their time."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The attorney can now record their time.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a user account in the document management system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The attorney can now access client files."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The attorney can now access client files.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Add the new attorney to the firm's conflicts database.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The attorney is now included in all future conflicts checks."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The attorney is now included in all future conflicts checks.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

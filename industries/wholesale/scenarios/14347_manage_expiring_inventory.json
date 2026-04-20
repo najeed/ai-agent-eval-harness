@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Run a report to identify all inventory that is approaching its expiration date.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of all products expiring in the next 30 days."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of all products expiring in the next 30 days.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Notify the sales team to prioritize selling these items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The sales team is alerted to the expiring stock."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The sales team is alerted to the expiring stock.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Offer a discount on the expiring items to encourage faster sales.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent applies a temporary discount to the products."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent applies a temporary discount to the products.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

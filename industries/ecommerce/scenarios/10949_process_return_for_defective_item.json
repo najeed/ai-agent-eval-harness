@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Find the customer's original order to verify the purchase date and warranty eligibility.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the item is still within its 1-year warranty period."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the item is still within its 1-year warranty period.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Create a return authorization for the defective item and a new order for a replacement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent processes the warranty replacement."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent processes the warranty replacement.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Log the defect reason to track product quality issues.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent logs 'Power Failure' as the defect reason for the product."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent logs 'Power Failure' as the defect reason for the product.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

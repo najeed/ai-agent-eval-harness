@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Gather Form 1098-T from the educational institution and the family's income information.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent collects all necessary documents and data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent collects all necessary documents and data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Verify that the student and the expenses meet all eligibility requirements for the AOTC.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the student is an eligible student at an eligible institution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the student is an eligible student at an eligible institution.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the maximum allowable credit using Form 8863.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent accurately calculates the credit amount, including any refundable portion."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent accurately calculates the credit amount, including any refundable portion.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

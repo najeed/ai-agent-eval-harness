@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Create a new stability study protocol for the new product.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the new study record."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the new study record.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Define the storage conditions (e.g., 25\u00b0C/60% RH, 40\u00b0C/75% RH) and the testing timepoints (e.g., 0, 3, 6, 9, 12 months).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly configures the study parameters."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly configures the study parameters.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Specify the tests to be performed at each timepoint and activate the protocol.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent links the required tests to the protocol, which will now automatically generate test requests at the scheduled intervals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent links the required tests to the protocol, which will now automatically generate test requests at the scheduled intervals.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

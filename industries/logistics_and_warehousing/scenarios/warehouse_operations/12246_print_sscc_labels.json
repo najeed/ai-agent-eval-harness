@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "After a pallet is fully picked, scan the pallet ID to begin the labeling process.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system retrieves the contents of the scanned pallet."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system retrieves the contents of the scanned pallet.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a unique SSCC number for the pallet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system generates a new, unique SSCC barcode."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system generates a new, unique SSCC barcode.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Print the SSCC label in the customer-specified format and apply it to the pallet.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A compliant GS1-128 label is printed and applied."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A compliant GS1-128 label is printed and applied.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

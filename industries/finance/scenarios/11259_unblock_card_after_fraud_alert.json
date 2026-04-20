@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Authenticate the customer and identify the transaction that triggered the fraud alert.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent verifies the customer and identifies the $500 online purchase."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent verifies the customer and identifies the $500 online purchase.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Confirm with the customer that the transaction was legitimate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The customer confirms they made the purchase. Agent marks the alert as a false positive."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The customer confirms they made the purchase. Agent marks the alert as a false positive.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Remove the block from the customer's card.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully unblocks the card, making it available for immediate use."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully unblocks the card, making it available for immediate use.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

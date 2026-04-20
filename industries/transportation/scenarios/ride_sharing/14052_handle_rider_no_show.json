@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The driver app shows they have arrived at the pickup location and a timer starts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The system logs the driver's arrival at the correct location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The system logs the driver's arrival at the correct location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The driver attempts to contact the rider via the app but gets no response.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A contact attempt is logged."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A contact attempt is logged.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "After the timer expires (e.g., 5 minutes), the option to cancel the trip becomes available.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The app allows the driver to cancel."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The app allows the driver to cancel.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "The driver cancels the trip, and the system automatically charges the rider a no-show fee and compensates the driver.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The trip is cancelled, and the fee is processed correctly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The trip is cancelled, and the fee is processed correctly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

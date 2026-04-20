@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the details of the unapplied payment, including the customer and the amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a payment of $5,678 from a specific customer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a payment of $5,678 from a specific customer.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve a list of all open invoices for that customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets a list of the customer's open invoices."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets a list of the customer's open invoices.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Look for an open invoice or a combination of invoices that exactly matches the payment amount.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds a single open invoice for $5,678."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds a single open invoice for $5,678.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Apply the cash to the identified invoice.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully applies the payment and closes the invoice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully applies the payment and closes the invoice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

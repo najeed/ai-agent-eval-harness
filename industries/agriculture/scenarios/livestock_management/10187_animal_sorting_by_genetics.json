@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the genomic test results for all heifers in the group, specifically the value for 'Predicted Transmitting Ability for Milk' (PTAM).",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent gets the genetic data for all animals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent gets the genetic data for all animals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Rank the heifers from highest to lowest based on their PTAM value.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a ranked list of the heifers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a ranked list of the heifers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create two lists: a 'keep' list for the top 80% of heifers and a 'sell' list for the bottom 20%.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates the two sorting lists for the farmer."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates the two sorting lists for the farmer.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

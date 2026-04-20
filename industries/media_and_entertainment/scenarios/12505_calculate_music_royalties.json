@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the composer's contract to determine their royalty percentage.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the composer is owed 5% of net receipts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the composer is owed 5% of net receipts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Gather viewership data from all streaming platforms and broadcasters for the previous quarter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles a report of all viewership numbers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles a report of all viewership numbers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Calculate the total royalty amount based on the contract terms and viewership data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent calculates the final royalty payment due."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent calculates the final royalty payment due.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Generate a royalty statement and schedule the payment.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a formal statement and queues the payment in the finance system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a formal statement and queues the payment in the finance system.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

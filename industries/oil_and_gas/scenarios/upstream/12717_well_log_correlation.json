@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Display the logs for the new well and three selected offset wells in a correlation view.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All specified well logs are displayed side-by-side."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All specified well logs are displayed side-by-side.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Identify and 'pick' the tops of key geological formations (e.g., 'Top Wilcox Sand') on each well log.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The geologist accurately identifies and marks the formation tops on all wells."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The geologist accurately identifies and marks the formation tops on all wells.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Create a cross-section view showing the correlated formation tops between the wells.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A geological cross-section is generated, illustrating the subsurface structure."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A geological cross-section is generated, illustrating the subsurface structure.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

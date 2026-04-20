@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the inclusion and exclusion criteria from the clinical trial protocol.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent correctly extracts key criteria such as 'Type 2 Diabetes diagnosis', 'A1C between 7.5 and 9.0', and 'no history of pancreatitis'."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent correctly extracts key criteria such as 'Type 2 Diabetes diagnosis', 'A1C between 7.5 and 9.0', and 'no history of pancreatitis'.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Construct a query to search the de-identified EHR database based on the protocol criteria.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent builds a query that correctly filters for the specified diagnosis, lab values, and contraindications."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent builds a query that correctly filters for the specified diagnosis, lab values, and contraindications.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Generate a list of potential patient IDs for the clinical site to review.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a list of candidate IDs without revealing any PII."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a list of candidate IDs without revealing any PII.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

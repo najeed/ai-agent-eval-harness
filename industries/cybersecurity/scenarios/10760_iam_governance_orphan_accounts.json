@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Generate a list of all active user accounts from Active Directory.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst has a complete list of all active accounts."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst has a complete list of all active accounts.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a list of all current employees from the HR system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst has a complete list of all active employees."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst has a complete list of all active employees.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the two lists to find accounts that do not have a corresponding active employee, then disable these orphaned accounts.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Analyst successfully identifies and disables several orphaned accounts, reducing the organization's attack surface."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Analyst successfully identifies and disables several orphaned accounts, reducing the organization's attack surface.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

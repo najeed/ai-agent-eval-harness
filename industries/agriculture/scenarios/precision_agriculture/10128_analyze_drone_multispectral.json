@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Stitch the individual drone images together to create a single orthomosaic map of the field.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates the orthomosaic."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates the orthomosaic.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate various vegetation indices from the multispectral data, such as NDVI, NDRE, and OSAVI.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent generates multiple index maps."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent generates multiple index maps.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Compare the different index maps to identify and delineate specific areas of crop stress that may not be visible in a standard NDVI map.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies areas of stress using the NDRE map that were not apparent in the NDVI map, suggesting a nutrient issue."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies areas of stress using the NDRE map that were not apparent in the NDVI map, suggesting a nutrient issue.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

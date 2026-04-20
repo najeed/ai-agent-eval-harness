@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the specific construction project based on the location provided by the resident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent locates the 'Main Street Repaving' project in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent locates the 'Main Street Repaving' project in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the project's public information, including scope, expected duration, and work hours.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the project details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the project details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Provide a summary of the project information to the resident.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly explains the project scope and timeline to the resident."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly explains the project scope and timeline to the resident.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

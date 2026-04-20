@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the retailer and their order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the order in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the order in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the real-time status of the order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent sees the order has been packed and is awaiting carrier pickup."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent sees the order has been packed and is awaiting carrier pickup.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the retailer of the current status.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent tells the retailer their order is scheduled to ship today."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent tells the retailer their order is scheduled to ship today.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

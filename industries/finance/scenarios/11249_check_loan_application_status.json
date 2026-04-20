@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Identify the customer and locate their pending mortgage application.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully finds the customer's application in the system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully finds the customer's application in the system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Retrieve the current status and any outstanding requirements.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent finds the application is 'Pending Underwriter Review' and requires one more pay stub."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent finds the application is 'Pending Underwriter Review' and requires one more pay stub.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the customer of the status and clearly explain the outstanding requirement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent communicates the status and tells the customer how to submit the required document."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent communicates the status and tells the customer how to submit the required document.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

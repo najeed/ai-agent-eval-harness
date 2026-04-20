@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "The picker arrives at the location and sees it is empty. They use their scanner to report a 'Stockout'.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The picker successfully reports the issue for their current task."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The picker successfully reports the issue for their current task.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "The system puts the current picking task on hold.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The order is paused pending resolution."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The order is paused pending resolution.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "The system automatically creates a high-priority cycle count task for the empty location to verify the stockout.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "An inventory controller is dispatched to verify the empty location."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "An inventory controller is dispatched to verify the empty location.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Simultaneously, the system finds an alternate location (bulk storage) with the same item and directs the original picker there to complete the pick.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The picker is rerouted to a new location to get the item, allowing the order to be fulfilled."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The picker is rerouted to a new location to get the item, allowing the order to be fulfilled.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Log the theft in the daily site log, including the type and estimated quantity of stolen material.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The theft is documented in the daily log."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The theft is documented in the daily log.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "File a police report with the local police department regarding the theft.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A police report is filed and a report number is obtained."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A police report is filed and a report number is obtained.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Notify the project manager and the insurance company of the theft.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All relevant internal and external stakeholders are notified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All relevant internal and external stakeholders are notified.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

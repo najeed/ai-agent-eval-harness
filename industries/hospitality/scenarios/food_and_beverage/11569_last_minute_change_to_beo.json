@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Retrieve the BEO and check the maximum capacity of the event space.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent confirms the room can accommodate 10 more guests."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent confirms the room can accommodate 10 more guests.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Contact the kitchen immediately to see if they can accommodate the increased food order.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The chef confirms they can handle the extra meals."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The chef confirms they can handle the extra meals.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Update the BEO with the new guest count and final price, and inform the banquet setup team to add another table.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "All systems and teams are updated to reflect the change."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "All systems and teams are updated to reflect the change.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

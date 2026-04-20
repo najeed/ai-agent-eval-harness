@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Ask the customer for the content and sender of the text message.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent receives the details of the suspicious message."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent receives the details of the suspicious message.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Compare the message content and sender number against a list of known phishing scams.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the message is a known phishing attempt."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the message is a known phishing attempt.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Advise the customer to delete the message, not to click any links, and report the number.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent provides clear and accurate security advice."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent provides clear and accurate security advice.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

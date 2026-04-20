@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Calculate the required strength and stroke of the shock absorbers based on the aircraft's maximum landing weight and sink rate.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent determines the required performance specs for the shock absorbers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent determines the required performance specs for the shock absorbers.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Design the retraction mechanism, ensuring it fits within the available space in the wing and fuselage when retracted.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a CAD model of a retraction mechanism that meets all geometric constraints."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a CAD model of a retraction mechanism that meets all geometric constraints.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Perform a kinematic simulation of the retraction and deployment sequence to ensure there are no clashes and the sequence completes within the required time.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent runs the simulation and confirms the landing gear deploys and retracts smoothly."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent runs the simulation and confirms the landing gear deploys and retracts smoothly.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Scan the customer's items.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The items are added to the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The items are added to the transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Use the 'Suspend Transaction' function on the POS.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The current transaction is saved, and the POS is ready for a new sale. A slip with a barcode is printed to resume the transaction."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The current transaction is saved, and the POS is ready for a new sale. A slip with a barcode is printed to resume the transaction.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "When the customer returns, scan the barcode on the slip to resume the transaction, add the final item, and complete the sale.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The saved transaction is successfully retrieved and completed."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The saved transaction is successfully retrieved and completed.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

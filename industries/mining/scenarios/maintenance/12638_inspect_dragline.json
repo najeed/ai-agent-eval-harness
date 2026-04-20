@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Schedule a third-party NDT contractor to perform an ultrasonic inspection on the critical welds of the dragline boom.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The inspection is scheduled in the maintenance plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The inspection is scheduled in the maintenance plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Receive the inspection report from the contractor.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The NDT report is received and uploaded into the CMMS."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The NDT report is received and uploaded into the CMMS.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Review the report, which indicates a small crack has been found. Create a high-priority work order for a certified welder to grind out and repair the crack.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The report is reviewed, and a repair work order is created to address the defect before it can grow."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The report is reviewed, and a repair work order is created to address the defect before it can grow.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

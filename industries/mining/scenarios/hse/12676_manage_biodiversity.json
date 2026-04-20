@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Review the planned land clearing area on a map.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The area to be cleared is identified."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The area to be cleared is identified.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Conduct a field survey of the area to identify any protected flora or fauna.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The survey identifies a population of a protected orchid species within the clearing footprint."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The survey identifies a population of a protected orchid species within the clearing footprint.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Develop a plan to translocate the protected orchids to a suitable, safe habitat before clearing begins.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "A species management plan is created and approved, allowing the project to proceed while protecting biodiversity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "A species management plan is created and approved, allowing the project to proceed while protecting biodiversity.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

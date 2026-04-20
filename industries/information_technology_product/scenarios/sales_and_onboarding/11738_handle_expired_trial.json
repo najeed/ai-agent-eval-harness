@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Identify a trial account that expired yesterday and had high engagement.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System automatically identifies a suitable candidate for follow-up."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System automatically identifies a suitable candidate for follow-up.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Send a templated follow-up email asking about their experience and if they have any questions.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "System sends a polite, automated follow-up email."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "System sends a polite, automated follow-up email.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

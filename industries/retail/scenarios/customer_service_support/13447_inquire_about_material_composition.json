@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Get the product name or item number from the customer.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent identifies the specific sweater in question."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent identifies the specific sweater in question.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Look up the product in the product information management (PIM) system.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent finds the detailed product page."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent finds the detailed product page.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check the material composition field and inform the customer that the sweater is made of '80% Cotton, 20% Polyester' and contains no wool.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "The agent provides accurate information that helps the customer make a safe purchasing decision."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "The agent provides accurate information that helps the customer make a safe purchasing decision.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

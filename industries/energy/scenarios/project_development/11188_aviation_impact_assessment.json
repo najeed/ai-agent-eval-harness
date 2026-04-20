@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Gather the precise coordinates and maximum tip height for every proposed wind turbine.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent compiles the required location and height data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent compiles the required location and height data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Submit a 'Notice of Proposed Construction or Alteration' to the FAA using their online portal.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully files the required notice with the FAA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully files the required notice with the FAA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Check for proximity to any airports or military training routes that could be affected.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent identifies a small, private airfield within 5 miles of the project."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent identifies a small, private airfield within 5 miles of the project.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Based on the FAA's feedback, determine the required nighttime lighting for the turbines.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the specific type of red flashing lights required for the turbines."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the specific type of red flashing lights required for the turbines.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

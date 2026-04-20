@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Define the RFQ, including the part specifications, required quantity, and response deadline.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent creates a new RFQ with all necessary details."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent creates a new RFQ with all necessary details.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Select a list of qualified suppliers to receive the RFQ.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent selects three qualified suppliers from the SRM system."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent selects three qualified suppliers from the SRM system.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Send the RFQ to the selected suppliers.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully dispatches the RFQ to all three suppliers."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully dispatches the RFQ to all three suppliers.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

@@ -12,20 +12,24 @@
       {
         "id": "task-1",
         "task_description": "Receive a list of roles and who they report to (e.g., 'Analyst A reports to Manager B').",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully ingests the hierarchical data."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully ingests the hierarchical data.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Generate a visual organization chart (e.g., using Mermaid syntax) that accurately reflects the reporting structure.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent produces a valid and correct organizational chart diagram."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent produces a valid and correct organizational chart diagram.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

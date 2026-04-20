@@ -12,29 +12,35 @@
       {
         "id": "task-1",
         "task_description": "Verify the customer's address is within the program's designated grid service area.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the address is in an eligible zone."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the address is in an eligible zone.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check if the customer is on a Time-of-Use (TOU) electricity rate, which is a prerequisite for the program.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the customer is on a TOU rate plan."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the customer is on a TOU rate plan.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Inform the customer they are eligible and provide them with the next steps to enroll.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent clearly communicates the positive eligibility status and enrollment process."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent clearly communicates the positive eligibility status and enrollment process.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [

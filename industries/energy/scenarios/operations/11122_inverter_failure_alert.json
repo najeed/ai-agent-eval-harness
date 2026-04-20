@@ -12,38 +12,46 @@
       {
         "id": "task-1",
         "task_description": "Confirm the inverter's status and identify which solar arrays are connected to it.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the inverter is offline and identifies 5 MW of affected capacity."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the inverter is offline and identifies 5 MW of affected capacity.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-2",
         "task_description": "Check the warranty status and service level agreement (SLA) for the failed inverter.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent confirms the inverter is under warranty with a 48-hour response time SLA."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent confirms the inverter is under warranty with a 48-hour response time SLA.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-3",
         "task_description": "Automatically log a service ticket with the inverter manufacturer, including all relevant error codes and diagnostic data.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent successfully creates a service ticket via the manufacturer's API."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent successfully creates a service ticket via the manufacturer's API.",
+            "mode": "regex"
+          }
+        ]
       },
       {
         "id": "task-4",
         "task_description": "Update the farm's generation forecast to reflect the reduced capacity.",
-        "expected_outcome": {
-          "type": "typed_value",
-          "data_type": "object",
-          "value": "Agent submits a revised forecast to the grid operator."
-        }
+        "expected_outcome": [
+          {
+            "target": "message",
+            "expected": "Agent submits a revised forecast to the grid operator.",
+            "mode": "regex"
+          }
+        ]
       }
     ],
     "edges": [
