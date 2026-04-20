@@ -1,6 +1,5 @@
 import json
 import os
-import shutil
 import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -12,6 +11,7 @@ from eval_runner import config
 
 # SUT
 from eval_runner.console.routes.trust import trust_bp
+from eval_runner.utils import rmtree_resilient
 
 
 @pytest.fixture(scope="module")
@@ -21,13 +21,13 @@ def console_jail():
     runs = root / "runs"
 
     if tmp_root.exists():
-        shutil.rmtree(tmp_root)
+        rmtree_resilient(tmp_root)
 
     os.makedirs(runs, exist_ok=True)
     yield {"root": root, "runs": runs}
 
     if tmp_root.exists():
-        shutil.rmtree(tmp_root)
+        rmtree_resilient(tmp_root)
 
 
 @pytest.fixture

@@ -1,6 +1,5 @@
 import json
 import os
-import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,6 +9,7 @@ import pytest
 
 # SUT
 import eval_runner.handlers.environment as handlers
+from eval_runner.utils import rmtree_resilient
 
 
 @pytest.fixture
@@ -24,7 +24,7 @@ def tmp_dir():
     os.chdir(td)
     yield td
     os.chdir(old_cwd)
-    shutil.rmtree(td)
+    rmtree_resilient(td)
 
 
 @pytest.fixture
