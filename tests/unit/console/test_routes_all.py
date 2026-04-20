@@ -1,5 +1,4 @@
 import os
-import shutil
 import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -10,6 +9,7 @@ from flask import Flask
 # SUT
 import eval_runner.config
 from eval_runner.console.routes import DebuggerStateStore, core_bp
+from eval_runner.utils import rmtree_resilient
 
 
 @pytest.fixture(scope="module")
@@ -26,7 +26,7 @@ def console_jail():
 
     # Cleanup any previous leaks
     if tmp_root.exists():
-        shutil.rmtree(tmp_root)
+        rmtree_resilient(tmp_root)
 
     os.makedirs(docs, exist_ok=True)
     os.makedirs(runs, exist_ok=True)
@@ -43,7 +43,7 @@ def console_jail():
 
     # Teardown
     if tmp_root.exists():
-        shutil.rmtree(tmp_root)
+        rmtree_resilient(tmp_root)
 
 
 @pytest.fixture

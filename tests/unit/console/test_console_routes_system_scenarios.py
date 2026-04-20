@@ -1,5 +1,4 @@
 import os
-import shutil
 import tempfile
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
@@ -12,6 +11,7 @@ from eval_runner.console.routes.scenarios import scenario_bp
 
 # SUT
 from eval_runner.console.routes.system import DebuggerStateStore, system_bp
+from eval_runner.utils import rmtree_resilient
 
 
 @pytest.fixture(scope="module")
@@ -22,14 +22,14 @@ def console_jail():
     docs = root / "docs-old"
 
     if tmp_root.exists():
-        shutil.rmtree(tmp_root)
+        rmtree_resilient(tmp_root)
 
     os.makedirs(runs, exist_ok=True)
     os.makedirs(docs / "guides", exist_ok=True)
     yield {"root": root, "runs": runs, "docs": docs}
 
     if tmp_root.exists():
-        shutil.rmtree(tmp_root)
+        rmtree_resilient(tmp_root)
 
 
 @pytest.fixture
