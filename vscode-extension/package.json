@@ -3,7 +3,10 @@
   "displayName": "AgentV",
   "description": "VS Code extension for the AgentV",
   "version": "0.1.0",
-  "publisher": "opencore",
+  "publisher": "AgentV",
+  "dependencies": {
+    "flatted": "^3.4.2"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },

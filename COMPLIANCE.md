@@ -13,22 +13,20 @@ The AgentV Verification Framework is distributed under the **Apache License 2.0*
 ## 2. Third-Party Dependency Licenses
 The following table summarizes the licenses of our core dependencies. All used licenses are permissive (MIT, BSD, Apache 2.0).
 
-| Package | Version | License | License File |
-| :--- | :--- | :--- | :--- |
 | **aiohttp** | 3.13.5 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **Flask** | 3.1.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **flask-cors** | 6.0.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **Flask** | 3.1.3 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **Werkzeug** | 3.1.8 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **requests** | 2.33.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **jsonschema** | 4.26.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **sentence-transformers** | 5.3.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **sentence-transformers** | 5.4.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **numpy** | 2.4.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **sqlalchemy** | 2.0.38 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **datasets** | 4.8.4 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **PyJWT** | 2.12.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **cryptography** | 46.0.7 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **opentelemetry-api** | 1.40.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **opentelemetry-sdk** | 1.40.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **opentelemetry-api** | 1.41.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **opentelemetry-sdk** | 1.41.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **google-genai** | 1.70.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **pypdf** | 6.10.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
