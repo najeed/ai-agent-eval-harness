@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentV Adapters Specification (v1.5.0)",
+  "description": "Administrative policy for selective activation of agent communication adapters.",
+  "type": "object",
+  "properties": {
+    "adapters": {
+      "type": "object",
+      "properties": {
+        "active_protocols": {
+          "type": "array",
+          "description": "Infrastructure-level communication protocols.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "http",
+              "local",
+              "socket",
+              "openapi"
+            ]
+          }
+        },
+        "active_providers": {
+          "type": "array",
+          "description": "Model-specific communication handlers.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "openai",
+              "claude",
+              "gemini",
+              "grok",
+              "ollama"
+            ]
+          }
+        },
+        "active_frameworks": {
+          "type": "array",
+          "description": "High-level orchestration frameworks.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "autogen",
+              "crewai",
+              "langgraph",
+              "langchain"
+            ]
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "active_protocols"
+      ]
+    }
+  },
+  "required": [
+    "adapters"
+  ]
+}
