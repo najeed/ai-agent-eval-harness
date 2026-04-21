@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentV Shim Registry Specification (v1.0.0)",
+  "description": "Schema for defining environmental resource shims via namespace-based mapping.",
+  "type": "object",
+  "required": ["shims"],
+  "properties": {
+    "shims": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["resources"],
+        "properties": {
+          "resources": {
+            "type": "object",
+            "additionalProperties": {
+              "anyOf": [
+                { "type": "string" },
+                { "type": "number" },
+                { "type": "boolean" },
+                { "type": "object" },
+                { "type": "array" }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

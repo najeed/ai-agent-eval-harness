@@ -14,33 +14,37 @@ AES is a standardized format for defining portable and robust AI agent benchmark
 
 ### 1. Metadata
 Details about the benchmark suite (name, industry, tags).
-- `capabilities`: [v1.4] List of required infrastructure components (e.g., `fintech_loan_api`).
+- `id`: **Mandatory** unique forensic identifier.
+- `capabilities`: List of required infrastructure components (e.g., `fintech_loan_api`).
 - `standards_registry`: Alignment with global standards (ISO 42001, NIST AI RMF, etc.).
 
-### 2. World Shim Configuration
+### 2. World Genesis (initial_state)
+**State Parity Foundation**. Seeds the `SharedStateRegistry` before Node 1 execution, ensuring deterministic environment alignment.
+
+### 3. World Shim Configuration
 Declare which environment simulators to mount for this benchmark.
 - `enabled_shims`: List of shim keys (e.g., `["database", "stripe", "security"]`).
 - Valid keys: `git`, `api`, `database`, `slack`, `crm`, `email`, `calendar`, `jira`, `cloud`, `terminal`, `stripe`, `erp`, `browser`, `kb`, `support`, `social`, `vector`, `cicd`, `iot`, `security`.
 
-### 3. Workflow DAG (State-Machine)
+### 4. Workflow DAG (State-Machine)
 The state-machine defining the agentic interaction.
 - `id`: Unique node identifier.
 - `task_description`: The instructions for the agent at this state.
 - `required_tools`: [v1.4] List of shims/tools explicitly allowed for this node.
 - `success_criteria`: [v1.4] Declarative checks for task completion.
 
-### 4. Success Criteria [v1.4]
+### 5. Success Criteria [v1.4]
 Specific, measurable predicates for validating a node's output.
 - `tool_called`: Verify a specific tool was used.
 - `output_matches`: Regex or exact match validation.
 - `factual_reference`: Verification against a golden dataset.
 
-### 5. Capability-Based Routing [v1.4] ⭐
+### 6. Capability-Based Routing [v1.4]
 Infrastructure targets are resolved dynamically via the `routing/manifest.json`.
 - Scenarios remain immutable across Dev/Staging/Prod.
 - Environments map `capabilities` to physical endpoints.
 
-### 6. Environmental DNA Snapshot
+### 7. Environmental DNA Snapshot
 Every trace captures a sanitized snapshot of the host's `shim_resources.json`.
 - Ensures forensic reproducibility without exposing production secrets.
 
