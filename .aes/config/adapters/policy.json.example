@@ -1,0 +1,18 @@
+{
+  "adapters": {
+    "active_protocols": [
+      "http",
+      "openapi",
+      "human"
+    ],
+    "active_providers": [
+      "openai",
+      "claude",
+      "gemini"
+    ],
+    "active_frameworks": [
+      "langgraph",
+      "langchain"
+    ]
+  }
+}

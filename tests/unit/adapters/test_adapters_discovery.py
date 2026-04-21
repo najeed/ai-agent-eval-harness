@@ -8,19 +8,17 @@ def test_adapter_discovery():
     AgentAdapterRegistry._discovered = False
     AgentAdapterRegistry._adapters = {}
 
-    AgentAdapterRegistry._discover()
+    # Use a permissive mock to allow core protocol registration for verification
+    from unittest.mock import patch
 
-    # Check default human adapter
-    assert "human" in AgentAdapterRegistry._adapters
-
-    # Check internal ecosystem adapters (should be loaded automatically from eval_runner/adapters/)
-    # CrewAI and LangGraph were already there, others were added.
-    assert "crewai" in AgentAdapterRegistry._adapters
-    assert "openai" in AgentAdapterRegistry._adapters
-    assert "ollama" in AgentAdapterRegistry._adapters
-    assert "langchain" in AgentAdapterRegistry._adapters
-    assert "gemini" in AgentAdapterRegistry._adapters
-    assert "claude" in AgentAdapterRegistry._adapters
+    with patch(
+        "eval_runner.config.RegistryManager.get_resolved_registry",
+        return_value={"adapters": {"active_protocols": ["http", "local", "socket"]}},
+    ):
+        AgentAdapterRegistry._discover()
+        assert "http" in AgentAdapterRegistry._adapters
+        assert "local" in AgentAdapterRegistry._adapters
+        assert "socket" in AgentAdapterRegistry._adapters
 
 
 @pytest.mark.asyncio

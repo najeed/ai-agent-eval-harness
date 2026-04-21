@@ -10,13 +10,17 @@ from eval_runner.runner import DefaultRunner
 async def test_adapter_registry_discovery():
     """Test that adapters are discovered and registered correctly."""
     # Reset state for clean test
-    AgentAdapterRegistry._discovered = False
-    AgentAdapterRegistry._adapters = {}
+    AgentAdapterRegistry.reset()
 
-    AgentAdapterRegistry._discover()
-    assert "http" in AgentAdapterRegistry._adapters
-    assert "local" in AgentAdapterRegistry._adapters
-    assert "human" in AgentAdapterRegistry._adapters
+    # Use a permissive mock to allow core protocol registration for verification
+    with patch(
+        "eval_runner.config.RegistryManager.get_resolved_registry",
+        return_value={"adapters": {"active_protocols": ["http", "local", "socket"]}},
+    ):
+        AgentAdapterRegistry._discover()
+        assert "http" in AgentAdapterRegistry._adapters
+        assert "local" in AgentAdapterRegistry._adapters
+        assert "socket" in AgentAdapterRegistry._adapters
 
 
 @pytest.mark.asyncio

@@ -130,6 +130,8 @@ class RegistryManager:
                 "routing.d": "routing",
                 "shims.d": "shims",
                 "plugins": "plugins",
+                "adapters": "adapters",
+                "adapters.d": "adapters",
             }
 
             # Alphabetical subfolder walk for deterministic override priority

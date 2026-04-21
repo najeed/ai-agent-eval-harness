@@ -1,0 +1,23 @@
+{
+  "adapters": {
+    "active_protocols": [
+      "http",
+      "local",
+      "socket",
+      "openapi"
+    ],
+    "active_providers": [
+      "openai",
+      "claude",
+      "gemini",
+      "grok",
+      "ollama"
+    ],
+    "active_frameworks": [
+      "autogen",
+      "crewai",
+      "langgraph",
+      "langchain"
+    ]
+  }
+}

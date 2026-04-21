@@ -110,19 +110,3 @@ async def test_call_agent_error_branches():
     with patch.dict(registry._adapters, {}, clear=True):
         with pytest.raises(ValueError, match="No adapter registered"):
             await registry.call_agent({"task_description": "hi"}, protocol="nonexistent")
-
-
-@pytest.mark.asyncio
-async def test_human_adapter_branch():
-    """Hits the _human_adapter branch in engine.py."""
-    from eval_runner.engine import AgentAdapterRegistry
-
-    registry = AgentAdapterRegistry()
-
-    with patch("builtins.input", return_value="human response"):
-        # Provide a dummy endpoint to satisfy the check in engine.py
-        res = await registry.call_agent(
-            {"task_description": "hi"}, protocol="human", endpoint="dummy"
-        )
-        assert res["action"] == "hitl_pause"
-        assert "Waiting for human" in res["message"]

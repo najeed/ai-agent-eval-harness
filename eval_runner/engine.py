@@ -24,17 +24,72 @@ MAX_TURNS = config.EVAL_MAX_TURNS
 class AgentAdapterRegistry:
     _adapters: dict[str, Callable] = {}
     _discovered: bool = False
+    _active_whitelists: dict[str, set[str] | None] = {
+        "protocols": None,
+        "providers": None,
+        "frameworks": None,
+    }
+
+    # Authoritative Taxonomy (v1.5.0 Standard)
+    ADAPTER_TAXONOMY = {
+        "http": "protocols",
+        "local": "protocols",
+        "socket": "protocols",
+        "openapi": "protocols",
+        "openai": "providers",
+        "claude": "providers",
+        "gemini": "providers",
+        "grok": "providers",
+        "ollama": "providers",
+        "autogen": "frameworks",
+        "crewai": "frameworks",
+        "langgraph": "frameworks",
+        "langchain": "frameworks",
+    }
+
+    # Baseline protocols protected from accidental overwrite
+    CORE_PROTOCOLS = {"http", "local", "socket", "openapi"}
 
     @classmethod
-    def register(cls, protocol: str, adapter_func):
+    def register(
+        cls, protocol: str, adapter_func, category: str | None = None, allow_override: bool = False
+    ):
+        """
+        Registers an adapter, enforcing categorical whitelists and core immutability.
+        """
+        # 1. Core Immutability Check
+        if protocol in cls.CORE_PROTOCOLS and protocol in cls._adapters and not allow_override:
+            import sys
+
+            sys.stderr.write(
+                f"      [Engine] WARNING: Blocked attempt to overwrite core protocol '{protocol}'. "
+                "Set allow_override=True to force.\n"
+            )
+            return
+
+        # 2. Categorical Governance check
+        # Resolve category from taxonomy if not provided explicitly
+        base_protocol = protocol.split(":")[0]
+        category = category or cls.ADAPTER_TAXONOMY.get(base_protocol)
+
+        if category and category in cls._active_whitelists:
+            whitelist = cls._active_whitelists[category]
+            if (
+                whitelist is not None
+                and protocol not in whitelist
+                and base_protocol not in whitelist
+            ):
+                # Silently skip if disabled by administrative policy
+                return
+
         cls._adapters[protocol] = adapter_func
 
     @classmethod
     def reset(cls):
         """Resets the registry state for tests."""
         cls._discovered = False
-        cls._plugins_discovered = False
         cls._adapters = {}
+        cls._active_whitelists = {"protocols": None, "providers": None, "frameworks": None}
 
     @classmethod
     def _discover(cls):
@@ -42,43 +97,47 @@ class AgentAdapterRegistry:
         if cls._discovered:
             return
 
+        # 0. Load Administrative Activation Policy
+        from .config import RegistryManager
+
+        # Hardened Zero-Trust Baseline (v1.5.0 Standard)
+        cls._active_whitelists["protocols"] = {"http", "openapi"}
+        cls._active_whitelists["providers"] = set()
+        cls._active_whitelists["frameworks"] = set()
+
+        resolved = RegistryManager.get_resolved_registry()
+        policy = resolved.get("adapters", {})
+
+        if not policy:
+            print(
+                "      [Engine] WARNING: No administrative adapter policy found. "
+                "Falling back to Zero-Trust Baseline."
+            )
+
+        # Apply Whitelists from Policy
+        for cat in ["protocols", "providers", "frameworks"]:
+            key = f"active_{cat}"
+            if key in policy:
+                cls._active_whitelists[cat] = set(policy[key])
+
         from eval_runner import adapters
 
-        # 1. Register Core Adapters (Hardcoded for stability)
+        from . import discovery
+
+        # 1. Authoritative Protocol Registration (Baseline)
         cls.register("http", adapters.http_adapter)
         cls.register("local", adapters.local_subprocess_adapter)
         cls.register("socket", adapters.socket_adapter)
 
-        # 2. Dynamically Load Ecosystem Adapters
-        from . import discovery
-
+        # 2. Ecosystem Discovery (Dynamic)
         discovery.scan_package_for_adapters(adapters, cls.register)
 
-        # 3. Register default human adapter
-        if "human" not in cls._adapters:
-            cls._adapters["human"] = AgentAdapterRegistry._human_adapter
-
-        cls._discovered = True
-
-        # 4. Trigger plugin discovery to allow third-party protocol injections
+        # 3. Trigger Plugin Discovery
         from eval_runner import plugins
 
         plugins.manager.trigger("on_discover_adapters", cls)
 
-    @staticmethod
-    async def _human_adapter(payload: dict, endpoint: str | None = None, **kwargs):
-        """Standard adapter for Human-In-The-Loop intervention."""
-        # Provides structured metadata to the session loop
-        return {
-            "action": "hitl_pause",
-            "message": "Waiting for human intervention.",
-            "prompt": payload.get(
-                "task_description",
-                "Please review the current state and provide guidance.",
-            ),
-        }
-
-    _plugins_discovered: bool = False
+        cls._discovered = True
 
     @classmethod
     async def call_agent(
@@ -90,11 +149,6 @@ class AgentAdapterRegistry:
         **kwargs,
     ):
         cls._discover()
-
-        if protocol not in cls._adapters and not cls._plugins_discovered:
-            # Lazy plugin discovery: only triggered if core adapters don't suffice
-            plugins.manager.trigger("on_discover_adapters", cls)
-            cls._plugins_discovered = True
 
         adapter = cls._adapters.get(protocol)
         if not adapter:
