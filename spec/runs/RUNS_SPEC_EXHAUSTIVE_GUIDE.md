@@ -1,6 +1,6 @@
-# Results Specification Masterclass: Traces, Scores & Certificates
+# Runs Specification Masterclass: Forensic Traces & the Unified Specification
 
-This guide provides an exhaustive inventory of the **AgentV Results Specification**. It details how evaluation outcomes are recorded, scored via NIST AI-100-1 dimensions, and cryptographically certified.
+This guide provides an exhaustive inventory of the **AgentV Runs Specification** (v1.5.0). It details how high-fidelity event streams (`run.jsonl`) are governed by the **Trace Specification** and how they anchor the industrial forensic chain.
 
 ---
 
@@ -18,21 +18,23 @@ In AgentV, an outcome is not just a "Pass/Fail". it is a three-stage forensic ar
 The `run.jsonl` is a line-delimited JSON file. Every significant transition in the eval engine is recorded here.
 
 ### Common Event Schema
+Every line in `run.jsonl` conforms to `spec/runs/runs.schema.json`.
+
 | Field | Type | Purpose |
 | :--- | :--- | :--- |
-| `event` | String | The event name (e.g., `turn_start`, `tool_call`). |
+| `event` | Enum | The specific transition type (e.g., `run_start`, `turn_start`). |
 | `timestamp` | String | ISO-8601 high-resolution timestamp. |
 | `run_id` | String | Unique ID linking this event to the session vault. |
-| `_seq` | Integer | Monotonic sequence number used to detect "Ghost Chains" (out-of-order events). |
-| `data` | Object | The event-specific payload (e.g., tool arguments, agent response). |
+| `_seq` | Integer | Monotonic sequence number used to ensure stream integrity. |
+| `data` / Payload | Object | Event-specific fields (e.g., `scenario` for starts, `metrics` for ends). |
 
 > **Forensic Integrity**: The trace file is the "Flight Recorder". If a run ends in a crash, the JSONL preserves the state up to the last nanosecond.
 
 ---
 
-## Lesson 2: The Atomic Result (`results.json`)
+## Lesson 2: The Outcome Event (`run_end`)
 
-This is the summary artifact used for high-level dashboards and CI/CD gates. It conforms to `spec/results/results.schema.json`.
+The terminal event of a trace is the `run_end` object. This event contains the authoritative summary of performance and cost metrics. 
 
 ### Property Table
 | Property | Type | Default | Purpose |
@@ -89,7 +91,7 @@ In industrial settings, an agent can have 100% Reliability but still fail.
 
 Scenario: `loan-underwriting-001`
 
-### 1. The Atomic Result (`results.json`)
+### 1. The Atomic Result (`run.jsonl`)
 ```json
 {
   "run_id": "audit-67890",

@@ -5,6 +5,7 @@ Learn how to enforce architectural consistency across your evaluation environmen
 ## 🎯 Objectives
 - Understand the importance of **Environment Mirroring** in industrial AI.
 - Generate a "Drifted" environment snapshot for diagnostic testing.
+- Understand the role of `initial_state` and `provisioning_hash` in anchoring state.
 - Execute a **Parity Check** to identify architectural discrepancies.
 
 ## 🚀 Steps
@@ -26,7 +27,7 @@ After the scanner completes, check the output. It will highlight the **Drift Fac
 
 ## 📊 Key Concepts
 - **Drift Logic**: Industrial environments are prone to "Secret Changes"—small, unlogged configuration modifications that can invalidate an entire benchmark.
-- **Zero-Touch Parity**: The harness ensures that your evaluation environment is a perfect byte-for-byte replica of your production system.
+- **Zero-Touch Parity**: The harness ensures that your evaluation environment is a perfect byte-for-byte replica of your production system, anchored by the cryptographic **`provisioning_hash`** and seeded via the **`initial_state`** registry.
 
 ---
 *Ready to find the drift? Run the [Generate_Parity_Drift.py](./Generate_Parity_Drift.py) script next!*

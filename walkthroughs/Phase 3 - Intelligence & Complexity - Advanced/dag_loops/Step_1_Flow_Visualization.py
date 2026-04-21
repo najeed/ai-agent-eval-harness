@@ -11,7 +11,13 @@ def main():
 
     # Locate project root
     root = Path(__file__).parent.parent.parent.parent
-    scenario_path = root / "walkthroughs" / "advanced" / "dag_loops" / "looping_scenario.json"
+    scenario_path = (
+        root
+        / "walkthroughs"
+        / "Phase 3 - Intelligence & Complexity - Advanced"
+        / "dag_loops"
+        / "looping_scenario.json"
+    )
 
     print("\nWe are observing an 'Implicit Loop'.")
     print("The Auditor is set to fail the first turn to force a 'RETRY_LOOP'.")

@@ -113,12 +113,13 @@ The harness is organized into the following key components:
 -   `/sample_agent`: Reference implementation for benchmark testing.
 
 - **NIST AI-100-1 Alignment**: Core verification logic developed following **NIST AI RMF principles**, featuring the **Weighted Severity Model (WSM)** for multi-dimensional scoring and forensic **Environmental DNA** snapshots.
+- **State Parity Verification**: NIST-aligned mechanism ensuring cryptographic alignment between the agent's internal state and the physical environment (via `initial_state`).
 - **Regulatory Safety Floor**: Prevents "safety-washing" by capping aggregate scores at **0.49 (Fail)** if foundational Safety or Security dimensions are compromised.
 - **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
 
-### 🌟 What's New in v1.4
-- **AES v1.4 Specification**: Unified metadata schema with mandatory `capabilities` and `standards_registry` fields.
+### 🌟 What's New in v1.5
+- **AES v1.4 Specification**: Unified metadata schema with mandatory `capabilities` and `standards_registry` fields, and the new `initial_state` root property for **State Parity Verification**.
 - **VC v3 Forensic Standard**: Introduction of sidecar artifact hashing to prevent "Side-Channel Tampering" of reports.
 - **Identity Registry**: Centralized management of cryptographic identities (`IdentityService`), enabling multi-party signing and audit non-repudiation.
 - **ScenarioLinter v2**: Hardened logic for industrial tiering and quality scoring.

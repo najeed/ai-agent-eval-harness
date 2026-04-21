@@ -27,7 +27,7 @@
     },
     "sha256": {
       "type": "string",
-      "pattern": "^[a-fA-F0-0]{64}$",
+      "pattern": "^[a-fA-F0-9]{64}$",
       "description": "SHA-256 hash of the trace .jsonl file"
     },
     "trace_file": {
@@ -66,7 +66,7 @@
       "type": "object",
       "additionalProperties": {
         "type": "string",
-        "pattern": "^[a-fA-F0-0]{64}$"
+        "pattern": "^[a-fA-F0-9]{64}$"
       },
       "description": "Map of sidecar filenames to their SHA-256 integrity hashes"
     },

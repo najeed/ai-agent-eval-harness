@@ -37,7 +37,7 @@ First-class, zero-touch support for the leading AI agent frameworks.
 - **Claude Code & xAI Grok**: Optimized adapters for the latest frontier models.
 - **Ollama**: Local-first evaluation for private or air-gapped environments.
 
-## 5. Research & Performance Metrics
+## 5. The Scholar & Performance Metrics
 Scientific-grade measurement of agent capabilities.
 - **Behavioral DNA Telemetry**: Micro-segmentation of agent decision paths using 4-level event granularity (PHASE, SUBTASK, ACTION, STEP).
 - **Wilson Score Confidence Intervals**: Provides 95% statistical confidence bounds for all reported pass rates.

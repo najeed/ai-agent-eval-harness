@@ -1,6 +1,6 @@
 # AgentV Walkthrough Syllabus
 
-Welcome to the guided learning path for the **AgentV (v1.2.3)** platform. This curriculum is designed to move you from foundational exploration through industrial-grade governance.
+Welcome to the guided learning path for the **AgentV (v1.5.0)** platform. This curriculum is designed to move you from foundational exploration through industrial-grade governance.
 
 ---
 

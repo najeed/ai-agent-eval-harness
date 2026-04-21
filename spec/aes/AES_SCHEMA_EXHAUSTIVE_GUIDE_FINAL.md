@@ -54,7 +54,7 @@ The AES JSON file is a **Blueprint**, but the actual **Resources** live in the p
 | `description` | String | "Evaluates loan logic..." | Detailed business context for cataloging. |
 | `complexity` | Enum | `low`, `medium`, `high` | Qualitative difficulty assessment. |
 | `agent` | Object | `{ "protocol": "http" }` | Explicit agent routing override. |
-| `forensics` | Array | `["FINTECH_DNA_V1"]` | Tags for automated artifact collation. |
+| `forensics` | Array | see `.aes/config/forensics/policy.json` | Tags for automated artifact collation. |
 | `agent_topology` | Object | `{ "underwriter": { "writes": ["db:*"] } }` | Defines agent permissions and resource namespaces. |
 | `policies` | Object | `{ "101": { "name": "No PII" } }` | Behavioral constraints and enforcement rules. |
 | `provisioning_hash` | String | SHA-256 | Cryptographic anchor for the infrastructure state. |

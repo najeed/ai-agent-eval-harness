@@ -11,7 +11,13 @@ def main():
 
     # Locate project root
     root = Path(__file__).parent.parent.parent.parent
-    scenario_path = root / "walkthroughs" / "advanced" / "multi_agent" / "multi_agent_scenario.json"
+    scenario_path = (
+        root
+        / "walkthroughs"
+        / "Phase 3 - Intelligence & Complexity - Advanced"
+        / "multi_agent"
+        / "multi_agent_scenario.json"
+    )
 
     print("\nWe are now orchestrating a three-node collaboration.")
     print("1. **Researcher**: Finds the thermal leak data.")

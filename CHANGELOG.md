@@ -14,7 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 *   **Granular Taint Tracking**: Enhanced the `SharedStateRegistry` to accept a centralized `event_bus` for unified infrastructure interaction monitoring.
 *   **Causal Chain Attribution**: Implemented the `CausalChain` and `DiagnosticResult` models to distinguish between root-cause triggers (e.g., Logical Loop) and terminal symptoms (e.g., Infra Timeout).
 *   **Enterprise Extension Support**: Re-categorized high-fidelity analyzers (Strategic Loops, Telemetry Gradients) as plugin-based examples, enabling users to inject advanced diagnostics via the `on_diagnose_failure` hook.
-*   **Documentation & Test Sync**: Extensively updated both modern (Starlight) and legacy documentation to reflect the Core/Enterprise structural split.
+*   **State Parity Enforcement**: Introduced native support for the `initial_state` root property in AES v1.4, enabling deterministic seeding of the `SharedStateRegistry` to ensure 1:1 alignment between agent context and physical environment.
+*   **Singleton Process Guard**: Hardened the PID-based lock management (`server.pid`) with active `psutil` stale process remediation, ensuring stable industrial orchestration and preventing port-5000 collisions across concurrent execution windows.
+*   **Documentation & Test Sync**: Extensively updated both modern (Starlight) and legacy documentation to reflect the Core/Enterprise structural split and "The Scholar" persona rebranding.
 
 ## [1.4.2] - 2026-04-11
 

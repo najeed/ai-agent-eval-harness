@@ -23,11 +23,11 @@
     },
     "initial_state": {
       "type": "object",
-      "description": "Seed state for the SharedStateRegistry (World Genesis)."
+      "description": "Seed state for the SharedStateRegistry."
     },
     "environmental_snapshot": {
       "type": "object",
-      "description": "A resolved snapshot of the environmental provisioning registry (shim_resources.json) captured at run start."
+      "description": "A resolved snapshot of the environmental provisioning registry captured at run start."
     }
   }
 }

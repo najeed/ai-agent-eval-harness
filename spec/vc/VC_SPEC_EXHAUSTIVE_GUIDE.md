@@ -21,7 +21,12 @@ The VC uses **SHA-256** hashing to create a unique fingerprint for every artifac
 The top-level `sha256` property is the hash of the core `run.jsonl` file. 
 > **Verification Protocol**: Any tool verifying the certificate MUST recalculate the hash of the trace file and compare it to this field. A single bit difference in the trace will cause a verification failure.
 
-### 2. The Evidence Ledger (`evidence_ledger`)
+### 2. The Trace Context (`harness_version` & `trace_file`)
+To ensure forensic portability, the VC explicitly declares its runtime context:
+- **`harness_version`**: The exact version of the AgentV engine that generated the trace and certificate.
+- **`trace_file`**: The basename of the primary trace file (usually `run.jsonl`).
+
+### 3. The Evidence Ledger (`evidence_ledger`)
 Sidecars (Database snapshots, terminal outputs, screenshots) are listed in a map:
 - **Keys**: The relative path within the session vault (e.g., `forensics/db_snapshot.sqlite`).
 - **Values**: The 64-character SHA-256 hex hash of that file.
@@ -53,7 +58,7 @@ The `provenance_chain` is an array of signature objects:
 ### 1. Compliance Anchoring
 The `compliance` block anchors the result to an industrial policy:
 - **`score`**: The WSM aggregate score (0.0 to 1.0).
-- **`status`**: The final verdict (`pass`, `fail`, `warning`).
+- **`status`**: The final verdict (`pass`, `fail`, `warning`, `error`).
 - **`policy_ref`**: The semantic link to the standard (e.g., `NIST-AI-100-1-v1.4`).
 
 ### 2. The Expiration Protocol (`governance_ttl`)
@@ -68,7 +73,9 @@ Digital certificates are not eternal. The `governance_ttl` (in days) defines the
 ```json
 {
   "vc_version": "3.0.0",
+  "harness_version": "1.5.0",
   "run_id": "audit-fc-2026-001",
+  "trace_file": "run.jsonl",
   "sha256": "8f02...e9a1",
   "compliance": {
     "status": "pass",
@@ -91,12 +98,6 @@ Digital certificates are not eternal. The `governance_ttl` (in days) defines the
       "role": "Agent",
       "signature": "887a...11bc",
       "timestamp": "2026-04-12T03:55:05Z"
-    },
-    {
-      "identity": "senior-auditor-najeed",
-      "role": "Auditor",
-      "signature": "fb01...de02",
-      "timestamp": "2026-04-13T10:00:00Z"
     }
   ],
   "governance_ttl": 365
