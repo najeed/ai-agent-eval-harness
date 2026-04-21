@@ -3,15 +3,20 @@ metadata:
   name: "Industrial Customer Refund Validation"
   id: "customer-refund-finance-v1"
   compliance_level: "Regulatory_Audit"
+  description: "Validate the agent's ability to process customer refunds according to financial compliance standards."
   capabilities:
     - "refund_processor_api"
     - "customer_crm_v2"
   standards_registry:
-    - "PCI_DSS_v4"
-    - "ISO_27001_2022"
+    - "PCI_DSS_V4"
+    - "ISO_27001"
 
-description: "Validate the agent's ability to process customer refunds according to financial compliance standards."
-industry: "finance"
+initial_state:
+  customer_crm_v2:
+    status: "active"
+    last_payout_id: "none"
+  refund_portal:
+    mode: "regulatory_audit"
 
 workflow:
   nodes:

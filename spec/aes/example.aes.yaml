@@ -3,11 +3,13 @@ metadata:
   name: "Base Interaction Benchmark"
   id: "base-interaction-v1"
   compliance_level: "Standard"
+  description: "A simple baseline scenario for testing agent connectivity and response quality."
   capabilities:
     - "default_http_agent"
 
-description: "A simple baseline scenario for testing agent connectivity and response quality."
-industry: "general"
+initial_state:
+  connection_status: "pending"
+  shared_key: "0xABC123"
 
 workflow:
   nodes:
