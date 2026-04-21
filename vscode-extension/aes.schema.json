@@ -1,30 +1,26 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Agent Eval Specification v0.1",
+    "title": "Agent Eval Specification (AES) v1.4.1 [Bundled]",
     "type": "object",
     "required": [
         "aes_version",
         "metadata",
-        "task",
-        "evaluation"
+        "workflow"
     ],
     "properties": {
         "aes_version": {
-            "type": "number"
+            "type": "number",
+            "const": 1.4
         },
         "metadata": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "id",
+                "compliance_level"
             ],
             "properties": {
                 "name": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "author": {
                     "type": "string"
                 },
                 "id": {
@@ -34,19 +30,154 @@
                     "type": "string",
                     "enum": [
                         "Standard",
-                        "Enterprise",
-                        "Industrial"
+                        "Gold",
+                        "Regulatory_Audit"
                     ]
+                },
+                "standards_registry": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "3GPP_5G",
+                            "BASEL_III",
+                            "CCPA",
+                            "CIS_BENCHMARKS",
+                            "COBIT",
+                            "COSO_ERM",
+                            "DCAT",
+                            "DICOM",
+                            "DUBLIN_CORE",
+                            "ESG_GRI",
+                            "ESG_ISSB",
+                            "ESG_SASB",
+                            "EU_AI_ACT",
+                            "FEDRAMP",
+                            "FIPS_140_3",
+                            "FISMA",
+                            "GDPR",
+                            "GLBA",
+                            "HIPAA",
+                            "HITECH",
+                            "HL7_FHIR_V4",
+                            "ICD_10",
+                            "ICD_11",
+                            "IEC_61850",
+                            "IEC_62351",
+                            "IEC_62443",
+                            "IEEE_1547",
+                            "IETF_RFC",
+                            "ISA_95",
+                            "ISO_11179",
+                            "ISO_14001",
+                            "ISO_19790",
+                            "ISO_20022",
+                            "ISO_23894",
+                            "ISO_27001",
+                            "ISO_27701",
+                            "ISO_31000",
+                            "ISO_42001",
+                            "ISO_45001",
+                            "ISO_50001",
+                            "ISO_9001",
+                            "ISO_9594",
+                            "LGPD",
+                            "MIFID_II",
+                            "NERC_CIP",
+                            "NIST_AI_RMF",
+                            "NIST_CSF",
+                            "OAUTH_2",
+                            "OECD_AI_PRINCIPLES",
+                            "OIDC",
+                            "OPC_UA",
+                            "PCI_DSS_V4",
+                            "PIPEDA",
+                            "PSD2",
+                            "SAML_V2",
+                            "SOC_2",
+                            "SOX",
+                            "SWIFT_MT103",
+                            "UNESCO_AI_ETHICS",
+                            "W3C_OWL",
+                            "W3C_RDF",
+                            "W3C_XML",
+                            "X_509"
+                        ]
+                    }
+                },
+                "agent_topology": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                            "writes": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "reads": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "policies": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object"
+                    }
+                },
+                "provisioning_hash": {
+                    "type": "string",
+                    "description": "SHA-256 hash of the resolved shim_resources.json used for this run."
+                },
+                "capabilities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Required infrastructure capabilities for routing (v1.4 upgrade)"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "complexity": {
+                    "type": "string",
+                    "enum": [
+                        "low",
+                        "medium",
+                        "high"
+                    ]
+                },
+                "agent": {
+                    "type": "object",
+                    "properties": {
+                        "protocol": {
+                            "type": "string"
+                        },
+                        "endpoint": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "forensics": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
-        "industry": {
-            "type": "string"
-        },
         "workflow": {
             "type": "object",
+            "description": "The State-Machine DAG defining agentic transitions.",
             "required": [
-                "nodes"
+                "nodes",
+                "edges"
             ],
             "properties": {
                 "nodes": {
@@ -54,7 +185,8 @@
                     "items": {
                         "type": "object",
                         "required": [
-                            "id"
+                            "id",
+                            "task_description"
                         ],
                         "properties": {
                             "id": {
@@ -63,8 +195,68 @@
                             "task_description": {
                                 "type": "string"
                             },
+                            "required_tools": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "description": "List of shim tools required to complete this task (v1.4 upgrade)"
+                            },
+                            "success_criteria": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "required": [
+                                        "metric",
+                                        "threshold"
+                                    ],
+                                    "properties": {
+                                        "metric": {
+                                            "type": "string"
+                                        },
+                                        "threshold": {
+                                            "type": "number"
+                                        }
+                                    }
+                                },
+                                "description": "Quantitative metrics for task success (v1.4 upgrade)"
+                            },
+                            "state_hygiene": {
+                                "type": "object",
+                                "description": "Assertions to check BEFORE this node can execute."
+                            },
                             "expected_outcome": {
-                                "type": "object"
+                                "type": "array",
+                                "description": "Authoritative assertion list (both Message and State parity).",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "target": {
+                                            "type": "string",
+                                            "description": "Assertion target (e.g., 'message', 'shim:loan_db')."
+                                        },
+                                        "property": {
+                                            "type": "string",
+                                            "description": "JSONPath or query to retrieve value."
+                                        },
+                                        "expected": {
+                                            "description": "The expected value."
+                                        },
+                                        "mode": {
+                                            "type": "string",
+                                            "enum": [
+                                                "exact",
+                                                "regex",
+                                                "numerical_tolerance"
+                                            ],
+                                            "default": "exact"
+                                        }
+                                    },
+                                    "required": [
+                                        "target",
+                                        "expected"
+                                    ]
+                                }
                             }
                         }
                     }
@@ -85,7 +277,8 @@
                                 "type": "string"
                             },
                             "condition": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "Logical condition to trigger the transition."
                             }
                         }
                     }
@@ -95,24 +288,47 @@
         "evaluation": {
             "type": "object",
             "properties": {
-                "metrics": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "required": [
-                            "metric"
-                        ],
-                        "properties": {
-                            "metric": {
+                "consensus": {
+                    "type": "object",
+                    "required": [
+                        "strategy",
+                        "min_judges"
+                    ],
+                    "properties": {
+                        "strategy": {
+                            "enum": [
+                                "Majority_Vote",
+                                "Weighted_Average",
+                                "Absolute_Unanimity"
+                            ]
+                        },
+                        "min_judges": {
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        "judge_panel": {
+                            "type": "array",
+                            "items": {
                                 "type": "string"
-                            },
-                            "threshold": {
-                                "type": "number"
                             }
                         }
                     }
+                },
+                "ija_threshold": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Inter-Judge Agreement threshold (0.0 to 1.0)."
                 }
             }
+        },
+        "initial_state": {
+            "type": "object",
+            "description": "Seed state for the SharedStateRegistry."
+        },
+        "environmental_snapshot": {
+            "type": "object",
+            "description": "A resolved snapshot of the environmental provisioning registry captured at run start."
         }
     }
 }
