@@ -151,12 +151,6 @@
           "type": "string"
         }
       }
-    },
-    "forensics": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
     }
   }
 }
