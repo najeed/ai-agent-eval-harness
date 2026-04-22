@@ -59,6 +59,8 @@ To remain compliant with these licenses, the following steps are handled automat
 ## 4. Forensic Governance & NIST Alignment (Protocol v1.4.1)
 - **Verification Certificate (VC) v3.0.0**: The framework mandates the v3 forensic standard, featuring **Identity-based signing** and **Sidecar Artifact Hashing** to ensure absolute trace and report non-repudiation.
 - **Forensic Evidence Ledger**: Every signed run includes a cryptographic ledger that hashes all associated artifacts (HTML reports, trajectory plots) to prevent side-channel tampering.
+- **Seal Hash Protocol**: To ensure the non-repudiability of the certification process itself, AgentV implements a "Seal Hash" anchor. Before appending the `verification_certificate_issued` event to the trace, the engine computes a hash of the trace history. This hash is embedded within the certificate event, mathematically binding the certification to the specific execution history.
+- **Binary Trace Integrity**: To prevent cross-platform hash mismatches (e.g., Windows CRLF vs. Linux LF), all trace appends are performed in binary mode. This ensures that the physical SHA-256 signature remains consistent regardless of the host operating system.
 - **Identity Registry**: Introduced in Core v1.4, the centralized `IdentityService` manages cryptographic standard Ed25519 keys, replacing unmanaged legacy key paths.
 - **Environmental Provenance**: AES v1.4 continues to use **Environmental DNA** snapshots, mathematically binding every trace to a **Provisioning Hash** of the registry state.
 - **Hard Gating**: Deployment pipelines are enforced via the `agentv gate` command, which blocks promotion if cryptographic VC v3 signatures or forensic hashes fail to match the sanctioned baseline.

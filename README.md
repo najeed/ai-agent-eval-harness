@@ -119,6 +119,8 @@ The harness is organized into the following key components:
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
 
 ### 🌟 What's New in v1.5
+- **Discovery Engine**: Industrial activation policy ensuring only relevant or explicitly sanctioned shims are active during evaluation.
+- **Seal Hash Protocol**: Cryptographic anchoring of trace history before certification to ensure non-repudiation of the audit process.
 - **AES v1.4 Specification**: Unified metadata schema with mandatory `capabilities` and `standards_registry` fields, and the new `initial_state` root property for **State Parity Verification**.
 - **VC v3 Forensic Standard**: Introduction of sidecar artifact hashing to prevent "Side-Channel Tampering" of reports.
 - **Identity Registry**: Centralized management of cryptographic identities (`IdentityService`), enabling multi-party signing and audit non-repudiation.
