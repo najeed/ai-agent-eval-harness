@@ -548,18 +548,21 @@ class SessionManager:
         """
         Authoritative State Parity Verification.
         Queries simulators/shims for point-in-time snapshots and validates assertions.
+        Includes industrial retry logic for asynchronous state propagation.
         """
         assertions = node.get("expected_outcome", [])
-        if not isinstance(assertions, list):
-            # Fallback for unexpected format (Hot-Swap Safety)
+        if not isinstance(assertions, list) or not assertions:
             return True
 
-        if not assertions:
-            return True
+        # 1. Industrial Polling Configuration
+        # Respect node-level timeout or default to 30s
+        timeout = float(node.get("timeout", 30))
+        interval = 2.0  # Standard Industrial Interval
+        start_time = asyncio.get_event_loop().time()
 
-        # 1. Resource Dispatch: Collect unique shims for parallel snapshotting
         logger.info(
-            f"      [Session] Starting Implicit Verification Phase ({len(assertions)} assertions)"
+            f"      [Session] Starting Implicit Verification Phase "
+            f"({len(assertions)} assertions) | Timeout: {timeout}s"
         )
 
         shim_ids = list(
@@ -569,68 +572,84 @@ class SessionManager:
                 if str(a.get("target")).startswith("shim:")
             }
         )
-        shim_snapshots = await self._get_shim_snapshots(sandbox, shim_ids)
 
-        all_passed = True
+        import re
 
-        for assertion in assertions:
-            target = assertion.get("target", "message")
-            expected = assertion.get("expected")
-            property_path = assertion.get("property")
-            mode = assertion.get("mode", "exact")
+        while True:
+            shim_snapshots = await self._get_shim_snapshots(sandbox, shim_ids)
+            all_passed = True
+            failed_reason = None
 
-            if target.startswith("shim:"):
-                shim_id = target.split(":", 1)[1]
-                actual_val = shim_snapshots.get(shim_id)
-            elif target == "message":
-                actual_val = self._extract_agent_summary(history)
-            else:
-                logger.warning(f"      [Session] [Parity] Unsupported assertion target: {target}")
-                all_passed = False
-                continue
+            for assertion in assertions:
+                target = assertion.get("target", "message")
+                expected = assertion.get("expected")
+                property_path = assertion.get("property")
+                mode = assertion.get("mode", "exact")
 
-            # Resolve property in snapshot/message using Unified Resolver
-            if property_path:
-                actual_val = PathResolver.resolve(actual_val, property_path)
+                if target.startswith("shim:"):
+                    shim_id = target.split(":", 1)[1]
+                    actual_val = shim_snapshots.get(shim_id)
+                elif target == "message":
+                    actual_val = self._extract_agent_summary(history)
+                else:
+                    logger.warning(
+                        f"      [Session] [Parity] Unsupported assertion target: {target}"
+                    )
+                    all_passed = False
+                    failed_reason = f"Unsupported target: {target}"
+                    break
 
-            # Comparison Logic
-            match = False
-            if mode == "exact":
-                match = actual_val == expected
-            elif mode == "regex" or (isinstance(expected, str) and expected.startswith("regex:")):
-                import re
+                # Resolve property in snapshot/message using Unified Resolver
+                if property_path:
+                    actual_val = PathResolver.resolve(actual_val, property_path)
 
-                pattern = str(expected)[6:] if str(expected).startswith("regex:") else str(expected)
-                match = bool(re.search(pattern, str(actual_val), re.IGNORECASE))
-            elif mode == "numerical_tolerance":
-                try:
-                    match = abs(float(actual_val) - float(expected)) < 1e-9
-                except (ValueError, TypeError):
-                    match = False
+                # Comparison Logic
+                match = False
+                if mode == "exact":
+                    match = actual_val == expected
+                elif mode == "regex" or (
+                    isinstance(expected, str) and expected.startswith("regex:")
+                ):
+                    pattern = (
+                        str(expected)[6:] if str(expected).startswith("regex:") else str(expected)
+                    )
+                    match = bool(re.search(pattern, str(actual_val), re.IGNORECASE))
+                elif mode == "numerical_tolerance":
+                    try:
+                        match = abs(float(actual_val) - float(expected)) < 1e-9
+                    except (ValueError, TypeError):
+                        match = False
 
-            if not match:
-                msg = (
-                    f"      [Session] [Parity] Assertion FAILED: {target}.{property_path or ''} "
-                    f"| Expected: {expected} | Actual: {actual_val}"
+                if not match:
+                    all_passed = False
+                    failed_reason = (
+                        f"{target}.{property_path or ''} | "
+                        f"Expected: {expected} | Actual: {actual_val}"
+                    )
+                    break  # Optimization: Retry on first failure
+
+            if all_passed:
+                logger.info(f"      [Session] [Parity] All {len(assertions)} assertions PASSED.")
+                return True
+
+            # Check for timeout
+            if asyncio.get_event_loop().time() - start_time > timeout:
+                logger.info(
+                    f"      [Session] [Parity-Audit] TIMEOUT reached. Last failure: {failed_reason}"
                 )
-                logger.info(msg)
-                all_passed = False
 
                 # [Forensics] Broadcast divergence for auditability & automated triage
                 self.event_bus.emit(
                     CoreEvents.ADAPTER_DEBUG,
                     {
-                        "message": msg,
+                        "message": f"Parity FAILED after {timeout}s: {failed_reason}",
                         "category": "PARITY_STATE_DIVERGENCE",
                         "is_root_cause": True,
                     },
                 )
-            else:
-                msg = f"      [Session] [Parity] Assertion passed: {target}.{property_path or ''}"
-                logger.debug(msg)
-                self.event_bus.emit(CoreEvents.ADAPTER_DEBUG, {"message": msg})
+                return False
 
-        return all_passed
+            await asyncio.sleep(interval)
 
     async def _handle_tool_call(self, turn, agent_response, sandbox, history, actions, turn_ctx):
         tool_name = agent_response["tool_name"]

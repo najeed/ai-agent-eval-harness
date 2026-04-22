@@ -22,6 +22,7 @@ def scenario():
             {"target": "shim:db", "property": "active", "expected": True},
             {"target": "shim:git", "property": "branch", "expected": "main"},
         ],
+        "timeout": 0.1,
     }
 
 
@@ -93,8 +94,8 @@ async def test_verify_state_parity_forensics(scenario):
         failure_event = next((e for e in debug_emits if e.get("is_root_cause")), None)
         assert failure_event is not None
         assert failure_event["category"] == "PARITY_STATE_DIVERGENCE"
-        assert "Assertion FAILED" in failure_event["message"]
-        assert "db.active" in failure_event["message"]
+        assert "Parity FAILED" in failure_event["message"]
+        assert "shim:db.active" in failure_event["message"]
 
 
 @pytest.mark.asyncio
