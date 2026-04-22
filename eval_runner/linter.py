@@ -82,10 +82,8 @@ class ScenarioLinter:
         aes_version = data.get("aes_version")
         results["aes_version"] = aes_version
 
-        if aes_version not in [1.2, 1.3, 1.4]:
-            results["errors"].append(
-                f"Invalid aes_version: {aes_version} (Requires 1.4, 1.3 or 1.2)"
-            )
+        if aes_version not in [1.4]:
+            results["errors"].append(f"Invalid aes_version: {aes_version} (Requires 1.4)")
             results["status"] = "fail"
             results["score"] -= 50
 
@@ -113,6 +111,20 @@ class ScenarioLinter:
             if "version" not in metadata:
                 results["warnings"].append("Missing recommended field: 'metadata.version'")
                 results["score"] -= 5
+
+            # 1b. Forensic Metadata Validation (v1.4.0 Baseline)
+            forensics = metadata.get("forensics")
+            if forensics is not None:
+                if not isinstance(forensics, list):
+                    results["errors"].append(
+                        "Forensics metadata must be an array of strings (v1.4.0 Standard)"
+                    )
+                    results["status"] = "fail"
+                    results["score"] -= 10
+                elif any(not isinstance(f, str) for f in forensics):
+                    results["errors"].append("All items in 'metadata.forensics' must be strings")
+                    results["status"] = "fail"
+                    results["score"] -= 10
 
         # Recommend complexity_level instead of difficulty
         if "complexity_level" not in data:

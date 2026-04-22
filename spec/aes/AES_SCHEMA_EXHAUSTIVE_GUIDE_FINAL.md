@@ -77,7 +77,7 @@ The AES JSON file is a **Blueprint**, but the actual **Resources** live in the p
     - **Purpose**: Industrial metadata for scenario catalogs. Enables quick filtering of "High Complexity Fintech" runs.
     - **Config**: Strings and Enums.
 6.  **`agent` / `forensics`**:
-    - **Purpose**: `agent` allows a local override of the global routing. `forensics` provides anchor tags for result aggregators (e.g., "Find all runs with FINTECH_DNA").
+    - **Purpose**: `agent` allows a local override of the global routing. `forensics` provides anchor tags for result aggregators.
     - **Config**: Objects and Arrays.
 7.  **`policies`**:
     - **Purpose**: The "Active Ingredients" of compliance. Defines the ruleset audited by the `CompliancePlugin`.

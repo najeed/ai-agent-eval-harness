@@ -3,25 +3,38 @@
   "title": "AgentV Forensic Policy Specification (v1.0.0)",
   "description": "Schema for defining forensic artifact retention via extension filtering and pattern matching.",
   "type": "object",
-  "required": ["forensics"],
+  "required": [
+    "forensics"
+  ],
   "properties": {
     "forensics": {
       "type": "object",
-      "required": ["extensions", "mandatory_patterns", "exclusion_patterns", "max_artifact_size"],
+      "required": [
+        "extensions",
+        "mandatory_patterns",
+        "exclusion_patterns",
+        "max_artifact_size"
+      ],
       "properties": {
         "extensions": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "List of file extensions to permit in the session vault."
         },
         "mandatory_patterns": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Regex patterns for files that MUST be retained regardless of other rules."
         },
         "exclusion_patterns": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Regex patterns for files that MUST be pruned from the vault."
         },
         "max_artifact_size": {

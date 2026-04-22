@@ -50,12 +50,14 @@ class DebuggerStateStore:
             data = event.get("data") or {
                 k: v for k, v in event.items() if k not in ["event", "name", "timestamp"]
             }
+            timestamp = event.get("timestamp")
         else:
             name = getattr(event, "name", None)
             data = getattr(event, "data", None)
+            timestamp = getattr(event, "timestamp", None)
 
         # Guard: In case event was just a task status or similar
-        if not name and isinstance(event, dict):
+        if not name and hasattr(event, "get"):
             name = event.get("status")
 
         # Map turning points to last_state
@@ -75,10 +77,26 @@ class DebuggerStateStore:
         elif name == "run_start":
             cls._last_state.update(data if data else {})
 
-        return cls.post_event({"event": name, "data": data})
+        return cls.post_event({"event": name, "data": data, "timestamp": timestamp})
 
     @classmethod
     def get_state(cls):
+        # Industrial Search: Find explicit root cause in timeline
+        root_cause = next((e for e in cls._events if e.get("is_root_cause")), None)
+        if root_cause:
+            # Add metadata for the UI 'Isolate Root Cause' feature
+            idx = cls._events.index(root_cause)
+            root_cause_meta = {
+                "index": idx,
+                "reason": root_cause.get("reason", "Heuristic policy violation identified"),
+                "confidence": root_cause.get("confidence", 1.0),
+            }
+            return {
+                "summary": cls._last_state,
+                "timeline": cls._events,
+                "root_cause": root_cause_meta,
+            }
+
         return {"summary": cls._last_state, "timeline": cls._events}
 
 

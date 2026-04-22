@@ -593,7 +593,12 @@ const HumanFriendlyDetail = ({ event, onNotify }) => {
                         }`}>
                         {event.event.replace('_', ' ')}
                     </span>
-                    <span className="text-xs text-slate-500 font-mono">{new Date(event.timestamp).toLocaleTimeString()}</span>
+                    <span className="text-xs text-slate-500 font-mono">
+                        {(() => {
+                            const d = new Date(event.timestamp);
+                            return isNaN(d.getTime()) ? "00:00:00" : d.toLocaleTimeString();
+                        })()}
+                    </span>
                 </div>
                 <div className="flex items-center gap-4">
                     <button
@@ -905,7 +910,7 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                                 <Icon name="box" size={14} />
                             </button>
                             <div className="w-px h-4 bg-slate-800 mx-1 self-center" />
-                            {(events.some(e => e.event === 'run_end' && e.status === 'failed')) && (
+                            {(rootCause || events.some(e => e.event === 'run_end' && e.status === 'failed')) && (
                                 <button
                                     onClick={() => {
                                         const isRootCauseRunEnd = rootCause?.index >= 0 && events[rootCause.index] && events[rootCause.index].event === 'run_end';
@@ -982,7 +987,10 @@ const VisualDebugger = ({ runId, onNotify = () => { }, minimal = false, hideTime
                                             {e.event.replace('_', ' ')}
                                         </span>
                                         <span className="text-[10px] text-slate-600 font-mono italic">
-                                            {new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {(() => {
+                                                const d = new Date(e.timestamp);
+                                                return isNaN(d.getTime()) ? "00:00:00" : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                            })()}
                                         </span>
                                     </div>
                                     <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed opacity-80">
