@@ -41,18 +41,38 @@ async def test_handle_analyze_direct(monkeypatch, tmp_path):
     mock_analyze.assert_called_once()
 
 
-def test_classify_scenario_helper():
-    """Hits classify_scenario logic in cli.py."""
-    # We mock SentenceTransformer to avoid heavy ML loading in unit tests
-    with patch("sentence_transformers.SentenceTransformer") as mock_st:
-        mock_model = MagicMock()
-        mock_model.encode.return_value = [[0.9, 0.1, 0.0]]  # Mock cosine similarity
-        mock_st.return_value = mock_model
+def test_classify_scenario_helper(monkeypatch):
+    """Hits classify_scenario logic in scenarios.py."""
+    import sys
 
-        scenario = {"title": "Loan Application", "description": "Test financial scenario"}
-        res = classify_scenario(scenario)
-        # res should return a dict with top-matched industry
-        assert "industry" in res
+    # 1. Mock the entire module in sys.modules to prevent real import/crash
+    mock_st_class = MagicMock()
+    mock_util = MagicMock()
+    mock_module = MagicMock()
+    mock_module.SentenceTransformer = mock_st_class
+    mock_module.util = mock_util
+
+    monkeypatch.setitem(sys.modules, "sentence_transformers", mock_module)
+
+    # 2. Setup the mock model behavior
+    mock_model = MagicMock()
+    # Return a dummy similarity vector (5 elements for the 5 industries in scenarios.py)
+    mock_model.encode.return_value = MagicMock()
+    mock_st_class.return_value = mock_model
+
+    # Mock util.cos_sim to return a tensor-like object with argmax
+    mock_sim = MagicMock()
+    mock_sim.__getitem__.return_value.argmax.return_value = 0  # finance
+    mock_sim.__getitem__.return_value.__getitem__.return_value = 0.95
+    mock_util.cos_sim.return_value = mock_sim
+
+    # 3. Execute target logic
+    scenario = {"title": "Loan Application", "description": "Test financial scenario"}
+    res = classify_scenario(scenario)
+
+    # 4. Assertions
+    assert "industry" in res
+    assert res["industry"] == "finance"
 
 
 @pytest.mark.asyncio
