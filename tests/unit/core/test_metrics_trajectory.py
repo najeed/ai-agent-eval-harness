@@ -82,18 +82,22 @@ async def test_engine_captures_state_transitions():
 
         forensics_dir = config.RUN_LOG_DIR / "test_trajectory_core" / "forensics"
 
-        # Turn 1 tool call produces two snapshots (before/after) in this implementation
-        state_before_path = forensics_dir / "state_turn_001.json"
+        # Turn 0 is the initial full baseline in the v1.5.0 hardening
+        state_baseline_path = forensics_dir / "state_turn_000_full.json"
         # Turn + 1000 offset is used for the "after" snapshot in the refined session logic
-        state_after_path = forensics_dir / "state_turn_1001.json"
+        state_after_path = forensics_dir / "state_turn_1001_diff.json"
 
-        assert state_before_path.exists()
-        with open(state_before_path) as f:
-            assert json.load(f) == {"status": "idle"}
+        assert state_baseline_path.exists()
+        with open(state_baseline_path) as f:
+            # Full state is nested under 'world' (Iteration 9)
+            data = json.load(f)
+            assert data["world"] == {"status": "idle"}
 
         assert state_after_path.exists()
         with open(state_after_path) as f:
-            assert json.load(f) == {"status": "active"}
+            # Diff state is also nested under 'world' for shim consistency
+            data = json.load(f)
+            assert data["world"] == {"status": "active"}
 
         history = results[0]["conversation_history"]
         # Verify history is clean of heavy state blobs
