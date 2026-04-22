@@ -117,13 +117,25 @@ def get_run_status(run_id):
         try:
             size = os.path.getsize(vault_trace)
             mtime = os.path.getmtime(vault_trace)
+
+            # Dynamic Tail Resolution (AgentV v1.5.0 Industrial)
+            # For small logs (< 128KB), read entirely. For large logs, seek to last 128KB.
+            window = 128 * 1024  # 128KB
             with open(vault_trace, "rb") as f:
-                if size > 0:
-                    f.seek(max(0, size - 2048))
-                    if b'"event": "run_end"' in f.read():
-                        is_finished = True
+                if size <= window:
+                    buffer = f.read()
+                else:
+                    f.seek(size - window)
+                    buffer = f.read()
+
+                # Scan for termination events in the retrieved tail
+                if (
+                    b'"event": "run_end"' in buffer
+                    or b'"event": "verification_certificate_issued"' in buffer
+                ):
+                    is_finished = True
         except Exception as e:
-            logger.warning(f"Error checking run-end event for {run_id}: {e}")
+            logger.warning(f"Error checking run status for {run_id}: {e}")
             pass
 
         return jsonify(

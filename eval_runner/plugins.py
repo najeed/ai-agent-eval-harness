@@ -61,6 +61,10 @@ class BaseEvalPlugin(ABC):  # noqa: B024
         """Hook to register custom world simulators."""
         pass
 
+    def on_discover_metrics(self, registry: Any):  # noqa: B027
+        """Hook to register custom evaluation metrics."""
+        pass
+
     def on_diagnose_failure(self, taxonomy: Any):  # noqa: B027
         """Hook to register custom forensic failure analyzers with the taxonomy engine."""
         pass
@@ -141,6 +145,17 @@ class PluginManager:
         self.provenance_map[loaded_class] = metadata
         return metadata
 
+    def register(self, plugin: BaseEvalPlugin, origin: str = "CORE"):
+        """
+        Authoritative Plugin Registration.
+        Ensures the plugin is added to the active set and its provenance is recorded.
+        """
+        if not any(isinstance(p, plugin.__class__) for p in self.plugins):
+            self.plugins.append(plugin)
+            self._record_provenance(plugin, origin=origin)
+            return True
+        return False
+
     def _record_provenance(self, plugin_obj, origin="MEMBER"):
         """Internal helper to capture industrial provenance for any loaded plugin."""
         plugin_cls = plugin_obj.__class__
@@ -213,7 +228,7 @@ class PluginManager:
                 universal_registry = get_universal_registry()
                 # AUTHORITATIVELY resolve the plugins schema using the Logical Anchor
                 # (Guardrails v3.4 Section 1.6 compliance)
-                schema_uri = "https://agentv.co/spec/plugins/plugins.schema.json"
+                schema_uri = "https://agentvos.ai/spec/plugins/plugins.schema.json"
                 try:
                     schema_resource = universal_registry.resolver().lookup(schema_uri).contents
                     validator_cls = validator_for(schema_resource)
@@ -354,11 +369,7 @@ class PluginManager:
         # Robust Instantiation Loop (Zero-Touch Isolation)
         for PluginClass in internal_manifest:
             try:
-                # Deduplication: Only load if an instance of this class doesn't exist
-                if not any(isinstance(p, PluginClass) for p in self.plugins):
-                    instance = PluginClass()
-                    self.plugins.append(instance)
-                    self._record_provenance(instance, origin="CORE")
+                self.register(PluginClass(), origin="CORE")
             except Exception as e:
                 # Log isolated failure without crashing the manager
                 print(f"   [PluginManager] Isolated Failure loading {PluginClass.__name__}: {e}")

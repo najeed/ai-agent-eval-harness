@@ -9,9 +9,7 @@
     "capabilities": [
       "telecom_support_agent"
     ],
-    "forensics": [
-      "LAB_STANDARD_V1"
-    ],
+
     "agent": {
       "protocol": "http",
       "endpoint": "http://localhost:5001/execute_task"

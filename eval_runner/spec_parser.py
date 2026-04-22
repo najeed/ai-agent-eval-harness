@@ -226,18 +226,6 @@ async def parse_markdown_to_scenario(markdown_text: str) -> dict[str, Any]:
                     policies[p_name] = p_val
             if policies:
                 scenario["metadata"]["policies"] = policies
-        elif "forensics" in header:
-            forensics_tags = []
-            for f_line in lines[1:]:
-                cl = f_line.strip()
-                # Extract bullet points
-                match = re.search(r"-\s*(.*)", cl)
-                if match:
-                    tag = match.group(1).strip(' `"[]')
-                    if tag:
-                        forensics_tags.append(tag)
-            if forensics_tags:
-                scenario["metadata"]["forensics"] = forensics_tags
 
     return scenario
 

@@ -110,7 +110,7 @@ async def test_sandbox_lifecycle(tmp_path):
     # Inject temp path to avoid polluting real workspaces/ dir
     sandbox.workspace_dir = str(test_ws)
 
-    sandbox.setup()
+    await sandbox.setup()
     assert Path(sandbox.workspace_dir).exists()
 
     await sandbox.teardown()
@@ -125,7 +125,7 @@ async def test_sandbox_cleanup_persistence(tmp_path):
     sandbox = ToolSandbox(scenario)
     sandbox.workspace_dir = str(test_ws)
 
-    sandbox.setup()
+    await sandbox.setup()
     ws_dir = sandbox.workspace_dir
     assert Path(ws_dir).exists()
 

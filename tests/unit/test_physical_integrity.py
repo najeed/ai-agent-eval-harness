@@ -19,9 +19,9 @@ def test_physical_registry_lookup():
     registry = get_universal_registry()
 
     # 1. Authoritative Logical Lookup (Standard v1.4+)
-    logical_uri = "https://agentv.co/spec/plugins/plugins.schema.json"
+    logical_uri = "https://agentvos.ai/spec/plugins/plugins.schema.json"
     resource = registry.resolver().lookup(logical_uri)
-    assert resource.contents["$id"] == "https://agentv.co/spec/plugins/plugins.schema.json"
+    assert resource.contents["$id"] == "https://agentvos.ai/spec/plugins/plugins.schema.json"
 
     # 2. Physical Fallback Lookup (Legacy/Debug support)
     # Ensure we use an absolute, normalized path matching what's registered

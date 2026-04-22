@@ -119,7 +119,8 @@ class RegistryManager:
                 print(f"      [Config] Warning: Failed to load internal baseline: {e}")
 
         # 2. Universal Config Discovery (.aes/config/*)
-        # We walk all subdirectories to ensure shims, routing, forensics, and plugins are covered.
+        # We walk all subdirectories to ensure shims, adapters, routing,
+        # forensics, and plugins are covered.
         if AES_CONFIG_DIR.exists() and AES_CONFIG_DIR.is_dir():
             # Specialized Affinity Map: Ensures content is nested under the correct root key
             # if the file itself doesn't provide it (aligning with .example files).

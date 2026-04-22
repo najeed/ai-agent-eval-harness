@@ -51,11 +51,15 @@ async def test_handle_evaluate_non_int_attempts(mock_args):
 # --- 2. Scenarios Handler ---
 
 
-def test_classify_scenario_fallback():
+def test_classify_scenario_fallback(monkeypatch):
     """Verify industry classification fallback when ML deps are missing."""
-    with patch("sentence_transformers.SentenceTransformer", side_effect=ImportError):
-        res = scenarios.classify_scenario({"title": "Loans"})
-        assert res["industry"] == "generic"
+    import sys
+
+    # Explicitly break the import in sys.modules before any code tries to touch it
+    monkeypatch.setitem(sys.modules, "sentence_transformers", None)
+
+    res = scenarios.classify_scenario({"title": "Loans"})
+    assert res["industry"] == "generic"
 
 
 @pytest.mark.asyncio

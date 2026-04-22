@@ -10,8 +10,9 @@ from typing import Any
 class BaseSimulator:
     """Base class for all world shims with state management."""
 
-    def __init__(self, initial_state: dict[str, Any] = None):
+    def __init__(self, initial_state: dict[str, Any] = None, config: dict[str, Any] = None):
         self.state = initial_state or {}
+        self.config = config or {}
         # [Turn 2 Hardening] Physical Jail Path
         self.terminal_jail: Any = None
 
@@ -58,8 +59,8 @@ class BaseSimulator:
 class GitSimulator(BaseSimulator):
     """Simulates a dynamic Git repository state."""
 
-    def __init__(self):
-        super().__init__({"history": [], "staged_files": []})
+    def __init__(self, *args, **kwargs):
+        super().__init__({"history": [], "staged_files": []}, *args, **kwargs)
         self._repo = None
 
     def _get_repo(self):
@@ -155,14 +156,16 @@ class GitSimulator(BaseSimulator):
 class ApiSimulator(BaseSimulator):
     """Simulates a generic REST API with dynamic registration."""
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__(
             {
                 "endpoints": {
                     "/api/v1/health": {"status": "healthy"},
                     "/api/v1/user/1": {"id": 1, "name": "Test User", "plan": "pro"},
                 }
-            }
+            },
+            *args,
+            **kwargs,
         )
 
     async def handle_api_request(self, params: dict) -> dict:
@@ -264,13 +267,15 @@ class ApiSimulator(BaseSimulator):
 class DatabaseSimulator(BaseSimulator):
     """Simulates a dynamic secure SQL environment."""
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__(
             {
                 "tables": {
                     "users": [{"id": 1, "email": "admin@example.com", "role": "admin"}],
                 }
-            }
+            },
+            *args,
+            **kwargs,
         )
         self._engine = None
 
@@ -283,11 +288,15 @@ class DatabaseSimulator(BaseSimulator):
 
         from sqlalchemy import create_engine
 
-        # [Iteration 2 Anchor] Secure session-scoped DB file
-        db_path = Path(self.terminal_jail or ".tmp").resolve() / "state.db"
-        # [Iteration 3 Normalization] Windows absolute path handling (sqlite:///C:/...)
-        db_path_str = str(db_path).replace("\\", "/")
-        db_uri = f"sqlite:///{db_path_str}"
+        # [Industrial Resolution] Use connection string from registry if available
+        # Falls back to session-scoped transient DB
+        db_uri = self.config.get("primary_db", {}).get("connection")
+        if not db_uri:
+            db_path = Path(self.terminal_jail or ".tmp").resolve() / "state.db"
+            # [Iteration 3 Normalization] Windows absolute path handling (sqlite:///C:/...)
+            db_path_str = str(db_path).replace("\\", "/")
+            db_uri = f"sqlite:///{db_path_str}"
+
         self._engine = create_engine(db_uri)
 
         # [Iteration 3 Init] Provision initial industrial state
@@ -334,6 +343,7 @@ class DatabaseSimulator(BaseSimulator):
         Returns a snapshot of all tables in the simulated database.
         If the real engine is active, it performs a bulk read of the schema.
         """
+        self._get_engine()
         if not self._engine:
             return {"tables": self.state.get("tables", {}), "engine": "mock"}
 
@@ -364,8 +374,8 @@ class DatabaseSimulator(BaseSimulator):
 class SlackSimulator(BaseSimulator):
     """Simulates a dynamic Slack workspace."""
 
-    def __init__(self):
-        super().__init__({"messages": []})
+    def __init__(self, *args, **kwargs):
+        super().__init__({"messages": []}, *args, **kwargs)
 
     def handle_slack_send(self, params: dict) -> dict:
         channel = params.get("channel", "general")
@@ -377,8 +387,10 @@ class SlackSimulator(BaseSimulator):
 class CRMSimulator(BaseSimulator):
     """Simulates a dynamic CRM system."""
 
-    def __init__(self):
-        super().__init__({"leads": [{"id": "L101", "name": "Acme Corp", "status": "New"}]})
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            {"leads": [{"id": "L101", "name": "Acme Corp", "status": "New"}]}, *args, **kwargs
+        )
 
     def handle_crm_update_lead(self, params: dict) -> dict:
         lead_id = params.get("id")
@@ -393,9 +405,11 @@ class CRMSimulator(BaseSimulator):
 class EmailSimulator(BaseSimulator):
     """Simulates a dynamic email server."""
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__(
-            {"inbox": [{"id": "M001", "from": "boss@corp.com", "subject": "Status?"}], "sent": []}
+            {"inbox": [{"id": "M001", "from": "boss@corp.com", "subject": "Status?"}], "sent": []},
+            *args,
+            **kwargs,
         )
 
     def handle_email_send(self, params: dict) -> dict:
@@ -409,8 +423,10 @@ class EmailSimulator(BaseSimulator):
 class CalendarSimulator(BaseSimulator):
     """Simulates a dynamic calendar system."""
 
-    def __init__(self):
-        super().__init__({"events": [{"title": "Eval Kickoff", "time": "2026-03-20T10:00"}]})
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            {"events": [{"title": "Eval Kickoff", "time": "2026-03-20T10:00"}]}, *args, **kwargs
+        )
 
     def handle_calendar_book(self, params: dict) -> dict:
         # Check for conflicts in a real implementation
@@ -421,12 +437,14 @@ class CalendarSimulator(BaseSimulator):
 class JiraSimulator(BaseSimulator):
     """Simulates a dynamic Jira project management environment."""
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__(
             {
                 "issues": [{"id": "PROJ-1", "summary": "Initial Bug", "status": "To Do"}],
                 "projects": ["PROJ"],
-            }
+            },
+            *args,
+            **kwargs,
         )
 
     def handle_jira_create(self, params: dict) -> dict:
@@ -452,8 +470,12 @@ class JiraSimulator(BaseSimulator):
 class CloudSimulator(BaseSimulator):
     """Simulates dynamic AWS/GCP infrastructure."""
 
-    def __init__(self):
-        super().__init__({"instances": [{"id": "i-1234", "type": "t2.micro", "status": "running"}]})
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            {"instances": [{"id": "i-1234", "type": "t2.micro", "status": "running"}]},
+            *args,
+            **kwargs,
+        )
 
     async def handle_cloud_launch(self, params: dict) -> dict:
         """
@@ -491,8 +513,8 @@ class CloudSimulator(BaseSimulator):
 class TerminalSimulator(BaseSimulator):
     """Simulates a dynamic SSH/Bash terminal."""
 
-    def __init__(self):
-        super().__init__({"cwd": "/home/user", "history": []})
+    def __init__(self, *args, **kwargs):
+        super().__init__({"cwd": "/home/user", "history": []}, *args, **kwargs)
 
     async def handle_terminal_execute(self, params: dict) -> dict:
         """
@@ -573,8 +595,8 @@ class TerminalSimulator(BaseSimulator):
 class StripeSimulator(BaseSimulator):
     """Simulates a dynamic payment gateway."""
 
-    def __init__(self):
-        super().__init__({"charges": []})
+    def __init__(self, *args, **kwargs):
+        super().__init__({"charges": []}, *args, **kwargs)
 
     def handle_stripe_charge(self, params: dict) -> dict:
         self.state["charges"].append(params)
@@ -584,8 +606,10 @@ class StripeSimulator(BaseSimulator):
 class ERPSimulator(BaseSimulator):
     """Simulates a dynamic ERP system."""
 
-    def __init__(self):
-        super().__init__({"orders": [{"id": "O-99", "item": "Widget", "qty": 100}]})
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            {"orders": [{"id": "O-99", "item": "Widget", "qty": 100}]}, *args, **kwargs
+        )
 
     def handle_erp_create_order(self, params: dict) -> dict:
         self.state["orders"].append(params)
@@ -595,8 +619,8 @@ class ERPSimulator(BaseSimulator):
 class BrowserSimulator(BaseSimulator):
     """Simulates dynamic headless browser DOM."""
 
-    def __init__(self):
-        super().__init__({"url": "about:blank"})
+    def __init__(self, *args, **kwargs):
+        super().__init__({"url": "about:blank"}, *args, **kwargs)
         self._playwright = None
         self._browser = None
         self._context = None
@@ -655,9 +679,11 @@ class BrowserSimulator(BaseSimulator):
 class KnowledgeBaseSimulator(BaseSimulator):
     """Simulates dynamic Knowledge Base."""
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__(
-            {"docs": [{"id": "D001", "title": "Onboarding", "content": "Welcome to the team!"}]}
+            {"docs": [{"id": "D001", "title": "Onboarding", "content": "Welcome to the team!"}]},
+            *args,
+            **kwargs,
         )
 
     def handle_kb_search(self, params: dict) -> dict:
@@ -667,9 +693,11 @@ class KnowledgeBaseSimulator(BaseSimulator):
 class SupportDeskSimulator(BaseSimulator):
     """Simulates dynamic ticketing system."""
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__(
-            {"tickets": [{"id": "TKT-123", "subject": "Billing issue", "status": "open"}]}
+            {"tickets": [{"id": "TKT-123", "subject": "Billing issue", "status": "open"}]},
+            *args,
+            **kwargs,
         )
 
     def handle_support_close(self, params: dict) -> dict:
@@ -684,8 +712,8 @@ class SupportDeskSimulator(BaseSimulator):
 class SocialMediaSimulator(BaseSimulator):
     """Simulates dynamic social media interactions."""
 
-    def __init__(self):
-        super().__init__({"posts": []})
+    def __init__(self, *args, **kwargs):
+        super().__init__({"posts": []}, *args, **kwargs)
 
     def handle_social_post(self, params: dict) -> dict:
         self.state["posts"].append(params)
@@ -702,8 +730,8 @@ class SocialMediaSimulator(BaseSimulator):
 class VectorDBSimulator(BaseSimulator):
     """Simulates dynamic Vector Database."""
 
-    def __init__(self):
-        super().__init__({"vectors": []})
+    def __init__(self, *args, **kwargs):
+        super().__init__({"vectors": []}, *args, **kwargs)
 
     def handle_vector_query(self, params: dict) -> dict:
         return {"status": "success", "matches": [{"id": "v1", "score": 0.99}]}
@@ -712,8 +740,8 @@ class VectorDBSimulator(BaseSimulator):
 class CICDSimulator(BaseSimulator):
     """Simulates dynamic CI/CD pipeline."""
 
-    def __init__(self):
-        super().__init__({"builds": [{"id": "B-1", "status": "success"}]})
+    def __init__(self, *args, **kwargs):
+        super().__init__({"builds": [{"id": "B-1", "status": "success"}]}, *args, **kwargs)
 
     async def handle_cicd_deploy(self, params: dict) -> dict:
         """
@@ -748,8 +776,8 @@ class CICDSimulator(BaseSimulator):
 class IoTSimulator(BaseSimulator):
     """Simulates dynamic IoT device interaction."""
 
-    def __init__(self):
-        super().__init__({"devices": {"thermostat": "72F", "lights": "off"}})
+    def __init__(self, *args, **kwargs):
+        super().__init__({"devices": {"thermostat": "72F", "lights": "off"}}, *args, **kwargs)
 
     def handle_iot_update(self, params: dict) -> dict:
         device = params.get("device")
@@ -768,8 +796,8 @@ class IoTSimulator(BaseSimulator):
 class SecuritySimulator(BaseSimulator):
     """Simulates dynamic Identity & Access Management."""
 
-    def __init__(self):
-        super().__init__({"users": [{"id": "u_99", "role": "admin"}]})
+    def __init__(self, *args, **kwargs):
+        super().__init__({"users": [{"id": "u_99", "role": "admin"}]}, *args, **kwargs)
 
     async def handle_security_auth(self, params: dict) -> dict:
         """
@@ -825,8 +853,9 @@ def get_simulator_registry() -> dict:
     """
     from eval_runner import plugins
 
-    # Return new instances of all internal simulators
-    registry = {name: cls() for name, cls in _INTERNAL_SIMULATOR_CLASSES.items()}
+    # Baseline: Populate with internal simulator classes for legacy discovery compatibility.
+    # [Hardening] We use name-based keys to align with the registry-manager discovery pattern.
+    registry = {k: v for k, v in _INTERNAL_SIMULATOR_CLASSES.items()}
 
     # Trigger plugin hook to allow external shims to register themselves (they should provide instances or factory), E501, E501  # noqa: E501
     plugins.manager.trigger("on_register_simulators", registry)

@@ -242,7 +242,6 @@ class TraceVerifier:
             "timestamp": timestamp,
             "run_id": run_id,
             "trace_file": p.name,
-            "sha256": sha256_hash,
             "compliance": {
                 "status": compliance_status,
                 "score": compliance_score,
@@ -255,7 +254,34 @@ class TraceVerifier:
             "behavioral_fingerprint_id": behavioral_fingerprint_id or "default_v1",
         }
 
-        # 3. Cryptographic Provenance
+        # 3. Emit Lifecycle Event to Trace (AgentV v1.5.0 Industrial)
+        # We append the event BEFORE computing the final hash,
+        # but we include a "Seal Hash" of the history up to this point.
+        try:
+            # [Seal Hash Protocol] Anchor the history before adding the certification event
+            seal_hash = cls.compute_signature(p)
+
+            event = {
+                "event": "verification_certificate_issued",
+                "timestamp": timestamp,
+                "identity": identity_id,
+                "vc_version": manifest["vc_version"],
+                "seal_hash": seal_hash,
+            }
+
+            # [Industrial Hardening] Use binary append to ensure predictable line endings (\n)
+            # This prevents Windows-specific \r\n from causing hash mismatches.
+            with open(p, "ab") as f:
+                event_line = (json.dumps(event) + "\n").encode("utf-8")
+                f.write(event_line)
+        except Exception as e:
+            logger.warning(f"      [Verifier] Failed to append lifecycle event to trace: {e}")
+
+        # 4. Final Authoritative Physical Hash (Post-Event)
+        sha256_hash = cls.compute_signature(p)
+        manifest["sha256"] = sha256_hash
+
+        # 5. Cryptographic Provenance
         try:
             private_key = IdentityService.get_private_key(identity_id)
             # Standard: Sign the manifest content (excluding transient fields like provenance_chain)
@@ -276,12 +302,12 @@ class TraceVerifier:
         except Exception as e:
             logger.warning(f"Could not cryptographically sign trace as '{identity_id}': {e}")
 
-        # 4. Save Sidecar Manifest
+        # 6. Save Sidecar Manifest
         sidecar_path = p.parent / "run_manifest.json"
         with open(sidecar_path, "w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=4)
 
-        # 5. Authoritative certificate backup
+        # 7. Authoritative certificate backup
         try:
             cert_dir = config.REPORTS_DIR / "certificates"
             cert_dir.mkdir(parents=True, exist_ok=True)

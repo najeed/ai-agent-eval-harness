@@ -25,7 +25,9 @@
     ],
     "mandatory_patterns": [
       "audit_.*\\.json",
-      "forensics/.*\\.json"
+      "forensics/.*\\.json",
+      "forensics/.*\\.jsonl",
+      "forensics/.*\\.csv"
     ],
     "exclusion_patterns": [
       ".*\\.node$",

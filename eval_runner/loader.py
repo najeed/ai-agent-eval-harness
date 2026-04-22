@@ -22,6 +22,7 @@ from .utils import normalize_uri
 # --- UNIVERSAL IMMUTABLE REGISTRY (Industrial Purity v1.4.0) ---
 _REGISTRY_CACHE = None
 _SCENARIO_SCHEMA = None
+_LAST_PROJECT_ROOT = None
 
 
 def get_internal_spec_root() -> Path:
@@ -36,9 +37,10 @@ def get_spec_root() -> Path:
 
 def reset_universal_registry():
     """Industrial helper for test environments to clear cached registry state."""
-    global _REGISTRY_CACHE, _SCENARIO_SCHEMA
+    global _REGISTRY_CACHE, _SCENARIO_SCHEMA, _LAST_PROJECT_ROOT
     _REGISTRY_CACHE = None
     _SCENARIO_SCHEMA = None
+    _LAST_PROJECT_ROOT = None
 
 
 def get_universal_registry():
@@ -47,7 +49,13 @@ def get_universal_registry():
     Pre-compiles internal baseline and project-specific overlays into an immutable collection.
     Complies with Guardrails v3.4 Section 1.6 (Environment Portability).
     """
-    global _REGISTRY_CACHE
+    global _REGISTRY_CACHE, _LAST_PROJECT_ROOT
+
+    # Industrial Multi-Tenancy Protection: Reset cache if project root changes
+    current_root = config.PROJECT_ROOT.resolve()
+    if _LAST_PROJECT_ROOT is not None and _LAST_PROJECT_ROOT != current_root:
+        reset_universal_registry()
+
     if _REGISTRY_CACHE is not None:
         return _REGISTRY_CACHE
 
@@ -77,7 +85,7 @@ def get_universal_registry():
 
                 # B. Logical URI (Guardrails v3.4 Section 1.6 - Identity Portability)
                 rel_path = json_path.relative_to(root)
-                logical_uri = f"https://agentv.co/spec/{rel_path.as_posix()}"
+                logical_uri = f"https://agentvos.ai/spec/{rel_path.as_posix()}"
 
                 # Anchor Logic: Authoritative Identity (Guardrails v3.4 Section 1.6)
                 # We prioritize the Logical URI identity for absolute portability.
@@ -93,6 +101,9 @@ def get_universal_registry():
                 # Double-Registration for total environment portability
                 registry = registry.with_resource(file_uri, resource)
                 registry = registry.with_resource(logical_uri, resource)
+
+                # C. Finalize Anchor
+                _LAST_PROJECT_ROOT = current_root
 
                 # Optimization: Specifically index the parent for relative sibling resolution
                 if json_path.name.endswith(".schema.json"):
@@ -179,6 +190,7 @@ def _normalize_identity(scenario_data: dict, file_path: Path) -> dict:
 
     # 1. Authoritative Resolution (AES v1.4.0 Compliance)
     # The schema check ensures metadata.id exists.
+    # Standardize the URI for validation
     identifier = metadata.get("id")
 
     # 2. Top-level Engine ID (Required for evaluation context and reporting)
@@ -281,7 +293,7 @@ def load_scenario(
         # Anchor Logic: Ensure the schema dict is associated with its canonical identity
         # The Registry provides all external $ref resolution without I/O side effects
         if "$id" not in schema:
-            schema["$id"] = "https://agentv.co/spec/aes/aes.schema.json"
+            schema["$id"] = "https://agentvos.ai/spec/aes/aes.schema.json"
 
         validator_cls = validator_for(schema)
         validator = validator_cls(schema, registry=registry)

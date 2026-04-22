@@ -126,6 +126,9 @@ class SessionManager:
         # 3. Provenance Injection: Ensure all plugins are recorded in the session metadata
         self.metadata["plugin_provenance"] = self.plugin_manager.provenance_map
 
+        # [AES v1.4.1] Dynamic Metric Discovery
+        self.plugin_manager.trigger("on_discover_metrics", metrics.MetricRegistry)
+
         # Auto-subscribe plugins to the session bus (Bridge to legacy Hooks)
         def _bridge_event_internal(event: Event):
             # Map events to legacy hook names
@@ -243,6 +246,11 @@ class SessionManager:
             logger.info(
                 "      [Session] psutil not found; hardware resource telemetry is disabled."
             )
+        else:
+            # [Forensic Sidecar] Initialize CSV for industrial audit
+            # Ensures O(1) header writing at session start.
+            headers = ["timestamp", "cpu_percent", "rss_mb", "vms_mb", "disk_usage_percent"]
+            self.forensics.init_telemetry(headers)
 
     async def execute_tasks(self, attempt_number: int) -> list[dict[str, Any]]:
         from graphlib import CycleError, TopologicalSorter
@@ -253,7 +261,7 @@ class SessionManager:
         try:
             # 🚀 Move Sandbox into the forensic recovery block
             sandbox = ToolSandbox(self.scenario, event_bus=self.event_bus, forensics=self.forensics)
-            sandbox.setup()
+            await sandbox.setup()
 
             workflow = self.scenario.get("workflow", {})
             nodes_data = {node["id"]: node for node in workflow.get("nodes", [])}
@@ -437,7 +445,13 @@ class SessionManager:
                     protocol=protocol,
                     endpoint=final_endpoint,
                     overrides=self.session_metadata.get("mapping_overrides"),
+                    forensics=self.forensics,
                 )
+
+                # [Forensic Persistence] Snapshoting state after turn completion
+                full_state = await sandbox.get_full_state()
+                self.forensics.snapshot_state(full_state, turn)
+                self._capture_telemetry()
 
                 if agent_response is None:
                     sys.stderr.write(
@@ -667,13 +681,12 @@ class SessionManager:
             span_context=turn_ctx.span_context,
         )
 
-        state_before = sandbox.state.copy()
         result = await sandbox.execute(tool_name, tool_params)
         state_after = sandbox.state.copy()
 
         # O(N) Forensics: Offload state to disk snapshots
-        self.forensics.snapshot_state(state_before, turn)
-        self.forensics.snapshot_state(state_after, turn + 1000)
+        state_after_full = await sandbox.get_full_state()
+        self.forensics.snapshot_state(state_after_full, turn + 1000)
 
         # [Forensic Hardening] capture state fingerprint for stall detection
         self.state_snapshots.append(
@@ -698,7 +711,6 @@ class SessionManager:
         actions["used_tools"].extend(tool_names)
 
         all_tool_results = []
-        state_before = sandbox.state.copy()
 
         for tn in tool_names:
             # [Industrial Interception] Per-tool mutation support
@@ -749,9 +761,9 @@ class SessionManager:
         # ... rest of the logic ...
 
         # O(N) Forensics: Offload state to disk snapshots
-        self.forensics.snapshot_state(state_before, turn)
+        state_after_full = await sandbox.get_full_state()
         self.forensics.snapshot_state(
-            state_after, turn + 1000
+            state_after_full, turn + 1000
         )  # Offset for after-state transparency
 
         # [Forensic Hardening] capture state fingerprint for stall detection
@@ -1058,5 +1070,11 @@ class SessionManager:
                 "disk_usage_percent": psutil.disk_usage(os.getcwd()).percent,
             }
             self.resource_telemetry.append(metrics)
+
+            # [Forensic Sidecar] Export to CSV for industrial audit
+            # Standard: Appends current turn telemetry to the pre-initialized CSV.
+            telemetry_path = self.forensics.target_dir / "telemetry.csv"
+            with open(telemetry_path, "a", encoding="utf-8") as f:
+                f.write(",".join(str(v) for v in metrics.values()) + "\n")
         except Exception as e:
             logger.warning(f"   [Session] Telemetry capture failed: {e}")

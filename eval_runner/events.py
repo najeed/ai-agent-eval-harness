@@ -167,7 +167,7 @@ class CoreEvents:
     NODE_START = "node_start"
     NODE_END = "node_end"
 
-    # Behavioral DNA & OTEL Nesting (v2)
+    # Behavioral DNA & OTEL Nesting (v1.1.0)
     STRATEGY_START = "strategy_start"
     STRATEGY_END = "strategy_end"
     MANEUVER_START = "maneuver_start"

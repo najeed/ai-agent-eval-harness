@@ -167,7 +167,7 @@ class AbstractSandbox(ABC):
 
         # [RFC-002 Hybrid Registry] Environmental DNA Snapshot
         # Capture the resolved state of all shims for this run
-        full_registry = config.RegistryManager.get_resolved_registry()
+        full_registry = config.RegistryManager.reload()
         snapshot_json = json.dumps(full_registry, sort_keys=True)
         self.provisioning_hash = hashlib.sha256(snapshot_json.encode()).hexdigest()
 
@@ -181,13 +181,51 @@ class AbstractSandbox(ABC):
         self.scenario["metadata"]["provisioning_hash"] = self.provisioning_hash
         self.scenario["environmental_snapshot"] = self.provisioning_snapshot
 
-    def setup(self):
+    async def get_full_state(self) -> dict[str, Any]:
+        """
+        [Industrial Requirement] Aggregates the base world state and the snapshots
+        from all active shims (simulators).
+        """
+        full_state = {"world": self.state}
+
+        # Aggregate states from all active simulators
+        # We use get_active_simulators() to ensure we only capture shims
+        # that are within the current Forensic Scope.
+        simulators = self.get_active_simulators()
+        for shim_name, shim_instance in simulators.items():
+            try:
+                # [Forensic Parity] Capture ground truth from the simulator
+                full_state[shim_name] = await shim_instance.get_snapshot()
+            except Exception as e:
+                import sys
+
+                sys.stderr.write(
+                    f"      [Sandbox] Warning: Failed to snapshot shim '{shim_name}': {e}\n"
+                )
+                full_state[shim_name] = {"error": str(e)}
+
+        return full_state
+
+    async def setup(self):
         """Perform one-time setup: Create workspace and terminal_jail directories."""
         from pathlib import Path
 
         Path(self.workspace_dir).mkdir(parents=True, exist_ok=True)
         # Ensure the terminal_jail exists physically (Iteration 2 Physical Isolation)
         Path(self.terminal_jail).mkdir(parents=True, exist_ok=True)
+
+        # [Forensic Baseline] Capture initial state before any turn execution
+        # This allows Turn 1 to be a differential snapshot.
+        if self.forensics:
+            try:
+                initial_state = await self.get_full_state()
+                self.forensics.snapshot_state(initial_state, 0)
+            except Exception as e:
+                import sys
+
+                sys.stderr.write(
+                    f"      [Sandbox] Warning: Failed to capture initial forensic baseline: {e}\n"
+                )
 
         print(f"      [Sandbox] Workspace initialized at: {self.workspace_dir}")
         print(f"      [Sandbox] Terminal Jail provisioned: {self.terminal_jail}")
@@ -357,6 +395,30 @@ class ToolSandbox(AbstractSandbox):
 
         return output
 
+    async def get_full_state(self) -> dict[str, Any]:
+        """
+        Deep State Aggregation.
+        Walks the simulator cache and performs a bulk snapshot of shims.
+        """
+        full_state = {
+            "world": self.state.copy(),
+            "shared": self.shared_state.registry.copy(),
+            "shims": {},
+        }
+
+        simulators = self.get_active_simulators()
+        for name, sim in simulators.items():
+            try:
+                full_state["shims"][name] = await sim.get_snapshot()
+            except Exception as e:
+                import sys
+
+                sys.stderr.write(
+                    f"      [Sandbox] Warning: Failed to snapshot shim '{name}': {e}\n"
+                )
+
+        return full_state
+
     @staticmethod
     def _sanitize_path(path: str) -> str:
         """Chroot/Virtualize a filesystem path, stripping traversals."""
@@ -369,36 +431,117 @@ class ToolSandbox(AbstractSandbox):
             safe = config.SANDBOX_VFS_PREFIX + safe.replace("\\", "/").split("/")[-1]
         return safe
 
+    def _get_scenario_relevant_shims(self) -> set[str]:
+        """
+        [Forensic Relevance Engine] Extracts all shims explicitly mentioned in the
+        scenario contracts (expected_outcome, success_criteria, etc.).
+        """
+        relevant = set()
+        workflow = self.scenario.get("workflow", {})
+        nodes = workflow.get("nodes", [])
+        for node in nodes:
+            outcomes = node.get("expected_outcome", [])
+            if outcomes:
+                # [Industrial Normalization] Support both single dict and list of outcomes
+                outcome_list = [outcomes] if isinstance(outcomes, dict) else outcomes
+
+                for outcome in outcome_list:
+                    if not isinstance(outcome, dict):
+                        continue
+                    target = outcome.get("target", "")
+                    if target.startswith("shim:"):
+                        relevant.add(target.split("shim:", 1)[1])
+
+        # [AgentV v1.5.0] Authoritative Discovery: Strictly rely on scenario contracts
+        # and enabled_shims list. Deprecated metadata.forensics is removed to align with AES v1.4.1.
+        return relevant
+
     def get_active_simulators(self) -> dict:
-        """Filters the global simulator registry based on both system-wide and scenario configs."""
+        """
+        [Industrial Discovery] Dynamically instantiates shims from the Registry
+        based on type mapping and administrative activation policy.
+        """
         if self._simulator_cache is not None:
             return self._simulator_cache
 
+        import sys
+
         from . import config, simulators
 
-        # Instantiate the fresh registry for this sandbox session
-        registry = simulators.get_simulator_registry()
+        # 1. Load the Authoritative Registry (merged baseline + .d extensions)
+        resolved_registry = config.RegistryManager.get_resolved_registry()
+        shim_configs = resolved_registry.get("shims", {})
 
-        # [Industrial Hardening] Inject terminal_jail and sandbox reference into all shims
-        for sim in registry.values():
-            if hasattr(sim, "terminal_jail"):
-                sim.terminal_jail = self.terminal_jail
-            # Enable shims to register artifacts for cleanup/audit
-            sim.sandbox = self
+        # 2. Get the industrial class mapping
+        shim_classes = simulators._INTERNAL_SIMULATOR_CLASSES
 
-        # Layer 1: Global System Filter (from config.py / environment)
-        # This acts as the Master Administrative Gate (User's Section 9 Governance).
+        # 3. Resolve Activation Policies
         global_enabled = config.GLOBAL_ENABLED_SHIMS
-        if "*" not in global_enabled:
-            registry = {name: sim for name, sim in registry.items() if name in global_enabled}
 
-        # Layer 2: Scenario-Specific Filter (from .json metadata)
+        # [Industrial Hardening] If 'enabled_shims' is omitted, we assume "Legacy Permissive" mode
+        # to maintain compatibility with standard scenarios. If explicitly set to [],
+        # we enter "Strict Discovery" mode.
         scenario_enabled = self.scenario.get("enabled_shims", ["*"])
-        if "*" not in scenario_enabled:
-            registry = {name: sim for name, sim in registry.items() if name in scenario_enabled}
+        relevant_shims = self._get_scenario_relevant_shims()
 
-        self._simulator_cache = registry
-        return registry
+        active_registry = {}
+
+        # Discover across all unique configured shims and supported classes
+        # (Iteration 9: Full Spectrum Discovery)
+        all_potential_shims = set(shim_configs.keys()) | set(shim_classes.keys())
+
+        for shim_name in all_potential_shims:
+            shim_cfg = shim_configs.get(shim_name, {})
+            # If not in configs, we might still have a built-in class
+            base_cls = shim_classes.get(shim_name)
+
+            # [Industrial Activation Hierarchy]
+            # Priority 1: Forensic Relevance (Explicitly mentioned in scenario contract)
+            is_relevant = shim_name in relevant_shims
+
+            # Priority 2: Administrative Enablement
+            is_globally_enabled = "*" in global_enabled or shim_name in global_enabled
+            is_scenario_enabled = "*" in scenario_enabled or shim_name in scenario_enabled
+
+            # Policy: Activate if relevant OR (globally enabled AND scenario enabled)
+            should_activate = is_relevant or (is_globally_enabled and is_scenario_enabled)
+
+            if not should_activate:
+                continue
+
+            # Layer 3: Authoritative Type Resolution
+            shim_type = shim_cfg.get("type", shim_name)
+
+            # Re-verify class affinity if type was overridden or using built-in
+            target_cls = shim_classes.get(shim_type, base_cls)
+
+            if target_cls:
+                try:
+                    # [Zero-Touch Injection] Instantiate with registry-provided resources
+                    instance = target_cls(config=shim_cfg)
+                    instance.terminal_jail = self.terminal_jail
+                    instance.sandbox = self
+                    active_registry[shim_name] = instance
+                    sys.stderr.write(
+                        f"      [Sandbox] OK: Activated shim '{shim_name}' (type: {shim_type})\n"
+                    )
+                except Exception as e:
+                    sys.stderr.write(
+                        f"      [Sandbox] Error: Failed to instantiate '{shim_name}': {e}\n"
+                    )
+            else:
+                sys.stderr.write(
+                    f"      [Sandbox] Warning: Unknown shim type '{shim_type}' for '{shim_name}'\n"
+                )
+
+        # 4. Trigger Plugin Hook for Ad-hoc/External Simulators
+        # (Already instantiated by plugins or returned as factory)
+        from . import plugins
+
+        plugins.manager.trigger("on_register_simulators", active_registry)
+
+        self._simulator_cache = active_registry
+        return active_registry
 
     @staticmethod
     def _sanitize_value(value):

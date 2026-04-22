@@ -21,6 +21,87 @@ def compute_file_hash(file_path: Path) -> str:
     return sha256.hexdigest()
 
 
+def list_diff(old: list, new: list) -> list | dict:
+    """
+    Computes a differential between two lists, optimized for database-style row sets.
+    Identifies primary keys (id, audit_id, etc.) to perform granular row tracking.
+    """
+    if not old or not new:
+        return new
+
+    # Tier 1: Check if this is a list of dictionaries (likely a DB table)
+    if not all(isinstance(x, dict) for x in old) or not all(isinstance(x, dict) for x in new):
+        return new  # Full replacement for non-dictionary lists
+
+    # Tier 2: Discover Authoritative Primary Key
+    pk_candidates = ["id", "audit_id", "application_id", "applicant_id", "email"]
+    pk = next(
+        (k for k in pk_candidates if all(k in x for x in old) and all(k in x for x in new)), None
+    )
+
+    if not pk:
+        return new  # Full replacement if no reliable identity found
+
+    # Tier 3: Record-Level Differential Analysis
+    old_map = {x[pk]: x for x in old}
+    diff = {"added": [], "modified": [], "deleted": []}
+
+    new_pks = set()
+    for item in new:
+        val = item[pk]
+        new_pks.add(val)
+        if val not in old_map:
+            diff["added"].append(item)
+        elif old_map[val] != item:
+            # Recursive check for deep dict changes within a row
+            row_diff = dict_diff(old_map[val], item)
+            if row_diff:
+                diff["modified"].append({pk: val, **row_diff})
+
+    # Track removals (Non-Repudiation Requirement)
+    for val in old_map:
+        if val not in new_pks:
+            diff["deleted"].append(val)
+
+    # Optimization: Return None if state is identical to prevent empty diff files
+    if not any(diff.values()):
+        return None
+
+    return {"__LIST_DIFF__": diff}
+
+
+def dict_diff(old: dict, new: dict) -> dict:
+    """
+    Computes a recursive differential between two dictionaries.
+    Returns a dict containing only the changed or new keys.
+    Deleted keys are marked as '__DELETED__'.
+    """
+    diff = {}
+    # Find changed and new keys
+    for k, v in new.items():
+        if k not in old:
+            diff[k] = v
+        elif old[k] != v:
+            if isinstance(v, dict) and isinstance(old[k], dict):
+                sub_diff = dict_diff(old[k], v)
+                if sub_diff:
+                    diff[k] = sub_diff
+            elif isinstance(v, list) and isinstance(old[k], list):
+                # Industrial Optimization: List-level differential
+                l_diff = list_diff(old[k], v)
+                if l_diff is not None:
+                    diff[k] = l_diff
+            else:
+                diff[k] = v
+
+    # Find deleted keys
+    for k in old:
+        if k not in new:
+            diff[k] = "__DELETED__"
+
+    return diff
+
+
 class ForensicRelevanceEngine:
     """
     Authoritative Filtering Engine for Participation-First Artifact Collection.
@@ -148,6 +229,7 @@ class ForensicCollector:
         self.target_dir = run_log_dir / "forensics"
         self._artifacts: list[dict[str, Any]] = []
         self._state_snapshots: dict[int, Path] = {}
+        self._last_state: dict[str, Any] = {}
 
     def register_artifact(self, path: Path, alias: str):
         """Registers a file path to be collected at the end of the session."""
@@ -193,18 +275,67 @@ class ForensicCollector:
     def snapshot_state(self, state: dict[str, Any], turn: int):
         """
         Saves a JSON snapshot of the world state to disk.
-        Prevents O(N^2) memory growth in SessionManager.
+        Uses differential encoding (dict_diff) to minimize storage footprint.
         """
         self.target_dir.mkdir(parents=True, exist_ok=True)
-        snapshot_path = self.target_dir / f"state_turn_{turn:03d}.json"
+        # Authoritative Baseline: Turn 0 is always full.
+        # All subsequent turns are differential.
+        is_full = turn == 0 or not self._last_state
+
+        if is_full:
+            snapshot_path = self.target_dir / f"state_turn_{turn:03d}_full.json"
+            content = state
+        else:
+            snapshot_path = self.target_dir / f"state_turn_{turn:03d}_diff.json"
+            content = dict_diff(self._last_state, state)
+            if not content:
+                # Zero-Change optimization: Don't write empty diffs
+                return
 
         try:
             with open(snapshot_path, "w", encoding="utf-8") as f:
-                json.dump(state, f, indent=4)
+                json.dump(content, f, indent=4)
+
             self._state_snapshots[turn] = snapshot_path
-            logger.debug(f"[Forensics] State snapshot saved for turn {turn}: {snapshot_path.name}")
+            self._last_state = state  # Update cache for next turn
+            logger.debug(
+                f"[Forensics] {'Full' if is_full else 'Diff'} snapshot saved: {snapshot_path.name}"
+            )
         except Exception as e:
             logger.error(f"[Forensics] Failed to save state snapshot for turn {turn}: {e}")
+
+    def init_telemetry(self, headers: list[str]):
+        """
+        Initializes the telemetry CSV file with a header.
+        Ensures O(1) header writing at session start.
+        """
+        self.target_dir.mkdir(parents=True, exist_ok=True)
+        telemetry_path = self.target_dir / "telemetry.csv"
+
+        try:
+            with open(telemetry_path, "w", encoding="utf-8") as f:
+                f.write(",".join(headers) + "\n")
+            logger.debug(f"[Forensics] Telemetry CSV initialized at {telemetry_path}")
+        except Exception as e:
+            logger.error(f"[Forensics] Failed to initialize telemetry CSV: {e}")
+
+    def register_raw_interaction(self, payload: dict, response: dict):
+        """
+        Logs a raw adapter interaction (stimulus/response) to the forensic vault.
+        Ensures bit-for-bit auditability of agent-harness communication.
+        """
+        self.target_dir.mkdir(parents=True, exist_ok=True)
+        trace_path = self.target_dir / "adapter_trace.jsonl"
+
+        import time
+
+        entry = {"timestamp": time.time(), "payload": payload, "response": response}
+
+        try:
+            with open(trace_path, "a", encoding="utf-8") as f:
+                f.write(json.dumps(entry) + "\n")
+        except Exception as e:
+            logger.error(f"[Forensics] Failed to log raw interaction: {e}")
 
     def collect(self) -> dict[str, str]:
         """

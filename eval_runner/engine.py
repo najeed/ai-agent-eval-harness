@@ -167,7 +167,14 @@ class AgentAdapterRegistry:
             raise ValueError(f"No endpoint/command provided for protocol '{protocol}'")
 
         print(f"      [Engine] Executing {protocol} call to: {endpoint}")
-        return await adapter(payload, endpoint, span_context=span_context, **kwargs)
+        response = await adapter(payload, endpoint, span_context=span_context, **kwargs)
+
+        # [Forensic Persistence] Recording raw interaction Stimulus
+        forensics_handle = kwargs.get("forensics")
+        if forensics_handle:
+            forensics_handle.register_raw_interaction(payload, response)
+
+        return response
 
 
 async def run_evaluation(
@@ -190,10 +197,8 @@ async def run_evaluation(
     from .flight_recorder import FlightRecorderPlugin
     from .reporting_plugin import ReportingPlugin
 
-    if not any(isinstance(p, FlightRecorderPlugin) for p in plugins.manager.plugins):
-        plugins.manager.plugins.append(FlightRecorderPlugin())
-    if not any(isinstance(p, ReportingPlugin) for p in plugins.manager.plugins):
-        plugins.manager.plugins.append(ReportingPlugin())
+    plugins.manager.register(FlightRecorderPlugin(), origin="CORE")
+    plugins.manager.register(ReportingPlugin(), origin="CORE")
 
     runner = DefaultRunner()
     results = await runner.run(

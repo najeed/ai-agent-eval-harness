@@ -54,7 +54,7 @@ The AES JSON file is a **Blueprint**, but the actual **Resources** live in the p
 | `description` | String | "Evaluates loan logic..." | Detailed business context for cataloging. |
 | `complexity` | Enum | `low`, `medium`, `high` | Qualitative difficulty assessment. |
 | `agent` | Object | `{ "protocol": "http" }` | Explicit agent routing override. |
-| `forensics` | Array | see `.aes/config/forensics/policy.json` | Tags for automated artifact collation. |
+
 | `agent_topology` | Object | `{ "underwriter": { "writes": ["db:*"] } }` | Defines agent permissions and resource namespaces. |
 | `policies` | Object | `{ "101": { "name": "No PII" } }` | Behavioral constraints and enforcement rules. |
 | `provisioning_hash` | String | SHA-256 | Cryptographic anchor for the infrastructure state. |
@@ -76,9 +76,9 @@ The AES JSON file is a **Blueprint**, but the actual **Resources** live in the p
 5.  **`description` / `complexity`**:
     - **Purpose**: Industrial metadata for scenario catalogs. Enables quick filtering of "High Complexity Fintech" runs.
     - **Config**: Strings and Enums.
-6.  **`agent` / `forensics`**:
-    - **Purpose**: `agent` allows a local override of the global routing. `forensics` provides anchor tags for result aggregators.
-    - **Config**: Objects and Arrays.
+6.  **`agent`**:
+    - **Purpose**: `agent` allows a local override of the global routing.
+    - **Config**: Object.
 7.  **`policies`**:
     - **Purpose**: The "Active Ingredients" of compliance. Defines the ruleset audited by the `CompliancePlugin`.
     - **Config**: A dictionary of objects (e.g., `{"leakage_prevention": {"id": "RULE_101"}}`).

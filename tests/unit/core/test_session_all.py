@@ -80,7 +80,11 @@ class TestSession:
                     with patch("eval_runner.plugins.manager.trigger"):
                         mock_sandbox = mock_sandbox_cls.return_value
                         mock_sandbox.state = {"val": 1}
+                        mock_sandbox.setup = AsyncMock()
                         mock_sandbox.teardown = AsyncMock()
+                        mock_sandbox.get_full_state = AsyncMock(
+                            return_value={"world": mock_sandbox.state}
+                        )
                         mock_call_agent.return_value = {"action": "final_answer", "content": "Done"}
 
                         results = await session.execute_tasks(attempt_number=1)
@@ -142,6 +146,9 @@ class TestSession:
                     mock_sandbox = MagicMock()
                     mock_sandbox.state = {"cwd": "/"}
                     mock_sandbox.execute = AsyncMock(return_value={"output": "ok"})
+                    mock_sandbox.get_full_state = AsyncMock(
+                        return_value={"world": mock_sandbox.state}
+                    )
                     history = []
                     actions = {"used_tools": []}
 
@@ -167,6 +174,7 @@ class TestSession:
                 mock_sandbox = MagicMock()
                 mock_sandbox.state = {}
                 mock_sandbox.execute = AsyncMock(return_value={"status": "success", "data": "res"})
+                mock_sandbox.get_full_state = AsyncMock(return_value={"world": {}})
                 history = []
                 actions = {"used_tools": []}
 

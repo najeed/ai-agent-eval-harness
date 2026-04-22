@@ -208,7 +208,28 @@ class FailureTaxonomy:
         ),
         # Contact Info (GDPR, PHI-linked)
         "contact": re.compile(
-            r"\b\d{10,11}\b|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|\b\d{1,5}\s+[A-Za-z]{2,}\s+[A-Za-z]{2,}\b",
+            r"""
+            (
+                # Phone numbers (with optional country code)
+                (?:\+?\d{1,3}[-.\s]?)?\d{7,12}
+                |
+                # Email addresses
+                [a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,3}
+                |
+                # Street addresses (number + street + suffix)
+                \b\d{1,5}\s(?:[A-Za-z0-9#-]+\s?){1,4}
+                (?:Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Lane|Ln|
+                Court|Ct|Way|Blvd|Boulevard|Terrace|Ter|Square|Sq|
+                Circle|Cir|Parkway|Pkwy|Place|Pl|Close|Cl|Block|Sector|Phase|
+                Plaza|Plz|Center|Ctr|Highway|Hwy|Loop|Mews|Path|Row|Trail|Trl|
+                Walk|Crescent|Cres|Circus|Gardens|Gdns)\b
+                |
+                # Postal codes (US/EU/APAC)
+                \b\d{5}(?:-\d{4})?\b                # US ZIP
+                | \b[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}\b  # UK
+                | \b\d{4,6}\b                       # EU/APAC numeric codes
+            )
+            """,
             re.IGNORECASE | re.VERBOSE,
         ),
         # Organizational Identity
@@ -355,6 +376,8 @@ class FailureTaxonomy:
                     return FailureCategory.LOGIC_STATE_MISMATCH
                 if "parity" in name:
                     return FailureCategory.PARITY_STATE_DIVERGENCE
+                if "output_matches" in name:
+                    return FailureCategory.LOGIC_PLANNING_ERROR
         return None
 
     @classmethod
