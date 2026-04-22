@@ -3,7 +3,7 @@ name = "dataproc-engine"
 version = "0.1.0"
 description = "High-Signal Industry Dataset Utility"
 authors = [
-    { name = "Najeed Khan", email = "ai.eval.harness.contact+najeed@gmail.com" }
+    { name = "Najeed Khan", email = "agentv@agentvos.ai" }
 ]
 dependencies = [
     "click",

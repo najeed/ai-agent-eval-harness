@@ -28,7 +28,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **opentelemetry-api** | 1.41.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **opentelemetry-sdk** | 1.41.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **google-genai** | 1.70.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **pypdf** | 6.10.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **pypdf** | 6.10.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **streamlit** | 1.56.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **pandas** | 3.0.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
@@ -37,6 +37,9 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **pyasn1** | 0.6.3 | BSD-2-Clause | [BSD-2-Clause.txt](LICENSES/BSD-2-Clause.txt) |
 | **python-dotenv** | 1.0.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **click** | 8.3.2 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **pydantic** | 2.13.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **pyarrow** | 24.0.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 
 ## 3. Obligations & Compliance Steps
 To remain compliant with these licenses, the following steps are handled automatically by this repository:
