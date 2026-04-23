@@ -59,6 +59,7 @@ async def test_run_quickstart_flow(tmp_path, monkeypatch, capsys):
         },
         "description": "Test",
         "workflow": {"nodes": [{"id": "t1", "task_description": "test task"}], "edges": []},
+        "evaluation": {"metrics": []},
     }
     scen_file.write_text(json.dumps(mock_scenario), encoding="utf-8")
 

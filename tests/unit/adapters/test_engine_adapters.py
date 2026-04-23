@@ -26,9 +26,8 @@ async def test_call_agent_protocol_selection():
         AgentAdapterRegistry._adapters,
         {"local": AsyncMock(return_value={"action": "final_answer", "content": "ok"})},
     ):
-        result = await AgentAdapterRegistry.call_agent(
-            payload, protocol="local", endpoint="echo 'test'"
-        )
+        # Industrial Signature: (protocol, endpoint, message, history, turn_ctx=None)
+        result = await AgentAdapterRegistry.call_agent("local", "echo 'test'", str(payload), [])
         assert result["content"] == "ok"
 
 
@@ -43,5 +42,6 @@ async def test_call_agent_env_fallback():
             AgentAdapterRegistry._adapters,
             {"local": AsyncMock(return_value={"action": "final_answer", "content": "env_ok"})},
         ):
-            result = await AgentAdapterRegistry.call_agent(payload, protocol="local")
+            # Industrial Signature: (protocol, endpoint, message, history, turn_ctx=None)
+            result = await AgentAdapterRegistry.call_agent("local", None, str(payload), [])
             assert result["content"] == "env_ok"

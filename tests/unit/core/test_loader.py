@@ -42,6 +42,7 @@ def test_load_valid_scenario(tmp_path):
             ],
             "edges": [],
         },
+        "evaluation": {"metrics": []},
     }
     scenario_file = tmp_path / "scenario.json"
     scenario_file.write_text(json.dumps(scenario_content))
@@ -123,6 +124,7 @@ def test_load_dataset_single_json(tmp_path):
         "industry": "test",
         "metadata": {"name": "Test", "id": "test-123", "compliance_level": "Standard"},
         "workflow": {"nodes": [], "edges": []},
+        "evaluation": {"metrics": []},
     }
     scenario_file.write_text(json.dumps(scenario_data))
     results = loader.load_dataset(scenario_file)
@@ -141,6 +143,7 @@ def test_load_dataset_directory(tmp_path):
                 "description": "d1",
                 "metadata": {"name": "S1", "id": "s1", "compliance_level": "Standard"},
                 "workflow": {"nodes": [], "edges": []},
+                "evaluation": {"metrics": []},
             }
         )
     )
@@ -153,6 +156,7 @@ def test_load_dataset_directory(tmp_path):
                 "description": "d2",
                 "metadata": {"name": "S2", "id": "s2", "compliance_level": "Standard"},
                 "workflow": {"nodes": [], "edges": []},
+                "evaluation": {"metrics": []},
             }
         )
     )

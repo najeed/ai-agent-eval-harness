@@ -1,16 +1,19 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Agent Eval Specification (AES) v1.4.0",
+  "title": "AES Root Schema (v1.4.0)",
   "type": "object",
   "required": [
     "aes_version",
     "metadata",
-    "workflow"
+    "workflow",
+    "evaluation"
   ],
   "properties": {
     "aes_version": {
       "type": "number",
-      "const": 1.4
+      "enum": [
+        1.4
+      ]
     },
     "metadata": {
       "$ref": "definitions/metadata.json"
@@ -22,12 +25,10 @@
       "$ref": "definitions/evaluation.json"
     },
     "initial_state": {
-      "type": "object",
-      "description": "Seed state for the SharedStateRegistry."
+      "type": "object"
     },
     "environmental_snapshot": {
-      "type": "object",
-      "description": "A resolved snapshot of the environmental provisioning registry captured at run start."
+      "type": "object"
     }
   }
 }

@@ -72,11 +72,11 @@ def test_handoff_token_expired(app):
     client = app.test_client()
 
     # Generate token that expired 10s ago
-    import datetime
+    from datetime import UTC, datetime, timedelta
 
     payload = {
-        "exp": datetime.datetime.utcnow() - datetime.timedelta(seconds=10),
-        "iat": datetime.datetime.utcnow(),
+        "exp": datetime.now(UTC) - timedelta(seconds=10),
+        "iat": datetime.now(UTC),
         "sub": "admin-user",
     }
     expired_token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")

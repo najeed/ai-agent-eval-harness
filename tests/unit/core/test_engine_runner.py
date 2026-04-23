@@ -29,9 +29,8 @@ async def test_adapter_registry_call_agent():
     mock_adapter = AsyncMock(return_value={"action": "test"})
     AgentAdapterRegistry.register("test-proto", mock_adapter)
 
-    result = await AgentAdapterRegistry.call_agent(
-        {"task_description": "do thing"}, protocol="test-proto", endpoint="test://url"
-    )
+    # Industrial Multi-Agent Signature: (protocol, endpoint, message, history, turn_ctx=None)
+    result = await AgentAdapterRegistry.call_agent("test-proto", "test://url", "do thing", [])
     assert result["action"] == "test"
     mock_adapter.assert_called_once()
 

@@ -1,0 +1,30 @@
+{
+  "aes_version": 1.4,
+  "id": "drift-0ce61f0e",
+  "industry": "finance",
+  "use_case": "production_replay",
+  "metadata": {
+    "id": "drift-0ce61f0e",
+    "name": "Imported Drift: i.json",
+    "compliance_level": "Standard"
+  },
+  "description": "Automatically imported from production trace: i.json",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "node_1",
+        "task_description": "Replay production trace and verify outcome.",
+        "success_criteria": [
+          {
+            "metric": "generic_accuracy",
+            "threshold": 0.8
+          }
+        ]
+      }
+    ],
+    "edges": []
+  },
+  "ground_truth_history": [
+    {}
+  ]
+}

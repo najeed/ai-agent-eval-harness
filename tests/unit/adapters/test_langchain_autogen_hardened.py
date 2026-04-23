@@ -76,8 +76,9 @@ async def test_autogen_adapter_missing_all():
 
 def test_registry_edge_cases():
     # Unknown protocol
-    with pytest.raises(ValueError, match="No adapter registered for protocol: ghost"):
-        asyncio.run(AgentAdapterRegistry.call_agent({}, "ghost", endpoint="dummy"))
+    with pytest.raises(ValueError, match="Unsupported protocol 'ghost'"):
+        # Industrial Signature: (protocol, endpoint, message, history, turn_ctx=None)
+        asyncio.run(AgentAdapterRegistry.call_agent("ghost", "dummy", "{}", []))
 
 
 @pytest.mark.asyncio
@@ -86,11 +87,15 @@ async def test_registry_call_agent_with_overrides():
     mock_adapter = AsyncMock(return_value={"status": "success"})
     registry.register("test", mock_adapter)
 
-    overrides = {"STUCK": "hitl_pause"}
-    await AgentAdapterRegistry.call_agent(
-        {"input": "x"}, "test", endpoint="http://t", overrides=overrides
-    )
+    # Industrial Multi-Agent Signature: (protocol, endpoint, message, history, turn_ctx=None)
+    # Overrides and other metadata should now be part of turn_ctx or message payload
+    # in the v1.5.0 specification.
+    await AgentAdapterRegistry.call_agent("test", "http://t", '{"input": "x"}', [])
 
-    # Check that overrides were passed in kwargs
+    # Check that adapter was called with correct args
     args, kwargs = mock_adapter.call_args
-    assert kwargs["overrides"] == overrides
+    # Adapter receives a single payload dict and endpoint as keyword
+    payload = args[0]
+    assert payload["protocol"] == "test"
+    assert payload["task_description"] == '{"input": "x"}'
+    assert kwargs["endpoint"] == "http://t"

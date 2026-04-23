@@ -46,7 +46,7 @@ async def test_pass_at_k_protocol():
     # Mock agent to succeed in 1 out of 2 attempts
     attempt_count = 0
 
-    async def mock_agent_call(payload, protocol="http", endpoint=None, **kwargs):
+    async def mock_agent_call(protocol, endpoint, message, history, turn_ctx):
         nonlocal attempt_count
         attempt_count += 1
         if attempt_count == 1:
@@ -87,7 +87,7 @@ async def test_consistency_score_integration():
     }
 
     # Mock agent to give same answer twice
-    async def mock_agent_call(payload, protocol="http", endpoint=None, **kwargs):
+    async def mock_agent_call(protocol, endpoint, message, history, turn_ctx):
         return {"action": "final_answer", "summary": "Identical result"}
 
     with patch(
@@ -149,10 +149,13 @@ async def test_engine_single_tool_call():
         },
     ]
 
+    async def mock_agent_call(protocol, endpoint, message, history, turn_ctx):
+        return responses.pop(0)
+
     with patch(
         "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
     ) as mock_call:
-        mock_call.side_effect = responses
+        mock_call.side_effect = mock_agent_call
         results = await engine.run_evaluation(_make_scenario(["tool_a"]))
 
     assert len(results) == 1
@@ -180,12 +183,16 @@ async def test_engine_multiple_tools():
             "summary": "All done.",
         },
     ]
+
+    async def mock_agent_call(protocol, endpoint, message, history, turn_ctx):
+        return responses.pop(0)
+
     scenario = _make_scenario(["tool_a", "tool_b"])
 
     with patch(
         "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
     ) as mock_call:
-        mock_call.side_effect = responses
+        mock_call.side_effect = mock_agent_call
         results = await engine.run_evaluation(scenario)
 
     metric = next(m for m in results[0]["metrics"] if m["metric"] == "tool_call_correctness")
@@ -202,10 +209,13 @@ async def test_engine_final_answer_first_turn():
         },
     ]
 
+    async def mock_agent_call(protocol, endpoint, message, history, turn_ctx):
+        return responses.pop(0)
+
     with patch(
         "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
     ) as mock_call:
-        mock_call.side_effect = responses
+        mock_call.side_effect = mock_agent_call
         results = await engine.run_evaluation(_make_scenario(["tool_a"]))
 
     # No tools were used, so tool_call_correctness should be 0.0
@@ -229,10 +239,13 @@ async def test_engine_max_turns_reached(monkeypatch):
         for i in range(5)
     ]
 
+    async def mock_agent_call(protocol, endpoint, message, history, turn_ctx):
+        return responses.pop(0)
+
     with patch(
         "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
     ) as mock_call:
-        mock_call.side_effect = responses
+        mock_call.side_effect = mock_agent_call
         results = await engine.run_evaluation(_make_scenario(["tool_a"]))
 
     # It should stop at MAX_TURNS (which is 2)
@@ -297,10 +310,13 @@ async def test_engine_generic_accuracy_metric():
         },
     ]
 
+    async def mock_agent_call(protocol, endpoint, message, history, turn_ctx):
+        return responses.pop(0)
+
     with patch(
         "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
     ) as mock_call:
-        mock_call.side_effect = responses
+        mock_call.side_effect = mock_agent_call
         results = await engine.run_evaluation(scenario)
 
     metric = next(
@@ -336,10 +352,13 @@ async def test_engine_communication_clarity_metric():
         },
     ]
 
+    async def mock_agent_call(protocol, endpoint, message, history, turn_ctx):
+        return responses.pop(0)
+
     with patch(
         "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
     ) as mock_call:
-        mock_call.side_effect = responses
+        mock_call.side_effect = mock_agent_call
         results = await engine.run_evaluation(scenario)
 
     metric = next(m for m in results[0]["metrics"] if m["metric"] == "communication_clarity")
@@ -377,10 +396,13 @@ async def test_engine_policy_violation_feedback_loop():
         {"action": "final_answer", "summary": "Limited the refund to 50."},
     ]
 
+    async def mock_agent_call(protocol, endpoint, message, history, turn_ctx):
+        return responses.pop(0)
+
     with patch(
         "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
     ) as mock_call:
-        mock_call.side_effect = responses
+        mock_call.side_effect = mock_agent_call
         results = await engine.run_evaluation(scenario)
 
     task_result = results[0]
@@ -427,10 +449,13 @@ async def test_engine_state_verification_metric():
         {"action": "final_answer", "summary": "Plan updated."},
     ]
 
+    async def mock_agent_call(protocol, endpoint, message, history, turn_ctx):
+        return responses.pop(0)
+
     with patch(
         "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
     ) as mock_call:
-        mock_call.side_effect = responses
+        mock_call.side_effect = mock_agent_call
         results = await engine.run_evaluation(scenario)
 
     task_result = results[0]

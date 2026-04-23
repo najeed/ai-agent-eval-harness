@@ -1,0 +1,28 @@
+{
+  "aes_version": 1.4,
+  "id": "fin-pack",
+  "metadata": {
+    "id": "fin-pack",
+    "name": "Curated fin pack (latest)",
+    "compliance_level": "Standard",
+    "capabilities": []
+  },
+  "industry": "fin",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "n1",
+        "task_description": "Benchmark for fin pack vlatest"
+      }
+    ],
+    "edges": []
+  },
+  "evaluation": {
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
+  }
+}

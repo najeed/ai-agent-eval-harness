@@ -1,4 +1,3 @@
-import asyncio
 import os
 import shlex
 import subprocess
@@ -21,7 +20,9 @@ class BaseSimulator:
         handler_name = f"handle_{action}"
         handler = getattr(self, handler_name, None)
         if handler:
-            if asyncio.iscoroutinefunction(handler):
+            import inspect
+
+            if inspect.iscoroutinefunction(handler):
                 return await handler(params)
             return handler(params)
         return {

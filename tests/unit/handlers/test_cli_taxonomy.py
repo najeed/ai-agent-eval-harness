@@ -37,6 +37,7 @@ async def test_handle_inspect_success(tmp_path, capsys):
         "industry": "finance",
         "description": "Verify it prints everything.",
         "workflow": {"nodes": [{"id": "t1", "task_description": "task"}], "edges": []},
+        "evaluation": {"metrics": []},
     }
     scen_path.write_text(json.dumps(scen_data))
 

@@ -54,6 +54,7 @@ def test_evaluate_endpoint_security_service_key(client, tmp_path):
                     "nodes": [{"id": "start", "task_description": "Verify programmatic auth"}],
                     "edges": [],
                 },
+                "evaluation": {"metrics": []},
             }
         ),
         encoding="utf-8",
@@ -99,6 +100,7 @@ def test_evaluate_endpoint_security_dash_key_fallback(client, tmp_path):
                     "nodes": [{"id": "start", "task_description": "Verify fallback execution"}],
                     "edges": [],
                 },
+                "evaluation": {"metrics": []},
             }
         ),
         encoding="utf-8",

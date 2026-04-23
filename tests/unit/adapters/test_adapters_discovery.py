@@ -23,17 +23,19 @@ def test_adapter_discovery():
 
 @pytest.mark.asyncio
 async def test_openai_adapter_logic():
-    from unittest.mock import AsyncMock, patch
+    from unittest.mock import AsyncMock, MagicMock, patch
 
     # Mock the aiohttp.ClientSession to avoid event loop issues
     mock_response = AsyncMock()
     mock_response.status = 401
     mock_response.text = AsyncMock(return_value="Unauthorized")
+    mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+    mock_response.__aexit__ = AsyncMock(return_value=None)
 
     mock_session = AsyncMock()
-    mock_session.__aenter__ = AsyncMock(return_value=AsyncMock())
+    mock_session.__aenter__ = AsyncMock(return_value=mock_session)
     mock_session.__aexit__ = AsyncMock(return_value=None)
-    mock_session.post = AsyncMock(return_value=mock_response)
+    mock_session.post = MagicMock(return_value=mock_response)
 
     with patch("aiohttp.ClientSession", return_value=mock_session):
         AgentAdapterRegistry._discover()

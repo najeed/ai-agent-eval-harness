@@ -1,5 +1,6 @@
 import datetime
 import functools
+from datetime import UTC
 
 import jwt
 from flask import Blueprint, jsonify, request
@@ -13,8 +14,8 @@ SECRET_KEY = "harness-dev-secret-change-me-in-production"
 def generate_handoff_token():
     """Generates a short-lived JWT for frontend-to-plugin handoff."""
     payload = {
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=60),
-        "iat": datetime.datetime.utcnow(),
+        "exp": datetime.datetime.now(UTC) + datetime.timedelta(seconds=60),
+        "iat": datetime.datetime.now(UTC),
         "sub": "admin-user",
         "scope": "console-handoff",
     }

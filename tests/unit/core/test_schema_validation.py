@@ -44,6 +44,7 @@ def test_loader_accepts_v14_minimal(tmp_path):
         "aes_version": 1.4,
         "metadata": {"id": "valid-v14", "name": "Valid Scenario", "compliance_level": "Standard"},
         "workflow": {"nodes": [{"id": "task-1", "task_description": "First task"}], "edges": []},
+        "evaluation": {"metrics": []},
     }
     scen_path.write_text(json.dumps(content))
 

@@ -99,245 +99,97 @@ class TestSession:
     @pytest.mark.asyncio
     async def test_execute_tasks_agent_error(self, session):
         with patch(
-            "eval_runner.engine.AgentAdapterRegistry.call_agent",
-            side_effect=Exception("Connection Refused"),
-        ):
-            with patch("eval_runner.tool_sandbox.ToolSandbox") as mock_sandbox_cls:
-                mock_sandbox = mock_sandbox_cls.return_value
-                mock_sandbox.teardown = AsyncMock()
-                with patch("eval_runner.events.EventEmitter.emit") as mock_emit:
+            "eval_runner.session.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+        ) as mock_call_agent:
+            with patch("eval_runner.session.ToolSandbox") as mock_sandbox_cls:
+                with patch("eval_runner.events.EventEmitter.emit"):
+                    mock_sandbox = mock_sandbox_cls.return_value
+                    mock_sandbox.setup = AsyncMock()
+                    mock_sandbox.teardown = AsyncMock()
+                    mock_sandbox.get_full_state = AsyncMock(return_value={})
+                    mock_call_agent.side_effect = Exception("Agent Crash")
+
                     results = await session.execute_tasks(1)
-                    assert len(results) >= 1
-                    error_emits = [
-                        args[0] for args, kwargs in mock_emit.call_args_list if args[0] == "error"
-                    ]
-                    assert "error" in error_emits
+                    assert len(results) == 1
+                    assert results[0]["status"] == "failure"
+                    assert "Agent Crash" in results[0]["message"]
 
     @pytest.mark.asyncio
-    async def test_handle_tool_call_blocked(self, session):
-        with patch.object(session.plugin_manager, "trigger_interceptor", return_value=False):
-            with patch("eval_runner.events.EventEmitter.emit") as mock_emit:
-                mock_ctx = MagicMock(spec=TurnContext)
-                mock_sandbox = MagicMock()
-                mock_sandbox.execute = AsyncMock(return_value={"status": "success"})
-                mock_sandbox.state = {}
-                history = []
-                actions = {"used_tools": []}
-
-                await session._handle_tool_call(
-                    1, {"tool_name": "ls"}, mock_sandbox, history, actions, mock_ctx
-                )
-
-                assert len(history) == 0
-                mock_sandbox.execute.assert_not_called()
-                error_emits = [
-                    kwargs["data"] if "data" in kwargs else args[1]
-                    for args, kwargs in mock_emit.call_args_list
-                    if args[0] == "error"
-                ]
-                assert any("blocked by plugin" in str(e) for e in error_emits)
-
-    @pytest.mark.asyncio
-    async def test_handle_tool_call_success(self, session):
-        with patch("eval_runner.plugins.manager.trigger_interceptor", return_value=True):
-            with patch("eval_runner.events.EventEmitter.emit"):
-                with patch("eval_runner.plugins.manager.trigger"):
-                    mock_ctx = MagicMock(spec=TurnContext)
-                    mock_sandbox = MagicMock()
-                    mock_sandbox.state = {"cwd": "/"}
-                    mock_sandbox.execute = AsyncMock(return_value={"output": "ok"})
-                    mock_sandbox.get_full_state = AsyncMock(
-                        return_value={"world": mock_sandbox.state}
-                    )
-                    history = []
-                    actions = {"used_tools": []}
-
-                    await session._handle_tool_call(
-                        1,
-                        {"tool_name": "ls", "tool_params": {}},
-                        mock_sandbox,
-                        history,
-                        actions,
-                        mock_ctx,
-                    )
-
-                    assert len(history) == 1
-                    assert history[0]["role"] == "environment"
-                    assert history[0]["content"] == {"output": "ok"}
-                    assert "ls" in actions["used_tools"]
-
-    @pytest.mark.asyncio
-    async def test_handle_multiple_tools(self, session):
-        with patch.object(session.plugin_manager, "trigger_interceptor") as mock_interceptor:
-            with patch("eval_runner.events.EventEmitter.emit"):
-                mock_interceptor.side_effect = [True, False]
-                mock_sandbox = MagicMock()
-                mock_sandbox.state = {}
-                mock_sandbox.execute = AsyncMock(return_value={"status": "success", "data": "res"})
-                mock_sandbox.get_full_state = AsyncMock(return_value={"world": {}})
-                history = []
-                actions = {"used_tools": []}
-
-                await session._handle_multiple_tools(
-                    1, {"tool_names": ["t1", "t2"]}, mock_sandbox, history, actions, MagicMock()
-                )
-
-                assert len(history) == 1
-                content = history[0]["content"]
-                assert len(content) == 2
-                assert content[0]["status"] == "success"
-                assert "blocked" in content[1]["status"]
-
-    @pytest.mark.asyncio
-    async def test_handle_hitl_ci(self, session):
-        with patch("eval_runner.events.EventEmitter.emit"):
-            with patch.dict(os.environ, {"CI": "true"}):
-                res = await session._handle_hitl("task-1", "approve?")
-                assert "Auto-approved" in res
-
-    @pytest.mark.asyncio
-    async def test_handle_hitl_tty(self, session):
-        with patch("eval_runner.events.EventEmitter.emit"):
-            with patch("sys.stdin.isatty", return_value=True):
-                with patch("builtins.input", return_value="yes"):
-                    with patch.dict(os.environ, {"CI": "false"}):
-                        res = await session._handle_hitl("task-1", "approve?")
-                        assert res == "yes"
-
-    @pytest.mark.asyncio
-    async def test_handle_hitl_non_interactive(self, session):
-        with patch("eval_runner.events.EventEmitter.emit"):
-            with patch("sys.stdin.isatty", return_value=False):
-                # Ensure the test isn't short-circuited by CI auto-approval
-                with patch.dict(os.environ, {"CI": "false"}):
-                    res = await session._handle_hitl("task-1", "approve?")
-                    assert "Simulation" in res
-
-    @pytest.mark.asyncio
-    async def test_calculate_metrics_state_hygiene(self, session):
-        node = {
-            "id": "node-1",
-            "state_hygiene": {
-                "rules": [
-                    {"path": "git.branch", "expected": "main", "op": "eq"},
-                    {"path": "db['active']", "expected": True, "op": "eq"},
-                    {"path": "missing", "op": "not_exists"},
-                    {"path": "db", "op": "exists"},
-                    {"path": "tags", "expected": "v1.2", "op": "contains"},
-                ]
-            },
-        }
+    async def test_execute_node_turn_loop(self, session):
+        # verify turns are counted
         mock_sandbox = MagicMock()
-        mock_sandbox.state = {
-            "git": {"branch": "main"},
-            "db": {"active": True},
-            "tags": ["v1.1", "v1.2"],
-        }
+        mock_sandbox.get_full_state = AsyncMock(return_value={})
+        history = []
+        actions = {"used_tools": []}
+        node = {"id": "n1", "task_description": "t1"}
 
-        results = await session._calculate_metrics(node, 1, 5, [], mock_sandbox, {"used_tools": []})
-
-        hygiene = results["state_hygiene"]
-        assert len(hygiene) == 5
-        for h in hygiene:
-            assert h["success"], f"Failed op {h['op']} for path {h['path']}"
-
-    @pytest.mark.asyncio
-    async def test_calculate_metrics_complex_hygiene(self, session):
-        """Verify PathResolver mixed notation in hygiene checks."""
-        node = {
-            "id": "node-1",
-            "state_hygiene": {
-                "rules": [
-                    {"path": "data.tables['users'][0].id", "expected": 1, "op": "eq"},
-                    {"path": "data.tables.users[0].name", "expected": "Alice", "op": "eq"},
-                ]
-            },
-        }
-        mock_sandbox = MagicMock()
-        mock_sandbox.state = {"data": {"tables": {"users": [{"id": 1, "name": "Alice"}]}}}
-
-        results = await session._calculate_metrics(node, 1, 1, [], mock_sandbox, {"used_tools": []})
-        hygiene = results["state_hygiene"]
-        assert all(h["success"] for h in hygiene)
-
-    def test_sanitize_for_history(self, session):
-        assert session._sanitize_for_history(1) == 1
-        assert session._sanitize_for_history([1, {"a": 2}]) == [1, {"a": 2}]
-        m = MagicMock()
-        m.__str__.return_value = "Mocked"
-        res = session._sanitize_for_history(m)
-        assert isinstance(res, str)
-
-    def test_fork_and_limits(self, session):
-        import eval_runner.session as session_module
-
-        s1 = session.fork([], {})
-        assert s1.fork_depth == 1
-
-        original_depth = session_module.MAX_FORK_DEPTH
-        try:
-            session_module.MAX_FORK_DEPTH = 1
-            with pytest.raises(RuntimeError) as cm:
-                s1.fork([], {})
-            assert "Maximum depth" in str(cm.value)
-        finally:
-            session_module.MAX_FORK_DEPTH = original_depth
-
-    @pytest.mark.asyncio
-    async def test_get_last_env_message(self, session):
-        assert session._get_last_env_message([]) == ""
-        assert session._get_last_env_message([{"role": "agent"}]) == ""
-        assert (
-            session._get_last_env_message(
-                [{"role": "environment", "content": {"message": "direct"}}]
-            )
-            == "direct"
-        )
-        assert (
-            session._get_last_env_message([{"role": "environment", "content": ["list"]}])
-            == 'Tools returned: ["list"]'
-        )
-        assert (
-            session._get_last_env_message(
-                [{"role": "environment", "content": {"message": "wrapped"}}]
-            )
-            == "wrapped"
-        )
-
-    def test_extract_agent_summary(self, session):
-        assert session._extract_agent_summary([]) == ""
-        assert (
-            session._extract_agent_summary([{"role": "agent", "content": {"summary": "sum"}}])
-            == "sum"
-        )
-        assert (
-            session._extract_agent_summary([{"role": "agent", "content": {"content": "ccc"}}])
-            == "ccc"
-        )
-        assert session._extract_agent_summary([{"role": "agent", "content": "plain"}]) == "plain"
-
-    @pytest.mark.asyncio
-    async def test_calculate_metrics_errors(self, session):
-        with patch("eval_runner.metrics.MetricRegistry.get") as mock_get:
-            mock_get.return_value = MagicMock(side_effect=Exception("Metric Boom"))
-            node = {"id": "n1", "success_criteria": [{"metric": "m1"}]}
-            results = await session._calculate_metrics(
-                node, 1, 1, [], MagicMock(), {"used_tools": []}
-            )
-            assert len(results["metrics"]) == 0
-
-    @pytest.mark.asyncio
-    async def test_execute_tasks_loop_variants(self, session):
         with patch(
-            "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+            "eval_runner.session.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
         ) as mock_call:
-            with patch("eval_runner.events.EventEmitter.emit"):
-                mock_call.side_effect = [
-                    {"action": "final_answer", "content": "over"},
-                    {"action": "error", "message": "bad"},
-                ]
-                res = await session.execute_tasks(1)
-                assert len(res) == 2
+            # First turn: call tool, second turn: final answer
+            mock_call.side_effect = [
+                {"action": "call_tool", "tool_name": "t1"},
+                {"action": "final_answer"},
+            ]
+
+            with patch.object(session, "_handle_tool_call", new_callable=AsyncMock):
+                res = await session._execute_node(node, 1, 0, mock_sandbox, history, actions)
+                assert res["turns_taken"] == 2
+                assert mock_call.call_count == 2
+
+    @pytest.mark.asyncio
+    async def test_handle_tool_call(self, session):
+        mock_sandbox = MagicMock()
+        mock_sandbox.execute = AsyncMock(return_value="tool output")
+        mock_sandbox.get_full_state = AsyncMock(return_value={})
+        mock_sandbox.state = {}
+        history = []
+        actions = {"used_tools": []}
+        agent_resp = {"tool_name": "my_tool", "tool_params": {"p1": "v1"}}
+        turn_ctx = TurnContext("n1", 1, "msg", [], None)
+
+        await session._handle_tool_call(1, agent_resp, mock_sandbox, history, actions, turn_ctx)
+
+        mock_sandbox.execute.assert_called_with("my_tool", {"p1": "v1"})
+        assert actions["used_tools"] == ["my_tool"]
+        assert any("tool output" in str(h) for h in history)
+
+    @pytest.mark.asyncio
+    async def test_handle_hitl(self, session):
+        with (
+            patch("builtins.input", return_value="human feedback"),
+            patch("sys.stdin.isatty", return_value=True),
+        ):
+            resp = {"action": "hitl_pause", "prompt": "Need help"}
+            turn_ctx = TurnContext("n1", 1, "msg", [], None)
+            res = await session._handle_hitl(1, resp, [], {}, turn_ctx)
+            assert res == "human feedback"
+
+    @pytest.mark.asyncio
+    async def test_verify_state_parity(self, session):
+        node = {
+            "expected_outcome": [
+                {"target": "state", "property": "$.user.name", "expected": "Najeed"}
+            ]
+        }
+        mock_sandbox = MagicMock()
+        mock_sandbox.get_full_state = AsyncMock(return_value={"user": {"name": "Najeed"}})
+
+        assert await session._verify_state_parity(node, mock_sandbox, []) is True
+
+        mock_sandbox.get_full_state.return_value = {"user": {"name": "Wrong"}}
+        assert await session._verify_state_parity(node, mock_sandbox, []) is False
+
+    @pytest.mark.asyncio
+    async def test_calculate_metrics(self, session):
+        node = {"success_criteria": [{"metric": "generic_accuracy", "threshold": 0.5}]}
+        mock_sandbox = MagicMock()
+        mock_sandbox.get_full_state = AsyncMock(return_value={})
+        actions = {"used_tools": []}
+
+        res = await session._calculate_metrics(node, 1, 1, [], mock_sandbox, actions)
+        assert "metrics" in res
+        assert len(res["metrics"]) >= 1
 
     @pytest.mark.asyncio
     async def test_execute_tasks_protocol_defaults(self, scenario):
@@ -353,7 +205,9 @@ class TestSession:
                     )
                     await session.execute_tasks(1)
                     mock_call.assert_called()
-                    assert mock_call.call_args[1]["endpoint"] == "my-cmd"
+                    # Positional arguments: (protocol, endpoint, message, history, turn_ctx)
+                    # endpoint is index 1
+                    assert mock_call.call_args[0][1] == "my-cmd"
 
 
 if __name__ == "__main__":

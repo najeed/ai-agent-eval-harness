@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -327,11 +328,17 @@ async def test_handler_evaluation_expansion(mock_config, monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_handler_scenarios_expansion(mock_config):
+async def test_handler_scenarios_expansion(mock_config, monkeypatch):
     # classify_scenario fallback
-    with patch("sentence_transformers.SentenceTransformer", side_effect=Exception("No ML")):
-        res = scenarios.classify_scenario({})
-        assert res["industry"] == "generic"
+    monkeypatch.setitem(sys.modules, "sentence_transformers", None)
+    res = scenarios.classify_scenario({})
+    assert res["industry"] == "generic"
+
+    res_fin = scenarios.classify_scenario({"metadata": {"industry": "finance"}})
+    assert res_fin["industry"] == "fintech"
+
+    res_med = scenarios.classify_scenario({"metadata": {"industry": "healthcare"}})
+    assert res_med["industry"] == "medical"
 
     # handle_aes_validate errors
     args = MagicMock(path=str(mock_config / "empty"))
@@ -341,11 +348,13 @@ async def test_handler_scenarios_expansion(mock_config):
     # export logic
     scen = mock_config / "test.aes.yaml"
     scen_content = (
-        "aes_version: 1.4\nworkflow: {nodes: [], edges: []}\nmetadata: {id: id1, name: n1}"
+        "aes_version: 1.4\nworkflow: {nodes: [], edges: []}\n"
+        "metadata: {id: id1, name: n1, compliance_level: Standard}\n"
+        "evaluation: {metrics: []}"
     )
     scen.write_text(scen_content)
     args = MagicMock(path=str(scen), export=str(mock_config / "exported.yaml"))
-    with patch("eval_runner.handlers.scenarios.validate"):  # skip real validation
+    with patch("jsonschema.validators.Draft7Validator.validate"):  # skip real validation
         assert await scenarios.handle_aes_validate(args) == 0
         assert (mock_config / "exported.yaml").exists()
 

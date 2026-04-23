@@ -23,9 +23,7 @@ async def test_advanced_adapter_discovery():
     try:
         # AgentAdapterRegistry._discovered should be reset for clean test
         AgentAdapterRegistry._discovered = False
-        response = await AgentAdapterRegistry.call_agent(
-            {}, protocol="mock_proto", endpoint="dummy"
-        )
+        response = await AgentAdapterRegistry.call_agent("mock_proto", "dummy", "msg", [], None)
         assert response["content"] == "Mock discovery works!"
     finally:
         manager.plugins.remove(plugin)
@@ -71,10 +69,10 @@ async def test_hitl_pause_resume(monkeypatch):
     call_counts = 0
     received_turns = []
 
-    async def mock_call_agent(payload, protocol="http", endpoint=None, **kwargs):
+    async def mock_call_agent(protocol, endpoint, message, history, turn_ctx):
         nonlocal call_counts
         call_counts += 1
-        received_turns.append(payload.get("turn"))
+        received_turns.append(turn_ctx.turn_number)
         if call_counts == 1:
             return {"action": "hitl_pause"}
         return {"action": "final_answer", "content": "Done"}
@@ -128,7 +126,7 @@ async def test_trajectory_branching(monkeypatch):
         "max_turns": 2,
     }
 
-    async def mock_call_agent(payload, protocol="http", endpoint=None, **kwargs):
+    async def mock_call_agent(protocol, endpoint, message, history, turn_ctx):
         return {
             "action": "branch",
             "branches": [{"name": "branch_a", "message": "hello from branch a"}],

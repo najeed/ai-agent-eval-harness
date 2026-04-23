@@ -7,7 +7,7 @@ Core evaluation engine.
 Updated for universal extensibility via registries, hooks, and typed contexts.
 """
 
-import os  # noqa: E402
+import sys  # noqa: E402
 from collections.abc import Callable  # noqa: E402
 from typing import Any  # noqa: E402
 
@@ -142,39 +142,40 @@ class AgentAdapterRegistry:
     @classmethod
     async def call_agent(
         cls,
-        payload: dict,
-        protocol="http",
-        endpoint: str | None = None,
-        span_context: dict[str, Any] | None = None,
-        **kwargs,
-    ):
-        cls._discover()
+        protocol: str,
+        endpoint: str | None,
+        message: str,
+        history: list[dict],
+        turn_ctx: Any | None = None,
+    ) -> dict[str, Any]:
+        """
+        Industrial Multi-Agent Dispatcher (v1.5.0).
+        Routes the task to the appropriate adapter based on protocol.
+        """
+        if not cls._discovered:
+            cls._discover()
 
-        adapter = cls._adapters.get(protocol)
-        if not adapter:
-            raise ValueError(f"No adapter registered for protocol: {protocol}")
+        # 1. Resolve Adapter
+        adapter_func = cls._adapters.get(protocol)
+        if not adapter_func:
+            available = list(cls._adapters.keys())
+            raise ValueError(f"Unsupported protocol '{protocol}'. Available: {available}")
 
-        # Use provided endpoint or fall back to defaults
-        if not endpoint:
-            if protocol == "http":
-                endpoint = config.AGENT_API_URL
-            elif protocol == "local":
-                endpoint = os.getenv("AGENT_LOCAL_CMD")
-            elif protocol == "socket":
-                endpoint = os.getenv("AGENT_SOCKET_ADDR")
+        # 2. Forensic Context Preparation
+        payload = {
+            "protocol": protocol,
+            "task_description": message,
+            "history": history,
+            "turn": turn_ctx.turn_number if turn_ctx else 1,
+            "metadata": turn_ctx.metadata if turn_ctx else {},
+        }
 
-        if not endpoint:
-            raise ValueError(f"No endpoint/command provided for protocol '{protocol}'")
-
-        print(f"      [Engine] Executing {protocol} call to: {endpoint}")
-        response = await adapter(payload, endpoint, span_context=span_context, **kwargs)
-
-        # [Forensic Persistence] Recording raw interaction Stimulus
-        forensics_handle = kwargs.get("forensics")
-        if forensics_handle:
-            forensics_handle.register_raw_interaction(payload, response)
-
-        return response
+        # 3. Execution (with Industrial Protection)
+        try:
+            return await adapter_func(payload, endpoint=endpoint)
+        except Exception as e:
+            sys.stderr.write(f"      [Dispatcher Error] {protocol} failed: {str(e)}\n")
+            raise
 
 
 async def run_evaluation(

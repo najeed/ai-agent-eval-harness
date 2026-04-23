@@ -128,5 +128,6 @@ async def test_call_agent_error_branches():
 
     # Test missing adapter
     with patch.dict(registry._adapters, {}, clear=True):
-        with pytest.raises(ValueError, match="No adapter registered"):
-            await registry.call_agent({"task_description": "hi"}, protocol="nonexistent")
+        with pytest.raises(ValueError, match="Unsupported protocol 'nonexistent'"):
+            # Industrial Signature: (protocol, endpoint, message, history, turn_ctx=None)
+            await registry.call_agent("nonexistent", None, "hi", [])

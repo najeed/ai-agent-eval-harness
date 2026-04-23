@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -73,8 +73,9 @@ async def test_evaluation_coverage_pure(mock_config):
     scen.write_text("{}")
 
     # 1. handle_evaluate (Success, Empty, Failure)
-    args = MockArgs(tmp_path, path=str(scen), limit=1)
+    args = MagicMock(path=str(scen), export=str(mock_config / "exported.yaml"))
     with (
+        patch("jsonschema.validators.Draft7Validator.validate"),
         patch("eval_runner.loader.load_dataset", return_value=[{"id": "s1"}]),
         patch("eval_runner.engine.run_evaluation", new_callable=AsyncMock),
         patch("eval_runner.handlers.evaluation.prepare_agent_env"),
@@ -169,10 +170,16 @@ async def test_analysis_coverage_pure(mock_config):
 async def test_scenarios_coverage_pure(mock_config):
     tmp_path = mock_config
     scen = tmp_path / "s.json"
-    scen.write_text('{"aes_version":"1.0"}')
+    scen_data = {
+        "aes_version": 1.4,
+        "metadata": {"id": "id1", "name": "n1", "compliance_level": "Standard"},
+        "workflow": {"nodes": [], "edges": []},
+        "evaluation": {"metrics": []},
+    }
+    scen.write_text(json.dumps(scen_data))
 
     # 1. AES Validate
-    with patch("eval_runner.handlers.scenarios.validate"):
+    with patch("jsonschema.validators.Draft7Validator.validate"):
         assert await scenarios.handle_aes_validate(MockArgs(tmp_path, path=str(scen))) == 0
         assert await scenarios.handle_aes_validate(MockArgs(tmp_path, path="MISSING")) == 1
 

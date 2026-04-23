@@ -258,97 +258,90 @@ class SessionManager:
         all_task_results = []
         global_cumulative_history = []
 
+        # 🚀 Move Sandbox into the forensic recovery block
+        sandbox = ToolSandbox(self.scenario, event_bus=self.event_bus, forensics=self.forensics)
+        await sandbox.setup()
+        workflow = self.scenario.get("workflow", {})
+        nodes_data = {node["id"]: node for node in workflow.get("nodes", [])}
+
+        # 1. Build Dependency Graph (Industrial AES v1.4)
+        print(f"      [Forensic Debug] Building Graph for {len(nodes_data)} nodes...")
+        self.event_bus.emit(
+            CoreEvents.PHASE_START,
+            {"phase": "workflow_sort"},
+            span_context=self.session_metadata.get("span_context"),
+        )
+
+        ts = TopologicalSorter()
+        for node_id in nodes_data:
+            ts.add(node_id)
+
+        for edge in workflow.get("edges", []):
+            src = edge.get("from")
+            trg = edge.get("to")
+            if src and trg:
+                ts.add(trg, src)
+
+        # 2. Sequential State Initialization
+        turns_taken = 0
+        history = []
+        actions = {"used_tools": []}
+
+        # 🚀 Topological Sorting Complete. Proceeding to execution dispatch.
         try:
-            # 🚀 Move Sandbox into the forensic recovery block
-            sandbox = ToolSandbox(self.scenario, event_bus=self.event_bus, forensics=self.forensics)
-            await sandbox.setup()
-
-            workflow = self.scenario.get("workflow", {})
-            nodes_data = {node["id"]: node for node in workflow.get("nodes", [])}
-
-            sys.stderr.write(f"      [PROBE: TOPOLOGY] Nodes: {list(nodes_data.keys())}\n")
-            sys.stderr.flush()
-
-            # 1. Build Dependency Graph (Industrial AES v1.4)
-            print(f"      [Forensic Debug] Building Graph for {len(nodes_data)} nodes...")
-            self.event_bus.emit(
-                CoreEvents.PHASE_START,
-                {"phase": "workflow_sort"},
-                span_context=self.session_metadata.get("span_context"),
+            execution_order = list(ts.static_order())
+        except CycleError:
+            err_msg = (
+                f"Industrial Shield Block: Cyclic dependencies detected in "
+                f"workflow DAG for {self.run_id}."
             )
+            sys.stderr.write(f"      [Cycle Error] {err_msg}\n")
+            sys.stderr.flush()
+            self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
+            raise ValueError(err_msg) from None
 
-            ts = TopologicalSorter()
-            for node_id in nodes_data:
-                ts.add(node_id)
+        # Check for empty topology explicitly to fail-fast
+        if not execution_order:
+            err_msg = f"Industrial Fail-Fast (v1.4.0): Empty Topology for Run {self.run_id}."
+            sys.stderr.write(f"      [FATAL] {err_msg}\n")
+            sys.stderr.flush()
+            raise ValueError(err_msg)
 
-            for edge in workflow.get("edges", []):
-                src = edge.get("from")
-                trg = edge.get("to")
-                if src and trg:
-                    ts.add(trg, src)
+        try:
+            for node_id in execution_order:
+                node = nodes_data.get(node_id)
+                if not node:
+                    continue
 
-            # 2. Sequential State Initialization
-            turns_taken = 0
-            history = []
-            actions = {"used_tools": []}
-
-            try:
-                # 🚀 Topological Sorting Complete. Proceeding to execution dispatch.
-                execution_order = list(ts.static_order())
-                sys.stderr.write(f"      [PROBE: EXECUTION_ORDER] Sequence: {execution_order}\n")
-                sys.stderr.flush()
-
-                # Check for empty topology explicitly to fail-fast
-                if not execution_order:
-                    err_msg = (
-                        f"Industrial Fail-Fast (v1.4.0): Empty Topology for Run {self.run_id}."
-                    )
-                    sys.stderr.write(f"      [FATAL] {err_msg}\n")
-                    sys.stderr.flush()
-                    raise ValueError(err_msg)
-
-                for node_id in execution_order:
-                    node = nodes_data.get(node_id)
-                    if not node:
-                        continue
-
-                    task_res = await self._execute_node(
-                        node, attempt_number, turns_taken, sandbox, history, actions
-                    )
-                    global_cumulative_history.extend(history)
-
-                    if task_res.get("status") == "success":
-                        turns_taken += 1
-                        all_task_results.append(task_res)
-                    else:
-                        print(f"      [Node Failure] {node_id}: {task_res.get('message')}")
-                        all_task_results.append(task_res)
-                        break
-
-            except CycleError:
-                err_msg = (
-                    f"Industrial Shield Block: Cyclic dependencies detected in "
-                    f"workflow DAG for {self.run_id}."
+                task_res = await self._execute_node(
+                    node, attempt_number, turns_taken, sandbox, history, actions
                 )
-                sys.stderr.write(f"      [Cycle Error] {err_msg}\n")
-                sys.stderr.flush()
-                self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
-                raise ValueError(err_msg) from None
-            except Exception as e:
-                err_msg = f"Forensic Exception during node execution: {str(e)}"
-                print(f"      [Fatal Exception] {err_msg}")
-                import traceback
+                global_cumulative_history.extend(history)
 
-                print(traceback.format_exc())
-                self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
-                raise ValueError(err_msg) from e
-            finally:
-                self.event_bus.emit(
-                    CoreEvents.PHASE_END,
-                    {"phase": "workflow_sort"},
-                    span_context=self.session_metadata.get("span_context"),
-                )
+                if task_res.get("status") == "success":
+                    turns_taken += 1
+                    all_task_results.append(task_res)
+                else:
+                    print(f"      [Node Failure] {node_id}: {task_res.get('message')}")
+                    all_task_results.append(task_res)
+                    break
 
+        except Exception as e:
+            err_msg = f"Forensic Exception during node execution: {str(e)}"
+            print(f"      [Fatal Exception] {err_msg}")
+            import traceback
+
+            print(traceback.format_exc())
+            self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
+            # [Industrial Resilience] Do not crash the entire process for a single node failure.
+            # Capture the failure in the forensic report and stop the node sequence.
+            all_task_results.append(
+                {
+                    "task_id": node_id if "node_id" in locals() else "unknown",
+                    "status": "failure",
+                    "message": err_msg,
+                }
+            )
         finally:
             await self.teardown(sandbox)
 
@@ -430,22 +423,9 @@ class SessionManager:
             try:
                 protocol = self.session_metadata.get("protocol", "http")
                 endpoint = self.session_metadata.get("agent")
-                payload = {
-                    "task_description": turn_ctx.current_message,
-                    "turn": turn_ctx.turn_number,
-                    "conversation_history": turn_ctx.history,
-                    "input_payload": node.get("input_payload", {}),
-                }
-
                 # [Industrial Protection] Final URI string verification
-                final_endpoint = str(endpoint) if endpoint else None
-
                 agent_response = await AgentAdapterRegistry.call_agent(
-                    payload,
-                    protocol=protocol,
-                    endpoint=final_endpoint,
-                    overrides=self.session_metadata.get("mapping_overrides"),
-                    forensics=self.forensics,
+                    protocol, endpoint, turn_ctx.current_message, turn_ctx.history, turn_ctx
                 )
 
                 # [Forensic Persistence] Snapshoting state after turn completion
@@ -479,12 +459,9 @@ class SessionManager:
                     current_message = self._get_last_env_message(conversation_history)
                 elif action == "hitl_pause":
                     # Human-In-The-Loop Intervention
-                    prompt = (
-                        agent_response.get("prompt")
-                        or agent_response.get("content")
-                        or "Intervention Required"
+                    human_response = await self._handle_hitl(
+                        turn, agent_response, conversation_history, agent_actions, turn_ctx
                     )
-                    human_response = await self._handle_hitl(node_id, prompt)
                     conversation_history.append({"role": "human", "content": human_response})
                     current_message = human_response
                 elif action in ["final_answer", "completed"]:
@@ -499,8 +476,15 @@ class SessionManager:
                     break
 
             except Exception as e:
-                self.event_bus.emit(CoreEvents.ERROR, {"message": f"Agent Node Error: {str(e)}"})
-                break
+                err_msg = f"Agent Node Error: {str(e)}"
+                self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
+                # [Industrial Resilience] Create partial results for the forensic audit
+                task_results = await self._calculate_metrics(
+                    node, attempt_number, turn, conversation_history, sandbox, agent_actions
+                )
+                task_results["status"] = "failure"
+                task_results["message"] = err_msg
+                return task_results
 
             self.event_bus.emit(CoreEvents.TURN_END, {"turn": turn, "task_id": node_id})
 
@@ -516,7 +500,7 @@ class SessionManager:
         task_results = await self._calculate_metrics(
             node, attempt_number, (turn), conversation_history, sandbox, agent_actions
         )
-        task_results["status"] = "success" if node_success else "failed"
+        task_results["status"] = "success" if node_success else "failure"
         task_results["parity_verified"] = parity_success
 
         self.event_bus.emit(CoreEvents.MANEUVER_END, {"node_id": node_id})
@@ -591,6 +575,8 @@ class SessionManager:
                     actual_val = shim_snapshots.get(shim_id)
                 elif target == "message":
                     actual_val = self._extract_agent_summary(history)
+                elif target == "state":
+                    actual_val = await sandbox.get_full_state()
                 else:
                     logger.warning(
                         f"      [Session] [Parity] Unsupported assertion target: {target}"
@@ -800,11 +786,23 @@ class SessionManager:
             }
         )
 
-    async def _handle_hitl(self, task_id: str, prompt: str) -> str:
+    async def _handle_hitl(
+        self,
+        turn: int,
+        agent_response: dict,
+        history: list,
+        actions: dict,
+        turn_ctx: Any,
+    ) -> str:
+        """
+        Industrial HITL Handshake (v1.5.0).
+        """
+        prompt = agent_response.get("prompt", "Human intervention required.")
         """Handles Human-In-The-Loop interaction."""
         import os
 
         # Record the pause event for audit/forensics regardless of CI mode
+        task_id = turn_ctx.task_id if turn_ctx else "unknown"
         self.event_bus.emit(CoreEvents.HITL_PAUSE, {"task_id": task_id, "prompt": prompt})
 
         if os.getenv("CI", "").lower() == "true":
@@ -945,7 +943,9 @@ class SessionManager:
                     eval_context["expected"] = primary_msg
 
                 async def _invoke(func, *args):
-                    if asyncio.iscoroutinefunction(func):
+                    import inspect
+
+                    if inspect.iscoroutinefunction(func):
                         return await func(*args)
                     return func(*args)
 

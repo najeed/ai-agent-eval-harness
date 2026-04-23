@@ -26,6 +26,7 @@ def get_minimal_scenario(scenario_id: str) -> dict:
         "aes_version": 1.4,
         "metadata": {"id": scenario_id, "name": "test", "compliance_level": "Standard"},
         "workflow": {"nodes": [], "edges": []},
+        "evaluation": {"metrics": []},
     }
 
 

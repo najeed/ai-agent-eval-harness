@@ -75,8 +75,9 @@ async def test_handle_mutate_all_types(tmp_path, monkeypatch):
         json.dumps(
             {
                 "aes_version": 1.4,
-                "metadata": {"name": "Test", "compliance_level": "Standard"},
+                "metadata": {"name": "Test", "id": "test_mutate", "compliance_level": "Standard"},
                 "workflow": {"nodes": [{"id": "t1", "task_description": "task"}], "edges": []},
+                "evaluation": {"consensus": {"strategy": "Majority_Vote", "min_judges": 1}},
             }
         )
     )
@@ -130,7 +131,7 @@ async def test_handle_aes_validate_error_paths(tmp_path, capsys, monkeypatch):
     result = await scenarios.handle_aes_validate(args)
     assert result == 1
     captured = capsys.readouterr()
-    assert "Invalid" in captured.out or "❌" in captured.out
+    assert "Invalid" in captured.out or "✘" in captured.out
 
     # Ensure we are in a safe project jail for this test
     monkeypatch.setattr("eval_runner.config.PROJECT_ROOT", tmp_path)

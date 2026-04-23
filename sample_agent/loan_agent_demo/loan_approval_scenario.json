@@ -41,5 +41,13 @@
         "to": "task-2"
       }
     ]
+  },
+  "evaluation": {
+    "metrics": [
+      {
+        "metric": "tool_call_correctness",
+        "threshold": 0.8
+      }
+    ]
   }
 }

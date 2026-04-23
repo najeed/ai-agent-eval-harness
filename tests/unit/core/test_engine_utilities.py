@@ -161,6 +161,7 @@ def test_loader_load_dataset_directory(tmp_path):
         "metadata": {"id": "s1", "name": "S1", "compliance_level": "Standard"},
         "aes_version": 1.4,
         "workflow": {"nodes": [], "edges": []},
+        "evaluation": {"metrics": []},
     }
     s1.write_text(json.dumps(s1_data), encoding="utf-8")
     assert len(loader.load_dataset(scenario_dir)) == 1
@@ -172,6 +173,7 @@ def test_loader_load_single_scenario(tmp_path):
         "metadata": {"id": "single", "name": "Single", "compliance_level": "Gold"},
         "aes_version": 1.4,
         "workflow": {"nodes": [], "edges": []},
+        "evaluation": {"metrics": []},
     }
     scenario_file.write_text(json.dumps(data), encoding="utf-8")
     assert len(loader.load_dataset(scenario_file, format_type=".json")) == 1
@@ -183,6 +185,7 @@ def test_loader_load_scenario_dataset_resolve(tmp_path):
         "metadata": {"id": "scen", "name": "Scen", "compliance_level": "Standard"},
         "aes_version": 1.4,
         "workflow": {"nodes": [], "edges": []},
+        "evaluation": {"metrics": []},
         "dataset": {"path": "./data.csv"},
     }
     scenario_file.write_text(json.dumps(data), encoding="utf-8")

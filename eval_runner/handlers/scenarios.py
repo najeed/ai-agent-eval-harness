@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 
 import yaml
-from jsonschema import validate
+from jsonschema.validators import validator_for
 from referencing import Registry, Resource
 
 from .. import catalog, drift_importer, linter, loader, mutator, spec_parser
@@ -20,6 +20,23 @@ def classify_scenario(scenario: dict) -> dict:
     Industrially classifies a scenario based on its title and description.
     Uses semantic similarity mapping to industries for metadata enrichment.
     """
+    # [Industrial Optimization] Check for explicit industry metadata first
+    metadata = scenario.get("metadata", {})
+    explicit_industry = metadata.get("industry")
+    if explicit_industry:
+        # Map common synonyms to standard taxonomy
+        mapping = {
+            "finance": "fintech",
+            "healthcare": "medical",
+            "legal": "legal",
+            "retail": "retail",
+            "technology": "technology",
+        }
+        return {
+            "industry": mapping.get(explicit_industry.lower(), explicit_industry),
+            "confidence": 1.0,
+        }
+
     try:
         # Lazy loading of ML components for industrial performance
         from sentence_transformers import SentenceTransformer, util
@@ -89,7 +106,9 @@ async def handle_aes_validate(args):
                     else:
                         data = json.load(f)
 
-                validate(instance=data, schema=schema, registry=registry)
+                validator_cls = validator_for(schema)
+                validator = validator_cls(schema, registry=registry)
+                validator.validate(data)
                 ver = data.get("aes_version", "unknown")
                 print(f"✔ {f_path.name}: Valid (AES v{ver})")
                 success_count += 1
