@@ -210,5 +210,6 @@ def test_calibrator_main_block(monkeypatch):
     with patch("sys.argv", ["calibrator.py", "dummy.json", "--plot"]):
         # Test __main__
         # Because we can't easily mock __name__ easily without runpy:
-        # Instead, just execute the module
+        # Clear from sys.modules to avoid RuntimeWarning when using runpy
+        sys.modules.pop("eval_runner.calibrator", None)
         runpy.run_module("eval_runner.calibrator", run_name="__main__")

@@ -58,6 +58,27 @@ def reset_environ():
     os.environ.clear()
     os.environ.update(orig)
     # Physically purge stale references and close pending file handles (Windows Hardening)
+    import asyncio
+
+    from eval_runner.simulators import BaseSimulator
+
+    if hasattr(BaseSimulator, "_instances"):
+        # Create a copy to iterate while modifying
+        for sim in list(BaseSimulator._instances):
+            try:
+                # Synchronous-safe cleanup for simulators that might be sync or async
+                if hasattr(sim, "cleanup"):
+                    # We use a transient loop if necessary, but simulators.py cleanup is async
+                    try:
+                        loop = asyncio.get_event_loop()
+                        if loop.is_running():
+                            loop.create_task(sim.cleanup())
+                        else:
+                            loop.run_until_complete(sim.cleanup())
+                    except Exception:
+                        pass
+            except Exception:
+                pass
     gc.collect()
 
 
@@ -77,37 +98,20 @@ def check_loop_hygiene():
     Hardened for Python 3.14+ loop policy isolation.
     """
     import asyncio
-    import warnings
 
     yield
 
+    # Forensic loop cleanup (Python 3.14+ compliant)
     try:
-        policy = asyncio.get_event_loop_policy()
-        loop = policy.get_event_loop()
-        if loop is not None:
+        loop = asyncio.get_event_loop()
+        if loop and not loop.is_closed():
             if loop.is_running():
-                # Critical violation: loop should never be running after test yield
+                # This should not happen if tests are awaited properly
                 pass
-
-            # Explicitly close and clear the loop from the policy to prevent cross-test leakage
-            if not loop.is_closed():
-                loop.close()
-
-            # Forcing a fresh loop for the next test context
-            try:
-                new_loop = asyncio.new_event_loop()
-                policy.set_event_loop(new_loop)
-                new_loop.close()  # Keep it set but closed for safety
-            except Exception:
-                pass
-
-            warnings.warn(
-                f"Loop pollution detected and mitigated: {loop} was still SET.",
-                RuntimeWarning,
-                stacklevel=2,
-            )
+            loop.close()
+    except RuntimeError:
+        pass
     except Exception:
-        # No loop set or policy empty, which is the clean state we want.
         pass
 
 

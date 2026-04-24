@@ -59,12 +59,10 @@ def test_install_command():
         "eval_runner.handlers.environment.handle_install", new_callable=AsyncMock, return_value=0
     ) as mock_install:
         with patch("sys.argv", ["agentv", "install", "telecom-pack"]):
-            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
-                with pytest.raises(SystemExit) as e:
-                    cli.main()
-                assert e.value.code == 0
-                mock_install.assert_called_once()
-                mock_safe.assert_called_once()
+            with pytest.raises(SystemExit) as e:
+                cli.main()
+            assert e.value.code == 0
+            mock_install.assert_called_once()
 
 
 def test_analyze_command():
@@ -73,12 +71,10 @@ def test_analyze_command():
         "eval_runner.handlers.environment.handle_analyze", new_callable=AsyncMock, return_value=0
     ) as mock_analyze:
         with patch("sys.argv", ["agentv", "analyze", "https://github.com/test"]):
-            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
-                with pytest.raises(SystemExit) as e:
-                    cli.main()
-                assert e.value.code == 0
-                mock_analyze.assert_called_once()
-                mock_safe.assert_called_once()
+            with pytest.raises(SystemExit) as e:
+                cli.main()
+            assert e.value.code == 0
+            mock_analyze.assert_called_once()
 
 
 def test_ci_generate_command():
@@ -89,12 +85,10 @@ def test_ci_generate_command():
         return_value=0,
     ) as mock_ci:
         with patch("sys.argv", ["agentv", "ci", "generate"]):
-            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
-                with pytest.raises(SystemExit) as e:
-                    cli.main()
-                assert e.value.code == 0
-                mock_ci.assert_called_once()
-                mock_safe.assert_called_once()
+            with pytest.raises(SystemExit) as e:
+                cli.main()
+            assert e.value.code == 0
+            mock_ci.assert_called_once()
 
 
 def test_explain_command():
@@ -115,12 +109,10 @@ def test_evaluate_command():
         "eval_runner.handlers.evaluation.handle_evaluate", new_callable=AsyncMock, return_value=0
     ) as mock_eval:
         with patch("sys.argv", ["agentv", "evaluate", "--path", "scenarios/finance/"]):
-            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
-                with pytest.raises(SystemExit) as e:
-                    cli.main()
-                assert e.value.code == 0
-                mock_eval.assert_called_once()
-                mock_safe.assert_called_once()
+            with pytest.raises(SystemExit) as e:
+                cli.main()
+            assert e.value.code == 0
+            mock_eval.assert_called_once()
 
 
 def test_report_command():
@@ -141,12 +133,10 @@ def test_lint_command():
         "eval_runner.handlers.scenarios.handle_lint", new_callable=AsyncMock, return_value=0
     ) as mock_lint:
         with patch("sys.argv", ["agentv", "lint", "--path", "scenarios/"]):
-            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
-                with pytest.raises(SystemExit) as e:
-                    cli.main()
-                assert e.value.code == 0
-                mock_lint.assert_called_once()
-                mock_safe.assert_called_once()
+            with pytest.raises(SystemExit) as e:
+                cli.main()
+            assert e.value.code == 0
+            mock_lint.assert_called_once()
 
 
 @pytest.mark.asyncio
@@ -156,12 +146,10 @@ async def test_handle_init_success(tmp_path, monkeypatch):
     with (
         patch("sys.argv", ["agentv", "init"]),
         patch("builtins.input", side_effect=["y", "http://localhost:5001/execute_task"]),
-        patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe,
     ):
         with pytest.raises(SystemExit) as e:
             cli.main()
         assert e.value.code == 0
-        mock_safe.assert_called_once()
 
 
 def test_calibrate_command():
@@ -182,12 +170,10 @@ def test_aes_validate_command():
         "eval_runner.handlers.scenarios.handle_aes_validate", new_callable=AsyncMock, return_value=0
     ) as mock_aes:
         with patch("sys.argv", ["agentv", "aes", "validate", "--path", "spec.aes.yaml"]):
-            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
-                with pytest.raises(SystemExit) as e:
-                    cli.main()
-                assert e.value.code == 0
-                mock_aes.assert_called_once()
-                mock_safe.assert_called_once()
+            with pytest.raises(SystemExit) as e:
+                cli.main()
+            assert e.value.code == 0
+            mock_aes.assert_called_once()
 
 
 def test_run_command():
@@ -196,12 +182,10 @@ def test_run_command():
         "eval_runner.handlers.evaluation.handle_run", new_callable=AsyncMock, return_value=0
     ) as mock_run:
         with patch("sys.argv", ["agentv", "run", "--scenario", "scenarios/test.json"]):
-            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
-                with pytest.raises(SystemExit) as e:
-                    cli.main()
-                assert e.value.code == 0
-                mock_run.assert_called_once()
-                mock_safe.assert_called_once()
+            with pytest.raises(SystemExit) as e:
+                cli.main()
+            assert e.value.code == 0
+            mock_run.assert_called_once()
 
 
 def test_failures_search_command():
@@ -212,12 +196,10 @@ def test_failures_search_command():
         return_value=0,
     ) as mock_failures:
         with patch("sys.argv", ["agentv", "failures", "search", "pii"]):
-            with patch("eval_runner.cli.safe_run_async", return_value=0) as mock_safe:
-                with pytest.raises(SystemExit) as e:
-                    cli.main()
-                assert e.value.code == 0
-                mock_failures.assert_called_once()
-                mock_safe.assert_called_once()
+            with pytest.raises(SystemExit) as e:
+                cli.main()
+            assert e.value.code == 0
+            mock_failures.assert_called_once()
 
 
 @pytest.mark.asyncio

@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -59,6 +59,11 @@ async def test_gemini_adapter_vertex_detection():
     plugin = GeminiAdapterPlugin()
     # Mock the SDK client
     with patch("google.genai.Client") as mock_client_cls:
+        mock_client = mock_client_cls.return_value
+        mock_resp = MagicMock()
+        mock_resp.text = "ok"
+        mock_resp.usage_metadata = None
+        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_resp)
         # Test Vertex detection via URL
         await plugin.execute_gemini_query({}, url="http://vertex-api")
         mock_client_cls.assert_called_with(api_key=None, vertexai=True)
@@ -76,7 +81,10 @@ async def test_gemini_adapter_full_messages():
     }
     with patch("google.genai.Client") as mock_client_cls:
         mock_client = mock_client_cls.return_value
-        mock_client.aio.models.generate_content = AsyncMock()
+        mock_resp = MagicMock()
+        mock_resp.text = "hello"
+        mock_resp.usage_metadata = None
+        mock_client.aio.models.generate_content = AsyncMock(return_value=mock_resp)
 
         await plugin.execute_gemini_query(payload)
         args, kwargs = mock_client.aio.models.generate_content.call_args

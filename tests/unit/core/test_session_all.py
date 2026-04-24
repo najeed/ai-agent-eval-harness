@@ -159,6 +159,7 @@ class TestSession:
         with (
             patch("builtins.input", return_value="human feedback"),
             patch("sys.stdin.isatty", return_value=True),
+            patch.dict(os.environ, {"CI": "false"}),
         ):
             resp = {"action": "hitl_pause", "prompt": "Need help"}
             turn_ctx = TurnContext("n1", 1, "msg", [], None)

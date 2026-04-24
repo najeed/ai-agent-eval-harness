@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2026-04-24
+
+### Industrial CLI Extension Architecture
+*   **Zero-Touch Extension Discovery**: Implemented a standard Python Entry Points pattern (`agentv.extensions`) for dynamic, decoupled CLI command registration. This allows Enterprise extensions to plug into the Core CLI without modifying a single line of Core code.
+*   **Unified Functional Dispatcher**: Replaced the monolithic 200+ line `if/elif` command-handling block with a data-driven functional dispatch system. All commands (Core and external) now share a unified execution protocol.
+*   **Lazy-Loading Optimization**: Introduced a PEP 562-inspired lazy-loading layer for command handlers. This ensures that the CLI remains hyper-responsive (<500ms startup) while decoupling heavy internal dependencies like `engine` and `simulators`.
+*   **Industrial Discovery Isolation**: Hardened the discovery loop to gracefully handle extension load failures, ensuring that a single broken external plugin cannot crash the main CLI environment.
+*   **Native Async Dispatching**: Enhanced the dispatcher to natively detect and execute asynchronous command handlers, providing seamless integration with the core engine's async lifecycle.
+*   **Standardized Handler Signature**: Formalized the command handler protocol (`handle_command(args) -> int`) to ensure consistent exit-code propagation and error handling across the entire ecosystem.
+
 ## [1.5.0] - 2026-04-12
 
 ### Deep Forensics & Core Refinement

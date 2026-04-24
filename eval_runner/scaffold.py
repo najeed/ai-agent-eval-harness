@@ -1,8 +1,51 @@
 import json
+import sys
 import uuid
 from pathlib import Path
 
 import jsonschema
+from jsonschema import validate
+
+# Industrial Encoding Bridge
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+try:
+    from referencing import Registry, Resource
+except ImportError:
+    # Fallback for environments without referencing (AES v1.4.0 legacy)
+    Registry, Resource = None, None
+
+
+def _get_aes_registry(schema_path: Path, root_schema: dict):
+    """Exhaustive registry crawler for AES schema definitions."""
+    if not Registry or not Resource:
+        return None
+
+    resource = Resource.from_contents(root_schema)
+    # Standardize base URI for local resolution using proper as_uri()
+    base_uri = schema_path.parent.as_uri() + "/"
+    registry = Registry().with_resource(base_uri, resource)
+
+    # Crawl definitions directory to enable local $ref resolution
+    defs_dir = schema_path.parent / "definitions"
+    if defs_dir.exists():
+        for def_file in defs_dir.glob("*.json"):
+            try:
+                with open(def_file, encoding="utf-8") as df:
+                    def_content = json.load(df)
+                    def_resource = Resource.from_contents(def_content)
+
+                    # Register both the absolute URI and the relative mapping
+                    def_uri = def_file.as_uri()
+                    rel_uri = base_uri + "definitions/" + def_file.name
+
+                    registry = registry.with_resource(def_uri, def_resource)
+                    registry = registry.with_resource(rel_uri, def_resource)
+            except Exception:
+                continue
+    return registry
 
 
 def generate_interactive():
@@ -89,17 +132,17 @@ def generate_interactive():
             },
         }
 
-        # Internal Schema Validation (Fail-Fast v1.4.0)
+        # Internal Schema Validation (Fail-Fast v1.5.0)
         try:
-            from jsonschema import RefResolver, validate
-
             schema_path = Path(__file__).parent.parent / "spec" / "aes" / "aes.schema.json"
             if schema_path.exists():
                 with open(schema_path, encoding="utf-8") as sf:
                     schema = json.load(sf)
 
-                resolver = RefResolver(f"file:///{schema_path.parent.as_posix()}/", schema)
-                validate(instance=scenario, schema=schema, resolver=resolver)
+                registry = _get_aes_registry(schema_path, schema)
+                # Inject $id to enable relative $ref resolution (v1.5.0 Hardening)
+                schema["$id"] = schema_path.as_uri()
+                validate(instance=scenario, schema=schema, registry=registry)
         except jsonschema.exceptions.ValidationError as ve:
             print(f"❌ Internal Validation Error for {identifier}: {ve.message}")
             continue

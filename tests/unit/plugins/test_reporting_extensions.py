@@ -66,14 +66,17 @@ def test_reporting_plugin_after_evaluation(mock_context, monkeypatch):
 
 
 def test_reporting_plugin_after_eval_notify_running_loop(mock_context, monkeypatch):
-    plugin = ReportingPlugin()
     mock_context.metadata["args"]["notify"] = True
 
     with (
-        patch("eval_runner.triage.TriageEngine.apply_triage"),
-        patch("eval_runner.reporter.generate_report"),
-        patch("asyncio.get_event_loop") as mock_get_loop,
+        patch("eval_runner.triage.TriageEngine.apply_triage", new_callable=MagicMock),
+        patch("eval_runner.reporter.generate_report", new_callable=MagicMock),
+        patch.object(
+            ReportingPlugin, "dispatch_notifications", new_callable=MagicMock, return_value=None
+        ),
+        patch("asyncio.get_event_loop", new_callable=MagicMock) as mock_get_loop,
     ):
+        plugin = ReportingPlugin()
         mock_loop = MagicMock()
         mock_loop.is_running.return_value = True
         mock_get_loop.return_value = mock_loop
@@ -83,14 +86,17 @@ def test_reporting_plugin_after_eval_notify_running_loop(mock_context, monkeypat
 
 
 def test_reporting_plugin_after_eval_notify_not_running(mock_context, monkeypatch):
-    plugin = ReportingPlugin()
     mock_context.metadata["args"]["notify"] = True
 
     with (
-        patch("eval_runner.triage.TriageEngine.apply_triage"),
-        patch("eval_runner.reporter.generate_report"),
-        patch("asyncio.get_event_loop") as mock_get_loop,
+        patch("eval_runner.triage.TriageEngine.apply_triage", new_callable=MagicMock),
+        patch("eval_runner.reporter.generate_report", new_callable=MagicMock),
+        patch.object(
+            ReportingPlugin, "dispatch_notifications", new_callable=MagicMock, return_value=None
+        ),
+        patch("asyncio.get_event_loop", new_callable=MagicMock) as mock_get_loop,
     ):
+        plugin = ReportingPlugin()
         mock_loop = MagicMock()
         mock_loop.is_running.return_value = False
         mock_get_loop.return_value = mock_loop

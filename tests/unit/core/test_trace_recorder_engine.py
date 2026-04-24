@@ -115,6 +115,11 @@ def test_trace_recorder_main(monkeypatch):
     monkeypatch.setattr("asyncio.run", mock_run)
 
     with patch.object(sys, "argv", ["trace_recorder.py", "http://custom-url"]):
+        # Clear from sys.modules to avoid RuntimeWarning when using runpy
+        sys.modules.pop("eval_runner.trace_recorder", None)
         runpy.run_module("eval_runner.trace_recorder", run_name="__main__")
 
     mock_run.assert_called_once()
+    # Close the coroutine to prevent RuntimeWarning: coroutine was never awaited
+    coro = mock_run.call_args[0][0]
+    coro.close()

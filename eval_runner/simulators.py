@@ -14,6 +14,10 @@ class BaseSimulator:
         self.config = config or {}
         # [Turn 2 Hardening] Physical Jail Path
         self.terminal_jail: Any = None
+        # [Industrial Hygiene] Global tracking for test suite cleanup
+        if not hasattr(BaseSimulator, "_instances"):
+            BaseSimulator._instances = set()
+        BaseSimulator._instances.add(self)
 
     async def execute(self, action: str, params: dict[str, Any]) -> dict[str, Any]:
         """Dispatches an action to a handler method."""
@@ -32,7 +36,8 @@ class BaseSimulator:
 
     async def cleanup(self):
         """[Turn 5] Explicit cleanup (e.g. closing browser, DB sessions)."""
-        pass
+        if hasattr(BaseSimulator, "_instances"):
+            BaseSimulator._instances.discard(self)
 
     async def on_poll(self, condition: str, params: dict[str, Any]) -> bool:
         """
@@ -298,7 +303,9 @@ class DatabaseSimulator(BaseSimulator):
             db_path_str = str(db_path).replace("\\", "/")
             db_uri = f"sqlite:///{db_path_str}"
 
-        self._engine = create_engine(db_uri)
+        from sqlalchemy.pool import NullPool
+
+        self._engine = create_engine(db_uri, poolclass=NullPool)
 
         # [Iteration 3 Init] Provision initial industrial state
         from sqlalchemy import text
@@ -370,6 +377,7 @@ class DatabaseSimulator(BaseSimulator):
         if self._engine:
             self._engine.dispose()
             self._engine = None
+        await super().cleanup()
 
 
 class SlackSimulator(BaseSimulator):

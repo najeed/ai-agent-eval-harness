@@ -39,7 +39,10 @@ The version is defined in exactly ONE place: **`pyproject.toml`**.
 
 ## 🧩 2 CLI Architecture: User Intent Lifecycle
 
-Entry point: `eval_runner/cli.py`. The CLI is structured around the industrial evaluation lifecycle:
+Entry point: `eval_runner/cli.py`. The CLI is refactored for **Industrial Extensibility** using a Functional Dispatcher.
+
+### 🧩 Unified Functional Dispatcher (v1.5.1)
+Unlike legacy CLIs that use massive `if/elif` chains, AgentV uses a data-driven dispatch model. Every command registers a `func` callback in its parser defaults. The `main()` loop simply executes `args.func(args)`.
 
 ### 1. Authoring & Scaffolding
 - `init` — Scaffold new project directories with synthetic datasets
@@ -155,7 +158,7 @@ Plugins are the primary extension point. They are discovered via `eval_runner.pl
 | `on_tool_request` | **Interception**: Return `False` to block a tool call. |
 | `on_tool_result` | Observe tool outputs and world state side-effects. |
 | `on_metrics_calculated`| Post-process or inject custom metrics. |
-| `on_register_commands` | Securely register plugin CLI commands (replaces `extend_cli`). |
+| `on_register_commands` | **CLI Discovery**: Register custom subcommands via entry points. |
 | `on_register_console_routes` | Inject custom REST routes and React Visual Suite navigation links. |
 | `after_evaluation` | Final reporting or post-run notifications. |
 
@@ -450,3 +453,34 @@ agentv doctor --registry
 ---
 
 For internal logic of utilities like `doctor` or `quickstart`, see the corresponding files in `eval_runner/`.
+---
+
+## 🛠️ 16 Building CLI Extensions
+
+Starting with v1.5.1, you can add your own commands to `agentv` without modifying the core repository.
+
+### 16.1 The Registration Hook
+Define a function in your extension that adds a subparser to the CLI.
+
+```python
+def register_my_commands(subparsers):
+    parser = subparsers.add_parser("my-tool", help="Custom dev tool")
+    parser.add_argument("--fast", action="store_true")
+    
+    # Define the functional dispatcher
+    parser.set_defaults(func=my_handler)
+
+async def my_handler(args):
+    print(f"Running custom tool (Fast={args.fast})")
+    return 0
+```
+
+### 16.2 Zero-Touch Registration
+Register your function in your extension's `pyproject.toml` under the `agentv.extensions` group:
+
+```toml
+[project.entry-points."agentv.extensions"]
+my_extension = "my_package.cli:register_my_commands"
+```
+
+AgentV will automatically discover and load this command at runtime. For performance, ensure that `my_package.cli` does not perform heavy imports at the module level.

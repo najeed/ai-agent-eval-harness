@@ -112,7 +112,7 @@ async def test_handle_explain_basic(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     args = parse_args(["explain", "--run-id", "ghost"])
-    handle_explain(args)
+    await handle_explain(args)
 
     real_file = tmp_path / "real.jsonl"
     real_file.write_text("{}", encoding="utf-8")
@@ -122,7 +122,7 @@ async def test_handle_explain_basic(tmp_path, monkeypatch):
         "eval_runner.explainer.explain_trace",
         return_value={"confidence": 0.9, "root_cause": "cpu", "suggestion": "fix"},
     ):
-        handle_explain(args)
+        await handle_explain(args)
 
 
 # --- handle_calibrate ---
@@ -133,7 +133,7 @@ async def test_handle_calibrate_basic(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     args = parse_args(["calibrate", "--run-id", "ghost"])
-    handle_calibrate(args)
+    await handle_calibrate(args)
 
     real_file = tmp_path / "real.jsonl"
     real_file.write_text("{}", encoding="utf-8")
@@ -143,12 +143,12 @@ async def test_handle_calibrate_basic(tmp_path, monkeypatch):
     with patch(
         "eval_runner.handlers.analysis.trace_utils.load_events", side_effect=Exception("Read bad")
     ):
-        handle_calibrate(args)
+        await handle_calibrate(args)
 
     with patch(
         "eval_runner.handlers.analysis.trace_utils.load_events", return_value=[{"event": "start"}]
     ):
-        handle_calibrate(args)
+        await handle_calibrate(args)
 
     with patch(
         "eval_runner.handlers.analysis.trace_utils.load_events",
@@ -157,4 +157,4 @@ async def test_handle_calibrate_basic(tmp_path, monkeypatch):
             {"event": "evaluation", "metric": "luna_judge_score", "value": 0.8, "human_score": 0.8},
         ],
     ):
-        handle_calibrate(args)
+        await handle_calibrate(args)

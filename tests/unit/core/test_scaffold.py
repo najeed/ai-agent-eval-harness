@@ -1,3 +1,8 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+
 import unittest
 from unittest.mock import mock_open, patch
 
@@ -7,11 +12,10 @@ import eval_runner.scaffold as scaffold
 
 class TestScaffold(unittest.TestCase):
     def setUp(self):
-        self.print_patch = patch("builtins.print")
-        self.print_patch.start()
+        pass
 
     def tearDown(self):
-        self.print_patch.stop()
+        pass
 
     @patch("builtins.input", side_effect=["finance", "loan_approval", "3"])
     @patch("pathlib.Path.mkdir")
@@ -35,8 +39,12 @@ class TestScaffold(unittest.TestCase):
     @patch("builtins.input", side_effect=["test", "test", "1"])
     @patch("pathlib.Path.mkdir")
     @patch("pathlib.Path.exists", return_value=True)
-    @patch("builtins.open", new_callable=mock_open, read_data="{}")
-    @patch("jsonschema.validate")
+    @patch(
+        "builtins.open",
+        new_callable=mock_open,
+        read_data='{"$schema": "http://json-schema.org/draft-07/schema#", "type": "object"}',
+    )
+    @patch("eval_runner.scaffold.validate")
     def test_generate_interactive_validation_error(
         self, mock_validate, mock_file, mock_exists, mock_mkdir, mock_input
     ):
@@ -46,8 +54,6 @@ class TestScaffold(unittest.TestCase):
         mock_validate.side_effect = ValidationError("Custom Error")
 
         scaffold.generate_interactive()
-        # Should print the error and continue (no crash)
-        # We can verify it was called
         mock_validate.assert_called()
 
     @patch("eval_runner.registry_sync.load_registry")

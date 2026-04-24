@@ -211,6 +211,7 @@ async def test_cicd_simulator_pipeline_state():
     await cicd.on_poll("build_complete", {"build_id": bid})
     assert cicd.state["builds"][-1]["status"] == "success"
     assert "Deployment successful." in cicd.state["builds"][-1]["logs"][-1]
+    await cicd.cleanup()
 
     await cicd.cleanup()
 
@@ -296,6 +297,13 @@ async def test_api_url_normalization():
     with patch("os.getenv", return_value="true"):  # Force IS_LIVE
         mock_client_instance = AsyncMock()
         mock_client_instance.__aenter__.return_value = mock_client_instance
+        mock_resp = MagicMock()
+        mock_resp.is_success = True
+        mock_resp.status_code = 200
+        mock_resp.headers = {"Content-Type": "application/json"}
+        mock_resp.json.return_value = {"status": "ok"}
+        mock_client_instance.request.return_value = mock_resp
+
         with patch("httpx.AsyncClient", return_value=mock_client_instance):
             # Test normalization of prefixless URL
             await api.execute("api_request", {"method": "GET", "url": "api.test/v1"})

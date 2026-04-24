@@ -49,7 +49,7 @@ graph TD
 | **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.5.0 (April 2026 Forensic Baseline) |
+| **Version** | v1.5.1 (April 2026 Industrial Extension Baseline) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
 | **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
@@ -119,12 +119,12 @@ The harness is organized into the following key components:
 - **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
 
 ### 🌟 What's New in v1.5
+- **Zero-Touch Extension Architecture**: Native support for Python Entry Points (`agentv.extensions`), allowing Enterprise and third-party commands to be registered without modifying Core code.
+- **Unified Functional Dispatcher**: Complete refactor of the CLI engine into a data-driven dispatch model for 100% decoupling.
+- **Lazy-Loading Optimization**: Sub-500ms CLI startup times via intelligent handler deferred loading.
 - **Discovery Engine**: Industrial activation policy ensuring only relevant or explicitly sanctioned shims are active during evaluation.
 - **Seal Hash Protocol**: Cryptographic anchoring of trace history before certification to ensure non-repudiation of the audit process.
-- **AES v1.4 Specification**: Unified metadata schema with mandatory `capabilities` and `standards_registry` fields, and the new `initial_state` root property for **State Parity Verification**.
-- **VC v3 Forensic Standard**: Introduction of sidecar artifact hashing to prevent "Side-Channel Tampering" of reports.
-- **Identity Registry**: Centralized management of cryptographic identities (`IdentityService`), enabling multi-party signing and audit non-repudiation.
-- **ScenarioLinter v2**: Hardened logic for industrial tiering and quality scoring.
+- **AES v1.4 Specification**: Unified metadata schema with mandatory `capabilities` and `standards_registry` fields.
 
 ## Getting Started
 

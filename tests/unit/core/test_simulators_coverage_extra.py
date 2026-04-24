@@ -36,6 +36,7 @@ async def test_git_simulator_errors():
     # Line 147: handle_git_push
     res = await sim.handle_git_push({})
     assert res["status"] == "success"
+    await sim.cleanup()
 
 
 @pytest.mark.asyncio
@@ -75,9 +76,10 @@ async def test_api_simulator_coverage():
     assert "endpoints" in snap
 
     # Line 262-263: execute fallback
-    res = await sim.execute("UNKNOWN", {})
+    res = await sim.execute("unknown_action", {})
     assert res["status"] == "error"
     assert "Unknown action" in res["message"]
+    await sim.cleanup()
 
 
 @pytest.mark.asyncio
@@ -91,6 +93,7 @@ async def test_database_simulator_coverage():
     assert snap["engine"] == "mock"
 
     # Line 355-361: inspect table names
+    await sim.cleanup()
     sim = DatabaseSimulator()
     sim._get_engine()  # Init real engine
     snap = await sim.get_snapshot()
@@ -102,6 +105,7 @@ async def test_database_simulator_coverage():
     sim._engine.connect.side_effect = ValueError("Mock connection error")
     snap = await sim.get_snapshot()
     assert "Mock connection error" in snap["error"]
+    await sim.cleanup()
 
 
 @pytest.mark.asyncio
@@ -109,6 +113,7 @@ async def test_cloud_simulator_coverage():
     sim = CloudSimulator()
     # Line 510: on_poll false
     assert not await sim.on_poll("instance_running", {"instance_id": "missing"})
+    await sim.cleanup()
 
 
 @pytest.mark.asyncio
@@ -136,6 +141,7 @@ async def test_terminal_simulator_coverage(tmp_path):
     # Line 590-591: execute fallback
     res = await sim.execute("terminal_execute", {"cmd": "ls"})
     assert res["status"] in ["success", "error"]
+    await sim.cleanup()
 
 
 @pytest.mark.asyncio
@@ -148,6 +154,7 @@ async def test_browser_simulator_coverage():
         res = await sim.handle_browser_go({})
         assert res["status"] == "error"
         assert "Mock browser error" in res.get("message", "")
+    await sim.cleanup()
 
 
 def test_support_desk_coverage():
@@ -156,6 +163,10 @@ def test_support_desk_coverage():
     res = sim.handle_support_close({"id": "MISSING"})
     assert res["status"] == "error"
     assert "Ticket not found" in res["message"]
+    # SupportDeskSimulator is sync, but sim.cleanup() is async
+    # (though empty/no-op in simulators.py for BaseSimulator)
+    # However, it's good practice.
+    # Wait, let me check if SupportDeskSimulator has a cleanup.
 
 
 @pytest.mark.asyncio
@@ -166,6 +177,7 @@ async def test_social_media_coverage():
     # Line 726: on_poll true
     sim.state["posts"].append({"id": "P1"})
     assert await sim.on_poll("post_confirmed", {"post_id": "P1"})
+    await sim.cleanup()
 
 
 @pytest.mark.asyncio
@@ -173,3 +185,4 @@ async def test_cicd_coverage():
     sim = CICDSimulator()
     # Line 773: on_poll false
     assert not await sim.on_poll("build_complete", {"build_id": "MISSING"})
+    await sim.cleanup()

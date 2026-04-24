@@ -15,6 +15,7 @@ The journey begins here. You are tasked with evaluating a new credit-scoring age
 4.  **`analyze`**: You also want to test against benchmarks from the agent's GitHub repository. `analyze` automatically generates scenarios based on the agent's codebase.
 5.  **`mutate`**: To ensure robustness, you generate **adversarial variants** (e.g., prompt injection, edge cases) from your baseline scenarios.
 6.  **`scenario`**: Finally, you use the interactive wizard to fine-tune task descriptions and inspect the final artifacts.
+7.  **`install`**: Finally, you use this command to download and install official **Scenario Packs** (e.g., Fintech, Healthcare) into your local registry to broaden your test coverage.
 
 ---
 
@@ -29,6 +30,7 @@ Before running tests, you explore the ecosystem to ensure you aren't duplicating
 4.  **`list-metrics`**: You review all registered evaluation metrics (e.g., `calculate_accuracy`, `policy_compliance`) to ensure they cover your PRD.
 5.  **`taxonomy`**: You consult the official failure taxonomy to understand how the engine will tag potential agent breaches.
 6.  **`list-plugins`**: You verify that the necessary security and observability plugins are active in your environment.
+7.  **`catalog-refresh`**: You synchronize your local catalog with the latest upstream industry registries to ensure you are testing against the most current standards.
 
 ---
 
@@ -104,4 +106,16 @@ Keeping the engine tuned and governed.
 5.  **`plugin`**: You manage the specialized "Finance Guardrail" plugins that protect the evaluation sandbox.
 
 ---
+
+## 🚀 Stage 9: Extension & Customization
+*Intent: I want to add my own commands to the AgentV ecosystem.*
+
+Starting with **v1.5.1**, the CLI is no longer a closed monolith. It uses an **Industrial Discovery Pattern** based on Python Entry Points.
+
+1.  **Extensible Commands**: You can now build separate Python packages that "plug in" to the `agentv` command without modifying the Core repository.
+2.  **Zero-Touch Discovery**: Commands registered via `pyproject.toml` are automatically discovered at runtime.
+3.  **Unified Dispatch**: All commands share the same functional dispatcher, ensuring that Enterprise tools feel like native parts of the harness.
+
+---
+
 **Summary**: By following this intent-based flow, AgentV ensures that every step—from authoring to deployment—is auditable, deterministic, and industrial-grade.

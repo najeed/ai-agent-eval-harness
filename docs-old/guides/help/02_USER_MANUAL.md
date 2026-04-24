@@ -92,6 +92,11 @@ agentv evaluate --run-id <id> --format jsonl --output reports/latest_results.jso
 
 ### ⚡ CLI Quick Reference
 
+### 🧩 Extensible Commands (v1.5.1+)
+Starting with v1.5.1, the CLI can be extended by external packages (like the **AgentV Enterprise Suite**). 
+- **Automatic Discovery**: New commands are registered via Python Entry Points and will appear in your `agentv --help` list automatically.
+- **Unified Experience**: These commands behave exactly like native core commands and support the same global flags where applicable.
+
 | Command | Common Options | Intent |
 |---|---|---|
 | **1. Authoring & Scaffolding** | | Create new tests |
