@@ -52,6 +52,7 @@ class TurnContext:
     turn_number: int
     current_message: str
     history: tuple[dict[str, Any], ...]  # Tuple for immutability
+    input_payload: dict[str, Any] = field(default_factory=dict)
     agent_response: dict[str, Any] | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
     span_context: dict[str, Any] | None = None

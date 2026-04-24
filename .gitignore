@@ -104,6 +104,7 @@ tmp/
 .tmp/
 /scratch/
 /scratch_tmp/
+/workspace/
 
 # --- Dependencies ---
 node_modules/

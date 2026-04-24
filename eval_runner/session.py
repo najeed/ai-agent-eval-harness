@@ -415,6 +415,7 @@ class SessionManager:
                 turn_number=turn,
                 current_message=current_message,
                 history=list(conversation_history),
+                input_payload=node.get("input_payload", {}),
                 span_context=self.session_metadata.get("span_context"),
             )
 
@@ -551,7 +552,7 @@ class SessionManager:
 
         shim_ids = list(
             {
-                a.get("target").split(":", 1)[1]
+                a.get("target").split(":", 1)[1].split(".", 1)[0]
                 for a in assertions
                 if str(a.get("target")).startswith("shim:")
             }
@@ -571,8 +572,20 @@ class SessionManager:
                 mode = assertion.get("mode", "exact")
 
                 if target.startswith("shim:"):
-                    shim_id = target.split(":", 1)[1]
-                    actual_val = shim_snapshots.get(shim_id)
+                    # [Industrial Resolve] Support combined shim:id.path syntax
+                    raw_target = target.split(":", 1)[1]
+                    if "." in raw_target:
+                        shim_id = raw_target.split(".", 1)[0]
+                        # Use everything after the first dot as the property path extension
+                        property_path_ext = raw_target.split(".", 1)[1]
+                        actual_val = shim_snapshots.get(shim_id)
+                        if property_path:
+                            property_path = f"{property_path_ext}.{property_path}"
+                        else:
+                            property_path = property_path_ext
+                    else:
+                        shim_id = raw_target
+                        actual_val = shim_snapshots.get(shim_id)
                 elif target == "message":
                     actual_val = self._extract_agent_summary(history)
                 elif target == "state":

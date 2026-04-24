@@ -450,7 +450,9 @@ class ToolSandbox(AbstractSandbox):
                         continue
                     target = outcome.get("target", "")
                     if target.startswith("shim:"):
-                        relevant.add(target.split("shim:", 1)[1])
+                        # [Industrial Resolve] Extract base shim ID from combined path
+                        shim_id = target.split("shim:", 1)[1].split(".", 1)[0]
+                        relevant.add(shim_id)
 
         # [AgentV v1.5.0] Authoritative Discovery: Strictly rely on scenario contracts
         # and enabled_shims list. Deprecated metadata.forensics is removed to align with AES v1.4.1.

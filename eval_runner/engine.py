@@ -168,6 +168,7 @@ class AgentAdapterRegistry:
             "history": history,
             "turn": turn_ctx.turn_number if turn_ctx else 1,
             "metadata": turn_ctx.metadata if turn_ctx else {},
+            "input_payload": getattr(turn_ctx, "input_payload", {}),
         }
 
         # 3. Execution (with Industrial Protection)
