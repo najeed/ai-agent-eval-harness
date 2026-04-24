@@ -788,6 +788,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#unified-functional-dispatcher-v151" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 Unified Functional Dispatcher (v1.5.1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#1-authoring-scaffolding" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1353,6 +1364,56 @@
     <span class="md-ellipsis">
       
         15.2 Forensic Auditing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#for-internal-logic-of-utilities-like-doctor-or-quickstart-see-the-corresponding-files-in-eval_runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For internal logic of utilities like doctor or quickstart, see the corresponding files in eval_runner/.
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-building-cli-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛠️ 16 Building CLI Extensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛠️ 16 Building CLI Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-the-registration-hook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16.1 The Registration Hook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#162-zero-touch-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16.2 Zero-Touch Registration
       
     </span>
   </a>
@@ -4554,6 +4615,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#unified-functional-dispatcher-v151" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 Unified Functional Dispatcher (v1.5.1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#1-authoring-scaffolding" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5130,6 +5202,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#for-internal-logic-of-utilities-like-doctor-or-quickstart-see-the-corresponding-files-in-eval_runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For internal logic of utilities like doctor or quickstart, see the corresponding files in eval_runner/.
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-building-cli-extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛠️ 16 Building CLI Extensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛠️ 16 Building CLI Extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#161-the-registration-hook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16.1 The Registration Hook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#162-zero-touch-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16.2 Zero-Touch Registration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -5174,7 +5296,9 @@
 <p><strong>Warning</strong>: Hardcoding version strings in logic will cause the <strong>Forensic Consistency Tests</strong> to fail in CI.</p>
 <hr />
 <h2 id="2-cli-architecture-user-intent-lifecycle">🧩 2 CLI Architecture: User Intent Lifecycle<a class="headerlink" href="#2-cli-architecture-user-intent-lifecycle" title="Permanent link">&para;</a></h2>
-<p>Entry point: <code>eval_runner/cli.py</code>. The CLI is structured around the industrial evaluation lifecycle:</p>
+<p>Entry point: <code>eval_runner/cli.py</code>. The CLI is refactored for <strong>Industrial Extensibility</strong> using a Functional Dispatcher.</p>
+<h3 id="unified-functional-dispatcher-v151">🧩 Unified Functional Dispatcher (v1.5.1)<a class="headerlink" href="#unified-functional-dispatcher-v151" title="Permanent link">&para;</a></h3>
+<p>Unlike legacy CLIs that use massive <code>if/elif</code> chains, AgentV uses a data-driven dispatch model. Every command registers a <code>func</code> callback in its parser defaults. The <code>main()</code> loop simply executes <code>args.func(args)</code>.</p>
 <h3 id="1-authoring-scaffolding">1. Authoring &amp; Scaffolding<a class="headerlink" href="#1-authoring-scaffolding" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>init</code> — Scaffold new project directories with synthetic datasets</li>
@@ -5309,7 +5433,7 @@ The harness uses an <strong>Adapter Pattern</strong> to support diverse provider
 </tr>
 <tr>
 <td><code>on_register_commands</code></td>
-<td>Securely register plugin CLI commands (replaces <code>extend_cli</code>).</td>
+<td><strong>CLI Discovery</strong>: Register custom subcommands via entry points.</td>
 </tr>
 <tr>
 <td><code>on_register_console_routes</code></td>
@@ -5576,7 +5700,28 @@ If <code>cleanup_workspace</code> is <code>false</code> (default for many resear
 <strong>Security Hardening</strong>: For security, absolute filesystem paths are <strong>masked</strong> in the diagnostic output to prevent directory structure leakage in shared dashboards.</p>
 </blockquote>
 <hr />
-<p>For internal logic of utilities like <code>doctor</code> or <code>quickstart</code>, see the corresponding files in <code>eval_runner/</code>.</p>
+<h2 id="for-internal-logic-of-utilities-like-doctor-or-quickstart-see-the-corresponding-files-in-eval_runner">For internal logic of utilities like <code>doctor</code> or <code>quickstart</code>, see the corresponding files in <code>eval_runner/</code>.<a class="headerlink" href="#for-internal-logic-of-utilities-like-doctor-or-quickstart-see-the-corresponding-files-in-eval_runner" title="Permanent link">&para;</a></h2>
+<h2 id="16-building-cli-extensions">🛠️ 16 Building CLI Extensions<a class="headerlink" href="#16-building-cli-extensions" title="Permanent link">&para;</a></h2>
+<p>Starting with v1.5.1, you can add your own commands to <code>agentv</code> without modifying the core repository.</p>
+<h3 id="161-the-registration-hook">16.1 The Registration Hook<a class="headerlink" href="#161-the-registration-hook" title="Permanent link">&para;</a></h3>
+<p>Define a function in your extension that adds a subparser to the CLI.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">register_my_commands</span><span class="p">(</span><span class="n">subparsers</span><span class="p">):</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>    <span class="n">parser</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s2">&quot;my-tool&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Custom dev tool&quot;</span><span class="p">)</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--fast&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    <span class="c1"># Define the functional dispatcher</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>    <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">my_handler</span><span class="p">)</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_handler</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running custom tool (Fast=</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">fast</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>    <span class="k">return</span> <span class="mi">0</span>
+</code></pre></div>
+<h3 id="162-zero-touch-registration">16.2 Zero-Touch Registration<a class="headerlink" href="#162-zero-touch-registration" title="Permanent link">&para;</a></h3>
+<p>Register your function in your extension's <code>pyproject.toml</code> under the <code>agentv.extensions</code> group:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">[project.entry-points.</span><span class="s2">&quot;agentv.extensions&quot;</span><span class="k">]</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="n">my_extension</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my_package.cli:register_my_commands&quot;</span>
+</code></pre></div>
+<p>AgentV will automatically discover and load this command at runtime. For performance, ensure that <code>my_package.cli</code> does not perform heavy imports at the module level.</p>
 
 
 

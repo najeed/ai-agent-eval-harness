@@ -3881,6 +3881,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#stage-9-extension-customization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Stage 9: Extension &amp; Customization
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3911,6 +3922,7 @@
 <li><strong><code>analyze</code></strong>: You also want to test against benchmarks from the agent's GitHub repository. <code>analyze</code> automatically generates scenarios based on the agent's codebase.</li>
 <li><strong><code>mutate</code></strong>: To ensure robustness, you generate <strong>adversarial variants</strong> (e.g., prompt injection, edge cases) from your baseline scenarios.</li>
 <li><strong><code>scenario</code></strong>: Finally, you use the interactive wizard to fine-tune task descriptions and inspect the final artifacts.</li>
+<li><strong><code>install</code></strong>: Finally, you use this command to download and install official <strong>Scenario Packs</strong> (e.g., Fintech, Healthcare) into your local registry to broaden your test coverage.</li>
 </ol>
 <hr />
 <h2 id="stage-2-discovery-exploration">🔍 Stage 2: Discovery &amp; Exploration<a class="headerlink" href="#stage-2-discovery-exploration" title="Permanent link">&para;</a></h2>
@@ -3923,6 +3935,7 @@
 <li><strong><code>list-metrics</code></strong>: You review all registered evaluation metrics (e.g., <code>calculate_accuracy</code>, <code>policy_compliance</code>) to ensure they cover your PRD.</li>
 <li><strong><code>taxonomy</code></strong>: You consult the official failure taxonomy to understand how the engine will tag potential agent breaches.</li>
 <li><strong><code>list-plugins</code></strong>: You verify that the necessary security and observability plugins are active in your environment.</li>
+<li><strong><code>catalog-refresh</code></strong>: You synchronize your local catalog with the latest upstream industry registries to ensure you are testing against the most current standards.</li>
 </ol>
 <hr />
 <h2 id="stage-3-executing-evaluations">⚡ Stage 3: Executing Evaluations<a class="headerlink" href="#stage-3-executing-evaluations" title="Permanent link">&para;</a></h2>
@@ -3984,6 +3997,15 @@
 <li><strong><code>cleanup-runs</code></strong>: You prune old log artifacts to maintain a clean workspace.</li>
 <li><strong><code>doctor</code></strong>: You audit the system environment to ensure all dependencies and forensic markers are healthy.</li>
 <li><strong><code>plugin</code></strong>: You manage the specialized "Finance Guardrail" plugins that protect the evaluation sandbox.</li>
+</ol>
+<hr />
+<h2 id="stage-9-extension-customization">🚀 Stage 9: Extension &amp; Customization<a class="headerlink" href="#stage-9-extension-customization" title="Permanent link">&para;</a></h2>
+<p><em>Intent: I want to add my own commands to the AgentV ecosystem.</em></p>
+<p>Starting with <strong>v1.5.1</strong>, the CLI is no longer a closed monolith. It uses an <strong>Industrial Discovery Pattern</strong> based on Python Entry Points.</p>
+<ol>
+<li><strong>Extensible Commands</strong>: You can now build separate Python packages that "plug in" to the <code>agentv</code> command without modifying the Core repository.</li>
+<li><strong>Zero-Touch Discovery</strong>: Commands registered via <code>pyproject.toml</code> are automatically discovered at runtime.</li>
+<li><strong>Unified Dispatch</strong>: All commands share the same functional dispatcher, ensuring that Enterprise tools feel like native parts of the harness.</li>
 </ol>
 <hr />
 <p><strong>Summary</strong>: By following this intent-based flow, AgentV ensures that every step—from authoring to deployment—is auditable, deterministic, and industrial-grade.</p>
