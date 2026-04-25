@@ -38,4 +38,4 @@ pypdf==6.10.2
 python-docx==1.2.0
 
 # --- Environment ---
-python-dotenv
+python-dotenv==1.2.2

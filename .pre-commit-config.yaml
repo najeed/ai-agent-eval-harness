@@ -13,3 +13,8 @@ repos:
     hooks:
       - id: bandit
         args: ["-r", "-ll"]
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.7.3
+    hooks:
+      - id: pip-audit
+        args: ["--desc", "on", "--ignore-vuln", "CVE-2026-3219"]

@@ -35,7 +35,7 @@ dependencies = [
     "httpx==0.28.1",
     "GitPython==3.1.44",
     "sqlalchemy==2.0.38",
-    "python-dotenv==1.0.1",
+    "python-dotenv==1.2.2",
 ]
 
 [build-system]
