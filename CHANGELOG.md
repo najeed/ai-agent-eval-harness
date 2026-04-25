@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-04-26
+
+### Modern Agent Support & Robust Metrics
+*   **Streaming Agent Support (SSE)**: Implemented native `sse_http_adapter` for `text/event-stream` interaction. Features automated chunk accumulation, JSON normalization, and graceful handling of malformed streams.
+*   **Robust Semantic Judging (Luna-Judge)**: Upgraded the LLM-as-Judge layer with enhanced regex-based score extraction and fallback Jaccard similarity heuristics. Handles reasoning-heavy agent responses with high fidelity.
+*   **Protocol Trace Observability**: Enhanced `SessionManager` to emit `STEP_START` events for every agent turn, enabling the `protocol_sequence` to track interaction protocols (`sse`, `http`) in forensic traces.
+*   **Adapter Interface Standardization**: Standardized all internal and plugin-based adapters to use a unified `(payload, endpoint=None)` signature, ensuring ecosystem-wide stability.
+*   **Security Policy Modernization**: Updated the default adapter policy to include `sse` in the `active_protocols` whitelist.
+*   **Engineering Hygiene**: Removed legacy `[PROBE: ...]` debug prints from production code and purged dead testing artifacts (`mock_agent_api.py.unused`).
+*   **Comprehensive Documentation Audit**: Fully updated the Triage Engine spec, Forensic Ledger schema, and User Manual to reflect the v1.6.0 feature set.
+
 ## [1.5.1] - 2026-04-24
 
 ### Industrial CLI Extension Architecture

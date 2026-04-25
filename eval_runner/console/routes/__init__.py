@@ -131,8 +131,13 @@ def register_core_routes(app, nav_registry):
 
 def subscribe_debugger():
     """Initializes event subscription for the Visual Debugger."""
-    # Implementation placeholder for event-driven debugger updates
-    pass
+    from eval_runner import events
+
+    from .system import DebuggerStateStore
+
+    # [Industrial Hardening] Connect the event bus to the ephemeral state store
+    events.subscribe(DebuggerStateStore.handle_event)
+    print("      [Console] Visual Debugger subscribed to event bus.")
 
 
 # PROXY ROUTES FOR CORE_BP (Bypasses prefixing requirements in legacy tests)

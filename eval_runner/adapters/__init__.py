@@ -14,13 +14,13 @@ from typing import Any, Dict, Optional  # noqa: F401, UP035
 from .. import config
 
 
-async def http_adapter(payload: dict, url: str, **kwargs):
+async def http_adapter(payload: dict, endpoint: str, **kwargs):
     """Call an agent over HTTP (default)."""
     import aiohttp
 
     async with aiohttp.ClientSession() as session:
         async with session.post(
-            url,
+            endpoint,
             json=payload,
             timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT),
         ) as response:
@@ -28,14 +28,14 @@ async def http_adapter(payload: dict, url: str, **kwargs):
             return await response.json()
 
 
-async def local_subprocess_adapter(payload: dict, command: str, **kwargs):
+async def local_subprocess_adapter(payload: dict, endpoint: str, **kwargs):
     """
     Call an agent by spawning a local subprocess.
     Sends JSON payload to stdin and reads JSON response from stdout.
     """
     # Secure Remediation (R0.2): Eliminate shell=True/shell=True context
     # shlex.split transforms "python agent.py --arg" into ["python", "agent.py", "--arg"]
-    cmd_args = shlex.split(command)
+    cmd_args = shlex.split(endpoint)
     process = await asyncio.create_subprocess_exec(
         *cmd_args,
         stdin=asyncio.subprocess.PIPE,
@@ -56,21 +56,21 @@ async def local_subprocess_adapter(payload: dict, command: str, **kwargs):
         raise RuntimeError(f"Agent subprocess returned invalid JSON: {stdout.decode()}")  # noqa: B904
 
 
-async def socket_adapter(payload: dict, address: str, **kwargs):
+async def socket_adapter(payload: dict, endpoint: str, **kwargs):
     """
     Call an agent over a Unix domain socket or TCP socket.
     Format: 'unix:/path/to/socket' or 'tcp:host:port'
     """
-    if address.startswith("unix:"):
-        path = address.replace("unix:", "")
+    if endpoint.startswith("unix:"):
+        path = endpoint.replace("unix:", "")
         reader, writer = await asyncio.open_unix_connection(path)
-    elif address.startswith("tcp:"):
-        parts = address.replace("tcp:", "").split(":")
+    elif endpoint.startswith("tcp:"):
+        parts = endpoint.replace("tcp:", "").split(":")
         host = parts[0]
         port = int(parts[1])
         reader, writer = await asyncio.open_connection(host, port)
     else:
-        raise ValueError(f"Unsupported socket address format: {address}")
+        raise ValueError(f"Unsupported socket address format: {endpoint}")
 
     try:
         input_data = json.dumps(payload).encode() + b"\n"
@@ -91,3 +91,52 @@ async def socket_adapter(payload: dict, address: str, **kwargs):
             import sys
 
             sys.stderr.write(f"   [Adapters] Warning: Socket cleanup failure: {e}\n")
+
+
+async def sse_http_adapter(payload: dict, endpoint: str, **kwargs):
+    """
+    Call an agent over HTTP with SSE (Server-Sent Events) streaming support.
+    Accumulates the stream into a final response.
+    """
+    import aiohttp
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            endpoint,
+            json=payload,
+            headers={"Accept": "text/event-stream"},
+            timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT),
+        ) as response:
+            response.raise_for_status()
+
+            full_content = ""
+            final_json = {}
+
+            async for line in response.content:
+                if not line:
+                    continue
+                line_str = line.decode("utf-8").strip()
+
+                if line_str.startswith("data:"):
+                    data = line_str[5:].strip()
+                    if data == "[DONE]":
+                        break
+                    try:
+                        chunk = json.loads(data)
+                        # Merge logic (AES v1.5.0 Standard)
+                        if isinstance(chunk, dict):
+                            final_json.update(chunk)
+                            if "content" in chunk:
+                                full_content += str(chunk["content"])
+                        else:
+                            full_content += str(chunk)
+                    except json.JSONDecodeError:
+                        full_content += data
+
+            if not final_json and full_content:
+                return {"content": full_content, "status": "completed"}
+
+            if full_content and "content" in final_json:
+                final_json["content"] = full_content
+
+            return final_json

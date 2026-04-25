@@ -59,14 +59,24 @@ async def calculate_luna_judge_score(criterion: dict[str, Any], agent_summary: s
 
         response_text = await provider.generate(prompt, temperature=temperature)
         try:
-            # Try to parse float only
+            # Try to parse float with robustness for reasoning-heavy responses
             import re
 
-            match = re.search(r"([0-1]\.[0-9]+|1\.0|0)", response_text)
-            if match:
-                score = float(match.group(1))
+            # Look for "Score: X" or just "X" at the end of the text
+            score_match = re.search(
+                r"(?:score|result|rating):\s*([0-1]\.[0-9]+|1\.0|0|1)",
+                response_text,
+                re.IGNORECASE,
+            )
+            if not score_match:
+                # Fallback: Find the last number in the text that looks like a score
+                all_nums = re.findall(r"([0-1]\.[0-9]+|1\.0|0|1)", response_text)
+                if all_nums:
+                    score = float(all_nums[-1])
+                else:
+                    score = float(response_text)
             else:
-                score = float(response_text)
+                score = float(score_match.group(1))
 
             print(f"      [Metrics] [Luna-Judge] Provider score: {score:.2f}")
             return max(0.0, min(1.0, score))

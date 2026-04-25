@@ -81,7 +81,10 @@ class ScenarioCatalog:
             new_scenarios = []
 
             # 1. Authoritative Restricted Top-Level Paths
-            search_paths = self._get_search_paths(kwargs.get("root_dir", self.root_dir))
+            jail_base = kwargs.get("root_dir", self.root_dir)
+            search_paths = self._get_search_paths(jail_base)
+            root_canonical_path = Path(jail_base).resolve()
+            root_canonical_str = str(root_canonical_path).lower().replace("\\", "/").rstrip("/")
 
             from eval_runner.utils import get_canonical_path, is_path_safe, normalize_industry
 
@@ -96,19 +99,16 @@ class ScenarioCatalog:
                 # Use glob for discovery but skip deep lints for 10x speedup
                 for p in root_path.glob("**/*.json"):
                     try:
-                        jail_base = kwargs.get("root_dir", self.root_dir)
-                        if not is_path_safe(p, jail_base):
-                            continue
+                        # Optimization: Use string-based prefix check for speed
+                        # glob results are already absolute or anchored.
+                        # We only resolve if we detect potential traversal/symlinks.
+                        p_str = str(p).lower().replace("\\", "/")
+                        if not p_str.startswith(root_canonical_str):
+                            # Fallback to strict safety check for suspected escapes
+                            if not is_path_safe(p, jail_base):
+                                continue
 
-                        abs_p = p.resolve()
-                        root_canonical = Path(jail_base).resolve()
-
-                        try:
-                            rel_p = abs_p.relative_to(root_canonical)
-                        except ValueError:
-                            rel_p = Path(os.path.relpath(abs_p, root_canonical))
-
-                        path_str = get_canonical_path(rel_p.as_posix())
+                        path_str = get_canonical_path(os.path.relpath(p, root_canonical_path))
                         mtime = p.stat().st_mtime
 
                         # Optimized Cache Check

@@ -33,8 +33,8 @@ The manifest is stored in `.aes/config/routing/manifest.json`. See [Routing JSON
 {
   "mappings": {
     "fintech_api": {
-      "protocol": "http",
-      "endpoint": "http://localhost:8000"
+      "protocol": "sse",
+      "endpoint": "http://localhost:8000/stream"
     },
     "default": {
       "protocol": "http",

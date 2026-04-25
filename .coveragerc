@@ -1,0 +1,22 @@
+[run]
+source =
+    eval_runner
+    dataproc_engine
+omit =
+    dataproc_engine/tests/*
+    tests/*
+    */__init__.py
+    */__main__.py
+
+[report]
+show_missing = True
+precision = 2
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if __name__ == .__main__.:
+    raise AssertionError
+    raise NotImplementedError
+    if TYPE_CHECKING:
+    pass

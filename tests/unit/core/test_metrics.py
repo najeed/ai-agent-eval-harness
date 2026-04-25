@@ -123,7 +123,8 @@ def test_tool_call_correctness_mismatch():
     assert score == 0.0
 
 
-def test_generic_accuracy():
+@pytest.mark.asyncio
+async def test_generic_accuracy():
     """
     Test generic accuracy calculation functionality.
 
@@ -131,12 +132,12 @@ def test_generic_accuracy():
     agent summary is provided, and 0.0 when it is empty.
     """
     criterion = {"metric": "information_retrieval_accuracy", "threshold": 0.8}
-    score = metrics.calculate_generic_accuracy(
+    score = await metrics.calculate_generic_accuracy(
         criterion, "Agent retrieved customer details successfully."
     )
     assert score == 1.0
 
-    score_empty = metrics.calculate_generic_accuracy(criterion, "")
+    score_empty = await metrics.calculate_generic_accuracy(criterion, "")
     assert score_empty == 0.0
 
 
@@ -177,10 +178,11 @@ def test_tool_correctness_duplicates_ignored():
     assert metrics.calculate_tool_call_correctness(["a", "a", "b"], ["b", "a"]) == 1.0
 
 
-def test_generic_accuracy_none_summary():
+@pytest.mark.asyncio
+async def test_generic_accuracy_none_summary():
     """None-like empty string → 0.0."""
     criterion = {"metric": "accuracy", "threshold": 0.5}
-    assert metrics.calculate_generic_accuracy(criterion, "") == 0.0
+    assert await metrics.calculate_generic_accuracy(criterion, "") == 0.0
 
 
 def test_communication_clarity_whitespace_only():

@@ -18,11 +18,27 @@ def calculate_tool_call_correctness(expected_tools: list, actual_tools: list) ->
 @MetricRegistry.register("factual_accuracy")
 @MetricRegistry.register("instructional_clarity")
 @MetricRegistry.register("problem_resolution_effectiveness")
-def calculate_generic_accuracy(criterion: dict, agent_summary: str) -> float:
-    """Evaluates whether the agent's summary contains the expected outcome."""
+async def calculate_generic_accuracy(criterion: dict, agent_summary: str) -> float:
+    """
+    Evaluates the agent's summary.
+    If 'expected_outcome' is provided, delegates to Luna-Judge for semantic verification.
+    Otherwise, falls back to a non-empty check (Legacy Baseline).
+    """
     if not agent_summary:
         return 0.0
-    return 1.0
+
+    expected_outcome = criterion.get("expected_outcome") or criterion.get("expected")
+    if expected_outcome:
+        from .accuracy import calculate_luna_judge_score
+
+        # Ensure expected_outcome is in the criterion for Luna Judge
+        updated_criterion = criterion.copy()
+        updated_criterion["expected_outcome"] = str(expected_outcome)
+
+        return await calculate_luna_judge_score(updated_criterion, agent_summary)
+
+    # Legacy Fallback: Presence Check
+    return 1.0 if len(agent_summary.strip()) > 0 else 0.0
 
 
 @MetricRegistry.register("communication_clarity")

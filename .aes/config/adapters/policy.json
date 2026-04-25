@@ -2,6 +2,7 @@
   "adapters": {
     "active_protocols": [
       "http",
+      "sse",
       "local",
       "socket",
       "openapi"

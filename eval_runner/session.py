@@ -47,11 +47,6 @@ class SessionManager:
     def __init__(self, run_id: str, scenario: dict, metadata: dict | None = None):
         from .plugins import PluginManager
 
-        sys.stderr.write(
-            f"\n[PROBE: SESSION_INIT] Scenario: {scenario.get('id')} | Run: {run_id}\n"
-        )
-        sys.stderr.flush()
-
         self.run_id = run_id
         # [Forensic Isolation] Ensure parallel runs don't mutate shared scenario state
         self.scenario = copy.deepcopy(scenario)
@@ -211,12 +206,6 @@ class SessionManager:
         if "metadata" in self.scenario:
             self.scenario["metadata"]["protocol"] = self.metadata["protocol"]
             self.scenario["metadata"]["agent"] = self.metadata["agent"]
-
-        sys.stderr.write(
-            f"      [PROBE: ROUTING] Target: {self.metadata.get('agent')} "
-            f"({self.metadata.get('protocol')})\n"
-        )
-        sys.stderr.flush()
 
         # [Industrial Persistence] Save RESOLVED scenario (post-routing discovery)
         with open(run_vault / "scenario_resolved.json", "w", encoding="utf-8") as f:
@@ -424,6 +413,10 @@ class SessionManager:
             try:
                 protocol = self.session_metadata.get("protocol", "http")
                 endpoint = self.session_metadata.get("agent")
+
+                # [Forensic Trace] Record protocol usage in the protocol sequence
+                self.event_bus.emit(CoreEvents.STEP_START, {"step": protocol})
+
                 # [Industrial Protection] Final URI string verification
                 agent_response = await AgentAdapterRegistry.call_agent(
                     protocol, endpoint, turn_ctx.current_message, turn_ctx.history, turn_ctx
@@ -435,10 +428,7 @@ class SessionManager:
                 self._capture_telemetry()
 
                 if agent_response is None:
-                    sys.stderr.write(
-                        f"      [PROBE: ERROR] Agent {protocol} at {endpoint} failed.\n"
-                    )
-                    sys.stderr.flush()
+                    logger.error(f"      [Agent Error] Agent {protocol} at {endpoint} failed.")
                     raise Exception(
                         f"Authoritative Failure: Agent for {protocol} returned no payload."
                     )

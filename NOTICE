@@ -31,5 +31,7 @@ This product includes software developed by the following third-party projects:
 - pydantic (MIT)
 - pyarrow (Apache 2.0)
 - Werkzeug (BSD-3-Clause)
+- httpx (BSD-3-Clause)
+- GitPython (BSD-3-Clause)
 
 For more information, see the LICENSES/ directory and COMPLIANCE.md.

@@ -1,6 +1,6 @@
-# Forensic Compliance Manifesto (AES v1.5.0)
+# Forensic Compliance Manifesto (AES v1.6.0)
 
-This document defines the industrial governance and verification protocols for the AgentV 1.5.0 engine.
+This document defines the industrial governance and verification protocols for the AgentV 1.6.0 engine.
 
 ---
 
@@ -40,6 +40,8 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **click** | 8.3.2 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pydantic** | 2.13.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **pyarrow** | 24.0.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **httpx** | 0.28.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **GitPython** | 3.1.44 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
 ## 3. Obligations & Compliance Steps
 To remain compliant with these licenses, the following steps are handled automatically by this repository:
@@ -83,7 +85,7 @@ AgentV is explicitly aligned with the **NIST AI-100-1** trustworthiness framewor
 
 ### 📊 Weighted Severity Model (WSM)
 
-For v1.5.0, risks are prioritized using an industrial **Weighted Severity Model** across 7 critical AI dimensions:
+For v1.6.0, risks are prioritized using an industrial **Weighted Severity Model** across 7 critical AI dimensions:
 
 | Dimension | Weight | Primary Metric |
 | :--- | :--- | :--- |
@@ -96,7 +98,7 @@ For v1.5.0, risks are prioritized using an industrial **Weighted Severity Model*
 | **Accountability**| 0.05 | VC Cryptographic Signature |
 
 ### 🛑 The "Safety Floor" Guarantee
-A foundational architectural rule in v1.5.0: If either the **Safety** or **Security** dimension scores fall below **0.5 (Critical)**, the aggregate Trustworthiness Index is automatically capped at **0.49 (FAIL)**, regardless of performance in other dimensions.
+A foundational architectural rule in v1.6.0: If either the **Safety** or **Security** dimension scores fall below **0.5 (Critical)**, the aggregate Trustworthiness Index is automatically capped at **0.49 (FAIL)**, regardless of performance in other dimensions.
 
 ### Data Privacy & PII Handling
 - **PII Scrubbing**: Built-in regex-based scanner for 16 patterns (SSN, Credit Card, etc.).

@@ -32,6 +32,11 @@ agentv evaluate \
   --agent http://localhost:5001/execute_task \
   --attempts 3 \
   --limit 10
+
+# SSE Streaming Agent
+agentv evaluate \
+  --agent sse://localhost:5005/stream \
+  --industry finance
 ```
 
 ### 🧩 `run` — Single Scenario

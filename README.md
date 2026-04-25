@@ -49,7 +49,7 @@ graph TD
 | **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.5.1 (April 2026 Industrial Extension Baseline) |
+| **Version** | v1.6.0 (April 2026 Industrial Extension Baseline) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
 | **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
@@ -216,8 +216,10 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 | Protocol | Description | Configuration Flag | Env Variable |
 | :--- | :--- | :--- | :--- |
 | **HTTP** | Standard REST API (POST) | `(default)` | `AGENT_API_URL` |
+| **SSE** | Server-Sent Events | `(default)` | `AGENT_API_URL` |
 | **Local** | Local process via stdin/stdout | `--agent-cmd` | `AGENT_LOCAL_CMD` |
 | **Socket** | TCP or Unix Domain Socket | `--agent-socket` | `AGENT_SOCKET_ADDR` |
+| **OpenAPI** | OpenAPI spec | `--agent-socket` | `AGENT_SOCKET_ADDR` |
 
 ---
 

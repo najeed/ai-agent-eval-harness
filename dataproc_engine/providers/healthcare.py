@@ -220,10 +220,24 @@ class HealthcareProvider(BaseProvider):
                 logger.error("cms_extraction_failed", path=path, error=str(e))
                 return None
 
-        # Fix paths if they are placeholders
-        actual_paths = [p for p in self.csv_paths if os.path.exists(p)]
+        # [Industrial Hardening] Explicit Path Resolution
+        actual_paths = []
+
+        if not self.csv_paths:
+            if self.allow_simulation:
+                actual_paths = ["sim_cms.csv"]
+        else:
+            for p in self.csv_paths:
+                if os.path.exists(p):
+                    actual_paths.append(p)
+                elif self.allow_simulation:
+                    logger.warning("cms_path_missing_using_sim", path=p)
+                    # Trigger simulation in fetch_csv for this specific entry
+                    actual_paths.append(f"sim_{os.path.basename(p)}")
+
         if not actual_paths:
-            actual_paths = ["sim_cms.csv"]  # Trigger simulation in fetch_csv
+            logger.error("no_valid_healthcare_paths_found")
+            return []
 
         tasks = [fetch_csv(p) for p in actual_paths]
         results = await asyncio.gather(*tasks)

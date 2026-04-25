@@ -145,7 +145,9 @@ async def run_evaluation(
 ```
 
 ### `AgentAdapterRegistry`
-Manage communication protocols (HTTP, Local, Socket, LangGraph, etc.).
+Manage communication protocols (HTTP, SSE, Local, Socket, etc.).
+- **Protocols**: `http`, `sse` (Streaming), `local` (CLI), `socket` (Raw TCP).
+- **Standardized Signature**: Adapters must accept `(payload, endpoint=None)`.
 ```python
 from eval_runner.engine import AgentAdapterRegistry
 AgentAdapterRegistry.register("my-protocol", my_custom_adapter_func)

@@ -35,6 +35,7 @@ class AgentAdapterRegistry:
         "http": "protocols",
         "local": "protocols",
         "socket": "protocols",
+        "sse": "protocols",
         "openapi": "protocols",
         "openai": "providers",
         "claude": "providers",
@@ -48,7 +49,7 @@ class AgentAdapterRegistry:
     }
 
     # Baseline protocols protected from accidental overwrite
-    CORE_PROTOCOLS = {"http", "local", "socket", "openapi"}
+    CORE_PROTOCOLS = {"http", "sse", "local", "socket", "openapi"}
 
     @classmethod
     def register(
@@ -101,7 +102,7 @@ class AgentAdapterRegistry:
         from .config import RegistryManager
 
         # Hardened Zero-Trust Baseline (v1.5.0 Standard)
-        cls._active_whitelists["protocols"] = {"http", "openapi"}
+        cls._active_whitelists["protocols"] = {"http", "sse", "openapi"}
         cls._active_whitelists["providers"] = set()
         cls._active_whitelists["frameworks"] = set()
 
@@ -126,6 +127,7 @@ class AgentAdapterRegistry:
 
         # 1. Authoritative Protocol Registration (Baseline)
         cls.register("http", adapters.http_adapter)
+        cls.register("sse", adapters.sse_http_adapter)
         cls.register("local", adapters.local_subprocess_adapter)
         cls.register("socket", adapters.socket_adapter)
 

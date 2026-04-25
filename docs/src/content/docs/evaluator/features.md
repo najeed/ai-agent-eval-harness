@@ -9,7 +9,8 @@ This inventory provides a comprehensive overview of the capabilities, tools, and
 
 The foundation of the harness, designed for framework-agnostic execution and high-fidelity measurement.
 - **Modular Plugin Bus**: Lifecycle hooks (`before_evaluation`, `on_turn_start`, `after_evaluation`) that allow extending the harness without modifying the core.
-- **Dynamic Adapter Discovery**: Automatically recognizes and registers agent protocols (`http`, `local`, `openai`, `gemini`, `claude`, `grok`, `ollama`) via the `AgentAdapterRegistry`.
+- **Dynamic Adapter Discovery**: Automatically recognizes and registers agent protocols (`http`, `sse`, `local`, `openai`, `gemini`, `claude`, `grok`, `ollama`) via the `AgentAdapterRegistry`.
+- **Modern Streaming Support (SSE)**: Built-in support for `text/event-stream` agents, with automated chunk accumulation and JSON normalization.
 - **Flight Recorder (`run.jsonl`)**: Captures every state transition, tool call, and agent response in a deterministic, append-only log.
 - **Virtual File System (VFS)**: State-aware sandboxing for tool execution with automated rollback and isolation.
 - **Asymmetric Trust Protocol (ED25519)**: Integrated `Verifier` for signatures, providing non-repudiable audit trails.
@@ -43,7 +44,7 @@ First-class, zero-touch support for leading AI agent frameworks.
 ## 5. Research & Performance Metrics
 
 Scientific-grade measurement of agent capabilities.
-- **Behavioral DNA Telemetry**: Micro-segmentation of agent decision paths using 4-level event granularity (PHASE, SUBTASK, ACTION, STEP).
+- **Robust Semantic Judging (Luna-Judge)**: Industrial LLM-as-Judge layer with automated regex-based score extraction, reasoning-aware parsing, and fallback Jaccard similarity heuristics.
 - **Wilson Score Confidence Intervals**: Provides 95% statistical confidence bounds for all reported pass rates.
 - **Grounding Coverage**: Heatmaps visualizing tool and knowledge-base utilization within scenarios.
 - **Cost/Latency Analytics**: P95 latency monitoring and precise token-based costing.

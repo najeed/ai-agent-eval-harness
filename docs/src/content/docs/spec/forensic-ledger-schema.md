@@ -67,7 +67,9 @@ A list of SHA-256 hashes representing the environment state (files, database key
 - Used by Enterprise analyzers to detect logic-state stalls, hallucinations, and state-action contradictions.
 
 ### `protocol_sequence` (list[str])
-A trace of transition events recorded during execution (e.g., `init`, `auth`, `execute`).
+A trace of transition events recorded during execution.
+- **Operational Steps**: Traditional handshake phases (e.g., `init`, `auth`, `execute`).
+- **Interaction Protocols**: Dynamic protocol traces (e.g., `http`, `sse`) recorded at each turn for forensic routing verification.
 - Verified against the `protocol_sequence_required` schema in the scenario.
 
 ### `diagnostic_report` (dict)

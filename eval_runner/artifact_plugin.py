@@ -92,7 +92,9 @@ class ArtifactPlugin(BaseEvalPlugin):
             "files": [],
         }
 
-        print(f"📦 [ArtifactPlugin] Bundling {len(files_to_include)} files in {base_path.name}...")
+        print(
+            f"      [ArtifactPlugin] Bundling {len(files_to_include)} files in {base_path.name}..."
+        )
 
         with zipfile.ZipFile(zip_path, "w") as zipf:
             for filename in files_to_include:
@@ -121,9 +123,9 @@ class ArtifactPlugin(BaseEvalPlugin):
             manifest_path = base_path / "audit_manifest.json"
             with open(manifest_path, "w") as f:
                 json.dump(manifest, f, indent=2)
-            print(f"✅ [ArtifactPlugin] Signed manifest created: {manifest_path}")
+            print(f"      [ArtifactPlugin] Signed manifest created: {manifest_path}")
 
-        print(f"✅ [ArtifactPlugin] Bundle created: {zip_path}")
+        print(f"      [ArtifactPlugin] Bundle created: {zip_path}")
         return {
             "bundle_path": str(zip_path),
             "manifest_path": (
@@ -161,12 +163,26 @@ class ArtifactPlugin(BaseEvalPlugin):
                 is_valid = False
 
         # Verify Signature if present
-        if is_valid and "signature_ed25519" in manifest:
+        if is_valid and "signature_ed25519" in manifest and "public_key" in manifest:
             try:
-                # Signature validation logic hook (Industrial placeholder for future chain audit)
-                sig_data = manifest.get("signature_ed25519")
-                if not sig_data:
-                    is_valid = False
+                # [Industrial Hardening] Verify the Ed25519 signature
+                pub_key_bytes = base64.b64decode(manifest["public_key"])
+                sig_bytes = base64.b64decode(manifest["signature_ed25519"])
+
+                # Reconstruct signing data (manifest without signature/public_key)
+                verify_manifest = {
+                    k: v
+                    for k, v in manifest.items()
+                    if k not in ["signature_ed25519", "public_key"]
+                }
+                manifest_json = json.dumps(verify_manifest, sort_keys=True)
+
+                from cryptography.hazmat.primitives.asymmetric import ed25519
+
+                public_key = ed25519.Ed25519PublicKey.from_public_bytes(pub_key_bytes)
+                public_key.verify(sig_bytes, manifest_json.encode())
+
+                print("      [ArtifactPlugin] Signature verification successful.")
             except Exception as e:
                 print(f"      [ArtifactPlugin] Signature verification failure: {e}")
                 is_valid = False

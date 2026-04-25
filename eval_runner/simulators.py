@@ -42,12 +42,36 @@ class BaseSimulator:
     async def on_poll(self, condition: str, params: dict[str, Any]) -> bool:
         """
         Industrial Liveness Hook.
-        Supports polling for asynchronous tool completions (e.g. cloud pending -> running).
+        Supports polling for asynchronous tool completions or state transitions.
+        Checks if the internal state matches the requested condition.
         """
+        # Priority 1: Exact value match if requested
+        if "expected_value" in params:
+            return self.state.get(condition) == params["expected_value"]
+
+        # Priority 2: Truthiness of the state key
+        if condition in self.state:
+            return bool(self.state[condition])
+
         return True
 
     async def on_verify(self, params: dict[str, Any]) -> dict[str, Any]:
-        """Standardized verification hook for shim-specific post-conditions."""
+        """
+        Standardized verification hook for shim-specific post-conditions.
+        Compares internal state against provided criteria.
+        """
+        criteria = params.get("criteria", {})
+        if not criteria:
+            return {"status": "success"}
+
+        errors = []
+        for key, expected in criteria.items():
+            actual = self.state.get(key)
+            if actual != expected:
+                errors.append(f"State mismatch for '{key}': expected {expected}, got {actual}")
+
+        if errors:
+            return {"status": "error", "message": "; ".join(errors)}
         return {"status": "success"}
 
     async def get_snapshot(self) -> dict[str, Any]:
