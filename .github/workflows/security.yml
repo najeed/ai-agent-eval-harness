@@ -29,7 +29,9 @@ jobs:
           pip install pip-audit bandit safety
 
       - name: Run pip-audit
-        run: pip-audit --desc on
+        # CVE-2026-3219 (pip) is currently unpatchable (no upstream fix as of 2026-04-25).
+        # We ignore it here to prevent blocking CI, as our environment uses trusted sources.
+        run: pip-audit --desc on --ignore-vuln CVE-2026-3219
 
       - name: Run Bandit
         run: bandit -r . -ll

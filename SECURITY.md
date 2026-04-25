@@ -115,6 +115,11 @@ We follow responsible disclosure practices:
 - Implement proper access controls for evaluation data
 - Consider data retention and deletion policies
 
+### Upstream Toolchain Vulnerabilities
+- Certain core tools (e.g., `pip`) may have known vulnerabilities with no immediate upstream fix.
+- **CVE-2026-3219 (pip)**: Handling of concatenated archives. Currently unpatchable as of 2026-04-25. 
+- Mitigation: We enforce the use of trusted, verified package sources and hashes in production environments. CI/CD pipelines explicitly document these exclusions.
+
 ## Security Updates
 
 ### How We Handle Security Issues
