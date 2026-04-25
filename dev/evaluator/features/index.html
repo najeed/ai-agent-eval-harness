@@ -76,7 +76,8 @@
 <p>The foundation of the harness, designed for framework-agnostic execution and high-fidelity measurement.</p>
 <ul>
 <li><strong>Modular Plugin Bus</strong>: Lifecycle hooks (<code dir="auto">before_evaluation</code>, <code dir="auto">on_turn_start</code>, <code dir="auto">after_evaluation</code>) that allow extending the harness without modifying the core.</li>
-<li><strong>Dynamic Adapter Discovery</strong>: Automatically recognizes and registers agent protocols (<code dir="auto">http</code>, <code dir="auto">local</code>, <code dir="auto">openai</code>, <code dir="auto">gemini</code>, <code dir="auto">claude</code>, <code dir="auto">grok</code>, <code dir="auto">ollama</code>) via the <code dir="auto">AgentAdapterRegistry</code>.</li>
+<li><strong>Dynamic Adapter Discovery</strong>: Automatically recognizes and registers agent protocols (<code dir="auto">http</code>, <code dir="auto">sse</code>, <code dir="auto">local</code>, <code dir="auto">openai</code>, <code dir="auto">gemini</code>, <code dir="auto">claude</code>, <code dir="auto">grok</code>, <code dir="auto">ollama</code>) via the <code dir="auto">AgentAdapterRegistry</code>.</li>
+<li><strong>Modern Streaming Support (SSE)</strong>: Built-in support for <code dir="auto">text/event-stream</code> agents, with automated chunk accumulation and JSON normalization.</li>
 <li><strong>Flight Recorder (<code dir="auto">run.jsonl</code>)</strong>: Captures every state transition, tool call, and agent response in a deterministic, append-only log.</li>
 <li><strong>Virtual File System (VFS)</strong>: State-aware sandboxing for tool execution with automated rollback and isolation.</li>
 <li><strong>Asymmetric Trust Protocol (ED25519)</strong>: Integrated <code dir="auto">Verifier</code> for signatures, providing non-repudiable audit trails.</li>
@@ -110,7 +111,7 @@
 <div class="sl-heading-wrapper level-h2"><h2 id="5-research--performance-metrics">5. Research &#x26; Performance Metrics</h2><a class="sl-anchor-link" href="#5-research--performance-metrics"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “5. Research &#x26; Performance Metrics”</span></a></div>
 <p>Scientific-grade measurement of agent capabilities.</p>
 <ul>
-<li><strong>Behavioral DNA Telemetry</strong>: Micro-segmentation of agent decision paths using 4-level event granularity (PHASE, SUBTASK, ACTION, STEP).</li>
+<li><strong>Robust Semantic Judging (Luna-Judge)</strong>: Industrial LLM-as-Judge layer with automated regex-based score extraction, reasoning-aware parsing, and fallback Jaccard similarity heuristics.</li>
 <li><strong>Wilson Score Confidence Intervals</strong>: Provides 95% statistical confidence bounds for all reported pass rates.</li>
 <li><strong>Grounding Coverage</strong>: Heatmaps visualizing tool and knowledge-base utilization within scenarios.</li>
 <li><strong>Cost/Latency Analytics</strong>: P95 latency monitoring and precise token-based costing.</li>

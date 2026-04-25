@@ -11,6 +11,7 @@ To ensure industrial-grade governance, AgentV distinguishes between three layers
 ### 1. Infrastructure Protocols (`active_protocols`)
 The bedrock of communication. These handle the literal transport of bits between the engine and the agent.
 - **`http`**: The standard REST interface.
+- **`sse`**: Server-Sent Events.
 - **`local`**: **[HIGH RISK]** Spawns local subprocesses. Should be disabled in multi-tenant or untrusted environments.
 - **`socket`**: High-performance Unix/TCP streaming.
 - **`openapi`**: Automated rest-standard negotiation.
