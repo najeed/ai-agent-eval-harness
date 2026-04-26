@@ -18,7 +18,7 @@ agentv list
 ### Step 2: Search for Finance
 Need to find benchmarks related to banking and ledgers? Use the query filter.
 ```bash
-agentv list --query finance
+agentv list --search finance
 ```
 
 ### Step 3: Run the Discovery Script

@@ -17,6 +17,7 @@ Look at `IJA_protocol_v1_industrial.json`. It defines the weights and roles for 
 
 ### Step 2: Run the Consensus Evaluation
 This interactive script will execute a series of evaluations where the judges' opinions differ, and the IJA protocol must resolve the conflict.
+- **Robust Semantic Extraction**: Notice how Luna-Judge now correctly extracts scores even from reasoning-heavy responses (e.g., "Score: 8/10" embedded in a paragraph).
 ```bash
 python "walkthroughs/Phase 4 - Production & Governance - Expert/luna_ija/Step_1_Run_IJA_Consensus.py"
 ```

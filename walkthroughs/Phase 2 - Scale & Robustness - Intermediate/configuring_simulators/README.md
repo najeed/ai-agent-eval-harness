@@ -32,5 +32,8 @@ Modify `scenario_with_shims.json` to change the `enabled_shims` to `["db"]`. Run
 - **Shim Isolation**: Ensuring that agents only interact with the systems defined in their specific industrial test case.
 - **NIST AI-100-1 Resilience**: By restricting shims, you test the agent's **Resilience** when its world-state is reduced or modified.
 
+> [!TIP]
+> **Pro-Tip**: Use the **[Industrial Data Extraction](../industrial_data_extraction/README.md)** module to fetch real-world data from the USDA or FCC to populate your simulators with high-fidelity world-states.
+
 ---
 *Ready to play god with the agent's universe? Check out the [STORY.md](./STORY.md) next!*

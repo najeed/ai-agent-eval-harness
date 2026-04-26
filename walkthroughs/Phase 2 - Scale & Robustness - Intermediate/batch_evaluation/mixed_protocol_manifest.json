@@ -10,15 +10,15 @@
   "attempts": 3,
   "scenarios": [
     {
-      "path": "scenarios/telecom/connectivity_check.json",
+      "path": "scenarios/finance/gen_finance_derivatives_trading_1.json",
       "agent_api_url": "http://localhost:5001/execute_task"
     },
     {
-      "path": "scenarios/finance/ledger_verification.json",
+      "path": "scenarios/fintech/gen_fintech_refund_processing_1.json",
       "agent_api_url": "local://walkthroughs/Phase 1 - Foundations - Beginner/adapters/local_agent_shim.py"
     },
     {
-      "path": "scenarios/telecom/signal_strength.json",
+      "path": "scenarios/cross_industry/disputed_claim.json",
       "agent_api_url": "http://localhost:5001/execute_task"
     }
   ]

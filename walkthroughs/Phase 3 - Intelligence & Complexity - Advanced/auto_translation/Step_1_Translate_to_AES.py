@@ -11,8 +11,20 @@ def main():
 
     # Locate project root
     root = Path(__file__).parent.parent.parent.parent
-    prd_path = root / "walkthroughs" / "advanced" / "auto_translation" / "sample_prd.md"
-    output_path = root / "walkthroughs" / "advanced" / "auto_translation" / "reactor_startup.json"
+    prd_path = (
+        root
+        / "walkthroughs"
+        / "Phase 3 - Intelligence & Complexity - Advanced"
+        / "auto_translation"
+        / "sample_prd.md"
+    )
+    output_path = (
+        root
+        / "walkthroughs"
+        / "Phase 3 - Intelligence & Complexity - Advanced"
+        / "auto_translation"
+        / "reactor_startup.json"
+    )
 
     print("\nWe are translating a human-readable 'Reactor Startup' PRD.")
     print(f"Source: {prd_path.name}")
@@ -22,7 +34,7 @@ def main():
 
     # Run the auto-translate command
     print(
-        "\n   [CLI] Running: agentv auto-translate --prd "
+        "\n   [CLI] Running: agentv auto-translate --input "
         + str(prd_path)
         + " --output "
         + str(output_path)
@@ -36,7 +48,7 @@ def main():
                 "-m",
                 "eval_runner.cli",
                 "auto-translate",
-                "--prd",
+                "--input",
                 str(prd_path),
                 "--output",
                 str(output_path),

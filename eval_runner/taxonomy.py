@@ -211,7 +211,7 @@ class FailureTaxonomy:
             r"""
             (
                 # Phone numbers (with optional country code)
-                (?:\+?\d{1,3}[-.\s]?)?\d{7,12}
+                (?:\+?\d{1,3}[-.\s]?)?(?:\d[-.\s]?){7,12}
                 |
                 # Email addresses
                 [a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,3}

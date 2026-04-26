@@ -11,7 +11,11 @@ def main():
     # Locate project root
     root = Path(__file__).parent.parent.parent.parent
     manifest_path = (
-        root / "walkthroughs" / "intermediate" / "batch_evaluation" / "mixed_protocol_manifest.json"
+        root
+        / "walkthroughs"
+        / "Phase 2 - Scale & Robustness - Intermediate"
+        / "batch_evaluation"
+        / "mixed_protocol_manifest.json"
     )
 
     print("\nWe are now orchestrating a fleet of fifty evaluations across three sectors.")
@@ -33,7 +37,7 @@ def main():
                 "eval_runner.cli",
                 "evaluate",
                 "--path",
-                "scenarios/telecom/",
+                "industries/telecom/scenarios/",
                 "--concurrency",
                 "5",
             ],

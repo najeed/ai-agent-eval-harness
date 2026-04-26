@@ -1,6 +1,6 @@
 # AgentV Walkthrough Syllabus
 
-Welcome to the guided learning path for the **AgentV (v1.5.0)** platform. This curriculum is designed to move you from foundational exploration through industrial-grade governance.
+Welcome to the guided learning path for the **AgentV (v1.6.0)** platform. This curriculum is designed to move you from foundational exploration through industrial-grade governance.
 
 ---
 
@@ -37,12 +37,13 @@ If you see a list of industrial benchmarks, you are ready to begin.
 ### 🟢 [Phase 1 - Foundations - Beginner](./Phase%201%20-%20Foundations%20-%20Beginner)
 **Focus**: Core loops, connectivity, and safety.
 - **[Exploration](./Phase%201%20-%20Foundations%20-%20Beginner/discovery/README.md)**: Search and filter the industrial scenario catalog.
-- **[Native Adapters](./Phase%201%20-%20Foundations%20-%20Beginner/adapters/README.md)**: Coordinate model communication via the unified adapter layer.
+- **[Native Adapters](./Phase%201%20-%20Foundations%20-%20Beginner/adapters/README.md)**: Coordinate model communication via the unified adapter layer (HTTP, SSE, Local, Socket, OpenAPI).
 - **[Sandboxing](./Phase%201%20-%20Foundations%20-%20Beginner/sandboxing_and_shims/README.md)**: Witness "Zero-Touch" isolation and proxy interception.
 
 ### 🟡 [Phase 2 - Scale & Robustness - Intermediate](./Phase%202%20-%20Scale%20%26%20Robustness%20-%20Intermediate)
 **Focus**: Industrial throughput and adversarial stress-testing.
 - **[Batch Eval](./Phase%202%20-%20Scale%20%26%20Robustness%20-%20Intermediate/batch_evaluation/README.md)**: Manage multi-protocol concurrent fleets.
+- **[Industrial Data Extraction](./Phase%202%20-%20Scale%20%26%20Robustness%20-%20Intermediate/industrial_data_extraction/README.md)**: Harness `dataproc_engine` for gold-standard sector data (USDA, FCC, etc.).
 - **[Configuring Simulators](./Phase%202%20-%20Scale%20%26%20Robustness%20-%20Intermediate/configuring_simulators/README.md)**: Toggling `enabled_shims` for CRM vs. DB world-states.
 - **[Pack Install](./Phase%202%20-%20Scale%20%26%20Robustness%20-%20Intermediate/pack_installation/README.md)**: Deploy and archive industrial benchmark packs.
 - **[Scenario Mutation](./Phase%202%20-%20Scale%20%26%20Robustness%20-%20Intermediate/scenario_mutation/README.md)**: Perform adversarial drift analysis through automated mutations.

@@ -11,7 +11,13 @@ def main():
     # Locate project root
     root = Path(__file__).parent.parent.parent.parent
     config_path = root / "eval_config.json"
-    shim_path = root / "walkthroughs" / "beginner" / "adapters" / "local_agent_shim.py"
+    shim_path = (
+        root
+        / "walkthroughs"
+        / "Phase 1 - Foundations - Beginner"
+        / "adapters"
+        / "local_agent_shim.py"
+    )
 
     print(f"\nYour current agent configuration is located in: {config_path.name}")
     print("Most agents run on remote servers (HTTP), but sometimes we need to evaluate")
@@ -34,7 +40,7 @@ def main():
 
     print("\n============================================")
     print("The Bridge is built. Now, run this command:")
-    print("agentv evaluate --path scenarios/telecom/connectivity_check.json")
+    print("agentv evaluate --path scenarios/cross_industry/disputed_claim.json")
     print("============================================")
 
 

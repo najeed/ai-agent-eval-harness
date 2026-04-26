@@ -40,8 +40,8 @@ def main():
     input("\n[Press ENTER] to filter the catalog for 'finance'...")
 
     # Run the search command
-    print("\n   [CLI] Running: agentv list --query finance")
-    search_output = run_cmd("python -m eval_runner.cli list --query finance")
+    print("\n   [CLI] Running: agentv list --search finance")
+    search_output = run_cmd("python -m eval_runner.cli list --search finance")
     print("-" * 40)
     print(search_output)
     print("-" * 40)
