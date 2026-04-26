@@ -14,7 +14,7 @@ def profile_data(df: pd.DataFrame) -> dict[str, Any]:
         "correlations": df.corr(numeric_only=True).to_dict(),
         "categorical_freqs": {
             col: df[col].value_counts(normalize=True).to_dict()
-            for col in df.select_dtypes(include="object")
+            for col in df.select_dtypes(include=["object", "str"])
         },
         "shape": df.shape,
         "columns": df.columns.tolist(),

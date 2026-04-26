@@ -147,8 +147,12 @@ class UnstructuredProvider(BaseProvider):
                         logger.error(f"OCR failed for {path}: {e}")
                         return []
                 else:
-                    with open(path, encoding="utf-8") as f:
-                        content = f.read()
+                    try:
+                        with open(path, encoding="utf-8") as f:
+                            content = f.read()
+                    except Exception as e:
+                        logger.error(f"File read failed for {path}: {e}")
+                        return []
             else:
                 logger.error(f"Input path not found: {path}")
                 return []

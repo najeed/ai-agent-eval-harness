@@ -86,12 +86,12 @@ async def test_cli_confirmation_branches(tmp_path):
         f.write('{"id": "old"}')
 
     # 2. Run with manual confirmation (Yes)
-    # We mock the engine to return 1 result so it triggers the save logic
-    # Mock asyncio.run to prevent event loop nesting errors
-    with patch("asyncio.run", lambda x: None):
+    # Mock asyncio.run to return the mock result and avoid unawaited coroutines
+    mock_results = [MagicMock(to_dict=lambda: {"id": "new"})]
+    with patch("asyncio.run", return_value=mock_results):
         with patch(
             "dataproc_engine.core.engine.DatasetEngine.run_industry_pipeline",
-            AsyncMock(return_value=[MagicMock(to_dict=lambda: {"id": "new"})]),
+            MagicMock(),
         ):
             result = runner.invoke(
                 cli, ["extract", "--industry", "finance", "--target-dir", target_dir], input="y\n"

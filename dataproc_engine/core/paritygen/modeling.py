@@ -21,7 +21,7 @@ def fit_multivariate_model(df: pd.DataFrame) -> Any:
         },
         "categorical": {
             col: df[col].value_counts(normalize=True).to_dict()
-            for col in df.select_dtypes(include="object")
+            for col in df.select_dtypes(include=["object", "str"])
         },
     }
     return model

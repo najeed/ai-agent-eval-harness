@@ -24,13 +24,16 @@ class GeminiAdapterPlugin(BaseEvalPlugin):
         from google import genai
         from google.genai import types
 
-        api_key = payload.get("api_key") or config.GOOGLE_API_KEY
+        api_key = payload.get("api_key")
         model = payload.get("model", config.GEMINI_MODEL)
 
         # Check if Vertex AI is requested via base_url or metadata
         vertexai = "vertex" in (url or "").lower() or payload.get("metadata", {}).get(
             "vertexai", False
         )
+
+        if not api_key and not vertexai:
+            api_key = config.GOOGLE_API_KEY
 
         client = genai.Client(api_key=api_key, vertexai=vertexai)
 

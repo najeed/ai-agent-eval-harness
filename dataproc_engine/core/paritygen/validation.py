@@ -16,7 +16,7 @@ def validate_parity(original_df: pd.DataFrame, synthetic_df: pd.DataFrame) -> di
     for col in original_df.select_dtypes(include="number").columns:
         if col in synthetic_df.columns:
             # KS Test
-            stat, pval = ks_2samp(original_df[col], synthetic_df[col])
+            stat, pval = ks_2samp(original_df[col], synthetic_df[col], method="asymp")
             # True Wasserstein Distance
             w_dist = wasserstein_distance(original_df[col], synthetic_df[col])
 
@@ -35,7 +35,7 @@ def validate_parity(original_df: pd.DataFrame, synthetic_df: pd.DataFrame) -> di
         results["_correlation_max_drift"] = round(corr_drift, 4)
 
     # 3. Categorical Frequencies
-    for col in original_df.select_dtypes(include="object").columns:
+    for col in original_df.select_dtypes(include=["object", "str"]).columns:
         if col in synthetic_df.columns:
             orig_freq = original_df[col].value_counts(normalize=True).to_dict()
             syn_freq = synthetic_df[col].value_counts(normalize=True).to_dict()
