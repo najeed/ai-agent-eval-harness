@@ -87,10 +87,11 @@ async def test_terminal_simulator_security_violation(tmp_path):
 async def test_social_media_polling():
     """Verify specialized social media polling."""
     sim = SocialMediaSimulator()
-    sim.handle_social_post({"id": "p1", "text": "Hello"})
+    res = sim.handle_social_post({"text": "Hello"})
+    pid = res["id"]
 
-    assert await sim.on_poll("post_confirmed", {"post_id": "p1"}) is True
-    assert await sim.on_poll("post_confirmed", {"post_id": "p2"}) is False
+    assert await sim.on_poll("post_confirmed", {"post_id": pid}) is True
+    assert await sim.on_poll("post_confirmed", {"post_id": "missing"}) is False
 
 
 @pytest.mark.asyncio

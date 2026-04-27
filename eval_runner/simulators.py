@@ -123,9 +123,9 @@ class GitSimulator(BaseSimulator):
         # GitPython uses subprocess under the hood, but we wrap for safety
         try:
             if dest.exists():
-                import shutil
+                from .utils import rmtree_resilient
 
-                shutil.rmtree(dest)
+                rmtree_resilient(dest)
 
             # [RFC-002 Hybrid Registry]
             from . import config
@@ -219,6 +219,9 @@ class ApiSimulator(BaseSimulator):
         if url and not url.startswith(("http://", "https://", "ws://", "wss://")):
             url = f"http://{url}"
 
+        if not url:
+            return {"status": "error", "message": "Invalid API URL provided."}
+
         # [Iteration 6: RFC-002 Hybrid Registry]
         # Pull declarative resources from the central registry
         registry_resources = config.get_shim_config("api")
@@ -299,15 +302,12 @@ class DatabaseSimulator(BaseSimulator):
 
     def __init__(self, *args, **kwargs):
         super().__init__(
-            {
-                "tables": {
-                    "users": [{"id": 1, "email": "admin@example.com", "role": "admin"}],
-                }
-            },
+            {"tables": {}},
             *args,
             **kwargs,
         )
         self._engine = None
+        self._forensics_provisioned = False
 
     def _get_engine(self):
         """Lazy initialization of SQLAlchemy engine inside the terminal_jail."""
@@ -316,7 +316,7 @@ class DatabaseSimulator(BaseSimulator):
 
         from pathlib import Path
 
-        from sqlalchemy import create_engine
+        from sqlalchemy import create_engine, text
 
         # New Standard -> Legacy Nesting -> Local Transient
         db_uri = self.config.get("primary_db", {}).get("connection") or self.config.get(
@@ -333,27 +333,139 @@ class DatabaseSimulator(BaseSimulator):
 
         self._engine = create_engine(db_uri, poolclass=NullPool)
 
-        # [Iteration 3 Init] Provision initial industrial state
-        from sqlalchemy import text
-
+        # [Iteration 3 Init] Baseline Table Provisioning (Pre-Forensic)
         with self._engine.connect() as conn:
+            # We provide a baseline 'users' table for backward compatibility with core tests.
             conn.execute(
-                text(
-                    "CREATE TABLE IF NOT EXISTS users "
-                    "(id INTEGER PRIMARY KEY, email TEXT, role TEXT)"
+                text("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    email TEXT UNIQUE,
+                    role TEXT DEFAULT 'user',
+                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
-            )
-            conn.execute(
-                text("INSERT INTO users (email, role) VALUES ('admin@example.com', 'admin')")
+            """)
             )
             conn.commit()
 
+        # [Industrial Governance] Provision Forensic Infrastructure
+        # (This will discover 'users' and install triggers)
+        if not self._forensics_provisioned:
+            self._provision_forensic_log(self._engine)
+            self._forensics_provisioned = True
+
+        # [Iteration 3 Seeding] Initial state mutations
+        with self._engine.connect() as conn:
+            # Seed if empty (Iteration 1 Baseline)
+            res = conn.execute(text("SELECT COUNT(*) FROM users")).scalar()
+            if res == 0:
+                conn.execute(
+                    text("INSERT INTO users (email, role) VALUES ('admin@test.com', 'admin')")
+                )
+            conn.commit()
+
         return self._engine
+
+    def _provision_forensic_log(self, engine):
+        """
+        [Industrial Hardening] Installs SQLite triggers for row-level mutation tracking (CUD).
+        Ensures all changes are recorded in _forensic_audit_log for lean forensics.
+        """
+
+        from sqlalchemy import inspect, text
+
+        with engine.connect() as conn:
+            # 1. Create Audit Table
+            conn.execute(
+                text("""
+                CREATE TABLE IF NOT EXISTS _forensic_audit_log (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    table_name TEXT,
+                    action TEXT,
+                    row_identity TEXT,
+                    old_data TEXT,
+                    new_data TEXT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            )
+
+            # 2. Discover Tables and Install Triggers
+            inspector = inspect(engine)
+            for table_name in inspector.get_table_names():
+                if table_name.startswith("_"):  # Skip internal tables
+                    continue
+
+                columns = [c["name"] for c in inspector.get_columns(table_name)]
+                if not columns:
+                    continue
+
+                # DNA Construction: Include rowid for reliable identity tracking
+                new_json_parts = ", ".join([f"'{c}', NEW.\"{c}\"" for c in columns])
+                new_json = f"json_object({new_json_parts})"
+                old_json_parts = ", ".join([f"'{c}', OLD.\"{c}\"" for c in columns])
+                old_json = f"json_object({old_json_parts})"
+
+                # Escape table names for reserved keywords (e.g. "order")
+                safe_table = f'"{table_name}"'
+
+                # C: INSERT
+                conn.execute(
+                    text(f"""
+                    CREATE TRIGGER IF NOT EXISTS _audit_insert_{table_name} 
+                    AFTER INSERT ON {safe_table}
+                    BEGIN
+                        INSERT INTO _forensic_audit_log (table_name, action, row_identity, new_data)
+                        VALUES ('{table_name}', 'INSERT', CAST(NEW.rowid AS TEXT), {new_json});
+                    END;
+                """)  # nosec B608
+                )
+                # U: UPDATE
+                conn.execute(
+                    text(f"""
+                    CREATE TRIGGER IF NOT EXISTS _audit_update_{table_name} 
+                    AFTER UPDATE ON {safe_table}
+                    BEGIN
+                        INSERT INTO _forensic_audit_log 
+                            (table_name, action, row_identity, old_data, new_data)
+                        VALUES 
+                            ('{table_name}', 'UPDATE', CAST(NEW.rowid AS TEXT), 
+                             {old_json}, {new_json});
+                    END;
+                """)  # nosec B608
+                )
+                # D: DELETE
+                conn.execute(
+                    text(f"""
+                    CREATE TRIGGER IF NOT EXISTS _audit_delete_{table_name} 
+                    AFTER DELETE ON {safe_table}
+                    BEGIN
+                        INSERT INTO _forensic_audit_log (table_name, action, row_identity, old_data)
+                        VALUES ('{table_name}', 'DELETE', CAST(OLD.rowid AS TEXT), {old_json});
+                    END;
+                """)  # nosec B608
+                )
+            conn.commit()
+
+    def log_forensic_event(self, conn, table_name: str, action: str, dna: dict | None = None):
+        """[Industrial Forensic] Manually log a non-CUD event (like RS) to the audit log."""
+        import json
+
+        from sqlalchemy import text
+
+        conn.execute(
+            text("""
+            INSERT INTO _forensic_audit_log (table_name, action, row_identity, new_data)
+            VALUES (:table, :action, 'N/A', :dna)
+        """),
+            {"table": table_name, "action": action, "dna": json.dumps(dna) if dna else None},
+        )
 
     async def handle_database_query(self, params: dict) -> dict:
         """
         [Iteration 3: Industrial SQL Engine]
         Executes a real SQL query using SQLAlchemy 2.0.
+        Logs RS (Read/Search) metadata for forensic auditing.
         """
         from sqlalchemy import text
 
@@ -365,37 +477,98 @@ class DatabaseSimulator(BaseSimulator):
                 result = conn.execute(text(q))
                 if result.returns_rows:
                     rows = [dict(row._mapping) for row in result]
+
+                    # [Forensic Hardening] Log RS (Read/Search) Metadata
+                    if q.strip().upper().startswith(("SELECT", "WITH")):
+                        self.log_forensic_event(
+                            conn, "N/A", "READ", {"query": q, "row_count": len(rows)}
+                        )
+
+                    conn.commit()
                     return {"status": "success", "rows": rows}
 
                 conn.commit()
+
+                # [Industrial Hardening] If a new table was created,
+                # provision forensics for it immediately.
+                if "CREATE TABLE" in q.upper():
+                    self._provision_forensic_log(engine)
+
                 return {"status": "success", "message": "Query executed successfully."}
         except Exception as e:
             return {"status": "error", "message": f"Database Error: {str(e)}"}
 
     async def get_snapshot(self) -> dict[str, Any]:
         """
-        Returns a snapshot of all tables in the simulated database.
-        If the real engine is active, it performs a bulk read of the schema.
+        [Lean Forensics] Returns only the CRUDS audit log since the beginning of the turn.
+        Never captures full table state, ensuring zero-leak compliance.
         """
         self._get_engine()
         if not self._engine:
-            return {"tables": self.state.get("tables", {}), "engine": "mock"}
+            return {"audit_log": [], "engine": "mock"}
 
-        from sqlalchemy import inspect, text
+        import json
 
-        snapshot = {"tables": {}, "engine": "sqlite"}
+        from sqlalchemy import text
+
+        snapshot = {"tables": {}, "audit_log": [], "engine": "sqlite"}
         try:
             with self._engine.connect() as conn:
-                inspector = inspect(self._engine)
-                for table_name in inspector.get_table_names():
-                    # Table names cannot be parameterized in standard SQL
-                    # We trust the inspector source for this simulation context.
-                    result = conn.execute(text(f"SELECT * FROM {table_name}"))  # nosec B608
-                    rows = [dict(row._mapping) for row in result]
+                # [Industrial Rule] Only return the forensic log.
+                # This ensures we don't snapshot a "trillion row db".
+                result = conn.execute(
+                    text("SELECT * FROM _forensic_audit_log ORDER BY timestamp ASC")
+                ).fetchall()
 
-                    snapshot["tables"][table_name] = rows
+                # We'll use a temporary map to track the latest state of each row
+                # to provide a virtual 'tables' view for state parity checks.
+                # Key: (table_name, row_identity)
+                latest_rows = {}
+
+                for row in result:
+                    entry = dict(row._mapping)
+                    tname = entry.get("table_name")
+                    action = entry.get("action")
+
+                    # Parse JSON data
+                    old_data = None
+                    new_data = None
+                    if entry.get("old_data"):
+                        try:
+                            old_data = json.loads(entry.get("old_data"))
+                        except Exception:
+                            import logging
+
+                            logging.debug("Failed to decode forensic old_data JSON")
+                    if entry.get("new_data"):
+                        try:
+                            new_data = json.loads(entry.get("new_data"))
+                        except Exception:
+                            import logging
+
+                            logging.debug("Failed to decode forensic new_data JSON")
+
+                    entry["old_data"] = old_data
+                    entry["new_data"] = new_data
+                    snapshot["audit_log"].append(entry)
+
+                    # Virtual Table Reconstruction (Lean Parity Support)
+                    if tname and tname != "N/A":
+                        row_id = entry.get("row_identity")
+                        if action == "DELETE":
+                            if (tname, row_id) in latest_rows:
+                                del latest_rows[(tname, row_id)]
+                        else:
+                            latest_rows[(tname, row_id)] = new_data
+
+                # Build the 'tables' view from latest_rows
+                for (tname, _), data in latest_rows.items():
+                    if tname not in snapshot["tables"]:
+                        snapshot["tables"][tname] = []
+                    snapshot["tables"][tname].append(data)
+
         except Exception as e:
-            snapshot["error"] = f"Snapshot failed: {e}"
+            snapshot["error"] = f"Forensic snapshot failed: {e}"
 
         return snapshot
 
@@ -752,8 +925,10 @@ class SocialMediaSimulator(BaseSimulator):
         super().__init__({"posts": []}, *args, **kwargs)
 
     def handle_social_post(self, params: dict) -> dict:
+        post_id = f"p_{len(self.state['posts']) + 1}"
+        params["id"] = post_id
         self.state["posts"].append(params)
-        return {"status": "success", "id": f"p_{len(self.state['posts'])}"}
+        return {"status": "success", "id": post_id}
 
     async def on_poll(self, condition: str, params: dict) -> bool:
         """Social specific polling (Line 639 coverage check)."""

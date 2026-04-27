@@ -83,8 +83,9 @@ async def test_api_simulator_coverage():
 
 
 @pytest.mark.asyncio
-async def test_database_simulator_coverage():
+async def test_database_simulator_coverage(tmp_path):
     sim = DatabaseSimulator()
+    sim.terminal_jail = tmp_path
 
     # Line 348: get_snapshot no engine
     sim._get_engine = MagicMock()
@@ -95,6 +96,7 @@ async def test_database_simulator_coverage():
     # Line 355-361: inspect table names
     await sim.cleanup()
     sim = DatabaseSimulator()
+    sim.terminal_jail = tmp_path
     sim._get_engine()  # Init real engine
     snap = await sim.get_snapshot()
     assert "tables" in snap
