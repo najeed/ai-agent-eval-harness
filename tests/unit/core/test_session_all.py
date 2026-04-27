@@ -52,9 +52,10 @@ class TestSession:
             session = SessionManager(
                 "test_run", {"aes_version": 1.4, "id": "empty-v1", "workflow": {"nodes": []}}
             )
-            with pytest.raises(ValueError) as cm:
-                await session.execute_tasks(1)
-            assert "Industrial Fail-Fast (v1.4.0)" in str(cm.value)
+            results = await session.execute_tasks(1)
+            assert len(results) == 1
+            assert results[0]["status"] == "failure"
+            assert "Industrial Fail-Fast (v1.4.0)" in results[0]["message"]
 
     @pytest.mark.asyncio
     async def test_execute_tasks_cycle_error(self):
@@ -66,9 +67,10 @@ class TestSession:
                 }
             }
             session = SessionManager("test_run", {**scenario_cycle, "id": "cycle-v1"})
-            with pytest.raises(ValueError) as cm:
-                await session.execute_tasks(1)
-            assert "Cyclic dependencies detected" in str(cm.value)
+            results = await session.execute_tasks(1)
+            assert len(results) == 1
+            assert results[0]["status"] == "failure"
+            assert "Cyclic dependencies detected" in results[0]["message"]
 
     @pytest.mark.asyncio
     async def test_execute_tasks_happy_path(self, session):
@@ -209,6 +211,24 @@ class TestSession:
                     # Positional arguments: (protocol, endpoint, message, history, turn_ctx)
                     # endpoint is index 1
                     assert mock_call.call_args[0][1] == "my-cmd"
+
+    @pytest.mark.asyncio
+    async def test_execute_node_unknown_action_failure(self, session):
+        # verify unknown action causes failure
+        mock_sandbox = MagicMock()
+        mock_sandbox.get_full_state = AsyncMock(return_value={})
+        history = []
+        actions = {"used_tools": []}
+        node = {"id": "n1", "task_description": "t1"}
+
+        with patch(
+            "eval_runner.session.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+        ) as mock_call:
+            mock_call.return_value = {"action": "invalid_action_name"}
+
+            res = await session._execute_node(node, 1, 0, mock_sandbox, history, actions)
+            assert res["status"] == "failure"
+            assert "Unknown Agent Action" in res["message"]
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import threading
 from pathlib import Path
 
 import yaml
@@ -59,6 +60,7 @@ PLUGINS_CONFIG_PATH = AES_CONFIG_DIR / "plugins" / "registry.json"
 # --- Shim Registry Manager (v1.3.0 Cumulative Mode) ---
 SHIM_RESOURCES_INTERNAL_PATH = Path(__file__).parent / "resources" / "shim_resources.json"
 _SHIM_REGISTRY_CACHE = None
+_REGISTRY_LOCK = threading.RLock()
 
 
 class RegistryManager:
@@ -103,8 +105,15 @@ class RegistryManager:
         Loads and merges all registry sources (Internal -> Cumulative .d Folder -> Env Overrides).
         """
         global _SHIM_REGISTRY_CACHE
+
+        # Double-Checked Locking (Optimized for performance)
         if _SHIM_REGISTRY_CACHE is not None:
             return _SHIM_REGISTRY_CACHE
+
+        with _REGISTRY_LOCK:
+            # Re-check inside the lock to prevent redundant loads
+            if _SHIM_REGISTRY_CACHE is not None:
+                return _SHIM_REGISTRY_CACHE
 
         registry = {"shims": {}, "forensics": {}}
 
@@ -202,8 +211,9 @@ class RegistryManager:
     def reload():
         """Clears the internal cache, forcing a re-load of the registry state."""
         global _SHIM_REGISTRY_CACHE
-        _SHIM_REGISTRY_CACHE = None
-        return RegistryManager.get_resolved_registry()
+        with _REGISTRY_LOCK:
+            _SHIM_REGISTRY_CACHE = None
+            return RegistryManager.get_resolved_registry()
 
     @staticmethod
     def _deep_merge(base: dict, overlay: dict) -> dict:

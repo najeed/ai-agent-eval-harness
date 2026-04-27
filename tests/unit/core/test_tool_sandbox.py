@@ -159,8 +159,8 @@ def test_sandbox_path_sanitization():
     # Test _sanitize_path logic (Lines 201+)
     # It should strip traversals and add prefix
     res = ToolSandbox._sanitize_path("../../etc/passwd")
-    assert "etc/passwd" not in res
-    assert "vfs:/" in res
+    assert ".." not in res
+    assert res == "vfs:/passwd"
 
 
 def test_sandbox_value_sanitization():

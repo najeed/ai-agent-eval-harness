@@ -28,8 +28,10 @@ async def test_session_run_empty_topology(mock_env_config):
         "evaluation": {"metrics": []},
     }
     session = SessionManager("run_empty", scenario)
-    with pytest.raises(ValueError, match="Empty Topology"):
-        await session.execute_tasks(1)
+    results = await session.execute_tasks(1)
+    assert len(results) == 1
+    assert results[0]["status"] == "failure"
+    assert "Empty Topology" in results[0]["message"]
 
 
 @pytest.mark.asyncio
@@ -50,8 +52,10 @@ async def test_session_run_cyclic_graph(mock_env_config):
         "evaluation": {"metrics": []},
     }
     session = SessionManager("run_cycle", scenario)
-    with pytest.raises(ValueError, match="Cyclic dependencies"):
-        await session.execute_tasks(1)
+    results = await session.execute_tasks(1)
+    assert len(results) == 1
+    assert results[0]["status"] == "failure"
+    assert "Cyclic dependencies" in results[0]["message"]
 
 
 @pytest.mark.asyncio

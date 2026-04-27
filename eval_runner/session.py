@@ -71,10 +71,9 @@ class SessionManager:
         self.max_turns = int(scenario.get("max_turns", config.EVAL_MAX_TURNS)) or 10
         self.fork_depth = scenario.get("_fork_depth", 0)
 
-        # Identity Propagation (v1.4.1 Hardening)
-        # Allows external tools/plugins to align artifacts with the session identity.
-        os.environ["AES_RUN_ID"] = run_id
-        os.environ["AES_IDENTIFIER"] = self.identifier
+        # [AgentV v1.5.0] Identifier Tracking
+        # Note: Purged global os.environ writes (AES_RUN_ID, AES_IDENTIFIER)
+        # to ensure parallel evaluation safety. Identity is now strictly context-bound.
 
         # Session-Scoped Infrastructure
         self.event_bus = EventEmitter(run_id=run_id)
@@ -249,53 +248,53 @@ class SessionManager:
 
         # 🚀 Move Sandbox into the forensic recovery block
         sandbox = ToolSandbox(self.scenario, event_bus=self.event_bus, forensics=self.forensics)
-        await sandbox.setup()
-        workflow = self.scenario.get("workflow", {})
-        nodes_data = {node["id"]: node for node in workflow.get("nodes", [])}
-
-        # 1. Build Dependency Graph (Industrial AES v1.4)
-        self.event_bus.emit(
-            CoreEvents.PHASE_START,
-            {"phase": "workflow_sort"},
-            span_context=self.session_metadata.get("span_context"),
-        )
-
-        ts = TopologicalSorter()
-        for node_id in nodes_data:
-            ts.add(node_id)
-
-        for edge in workflow.get("edges", []):
-            src = edge.get("from")
-            trg = edge.get("to")
-            if src and trg:
-                ts.add(trg, src)
-
-        # 2. Sequential State Initialization
-        turns_taken = 0
-        history = []
-        actions = {"used_tools": []}
-
-        # 🚀 Topological Sorting Complete. Proceeding to execution dispatch.
         try:
-            execution_order = list(ts.static_order())
-        except CycleError:
-            err_msg = (
-                f"Industrial Shield Block: Cyclic dependencies detected in "
-                f"workflow DAG for {self.run_id}."
+            await sandbox.setup()
+            workflow = self.scenario.get("workflow", {})
+            nodes_data = {node["id"]: node for node in workflow.get("nodes", [])}
+
+            # 1. Build Dependency Graph (Industrial AES v1.4)
+            self.event_bus.emit(
+                CoreEvents.PHASE_START,
+                {"phase": "workflow_sort"},
+                span_context=self.session_metadata.get("span_context"),
             )
-            sys.stderr.write(f"      [Cycle Error] {err_msg}\n")
-            sys.stderr.flush()
-            self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
-            raise ValueError(err_msg) from None
 
-        # Check for empty topology explicitly to fail-fast
-        if not execution_order:
-            err_msg = f"Industrial Fail-Fast (v1.4.0): Empty Topology for Run {self.run_id}."
-            sys.stderr.write(f"      [FATAL] {err_msg}\n")
-            sys.stderr.flush()
-            raise ValueError(err_msg)
+            ts = TopologicalSorter()
+            for node_id in nodes_data:
+                ts.add(node_id)
 
-        try:
+            for edge in workflow.get("edges", []):
+                src = edge.get("from")
+                trg = edge.get("to")
+                if src and trg:
+                    ts.add(trg, src)
+
+            # 2. Sequential State Initialization
+            turns_taken = 0
+            history = []
+            actions = {"used_tools": []}
+
+            # 🚀 Topological Sorting Complete. Proceeding to execution dispatch.
+            try:
+                execution_order = list(ts.static_order())
+            except CycleError:
+                err_msg = (
+                    f"Industrial Shield Block: Cyclic dependencies detected in "
+                    f"workflow DAG for {self.run_id}."
+                )
+                sys.stderr.write(f"      [Cycle Error] {err_msg}\n")
+                sys.stderr.flush()
+                self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
+                raise ValueError(err_msg) from None
+
+            # Check for empty topology explicitly to fail-fast
+            if not execution_order:
+                err_msg = f"Industrial Fail-Fast (v1.4.0): Empty Topology for Run {self.run_id}."
+                sys.stderr.write(f"      [FATAL] {err_msg}\n")
+                sys.stderr.flush()
+                raise ValueError(err_msg)
+
             for node_id in execution_order:
                 node = nodes_data.get(node_id)
                 if not node:
@@ -331,6 +330,8 @@ class SessionManager:
                 }
             )
         finally:
+            # [Industrial Resilience] Ensure teardown runs even if topological sort fails
+            # or if initialization crashes before execution begins.
             await self.teardown(sandbox)
 
         # 🧬 Global Evaluation Pass (Industrial AES v1.4.1)
@@ -461,8 +462,11 @@ class SessionManager:
                     # Industrial Wait-State: Continue loop if max_turns allows
                     continue
                 else:
-                    # Treat unrecognized actions as implicit terminal states for safety
-                    node_success = True  # Assume success if agent finished with unknown terminal
+                    # [Industrial Hardening] Treat unrecognized actions as critical failures
+                    err_msg = f"Unknown Agent Action: '{action}' | Protocol: {protocol}"
+                    logger.error(f"      [Action Error] {err_msg}")
+                    self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
+                    node_success = False
                     break
 
             except Exception as e:
@@ -492,6 +496,10 @@ class SessionManager:
         )
         task_results["status"] = "success" if node_success else "failure"
         task_results["parity_verified"] = parity_success
+
+        # [Industrial Requirement] Ensure failure context is preserved
+        if not node_success and "err_msg" in locals():
+            task_results["message"] = locals()["err_msg"]
 
         self.event_bus.emit(CoreEvents.MANEUVER_END, {"node_id": node_id})
         return task_results

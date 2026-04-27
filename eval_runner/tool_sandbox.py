@@ -130,25 +130,6 @@ class AbstractSandbox(ABC):
         self.forensics = forensics
         self.resources = ResourceRegistry()
 
-        # Workspace management
-        from pathlib import Path
-
-        self.identifier = self.scenario.get("id", "default")
-        self.workspace_dir = Path("workspace") / self.identifier
-
-        # Phase 2: Grounding Coverage Tracking
-        # Stores hit counts for 'policies' and 'tools' (KB/Grounding)
-        self.grounding_hits: dict[str, dict[str, int]] = {"policies": {}, "tools": {}}
-
-        # Cache for state-aware world simulators
-        self._simulator_cache: dict[str, Any] | None = None
-
-        # [Turn 2 Hardening] Session-Scoped Terminal Jail
-        import hashlib
-        import json
-
-        import eval_runner.config as config
-
         # [INDUSTRIAL HARDENING] Absolute Session Identity (AgentV v1.5.0)
         # Prevents 'unknown_run' directory pollution in the root runs/ directory.
         self.run_id = self.scenario.get("run_id")
@@ -164,6 +145,23 @@ class AbstractSandbox(ABC):
             )
         else:
             self.terminal_jail = (config.RUN_LOG_DIR / self.run_id / "terminal_jail").resolve()
+
+        # Workspace management
+        self.identifier = self.scenario.get("id", "default")
+        # [Industrial Isolation] Workspaces MUST be partitioned by run_id to ensure
+        # parallel execution safety and forensic purity.
+        self.workspace_dir = Path("workspace") / self.run_id
+
+        # Phase 2: Grounding Coverage Tracking
+        # Stores hit counts for 'policies' and 'tools' (KB/Grounding)
+        self.grounding_hits: dict[str, dict[str, int]] = {"policies": {}, "tools": {}}
+
+        # Cache for state-aware world simulators
+        self._simulator_cache: dict[str, Any] | None = None
+
+        # [Turn 2 Hardening] Session-Scoped Terminal Jail
+        import hashlib
+        import json
 
         # [RFC-002 Hybrid Registry] Environmental DNA Snapshot
         # Capture the resolved state of all shims for this run
@@ -421,15 +419,31 @@ class ToolSandbox(AbstractSandbox):
 
     @staticmethod
     def _sanitize_path(path: str) -> str:
-        """Chroot/Virtualize a filesystem path, stripping traversals."""
-        import re
+        """
+        [Security Protocol] Path Virtualization.
+        Strips directory traversal sequences and prepends vfs:// root.
+        Aggressively collapses to basename if traversal is attempted.
+        """
+        import os
 
-        # Remove all forms of directory traversal
-        safe = re.sub(r"\.\.[\\/]+", "", path)
-        safe = safe.replace("../", "").replace("..\\", "")
-        if "/" in safe or "\\" in safe:
-            safe = config.SANDBOX_VFS_PREFIX + safe.replace("\\", "/").split("/")[-1]
-        return safe
+        from . import config
+
+        # 1. Simple keys (no separators, no traversals) are returned as is
+        if not any(x in path for x in ["..", "/", "\\"]):
+            return path
+
+        # 2. If traversal is attempted, collapse to basename for maximum safety (Audit Point #5)
+        if ".." in path:
+            # Normalize to forward slashes for basename processing
+            clean_path = os.path.basename(path.replace("\\", "/"))
+            return f"{config.SANDBOX_VFS_PREFIX}{clean_path}"
+
+        # 3. Otherwise, normalize and virtualize nested paths
+        clean_path = path.replace("\\", "/").lstrip("/")
+        if not clean_path.startswith(config.SANDBOX_VFS_PREFIX):
+            clean_path = f"{config.SANDBOX_VFS_PREFIX}{clean_path}"
+
+        return clean_path
 
     def _get_scenario_relevant_shims(self) -> set[str]:
         """
