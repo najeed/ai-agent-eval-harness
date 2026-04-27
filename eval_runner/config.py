@@ -469,7 +469,13 @@ def get_shim_config(shim_name: str) -> dict:
     """Standard protocol for shims to retrieve their environmental state from the registry."""
     registry = RegistryManager.get_resolved_registry()
     shim_def = registry.get("shims", {}).get(shim_name, {})
-    return shim_def.get("resources", {})
+
+    # [Industrial Hardening] Handle potentially double-nested 'resources'
+    res = shim_def.get("resources", shim_def)
+    if isinstance(res, dict) and "resources" in res:
+        res = res["resources"]
+
+    return res
 
 
 def get_routing_strategy() -> str:

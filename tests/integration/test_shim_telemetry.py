@@ -43,6 +43,7 @@ async def test_api_simulator_uses_registry_defaults():
     scenario = {
         "id": "api_test",
         "metadata": {"name": "API Test", "compliance_level": "Standard"},
+        "enabled_shims": ["api"],
         "workflow": {"nodes": [], "edges": []},
     }
 

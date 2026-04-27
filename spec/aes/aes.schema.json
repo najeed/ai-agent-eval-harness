@@ -29,6 +29,11 @@
     },
     "environmental_snapshot": {
       "type": "object"
+    },
+    "enabled_shims": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Explicit whitelist of world simulators to activate."
     }
   }
 }

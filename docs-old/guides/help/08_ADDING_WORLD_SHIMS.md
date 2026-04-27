@@ -40,12 +40,12 @@ A common question is: *How do shims allow for VFS state parity checks?*
 4.  **Parity Check**: At the end of a run, the `Evaluator` compares the current VFS state against the **"Ground Truth"** defined in the scenario. This is how we ensure "State Parity."
 
 ## Configuration & Governance
-The system uses a **Two-Key Activation Model** for World Shims to ensure security and ease of management:
+The system uses a **Two-Key Activation Model** for World Shims to ensure security and ease of management. As of **v1.6.0**, this model enforces strict industrial forensic scoping:
 
-### 1. Global System Override
+### 1. Global System Override (The Master Gate)
 In `.env` (or via environment variables), you can set `GLOBAL_ENABLED_SHIMS`:
+- **Hard Gate**: This is the authoritative system-wide filter. If a shim is not in this list, it is **never** available, even if explicitly requested by a scenario.
 - **Default**: `git,api,database,terminal,cloud,slack,email,jira,social,support,crm,erp,stripe,calendar,browser,vector,kb,cicd,iot,security`
-- **Restricted**: `git,api` (Only these two can ever be used).
 - This allows you to disable heavy or risky shims system-wide without updating a single scenario.
 - **Wildcard**: Use `*` to enable all registered shims (including those from plugins).
 
@@ -53,8 +53,9 @@ In `.env` (or via environment variables), you can set `GLOBAL_ENABLED_SHIMS`:
 
 ### 2. Per-Scenario Configuration
 Each scenario can further restrict its environment using the `enabled_shims` property:
-- This only has an effect if the shim is also allowed by the Global Override.
-- If missing, it defaults to `*` (respecting the Global limit).
+- **Scenario Specificity**: This only has an effect if the shim is also allowed by the Global Override.
+- Only shims that are **Relevant** (referenced in the contract) or explicitly enabled are activated and captured in forensic evidence.
+- If missing, it defaults to all globally allowed shims.
 
 ---
 

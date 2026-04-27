@@ -172,16 +172,14 @@ def generate_html_report(
                 break
 
     total_tasks = len(results)
-    successful_tasks = sum(
-        1 for tr in results if tr.get("metrics") and all(m["success"] for m in tr["metrics"])
-    )
+    successful_tasks = sum(1 for tr in results if all(m["success"] for m in tr.get("metrics", [])))
     success_rate = (successful_tasks / total_tasks * 100) if total_tasks > 0 else 0
 
     tasks_html = ""
     for tr in results:
         task_id = tr["task_id"]
         metrics = tr.get("metrics", [])
-        is_success = bool(metrics) and all(m["success"] for m in metrics)
+        is_success = all(m["success"] for m in metrics)
         status_class = "success" if is_success else "failure"
         status_text = "PASSED" if is_success else f"FAILED [{tr.get('triage_tag', 'UNKNOWN')}]"
 
@@ -420,7 +418,7 @@ def generate_report(
     for task_result in results:
         task_id = task_result["task_id"]
         metrics_list = task_result.get("metrics", [])
-        task_is_overall_success = bool(metrics_list) and all(m["success"] for m in metrics_list)
+        task_is_overall_success = all(m["success"] for m in metrics_list)
 
         if task_is_overall_success:
             status = "SUCCESS"

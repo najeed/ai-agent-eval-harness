@@ -254,7 +254,6 @@ class SessionManager:
         nodes_data = {node["id"]: node for node in workflow.get("nodes", [])}
 
         # 1. Build Dependency Graph (Industrial AES v1.4)
-        print(f"      [Forensic Debug] Building Graph for {len(nodes_data)} nodes...")
         self.event_bus.emit(
             CoreEvents.PHASE_START,
             {"phase": "workflow_sort"},

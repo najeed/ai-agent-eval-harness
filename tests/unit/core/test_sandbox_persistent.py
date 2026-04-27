@@ -22,6 +22,7 @@ async def test_git_state_persistence_in_sandbox():
         "industry": "test",
         "description": "test",
         "metadata": {"name": "persistence_test", "compliance_level": "Standard"},
+        "enabled_shims": ["git"],
         "workflow": {"nodes": [], "edges": []},
     }
 
@@ -60,6 +61,7 @@ async def test_jira_state_persistence_in_sandbox():
         "aes_version": 1.4,
         "id": "persistence_test",
         "metadata": {"name": "persistence_test", "compliance_level": "Standard"},
+        "enabled_shims": ["jira"],
         "workflow": {"nodes": [], "edges": []},
     }
     sandbox = ToolSandbox(scenario)

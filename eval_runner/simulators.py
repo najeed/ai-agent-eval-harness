@@ -318,9 +318,11 @@ class DatabaseSimulator(BaseSimulator):
 
         from sqlalchemy import create_engine
 
-        # [Industrial Resolution] Use connection string from registry if available
-        # Falls back to session-scoped transient DB
-        db_uri = self.config.get("primary_db", {}).get("connection")
+        # New Standard -> Legacy Nesting -> Local Transient
+        db_uri = self.config.get("primary_db", {}).get("connection") or self.config.get(
+            "resources", {}
+        ).get("primary_db", {}).get("connection")
+
         if not db_uri:
             db_path = Path(self.terminal_jail or ".tmp").resolve() / "state.db"
             # [Iteration 3 Normalization] Windows absolute path handling (sqlite:///C:/...)
@@ -390,6 +392,7 @@ class DatabaseSimulator(BaseSimulator):
                     # We trust the inspector source for this simulation context.
                     result = conn.execute(text(f"SELECT * FROM {table_name}"))  # nosec B608
                     rows = [dict(row._mapping) for row in result]
+
                     snapshot["tables"][table_name] = rows
         except Exception as e:
             snapshot["error"] = f"Snapshot failed: {e}"

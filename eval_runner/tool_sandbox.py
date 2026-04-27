@@ -434,28 +434,47 @@ class ToolSandbox(AbstractSandbox):
     def _get_scenario_relevant_shims(self) -> set[str]:
         """
         [Forensic Relevance Engine] Extracts all shims explicitly mentioned in the
-        scenario contracts (expected_outcome, success_criteria, etc.).
+        scenario contracts (expected_outcome, success_criteria, etc.) or required tools.
         """
         relevant = set()
         workflow = self.scenario.get("workflow", {})
         nodes = workflow.get("nodes", [])
+
+        # 1. Discover from Tool Usage (Global and Local)
+        # Dynamically resolve sanctioned shim prefixes from the Global Gate
+        from . import config, simulators
+
+        global_enabled = config.GLOBAL_ENABLED_SHIMS
+        all_registered = set(simulators.get_simulator_registry().keys())
+
+        if "*" in global_enabled:
+            shim_prefixes = all_registered
+        else:
+            shim_prefixes = all_registered.intersection(set(global_enabled))
+
+        all_tools = set(self.scenario.get("tools", {}).keys())
+        for node in nodes:
+            all_tools.update(node.get("required_tools", []))
+
+        for tool in all_tools:
+            if "_" in tool:
+                prefix = tool.split("_", 1)[0]
+                if prefix in shim_prefixes:
+                    relevant.add(prefix)
+
+        # 2. Discover from Outcome Contracts
         for node in nodes:
             outcomes = node.get("expected_outcome", [])
             if outcomes:
-                # [Industrial Normalization] Support both single dict and list of outcomes
                 outcome_list = [outcomes] if isinstance(outcomes, dict) else outcomes
-
                 for outcome in outcome_list:
                     if not isinstance(outcome, dict):
                         continue
                     target = outcome.get("target", "")
                     if target.startswith("shim:"):
-                        # [Industrial Resolve] Extract base shim ID from combined path
                         shim_id = target.split("shim:", 1)[1].split(".", 1)[0]
                         relevant.add(shim_id)
 
-        # [AgentV v1.5.0] Authoritative Discovery: Strictly rely on scenario contracts
-        # and enabled_shims list. Deprecated metadata.forensics is removed to align with AES v1.4.1.
         return relevant
 
     def get_active_simulators(self) -> dict:
@@ -475,15 +494,15 @@ class ToolSandbox(AbstractSandbox):
         shim_configs = resolved_registry.get("shims", {})
 
         # 2. Get the industrial class mapping
-        shim_classes = simulators._INTERNAL_SIMULATOR_CLASSES
+        shim_classes = simulators.get_simulator_registry()
 
         # 3. Resolve Activation Policies
         global_enabled = config.GLOBAL_ENABLED_SHIMS
 
-        # [Industrial Hardening] If 'enabled_shims' is omitted, we assume "Legacy Permissive" mode
-        # to maintain compatibility with standard scenarios. If explicitly set to [],
-        # we enter "Strict Discovery" mode.
-        scenario_enabled = self.scenario.get("enabled_shims", ["*"])
+        # [Industrial Hardening] Resolve Activation Strategy
+        # Case 1: If 'enabled_shims' is omitted, use 'Strict Discovery Mode'.
+        # Case 2: If 'enabled_shims' is provided, it acts as an 'Authoritative Whitelist'.
+        scenario_enabled = self.scenario.get("enabled_shims")
         relevant_shims = self._get_scenario_relevant_shims()
 
         active_registry = {}
@@ -497,16 +516,22 @@ class ToolSandbox(AbstractSandbox):
             # If not in configs, we might still have a built-in class
             base_cls = shim_classes.get(shim_name)
 
-            # [Industrial Activation Hierarchy]
-            # Priority 1: Forensic Relevance (Explicitly mentioned in scenario contract)
+            # Priority 1: Master System Filter (Hard Gate)
+            # If a shim is not globally sanctioned, it is never available to the scenario.
+            is_globally_enabled = "*" in global_enabled or shim_name in global_enabled
+            if not is_globally_enabled:
+                continue
+
+            # Priority 2: Scenario Activation Policy
+            # Only shims that are relevant to the contract or explicitly enabled are activated.
             is_relevant = shim_name in relevant_shims
 
-            # Priority 2: Administrative Enablement
-            is_globally_enabled = "*" in global_enabled or shim_name in global_enabled
-            is_scenario_enabled = "*" in scenario_enabled or shim_name in scenario_enabled
-
-            # Policy: Activate if relevant OR (globally enabled AND scenario enabled)
-            should_activate = is_relevant or (is_globally_enabled and is_scenario_enabled)
+            if scenario_enabled is None:
+                # Case 1: Strict Discovery Mode (Auto-activate relevant only)
+                should_activate = is_relevant
+            else:
+                # Case 2: Explicit Whitelist Mode (Guardrail)
+                should_activate = "*" in scenario_enabled or shim_name in scenario_enabled
 
             if not should_activate:
                 continue
@@ -524,9 +549,7 @@ class ToolSandbox(AbstractSandbox):
                     instance.terminal_jail = self.terminal_jail
                     instance.sandbox = self
                     active_registry[shim_name] = instance
-                    sys.stderr.write(
-                        f"      [Sandbox] OK: Activated shim '{shim_name}' (type: {shim_type})\n"
-                    )
+
                 except Exception as e:
                     sys.stderr.write(
                         f"      [Sandbox] Error: Failed to instantiate '{shim_name}': {e}\n"
@@ -535,12 +558,6 @@ class ToolSandbox(AbstractSandbox):
                 sys.stderr.write(
                     f"      [Sandbox] Warning: Unknown shim type '{shim_type}' for '{shim_name}'\n"
                 )
-
-        # 4. Trigger Plugin Hook for Ad-hoc/External Simulators
-        # (Already instantiated by plugins or returned as factory)
-        from . import plugins
-
-        plugins.manager.trigger("on_register_simulators", active_registry)
 
         self._simulator_cache = active_registry
         return active_registry

@@ -16,7 +16,12 @@ Add an `enabled_shims` array to your scenario JSON. The evaluation engine will m
 }
 ```
 
-If `enabled_shims` is omitted, **all 20 shims** are mounted (default behavior).
+> [!IMPORTANT]
+> **Industrial Activation Policy**:
+> 1. **Global Gate**: A shim must first be allowed by the system-wide `GLOBAL_ENABLED_SHIMS` setting. If a shim is globally blocked, it cannot be used, even if explicitly listed in the scenario.
+> 2. **Scenario Specificity**: Active shims are limited to those explicitly enabled in the scenario OR those identified as forensically relevant to the scenario contract. This ensures high-signal forensic snapshots.
+
+If `enabled_shims` is omitted, all shims sanctioned by the `GLOBAL_ENABLED_SHIMS` filter are available.
 
 ---
 

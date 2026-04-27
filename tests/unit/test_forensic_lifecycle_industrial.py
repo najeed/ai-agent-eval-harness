@@ -73,46 +73,55 @@ def test_forensic_seal_hash_integrity(vault_setup):
 
 def test_forensic_shim_relevance_strict():
     """
-    [AgentV v1.5.0] Discovery Logic Test.
-    Ensures deprecated 'forensics' metadata is ignored and discovery
-    relies on 'expected_outcomes' and 'enabled_shims'.
+    [AgentV v1.6.0] Conditional Discovery Logic Test.
+    Ensures:
+    1. Omitted 'enabled_shims' triggers Strict Discovery (Relevance-based).
+    2. Provided 'enabled_shims' acts as a Hard Boundary (ignores other relevant shims).
     """
-    scenario = {
-        "metadata": {
-            "forensics": ["deprecated_shim"]  # Should be ignored
-        },
-        "enabled_shims": ["explicit_shim"],
-        "workflow": {"nodes": [{"expected_outcome": [{"target": "shim:contract_shim"}]}]},
+    # 1. Setup Mock Registry and Classes
+    mock_registry = {
+        "shims": {
+            "explicit_shim": {"type": "mock_type"},
+            "contract_shim": {"type": "mock_type"},
+            "ignored_shim": {"type": "mock_type"},
+        }
     }
 
-    sandbox = ToolSandbox(scenario)
-    relevant = sandbox._get_scenario_relevant_shims()
-
-    assert "contract_shim" in relevant
-    assert "deprecated_shim" not in relevant
-
-    # Check activation logic
-    # Patch the correct paths for tool_sandbox dependencies
     with patch(
         "eval_runner.config.RegistryManager.get_resolved_registry",
-        return_value={
-            "shims": {
-                "explicit_shim": {"type": "mock_type"},
-                "contract_shim": {"type": "mock_type"},
-                "deprecated_shim": {"type": "mock_type"},
-            }
-        },
+        return_value=mock_registry,
     ):
-        # Mocking simulators classes
-        mock_cls = MagicMock()
-        with patch("eval_runner.simulators._INTERNAL_SIMULATOR_CLASSES", {"mock_type": mock_cls}):
-            with patch(
-                "eval_runner.config.GLOBAL_ENABLED_SHIMS", ["explicit_shim", "contract_shim"]
-            ):
-                active = sandbox.get_active_simulators()
-                assert "explicit_shim" in active
-                assert "contract_shim" in active
-                assert "deprecated_shim" not in active
+        # Patch simulators globally
+        with patch(
+            "eval_runner.simulators.get_simulator_registry",
+            return_value={"explicit_shim": MagicMock, "contract_shim": MagicMock},
+        ):
+            with patch("eval_runner.config.GLOBAL_ENABLED_SHIMS", ["*"]):
+                # --- CASE 1: Strict Discovery Mode (Omitted Whitelist) ---
+                scenario_discovery = {
+                    "workflow": {
+                        "nodes": [{"expected_outcome": [{"target": "shim:contract_shim"}]}]
+                    }
+                }
+                sandbox_discovery = ToolSandbox(scenario_discovery)
+                active_discovery = sandbox_discovery.get_active_simulators()
+
+                assert "contract_shim" in active_discovery
+                assert "explicit_shim" not in active_discovery  # Not relevant
+
+                # --- CASE 2: Explicit Whitelist Mode (Hard Boundary) ---
+                scenario_whitelist = {
+                    "enabled_shims": ["explicit_shim"],
+                    "workflow": {
+                        "nodes": [{"expected_outcome": [{"target": "shim:contract_shim"}]}]
+                    },
+                }
+                sandbox_whitelist = ToolSandbox(scenario_whitelist)
+                active_whitelist = sandbox_whitelist.get_active_simulators()
+
+                assert "explicit_shim" in active_whitelist
+                # CRITICAL: contract_shim is relevant but BLOCKED
+                assert "contract_shim" not in active_whitelist
 
 
 def test_forensic_telemetry_lifecycle(vault_setup):

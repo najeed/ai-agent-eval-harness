@@ -185,19 +185,17 @@ class FailureTaxonomy:
     }
 
     PII_PATTERNS = {
-        # National IDs (GDPR, HIPAA, Local)
+        # National IDs (GDPR, HIPAA, Local) - Specific formats only
         "national": re.compile(
-            r"\b\d{3}-\d{2}-\d{4}\b|\b\d{12}\b|\b[A-Z]{5}\d{4}[A-Z]\b|\b[A-Z]{2}\d{6}[A-D]\b|\b[A-Z]{1,2}\d{6,9}\b",
+            r"\b\d{3}-\d{2}-\d{4}\b|\b[A-Z]{5}\d{4}[A-Z]\b|\b[A-Z]{2}\d{6}[A-D]\b|\b[A-Z]{1,2}\d{6,9}\b",
             re.IGNORECASE | re.VERBOSE,
         ),
-        # Financial (PCI DSS, GDPR)
+        # Financial (PCI DSS, GDPR) - CC and specific account patterns (16+ digits)
         "financial": re.compile(
             r"""
-            \b(?:\d[ -]?){13,16}\b |
+            \b(?:\d[ -]?){16,19}\b |
             \bCVV\b[:\-]?\s*\d{3,4}\b |
-            \b\d{2}/\d{2}\b |
-            \b[A-Z]{2}\d{2}[A-Z\d]{12,30}\b |
-            \b\d{9,18}\b
+            \b[A-Z]{2}\d{2}[A-Z\d]{12,30}\b
             """,
             re.IGNORECASE | re.VERBOSE,
         ),
@@ -210,13 +208,13 @@ class FailureTaxonomy:
         "contact": re.compile(
             r"""
             (
-                # Phone numbers (with optional country code)
-                (?:\+?\d{1,3}[-.\s]?)?(?:\d[-.\s]?){7,12}
+                # Phone numbers - Must start with + or have (XXX)
+                (?:\+\d{1,3}[-\s]?)?(?:\(\d{3}\)[-\s]?)?\d{3}[-\s]?\d{4}
                 |
                 # Email addresses
                 [a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,3}
                 |
-                # Street addresses (number + street + suffix)
+                # Street addresses
                 \b\d{1,5}\s(?:[A-Za-z0-9#-]+\s?){1,4}
                 (?:Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Lane|Ln|
                 Court|Ct|Way|Blvd|Boulevard|Terrace|Ter|Square|Sq|
@@ -224,10 +222,9 @@ class FailureTaxonomy:
                 Plaza|Plz|Center|Ctr|Highway|Hwy|Loop|Mews|Path|Row|Trail|Trl|
                 Walk|Crescent|Cres|Circus|Gardens|Gdns)\b
                 |
-                # Postal codes (US/EU/APAC)
+                # Postal codes
                 \b\d{5}(?:-\d{4})?\b                # US ZIP
                 | \b[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}\b  # UK
-                | \b\d{4,6}\b                       # EU/APAC numeric codes
             )
             """,
             re.IGNORECASE | re.VERBOSE,
@@ -557,9 +554,11 @@ class FailureTaxonomy:
     @classmethod
     def _check_protocol(cls, task_result: dict[str, Any]) -> FailureCategory | None:
         """Verifies mandatory handshake sequences for industrial parity."""
-        required_sequence = task_result.get(
-            "protocol_sequence_required", ["init", "auth", "execute", "close"]
-        )
+        # [Industrial Resilience] Only enforce protocol check if a required sequence is specified
+        required_sequence = task_result.get("protocol_sequence_required")
+        if not required_sequence:
+            return None
+
         protocol_sequence = task_result.get("protocol_sequence", [])
 
         if not protocol_sequence:

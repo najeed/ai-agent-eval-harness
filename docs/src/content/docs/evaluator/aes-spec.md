@@ -62,6 +62,11 @@ If the structural parser fails to find tasks, the engine automatically triggers 
 - **Synonym Recognition**: "Test Cases", "Evaluation Steps", and "Tasks" are treated as equivalent headers.
 - **Global Tool Injection**: Tools defined in a global `## Tools` section are inherited by all tasks unless explicitly overridden.
 
+---
+
+> [!NOTE]
+> **Infrastructure Decoupling**: AES v1.4 decouples environment lifecycle management (setup/teardown) from the scenario JSON. These side-effects are managed by the execution engine's plugin architecture.
+
 ## 🚀 Workflow
 
 To convert a PRD and backfill schema defaults:

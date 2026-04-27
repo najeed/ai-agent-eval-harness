@@ -6,13 +6,16 @@ from eval_runner.tool_sandbox import ToolSandbox
 
 
 class CustomShim:
+    def __init__(self, **kwargs):
+        pass
+
     async def execute(self, action, params):
         return {"status": "success", "message": "Custom shim executed"}
 
 
 class CustomPlugin(BaseEvalPlugin):
     def on_register_simulators(self, registry):
-        registry["custom"] = CustomShim()
+        registry["custom"] = CustomShim
 
 
 @pytest.mark.asyncio
@@ -26,7 +29,7 @@ async def test_shim_hot_swapping():
         # 2. Get the registry and verify discovery
         registry = get_simulator_registry()
         assert "custom" in registry
-        assert isinstance(registry["custom"], CustomShim)
+        assert registry["custom"] is CustomShim
 
         # 3. Execute via sandbox
         # Mocking admin approval for 'custom' shim as per new Master Gate architecture
@@ -35,7 +38,9 @@ async def test_shim_hot_swapping():
         from eval_runner import config
 
         with patch.object(config, "GLOBAL_ENABLED_SHIMS", config.GLOBAL_ENABLED_SHIMS + ["custom"]):
-            scenario = {"id": "test"}
+            # Updated: Explicitly enable 'custom' or use a relevant tool
+            # to satisfy the new discovery logic.
+            scenario = {"id": "test", "enabled_shims": ["custom"]}
             sandbox = ToolSandbox(scenario)
             result = await sandbox.execute("custom_action", {})
         assert result["status"] == "success"
@@ -96,3 +101,71 @@ def test_shim_global_filtering(monkeypatch):
 
     assert "git" in active
     assert "api" not in active  # Should be blocked by global filter
+
+
+def test_shim_relevance_global_gate(monkeypatch):
+    """Verify that even relevant shims are blocked if not globally enabled."""
+    import eval_runner.config as config
+
+    # 1. Block 'database' globally
+    monkeypatch.setattr(config, "GLOBAL_ENABLED_SHIMS", ["git"])
+
+    # 2. Scenario contract mentions 'database' as relevant
+    scenario = {
+        "id": "relevance-gate-test",
+        "workflow": {
+            "nodes": [{"id": "n1", "expected_outcome": [{"target": "shim:database.users"}]}]
+        },
+    }
+    sandbox = ToolSandbox(scenario)
+    active = sandbox.get_active_simulators()
+
+    # Even though it's relevant, it's not globally enabled
+    assert "database" not in active
+
+
+def test_shim_strict_discovery_omitted():
+    """Verify that omitting enabled_shims auto-activates relevant shims."""
+    scenario = {
+        "id": "discovery-test",
+        "workflow": {
+            "nodes": [{"id": "n1", "expected_outcome": [{"target": "shim:database.users"}]}]
+        },
+    }
+    sandbox = ToolSandbox(scenario)
+    active = sandbox.get_active_simulators()
+
+    assert "database" in active
+    assert "git" not in active  # Not relevant, not enabled
+
+
+def test_shim_discovery_via_tool_prefix():
+    """Verify that tool prefixes trigger auto-discovery when enabled_shims is omitted."""
+    scenario = {
+        "id": "tool-discovery-test",
+        "workflow": {"nodes": [{"id": "n1", "required_tools": ["git_commit"]}]},
+    }
+    sandbox = ToolSandbox(scenario)
+    active = sandbox.get_active_simulators()
+
+    assert "git" in active
+    assert "database" not in active
+
+
+def test_shim_explicit_whitelist_disables_discovery():
+    """Verify that an explicit whitelist ignores other relevant shims (Hard Guardrail)."""
+    scenario = {
+        "id": "whitelist-guardrail-test",
+        "enabled_shims": ["git"],  # ONLY Git
+        "workflow": {
+            "nodes": [
+                # Database is relevant, but NOT in the whitelist above
+                {"id": "n1", "expected_outcome": [{"target": "shim:database.users"}]}
+            ]
+        },
+    }
+    sandbox = ToolSandbox(scenario)
+    active = sandbox.get_active_simulators()
+
+    assert "git" in active
+    assert "database" not in active  # Blocked by the explicit whitelist guardrail

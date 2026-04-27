@@ -9,11 +9,20 @@ The **Authoritative Discovery Engine** is a core component of the AgentV v1.5.0 
 
 AgentV uses a multi-tier activation policy to determine which shims should be instantiated in the `ToolSandbox`.
 
-| Priority | Level | Policy |
-| :--- | :--- | :--- |
-| **1** | **Forensic Relevance** | Activated if the shim is explicitly targeted in the scenario's `expected_outcome` or `success_criteria`. |
-| **2** | **Scenario Enablement** | Activated if the shim is listed in the scenario's `enabled_shims` array. |
-| **3** | **Global Policy** | Controlled by `GLOBAL_ENABLED_SHIMS` in `config.py` (e.g., `*` for all or a whitelist). |
+| **1** | **Master Gate (Global)** | **Mandatory Hard Gate**. Controlled by `GLOBAL_ENABLED_SHIMS`. If a shim is blocked here, it is never activated. |
+| **2** | **Forensic Relevance** | Activated if globally allowed AND explicitly targeted in the scenario's `expected_outcome` or `success_criteria`. |
+| **3** | **Scenario Enablement** | Activated if globally allowed AND listed in the scenario's `enabled_shims` array. |
+
+---
+
+## 2. Capabilities vs. Shim Activation
+
+It is important to distinguish between **Agent Capabilities** and **Shim Activation**:
+
+- **Capabilities** (`metadata.capabilities`): High-level metadata (e.g., `sql_generation`, `api_integration`) used for agent selection and capability-based routing. These do **not** trigger shim activation.
+- **Shim Activation**: Driven strictly by the Activation Hierarchy above. A shim is only provisioned if it is forensically relevant to the contract or explicitly enabled.
+
+*Example*: Listing `sql_generation` in capabilities will not activate the `database` shim. You must either use a `database_` tool or mention a `shim:database` outcome to trigger activation.
 
 ### Strict vs. Permissive Mode
 

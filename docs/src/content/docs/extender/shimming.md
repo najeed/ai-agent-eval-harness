@@ -66,7 +66,7 @@ Enable specific shims by adding them to your scenario JSON:
 }
 ```
 
-### Global Override
-Use the `GLOBAL_ENABLED_SHIMS` environment variable to restrict available shims system-wide (e.g., for security or air-gapped environments).
-- `GLOBAL_ENABLED_SHIMS=*` (Enable all)
-- `GLOBAL_ENABLED_SHIMS=git,api` (Restrict to Git and API only)
+### Global Override (The Master Gate)
+Use the `GLOBAL_ENABLED_SHIMS` environment variable to restrict available shims system-wide. This acts as a **Hard Gate**: if a shim is blocked globally, it cannot be activated by any scenario.
+- `GLOBAL_ENABLED_SHIMS=*` (Enable all sanctioned shims)
+- `GLOBAL_ENABLED_SHIMS=git,api` (Restrict system to Git and API only)
