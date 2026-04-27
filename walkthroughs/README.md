@@ -9,7 +9,7 @@ Welcome to the guided learning path for the **AgentV (v1.6.0)** platform. This c
 Before starting the walkthroughs, ensure your environment is correctly configured:
 
 ### 1. System Requirements
-- **Python**: 3.9 or higher.
+- **Python**: 3.11 or higher.
 - **Dependencies**: Install the required libraries via pip:
   ```bash
   pip install -r requirements.txt

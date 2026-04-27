@@ -12,7 +12,7 @@
 
 AgentV sits inside the execution loop and verifies state parity, policy adherence, and business outcomes before your agent earns the right to act. Cryptographically signed traces (Ed25519). HIPAA/FINRA/GDPR compliance packs. CI/CD hard gating. NIST AI-100-1 aligned. Built for regulated industries.
 
-*[5,000+ OOTB scenarios] • [45 verticals] • [Apache 2.0] • [Enterprise Edition available]*
+*[5,000+ OOTB scenarios] • [50+ verticals] • [Apache 2.0] • [Enterprise Edition available]*
 
 ## Architecture Overview
 
@@ -96,36 +96,6 @@ Embark on a **4-Phase, 18-Milestone Hands-on Curriculum** designed to take you f
 
 👉 **[Launch the Master Syllabus](./walkthroughs/README.md)** to begin your journey.
 
-The harness is organized into the following key components:
-
--   `/dataproc_engine`: High-fidelity industrial data extraction engine (7 Sectors, Gold Standards).
--   `/industries`: Evaluation assets (5,000+ starter scenarios) categorized by 45+ industries.
--   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
--   `/eval_runner/console`: Flask-based REST API for the Integrated Visual Suite.
--   `/ui/visual-debugger`: Premium React-based Visual Debugger & Dashboard.
--   `/examples`: Sample drift traces and triage scenarios for rapid onboarding.
--   `/reports`: Generated artifacts (JSONL, trajectories, HTML heatmaps).
--   `/runs`: Local execution history (Flight Recorder logs).
--   `/spec/aes`: **Agent Eval Specification (Foundational)** - Benchmark standard v1.4.
--   `/schemas`: JSON Schema definitions for cross-platform scenario validation.
--   `/docs`: Deep-dive guides, architecture, and API specifications.
--   `/tests`: Comprehensive test suite (Unit, Integration, and Red-Teaming).
--   `/sample_agent`: Reference implementation for benchmark testing.
-
-- **NIST AI-100-1 Alignment**: Core verification logic developed following **NIST AI RMF principles**, featuring the **Weighted Severity Model (WSM)** for multi-dimensional scoring and forensic **Environmental DNA** snapshots.
-- **State Parity Verification**: NIST-aligned mechanism ensuring cryptographic alignment between the agent's internal state and the physical environment (via `initial_state`).
-- **Regulatory Safety Floor**: Prevents "safety-washing" by capping aggregate scores at **0.49 (Fail)** if foundational Safety or Security dimensions are compromised.
-- **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
-- **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
-
-### 🌟 What's New in v1.5
-- **Zero-Touch Extension Architecture**: Native support for Python Entry Points (`agentv.extensions`), allowing Enterprise and third-party commands to be registered without modifying Core code.
-- **Unified Functional Dispatcher**: Complete refactor of the CLI engine into a data-driven dispatch model for 100% decoupling.
-- **Lazy-Loading Optimization**: Sub-500ms CLI startup times via intelligent handler deferred loading.
-- **Discovery Engine**: Industrial activation policy ensuring only relevant or explicitly sanctioned shims are active during evaluation.
-- **Seal Hash Protocol**: Cryptographic anchoring of trace history before certification to ensure non-repudiation of the audit process.
-- **AES v1.4 Specification**: Unified metadata schema with mandatory `capabilities` and `standards_registry` fields.
-
 ## Getting Started
 
 ### Prerequisites
@@ -159,6 +129,37 @@ The harness is organized into the following key components:
 > [!TIP]
 > **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `agentv console`. This includes the **Visual AES Builder** for zero-code scenario design. See the [User Manual](docs-old/guides/help/02_USER_MANUAL.md#visual-suite) for details.
 
+## Harness Structure
+The harness is organized into the following key components:
+
+-   `/dataproc_engine`: High-fidelity industrial data extraction engine (7 Sectors, Gold Standards).
+-   `/industries`: Evaluation assets (5,000+ starter scenarios) categorized by 50+ industries.
+-   `/eval_runner`: Modular Core Engine (Multi-turn loop, Sandbox, Metrics, Simulators, Mutator).
+-   `/eval_runner/console`: Flask-based REST API for the Integrated Visual Suite.
+-   `/ui/visual-debugger`: Premium React-based Visual Debugger & Dashboard.
+-   `/examples`: Sample drift traces and triage scenarios for rapid onboarding.
+-   `/reports`: Generated artifacts (JSONL, trajectories, HTML heatmaps).
+-   `/runs`: Local execution history (Flight Recorder logs).
+-   `/spec/aes`: **Agent Eval Specification (Foundational)** - Benchmark standard v1.4.
+-   `/docs`: Deep-dive guides, architecture, and API specifications.
+-   `/tests`: Comprehensive test suite (Unit, Integration, and Red-Teaming).
+-   `/sample_agent`: Reference implementation for benchmark testing.
+
+- **NIST AI-100-1 Alignment**: Core verification logic developed following **NIST AI RMF principles**, featuring the **Weighted Severity Model (WSM)** for multi-dimensional scoring and forensic **Environmental DNA** snapshots.
+- **State Parity Verification**: NIST-aligned mechanism ensuring cryptographic alignment between the agent's internal state and the physical environment (via `initial_state`).
+- **Regulatory Safety Floor**: Prevents "safety-washing" by capping aggregate scores at **0.49 (Fail)** if foundational Safety or Security dimensions are compromised.
+- **Behavioral DNA Telemetry**: High-granularity event bus (4-level: PHASE, SUBTASK, ACTION, STEP) providing a precise "genetic" map of agent decision-making.
+- **Verification Certificate (VC) v3.0.0**: Traces are signed via the **Identity Registry** (Ed25519) and backed by a **Forensic Evidence Ledger** that hashes sidecar artifacts to ensure end-to-end provenance.
+
+### 🌟 What's New in v1.6 (April 2026 Industrial Extension)
+
+- **Zero-Touch Extension Architecture**: Native support for Python Entry Points (`agentv.extensions`), allowing Enterprise and third-party commands to be registered without modifying Core code.
+- **Unified Functional Dispatcher**: Complete refactor of the CLI engine into a data-driven dispatch model for 100% decoupling.
+- **Lazy-Loading Optimization**: Sub-500ms CLI startup times via intelligent handler deferred loading.
+- **Discovery Engine**: Industrial activation policy ensuring only relevant or explicitly sanctioned shims are active during evaluation.
+- **Seal Hash Protocol**: Cryptographic anchoring of trace history before certification to ensure non-repudiation of the audit process.
+- **AES v1.4 Specification**: Unified metadata schema with `capabilities` and `standards_registry` fields.
+
 ## 📂 The Global Scenario Corpus
 
 The harness now ships with a massive, validated corpus of **5,000+ scenarios** designed to stress-test agents across every dimension:
@@ -175,7 +176,7 @@ Comprehensive coverage for **50+ verticals** including:
 - **Interactive Complexity**: Multi-turn flows involving conflicting human-in-the-loop (HITL) requirements.
 - **Simulations**: High-fidelity sector labs (e.g., Bank, EHR/HL7, CRM) for testing agents in realistic, isolated environments.
 
-*All scenarios are 100% compliant with the [AES Specification](docs-old/guides/04_AES_SPECIFICATION.md).*
+*All scenarios are 100% compliant with the [AES v1.4.0 Specification](docs-old/guides/04_AES_SPECIFICATION.md).*
 
 ### Manual Evaluation (Running the Sample Agent)
 
@@ -226,7 +227,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 ## At a Glance
 
 - **Evaluation Specification (AES)**: Standardized YAML/Markdown benchmarks for agents.
-- **20-Shim Enterprise Suite**: High-fidelity simulators for **Git, API, Database, Knowledge Base, Support Desk, Social Media, Vector DB, CI/CD, IoT, Security**, and more.
+- **20-Shim Enterprise Suite**: Environment simulators for **Git, API, Database, Knowledge Base, Support Desk, Social Media, Vector DB, CI/CD, IoT, Security**, and more (Enterprise Edition supports high-fidelity versions).
 - **Schema-Driven Core Registry**: Decoupled environmental state management using declarative manifests (`shim_resources.json`) with **Async Simulation Hardening** for non-blocking non-linear evaluations.
 - **Industrial PBAC & Operational Governance**: Granular **Permission-Based Access Control** (v1.2.3) and **Operational Throttling** (`EVAL_TURN_THROTTLE`) for regulated enterprise environments.
 - **Zero-Touch Hot-Swap Architecture**: Dynamically register and swap simulators via plugins without core code modifications.
@@ -240,7 +241,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **Judge Guarding**: Model-based scoring with support for OpenAI, Gemini, Claude, and Ollama.
 
 #### Advanced CLI Suite
-- **`list`**: Faceted search filtering across 5,000+ industry scenarios.
+- **`list`**: Faceted search filtering across 5,000+ industry scenarios via `--search`.
 - **`lint`**: Automated quality scoring and AES compliance verification via `--path`.
 - **`install <pack>`**: Rapid deployment of curated, industry-specific scenario bundles (e.g., `telecom-pack`, `rag-agent-pack`).
 - **`analyze <url>`**: Proactive agent repo scanning; auto-generates AES stubs by identifying tools and endpoints.
@@ -253,6 +254,8 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **`auto-translate`**: Leverage local LLMs (via Ollama) to convert raw documents into executable AES scenarios.
 - **`aes add-standard`**: Expand the global industrial registry with new standard definitions (ID, Name, Industry, Description).
 - **`init --standard <id>`**: Rapidly scaffold a dedicated, industry-compliant evaluation environment for a specific standard (e.g., `init --standard ISO_20022`).
+
+and more (check [CLI Reference](./docs-old/cli_reference.md) for complete list) ...
 
 #### Premium UX Tools
 - **Scenario Editor**: A visual interface for constructing real-world AES logic; saves production-ready JSON directly to the catalog.
@@ -272,7 +275,7 @@ The harness is built on a decoupled, event-driven architecture that allows custo
 - **Pluggable World Shims**: Register custom environment simulators through the `on_register_simulators` hook.
 
 ### 🛠️ dataproc-engine: Industrial Extraction Core
-The framework now features a standalone extraction engine designed for high-fidelity data acquisition:
+The repository also features a standalone extraction engine designed for high-fidelity data acquisition:
 - **Sector Coverage**: Finance, Healthcare, Energy, Telecom, Ecommerce, Agriculture, and Transportation.
 - **Zero-Mock Integrity**: Automated fallback to high-fidelity simulations when live APIs are unavailable, maintaining 100% data availability.
 
