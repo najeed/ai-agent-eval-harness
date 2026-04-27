@@ -12,31 +12,27 @@
         <meta name="author" content="Najeed Khan">
       
       
-        <link rel="canonical" href="https://najeed.github.io/ai-agent-eval-harness/guides/help/08_ADDING_WORLD_SHIMS/">
+        <link rel="canonical" href="https://najeed.github.io/ai-agent-eval-harness/guides/05_HARNESS_USER_GUIDE/">
       
       
-        <link rel="prev" href="../07_WORLD_SHIMS_REFERENCE/">
-      
-      
-        <link rel="next" href="../06_TRIAGE_ENGINE_AND_VFS/">
       
       
         
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Adding World Shims - AgentV</title>
+        <title>AgentV Evaluation Harness: User Guide (v1.6.0) - AgentV</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,7 +51,7 @@
       
     
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#dynamic-discovery-dashboard" class="md-skip">
+        <a href="#agentv-evaluation-harness-user-guide-v160" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +90,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-header__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Adding World Shims
+              AgentV Evaluation Harness: User Guide (v1.6.0)
             
           </span>
         </div>
@@ -215,7 +211,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -236,7 +232,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../01_QUICK_START/" class="md-tabs__link">
+        <a href="../help/01_QUICK_START/" class="md-tabs__link">
           
   
   
@@ -254,7 +250,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../architecture/" class="md-tabs__link">
+      <a href="../../architecture/" class="md-tabs__link">
         
   
   
@@ -275,7 +271,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../api/developer_api.md#cli-core-interface" class="md-tabs__link">
+        <a href="../../api/developer_api.md#cli-core-interface" class="md-tabs__link">
           
   
   
@@ -295,7 +291,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../feature_inventory/" class="md-tabs__link">
+        <a href="../../feature_inventory/" class="md-tabs__link">
           
   
   
@@ -315,7 +311,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../dataproc-design/" class="md-tabs__link">
+        <a href="../../dataproc-design/" class="md-tabs__link">
           
   
   
@@ -335,7 +331,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../01_EVALUATION_GUIDE/" class="md-tabs__link">
+        <a href="../01_EVALUATION_GUIDE/" class="md-tabs__link">
           
   
   
@@ -355,7 +351,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../scholar/METHODOLOGY/" class="md-tabs__link">
+        <a href="../scholar/METHODOLOGY/" class="md-tabs__link">
           
   
   
@@ -375,7 +371,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../04_AES_SPECIFICATION/" class="md-tabs__link">
+        <a href="../04_AES_SPECIFICATION/" class="md-tabs__link">
           
   
   
@@ -391,13 +387,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../04_ONBOARDING_TUTORIAL/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../help/04_ONBOARDING_TUTORIAL/" class="md-tabs__link">
           
   
   
@@ -417,7 +411,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../00_COMPREHENSIVE_GUIDE/" class="md-tabs__link">
+        <a href="../help/00_COMPREHENSIVE_GUIDE/" class="md-tabs__link">
           
   
   
@@ -451,7 +445,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
+    <a href="../.." title="AgentV" class="md-nav__button md-logo" aria-label="AgentV" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -469,7 +463,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -550,7 +544,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../01_QUICK_START/" class="md-nav__link">
+      <a href="../help/01_QUICK_START/" class="md-nav__link">
         
   
   
@@ -578,7 +572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../02_USER_MANUAL/" class="md-nav__link">
+      <a href="../help/02_USER_MANUAL/" class="md-nav__link">
         
   
   
@@ -660,7 +654,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../03_DEVELOPER_GUIDE/" class="md-nav__link">
+      <a href="../help/03_DEVELOPER_GUIDE/" class="md-nav__link">
         
   
   
@@ -688,7 +682,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/STABILITY_GUARD/" class="md-nav__link">
+      <a href="../advanced/STABILITY_GUARD/" class="md-nav__link">
         
   
   
@@ -716,7 +710,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/CLI_DISPATCH/" class="md-nav__link">
+      <a href="../advanced/CLI_DISPATCH/" class="md-nav__link">
         
   
   
@@ -744,7 +738,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../testing/overview/" class="md-nav__link">
+      <a href="../testing/overview/" class="md-nav__link">
         
   
   
@@ -772,7 +766,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../testing/writing-tests/" class="md-nav__link">
+      <a href="../testing/writing-tests/" class="md-nav__link">
         
   
   
@@ -800,7 +794,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../testing/running-tests/" class="md-nav__link">
+      <a href="../testing/running-tests/" class="md-nav__link">
         
   
   
@@ -828,7 +822,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../testing/test-patterns/" class="md-nav__link">
+      <a href="../testing/test-patterns/" class="md-nav__link">
         
   
   
@@ -871,7 +865,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/" class="md-nav__link">
+      <a href="../../architecture/" class="md-nav__link">
         
   
   
@@ -952,7 +946,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api/developer_api.md#cli-core-interface" class="md-nav__link">
+      <a href="../../api/developer_api.md#cli-core-interface" class="md-nav__link">
         
   
   
@@ -980,7 +974,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api/developer_api/" class="md-nav__link">
+      <a href="../../api/developer_api/" class="md-nav__link">
         
   
   
@@ -1008,7 +1002,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api/extender_api/" class="md-nav__link">
+      <a href="../../api/extender_api/" class="md-nav__link">
         
   
   
@@ -1036,7 +1030,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../agent_api/" class="md-nav__link">
+      <a href="../../agent_api/" class="md-nav__link">
         
   
   
@@ -1064,7 +1058,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api/core_evaluator/" class="md-nav__link">
+      <a href="../../api/core_evaluator/" class="md-nav__link">
         
   
   
@@ -1092,7 +1086,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../plugins/" class="md-nav__link">
+      <a href="../../plugins/" class="md-nav__link">
         
   
   
@@ -1181,7 +1175,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../feature_inventory/" class="md-nav__link">
+      <a href="../../feature_inventory/" class="md-nav__link">
         
   
   
@@ -1270,7 +1264,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/" class="md-nav__link">
+      <a href="../../dataproc-design/" class="md-nav__link">
         
   
   
@@ -1298,7 +1292,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/user_manual/" class="md-nav__link">
+      <a href="../../dataproc-design/user_manual/" class="md-nav__link">
         
   
   
@@ -1326,7 +1320,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/distribution_manifest/" class="md-nav__link">
+      <a href="../../dataproc-design/distribution_manifest/" class="md-nav__link">
         
   
   
@@ -1354,7 +1348,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/local_synthesis_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/local_synthesis_guide/" class="md-nav__link">
         
   
   
@@ -1382,7 +1376,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/data_veracity_report/" class="md-nav__link">
+      <a href="../../dataproc-design/data_veracity_report/" class="md-nav__link">
         
   
   
@@ -1410,7 +1404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/pilot_prioritization/" class="md-nav__link">
+      <a href="../../dataproc-design/pilot_prioritization/" class="md-nav__link">
         
   
   
@@ -1492,7 +1486,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/agriculture/agriculture_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/agriculture/agriculture_guide/" class="md-nav__link">
         
   
   
@@ -1574,7 +1568,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/finance/finance_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/finance/finance_guide/" class="md-nav__link">
         
   
   
@@ -1602,7 +1596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/healthcare/healthcare_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/healthcare/healthcare_guide/" class="md-nav__link">
         
   
   
@@ -1630,7 +1624,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/ecommerce/ecommerce_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/ecommerce/ecommerce_guide/" class="md-nav__link">
         
   
   
@@ -1658,7 +1652,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/manufacturing/manufacturing_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/manufacturing/manufacturing_guide/" class="md-nav__link">
         
   
   
@@ -1748,7 +1742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/public_sector/demographics/demographics_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/public_sector/demographics/demographics_guide/" class="md-nav__link">
         
   
   
@@ -1776,7 +1770,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/public_sector/housing/housing_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/public_sector/housing/housing_guide/" class="md-nav__link">
         
   
   
@@ -1804,7 +1798,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/public_sector/labor/labor_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/public_sector/labor/labor_guide/" class="md-nav__link">
         
   
   
@@ -1832,7 +1826,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/public_sector/environment/environment_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/public_sector/environment/environment_guide/" class="md-nav__link">
         
   
   
@@ -1860,7 +1854,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/education/education_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/education/education_guide/" class="md-nav__link">
         
   
   
@@ -1950,7 +1944,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/energy/energy_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/energy/energy_guide/" class="md-nav__link">
         
   
   
@@ -1978,7 +1972,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/telecom/telecom_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/telecom/telecom_guide/" class="md-nav__link">
         
   
   
@@ -2006,7 +2000,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/implementation_strategy/" class="md-nav__link">
+      <a href="../../dataproc-design/implementation_strategy/" class="md-nav__link">
         
   
   
@@ -2096,7 +2090,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/media_and_entertainment/media_and_entertainment_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/media_and_entertainment/media_and_entertainment_guide/" class="md-nav__link">
         
   
   
@@ -2124,7 +2118,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/cross_sector/decision_support_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/cross_sector/decision_support_guide/" class="md-nav__link">
         
   
   
@@ -2152,7 +2146,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/cross_sector/unstructured_guide/" class="md-nav__link">
+      <a href="../../dataproc-design/cross_sector/unstructured_guide/" class="md-nav__link">
         
   
   
@@ -2180,7 +2174,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/cross_sector/algorithm_overview/" class="md-nav__link">
+      <a href="../../dataproc-design/cross_sector/algorithm_overview/" class="md-nav__link">
         
   
   
@@ -2208,7 +2202,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/cross_sector/industrial_sectors/" class="md-nav__link">
+      <a href="../../dataproc-design/cross_sector/industrial_sectors/" class="md-nav__link">
         
   
   
@@ -2298,7 +2292,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/aes_alignment/" class="md-nav__link">
+      <a href="../../dataproc-design/aes_alignment/" class="md-nav__link">
         
   
   
@@ -2326,7 +2320,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/architecture_diagram/" class="md-nav__link">
+      <a href="../../dataproc-design/architecture_diagram/" class="md-nav__link">
         
   
   
@@ -2354,7 +2348,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/build_strategy/" class="md-nav__link">
+      <a href="../../dataproc-design/build_strategy/" class="md-nav__link">
         
   
   
@@ -2382,7 +2376,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/config_management/" class="md-nav__link">
+      <a href="../../dataproc-design/config_management/" class="md-nav__link">
         
   
   
@@ -2410,7 +2404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/data_to_agentdata/" class="md-nav__link">
+      <a href="../../dataproc-design/data_to_agentdata/" class="md-nav__link">
         
   
   
@@ -2438,7 +2432,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/framework_arch/" class="md-nav__link">
+      <a href="../../dataproc-design/framework_arch/" class="md-nav__link">
         
   
   
@@ -2466,7 +2460,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/provider_interfaces/" class="md-nav__link">
+      <a href="../../dataproc-design/provider_interfaces/" class="md-nav__link">
         
   
   
@@ -2494,7 +2488,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/robustness_strategy/" class="md-nav__link">
+      <a href="../../dataproc-design/robustness_strategy/" class="md-nav__link">
         
   
   
@@ -2522,7 +2516,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../dataproc-design/scenario_schema/" class="md-nav__link">
+      <a href="../../dataproc-design/scenario_schema/" class="md-nav__link">
         
   
   
@@ -2627,7 +2621,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../01_EVALUATION_GUIDE/" class="md-nav__link">
+      <a href="../01_EVALUATION_GUIDE/" class="md-nav__link">
         
   
   
@@ -2655,7 +2649,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../02_ADDING_AN_INDUSTRY/" class="md-nav__link">
+      <a href="../02_ADDING_AN_INDUSTRY/" class="md-nav__link">
         
   
   
@@ -2683,7 +2677,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../03_CORE_FUNCTIONS_GUIDE/" class="md-nav__link">
+      <a href="../03_CORE_FUNCTIONS_GUIDE/" class="md-nav__link">
         
   
   
@@ -2772,7 +2766,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../scholar/METHODOLOGY/" class="md-nav__link">
+      <a href="../scholar/METHODOLOGY/" class="md-nav__link">
         
   
   
@@ -2800,7 +2794,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../scholar/BENCHMARKS/" class="md-nav__link">
+      <a href="../scholar/BENCHMARKS/" class="md-nav__link">
         
   
   
@@ -2889,7 +2883,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../04_AES_SPECIFICATION/" class="md-nav__link">
+      <a href="../04_AES_SPECIFICATION/" class="md-nav__link">
         
   
   
@@ -2917,7 +2911,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../spec/trust_protocol_spec_v1/" class="md-nav__link">
+      <a href="../../spec/trust_protocol_spec_v1/" class="md-nav__link">
         
   
   
@@ -2945,7 +2939,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../07_SECURITY_AND_AUTHENTICATION/" class="md-nav__link">
+      <a href="../07_SECURITY_AND_AUTHENTICATION/" class="md-nav__link">
         
   
   
@@ -2973,7 +2967,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../05_DRIFT_AND_TRIAGE/" class="md-nav__link">
+      <a href="../05_DRIFT_AND_TRIAGE/" class="md-nav__link">
         
   
   
@@ -3001,7 +2995,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/LLM_JUDGE_CALIBRATION/" class="md-nav__link">
+      <a href="../advanced/LLM_JUDGE_CALIBRATION/" class="md-nav__link">
         
   
   
@@ -3029,7 +3023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/PYPI_DISTRIBUTION/" class="md-nav__link">
+      <a href="../advanced/PYPI_DISTRIBUTION/" class="md-nav__link">
         
   
   
@@ -3057,7 +3051,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../publication_guide/" class="md-nav__link">
+      <a href="../../publication_guide/" class="md-nav__link">
         
   
   
@@ -3089,31 +3083,28 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" checked>
         
           
-          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
             
   
   
@@ -3131,7 +3122,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_10">
             <span class="md-nav__icon md-icon"></span>
             
@@ -3149,7 +3140,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../04_ONBOARDING_TUTORIAL/" class="md-nav__link">
+      <a href="../help/04_ONBOARDING_TUTORIAL/" class="md-nav__link">
         
   
   
@@ -3183,13 +3174,10 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
@@ -3198,7 +3186,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10_2" >
         
           
-          <label class="md-nav__link" for="__nav_10_2" id="__nav_10_2_label" tabindex="">
+          <label class="md-nav__link" for="__nav_10_2" id="__nav_10_2_label" tabindex="0">
             
   
   
@@ -3234,7 +3222,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../frameworks/autogen/" class="md-nav__link">
+      <a href="../frameworks/autogen/" class="md-nav__link">
         
   
   
@@ -3262,7 +3250,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../frameworks/claude-code/" class="md-nav__link">
+      <a href="../frameworks/claude-code/" class="md-nav__link">
         
   
   
@@ -3290,7 +3278,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../frameworks/crewai/" class="md-nav__link">
+      <a href="../frameworks/crewai/" class="md-nav__link">
         
   
   
@@ -3318,7 +3306,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../frameworks/gemini-multimodal-live/" class="md-nav__link">
+      <a href="../frameworks/gemini-multimodal-live/" class="md-nav__link">
         
   
   
@@ -3346,7 +3334,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../frameworks/gemini-vertex-ai/" class="md-nav__link">
+      <a href="../frameworks/gemini-vertex-ai/" class="md-nav__link">
         
   
   
@@ -3374,7 +3362,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../frameworks/langchain/" class="md-nav__link">
+      <a href="../frameworks/langchain/" class="md-nav__link">
         
   
   
@@ -3402,7 +3390,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../frameworks/langgraph/" class="md-nav__link">
+      <a href="../frameworks/langgraph/" class="md-nav__link">
         
   
   
@@ -3430,7 +3418,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../frameworks/ollama/" class="md-nav__link">
+      <a href="../frameworks/ollama/" class="md-nav__link">
         
   
   
@@ -3458,7 +3446,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../frameworks/openai-assistants/" class="md-nav__link">
+      <a href="../frameworks/openai-assistants/" class="md-nav__link">
         
   
   
@@ -3494,7 +3482,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../07_WORLD_SHIMS_REFERENCE/" class="md-nav__link">
+      <a href="../help/07_WORLD_SHIMS_REFERENCE/" class="md-nav__link">
         
   
   
@@ -3519,35 +3507,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Adding World Shims
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../help/08_ADDING_WORLD_SHIMS/" class="md-nav__link">
         
   
   
@@ -3563,235 +3526,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#dynamic-discovery-dashboard" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dynamic Discovery &amp; Dashboard
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Dynamic Discovery &amp; Dashboard">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#core-infrastructure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core Infrastructure
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#communication-collaboration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Communication &amp; Collaboration
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#business-fintech" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Business &amp; Fintech
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ai-modern-web" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        AI &amp; Modern Web
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#shims-vs-vfs-state-parity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Shims vs. VFS State Parity
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#configuration-governance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Configuration &amp; Governance
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Configuration &amp; Governance">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-global-system-override-the-master-gate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Global System Override (The Master Gate)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-per-scenario-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Per-Scenario Configuration
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#adding-a-new-shim-zero-touch-plugin-method" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Adding a New Shim (Zero-Touch Plugin Method)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Adding a New Shim (Zero-Touch Plugin Method)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-define-the-simulator" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Define the Simulator
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-register-via-plugin-hook" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Register via Plugin Hook
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-configure-via-the-hybrid-registry-v13" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Configure via the Hybrid Registry (v1.3)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Configure via the Hybrid Registry (v1.3)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#shim_resourcesjson-declarative-baseline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        shim_resources.json (Declarative Baseline)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#shim_resourceslocaljson-sensitive-overlays" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        shim_resources.local.json (Sensitive Overlays)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-verify-on-dashboard" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Verify on Dashboard
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#using-the-shim-in-scenarios" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Using the Shim in Scenarios
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -3804,7 +3538,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../06_TRIAGE_ENGINE_AND_VFS/" class="md-nav__link">
+      <a href="../help/06_TRIAGE_ENGINE_AND_VFS/" class="md-nav__link">
         
   
   
@@ -3832,7 +3566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../05_ECOSYSTEM_VERIFICATION_GUIDE/" class="md-nav__link">
+      <a href="../help/05_ECOSYSTEM_VERIFICATION_GUIDE/" class="md-nav__link">
         
   
   
@@ -3921,7 +3655,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../00_COMPREHENSIVE_GUIDE/" class="md-nav__link">
+      <a href="../help/00_COMPREHENSIVE_GUIDE/" class="md-nav__link">
         
   
   
@@ -3949,7 +3683,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../contributing/" class="md-nav__link">
+      <a href="../../contributing/" class="md-nav__link">
         
   
   
@@ -3977,7 +3711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../samples/prd_sample/" class="md-nav__link">
+      <a href="../../samples/prd_sample/" class="md-nav__link">
         
   
   
@@ -4005,7 +3739,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../CODE_OF_CONDUCT/" class="md-nav__link">
+      <a href="../../CODE_OF_CONDUCT/" class="md-nav__link">
         
   
   
@@ -4050,6 +3784,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -4058,22 +3794,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#dynamic-discovery-dashboard" class="md-nav__link">
+  <a href="#1-executing-evaluations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dynamic Discovery &amp; Dashboard
+        1. Executing Evaluations
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Dynamic Discovery &amp; Dashboard">
+    <nav class="md-nav" aria-label="1. Executing Evaluations">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#core-infrastructure" class="md-nav__link">
+  <a href="#single-scenario" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Core Infrastructure
+        Single Scenario
       
     </span>
   </a>
@@ -4081,32 +3817,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#communication-collaboration" class="md-nav__link">
+  <a href="#batch-evaluation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Communication &amp; Collaboration
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#business-fintech" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Business &amp; Fintech
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ai-modern-web" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        AI &amp; Modern Web
+        Batch Evaluation
       
     </span>
   </a>
@@ -4119,10 +3833,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#shims-vs-vfs-state-parity" class="md-nav__link">
+  <a href="#2-replaying-execution-agentv-replay" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Shims vs. VFS State Parity
+        2. Replaying Execution (agentv replay)
       
     </span>
   </a>
@@ -4130,22 +3844,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-governance" class="md-nav__link">
+  <a href="#3-trust-protocol-behavioral-fingerprinting" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configuration &amp; Governance
+        3. Trust Protocol &amp; Behavioral Fingerprinting
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Configuration &amp; Governance">
+    <nav class="md-nav" aria-label="3. Trust Protocol &amp; Behavioral Fingerprinting">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-global-system-override-the-master-gate" class="md-nav__link">
+  <a href="#forensic-environmental-dna" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Global System Override (The Master Gate)
+        Forensic Environmental DNA
       
     </span>
   </a>
@@ -4153,10 +3867,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-per-scenario-configuration" class="md-nav__link">
+  <a href="#behavioral-fingerprinting-enterprise" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Per-Scenario Configuration
+        Behavioral Fingerprinting (Enterprise)
       
     </span>
   </a>
@@ -4169,99 +3883,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adding-a-new-shim-zero-touch-plugin-method" class="md-nav__link">
+  <a href="#4-regulatory-compliance-gating-agentv-gate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Adding a New Shim (Zero-Touch Plugin Method)
+        4. Regulatory Compliance Gating (agentv gate)
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Adding a New Shim (Zero-Touch Plugin Method)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-define-the-simulator" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Define the Simulator
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-register-via-plugin-hook" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Register via Plugin Hook
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-configure-via-the-hybrid-registry-v13" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Configure via the Hybrid Registry (v1.3)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. Configure via the Hybrid Registry (v1.3)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#shim_resourcesjson-declarative-baseline" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        shim_resources.json (Declarative Baseline)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#shim_resourceslocaljson-sensitive-overlays" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        shim_resources.local.json (Sensitive Overlays)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-verify-on-dashboard" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Verify on Dashboard
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#using-the-shim-in-scenarios" class="md-nav__link">
+  <a href="#5-industrial-standards-registry-agentv-init" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Using the Shim in Scenarios
+        5. Industrial Standards Registry (agentv init)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-forensic-trace-logging-runjsonl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Forensic Trace Logging (run.jsonl)
       
     </span>
   </a>
@@ -4285,122 +3932,55 @@
 
 
 
-  <h1>Adding World Shims</h1>
-
-<h2 id="dynamic-discovery-dashboard">Dynamic Discovery &amp; Dashboard<a class="headerlink" href="#dynamic-discovery-dashboard" title="Permanent link">&para;</a></h2>
-<p>The system includes <strong>20 default shims</strong>, categorized for full-spectrum enterprise simulation:</p>
-<h3 id="core-infrastructure">Core Infrastructure<a class="headerlink" href="#core-infrastructure" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Git</strong>: VFS-aware repository and version control simulation.</li>
-<li><strong>API</strong>: Generic REST/gRPC endpoint mocking with state.</li>
-<li><strong>Database</strong>: SQL table simulation with persistent row storage.</li>
-<li><strong>Terminal</strong>: SSH and shell execution environment (sandboxed).</li>
-<li><strong>Cloud</strong>: Cloud infrastructure simulator (AWS/GCP/Azure resources).</li>
-</ul>
-<h3 id="communication-collaboration">Communication &amp; Collaboration<a class="headerlink" href="#communication-collaboration" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Slack</strong>: Corporate messaging, channels, and bot interaction mock.</li>
-<li><strong>Email</strong>: SMTP/IMAP simulator for transactional and user mail.</li>
-<li><strong>Jira</strong>: Ticketing, agile boards, and project management simulation.</li>
-<li><strong>Social</strong>: Social media posting and feed simulation (X/LinkedIn).</li>
-<li><strong>Support</strong>: Desk/Tickets simulator (Zendesk/Intercom).</li>
-</ul>
-<h3 id="business-fintech">Business &amp; Fintech<a class="headerlink" href="#business-fintech" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>CRM</strong>: Customer/Lead management simulation (Salesforce-like).</li>
-<li><strong>ERP</strong>: Enterprise resource planning and supply chain mock.</li>
-<li><strong>Stripe</strong>: Payment processing, subscriptions, and invoice simulation.</li>
-<li><strong>Calendar</strong>: Meeting scheduling and availability management.</li>
-</ul>
-<h3 id="ai-modern-web">AI &amp; Modern Web<a class="headerlink" href="#ai-modern-web" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Browser</strong>: Headless browser automation and DOM interaction simulator.</li>
-<li><strong>Vector</strong>: Vector database simulation for RAG (Pinecone/Milvus).</li>
-<li><strong>KB</strong>: Knowledge base search and retrieval (Confluence/Notion).</li>
-<li><strong>CI/CD</strong>: Build pipeline and deployment status simulator.</li>
-<li><strong>IoT</strong>: Smart device and sensor interaction mock.</li>
-<li><strong>Security</strong>: Identity &amp; Access Management (Auth0/Okta/IAM).</li>
-</ul>
-<p>These are automatically reflected in your <strong>Dashboard</strong> under "World Shims."</p>
-<h2 id="shims-vs-vfs-state-parity">Shims vs. VFS State Parity<a class="headerlink" href="#shims-vs-vfs-state-parity" title="Permanent link">&para;</a></h2>
-<p>A common question is: <em>How do shims allow for VFS state parity checks?</em></p>
-<ol>
-<li><strong>The Sandbox State (VFS)</strong>: The <a href="https://github.com/najeed/ai-agent-eval-harness/blob/main/eval_runner/tool_sandbox.py">tool_sandbox.py</a> maintains a "Virtual File System" (the <code>.state</code> dict).</li>
-<li><strong>Execution Hook</strong>: When an agent calls <code>database_query</code>, the <code>ToolSandbox</code> routes it to the <a href="https://github.com/najeed/ai-agent-eval-harness/blob/main/eval_runner/simulators.py">DatabaseSimulator</a>.</li>
-<li><strong>State Reflection</strong>: The shim executes the action and can optionally return <code>state_changes</code> that are applied to the VFS.</li>
-<li><strong>Parity Check</strong>: At the end of a run, the <code>Evaluator</code> compares the current VFS state against the <strong>"Ground Truth"</strong> defined in the scenario. This is how we ensure "State Parity."</li>
-</ol>
-<h2 id="configuration-governance">Configuration &amp; Governance<a class="headerlink" href="#configuration-governance" title="Permanent link">&para;</a></h2>
-<p>The system uses a <strong>Two-Key Activation Model</strong> for World Shims to ensure security and ease of management. As of <strong>v1.6.0</strong>, this model enforces strict industrial forensic scoping:</p>
-<h3 id="1-global-system-override-the-master-gate">1. Global System Override (The Master Gate)<a class="headerlink" href="#1-global-system-override-the-master-gate" title="Permanent link">&para;</a></h3>
-<p>In <code>.env</code> (or via environment variables), you can set <code>GLOBAL_ENABLED_SHIMS</code>:
-- <strong>Hard Gate</strong>: This is the authoritative system-wide filter. If a shim is not in this list, it is <strong>never</strong> available, even if explicitly requested by a scenario.
-- <strong>Default</strong>: <code>git,api,database,terminal,cloud,slack,email,jira,social,support,crm,erp,stripe,calendar,browser,vector,kb,cicd,iot,security</code>
-- This allows you to disable heavy or risky shims system-wide without updating a single scenario.
-- <strong>Wildcard</strong>: Use <code>*</code> to enable all registered shims (including those from plugins).</p>
+<h1 id="agentv-evaluation-harness-user-guide-v160">AgentV Evaluation Harness: User Guide (v1.6.0)<a class="headerlink" href="#agentv-evaluation-harness-user-guide-v160" title="Permanent link">&para;</a></h1>
+<p>This guide covers the <strong>Execution Engine</strong>, CLI commands, and Forensic infrastructure. For the scenario JSON schema, see the <a href="../04_AES_SPECIFICATION/">AES Specification</a>.</p>
 <hr />
-<h3 id="2-per-scenario-configuration">2. Per-Scenario Configuration<a class="headerlink" href="#2-per-scenario-configuration" title="Permanent link">&para;</a></h3>
-<p>Each scenario can further restrict its environment using the <code>enabled_shims</code> property:
-- <strong>Scenario Specificity</strong>: This only has an effect if the shim is also allowed by the Global Override.
-- Only shims that are <strong>Relevant</strong> (referenced in the contract) or explicitly enabled are activated and captured in forensic evidence.
-- If missing, it defaults to all globally allowed shims.</p>
-<hr />
-<h2 id="adding-a-new-shim-zero-touch-plugin-method">Adding a New Shim (Zero-Touch Plugin Method)<a class="headerlink" href="#adding-a-new-shim-zero-touch-plugin-method" title="Permanent link">&para;</a></h2>
-<p>The preferred way to add a shim is via a <strong>Plugin</strong>. This keeps the core harness immutable.</p>
-<h3 id="1-define-the-simulator">1. Define the Simulator<a class="headerlink" href="#1-define-the-simulator" title="Permanent link">&para;</a></h3>
-<p>Create your simulator class anywhere (e.g., in your plugin package). It must implement <a href="https://github.com/najeed/ai-agent-eval-harness/blob/main/eval_runner/simulators.py">execute(action, params)</a>.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCustomSimulator</span><span class="p">:</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;success&quot;</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="s2">&quot;Action executed!&quot;</span><span class="p">}</span>
+<h2 id="1-executing-evaluations">1. Executing Evaluations<a class="headerlink" href="#1-executing-evaluations" title="Permanent link">&para;</a></h2>
+<h3 id="single-scenario">Single Scenario<a class="headerlink" href="#single-scenario" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>agentv<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>scenarios/my_test.json
+</code></pre></div>
+<h3 id="batch-evaluation">Batch Evaluation<a class="headerlink" href="#batch-evaluation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--path<span class="w"> </span>scenarios/finance/<span class="w"> </span>--format<span class="w"> </span>json
 </code></pre></div>
 <hr />
-<h3 id="2-register-via-plugin-hook">2. Register via Plugin Hook<a class="headerlink" href="#2-register-via-plugin-hook" title="Permanent link">&para;</a></h3>
-<p>In your <a href="https://github.com/najeed/ai-agent-eval-harness/blob/main/eval_runner/plugins.py">BaseEvalPlugin</a> subclass, override the <a href="https://github.com/najeed/ai-agent-eval-harness/blob/main/eval_runner/plugins.py">on_register_simulators</a> hook:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">eval_runner.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEvalPlugin</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyEcoPlugin</span><span class="p">(</span><span class="n">BaseEvalPlugin</span><span class="p">):</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">on_register_simulators</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">registry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        <span class="c1"># Register your shim instance in the provided registry dict</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>        <span class="n">registry</span><span class="p">[</span><span class="s2">&quot;custom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MyCustomSimulator</span><span class="p">()</span>
+<h2 id="2-replaying-execution-agentv-replay">2. Replaying Execution (<code>agentv replay</code>)<a class="headerlink" href="#2-replaying-execution-agentv-replay" title="Permanent link">&para;</a></h2>
+<p>Every evaluation produces a <code>run.jsonl</code> flight recorder log. You can replay this log to reconstruct the agent's interaction history:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>agentv<span class="w"> </span>replay<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div>
 <hr />
-<h3 id="3-configure-via-the-hybrid-registry-v13">3. Configure via the Hybrid Registry (v1.3)<a class="headerlink" href="#3-configure-via-the-hybrid-registry-v13" title="Permanent link">&para;</a></h3>
-<p>To make your custom shim configurable via the <strong>Hybrid Registry</strong>, add a entry for it in <code>shim_resources.json</code>. This allows you to decouple its physical address (URL, port) from its logic.</p>
-<h4 id="shim_resourcesjson-declarative-baseline"><code>shim_resources.json</code> (Declarative Baseline)<a class="headerlink" href="#shim_resourcesjson-declarative-baseline" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;custom&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Industrial IoT Sensor&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://localhost:8080/v1&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">&quot;managed_lifecycle&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">      </span><span class="nt">&quot;protocol&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mqtt&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">      </span><span class="nt">&quot;standard&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ISO_8000&quot;</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span><span class="p">}</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="p">}</span>
-</code></pre></div>
-<h4 id="shim_resourceslocaljson-sensitive-overlays"><code>shim_resources.local.json</code> (Sensitive Overlays)<a class="headerlink" href="#shim_resourceslocaljson-sensitive-overlays" title="Permanent link">&para;</a></h4>
-<p>For sensitive credentials like API keys, always use the local overlay (ignored by Git):
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;custom&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="nt">&quot;api_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sk-12345-secret-key&quot;</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="p">}</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p">}</span>
-</code></pre></div></p>
+<h2 id="3-trust-protocol-behavioral-fingerprinting">3. Trust Protocol &amp; Behavioral Fingerprinting<a class="headerlink" href="#3-trust-protocol-behavioral-fingerprinting" title="Permanent link">&para;</a></h2>
+<p>To ensure high-stakes industrial reliability, AgentV implements the <strong>Forensic Evidence Ledger</strong>.</p>
+<h3 id="forensic-environmental-dna">Forensic Environmental DNA<a class="headerlink" href="#forensic-environmental-dna" title="Permanent link">&para;</a></h3>
+<p>The harness captures a "baseline" of the physical world state during the evaluation, including:
+- <strong>Identity Consistency</strong>: Cross-referencing IDs across simulators.
+- <strong>Connectivity Trace</strong>: API keys and endpoint sanitization.
+- <strong>Simulator Configuration</strong>: Snapshot of all world-shim parameters.</p>
+<h3 id="behavioral-fingerprinting-enterprise">Behavioral Fingerprinting (Enterprise)<a class="headerlink" href="#behavioral-fingerprinting-enterprise" title="Permanent link">&para;</a></h3>
+<p>The engine generates a non-repudiable fingerprint of the agent's trajectory. If the agent's logic deviates from the certified path, the harness triggers a <strong>Behavioral Drift</strong> alert.</p>
 <hr />
-<h3 id="4-verify-on-dashboard">4. Verify on Dashboard<a class="headerlink" href="#4-verify-on-dashboard" title="Permanent link">&para;</a></h3>
-<p>Restart the console or run <code>agentv console</code>. Your shim will be automatically discovered and reflected in the "World Shims" count.</p>
-<h2 id="using-the-shim-in-scenarios">Using the Shim in Scenarios<a class="headerlink" href="#using-the-shim-in-scenarios" title="Permanent link">&para;</a></h2>
-<p>You can now reference this shim in your scenario's <code>tasks</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&quot;tasks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="p">{</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nt">&quot;task_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;db_check&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Query the user table for high scorers&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="nt">&quot;tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;database.query&quot;</span><span class="p">],</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="nt">&quot;expected_outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Score returned for Alice&quot;</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span><span class="p">}</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="p">]</span>
+<h2 id="4-regulatory-compliance-gating-agentv-gate">4. Regulatory Compliance Gating (<code>agentv gate</code>)<a class="headerlink" href="#4-regulatory-compliance-gating-agentv-gate" title="Permanent link">&para;</a></h2>
+<p>The <code>gate</code> command is used in CI/CD pipelines to enforce compliance standards:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>agentv<span class="w"> </span>gate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--verify-ledger
 </code></pre></div>
+<p><strong>Verification Criteria:</strong>
+1. <strong>Integrity</strong>: Validates the ED25519 signature of the trace.
+2. <strong>Provenance</strong>: Matches the <code>git_hash</code> and <code>harness_version</code> against sanctioned baselines.
+3. <strong>Ledger Match</strong>: Ensures all forensic sidecars (screenshots, logs) match the signed manifest.</p>
+<hr />
+<h2 id="5-industrial-standards-registry-agentv-init">5. Industrial Standards Registry (<code>agentv init</code>)<a class="headerlink" href="#5-industrial-standards-registry-agentv-init" title="Permanent link">&para;</a></h2>
+<p>The harness includes a centralized registry for bootstrapping standardized evaluation environments.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>agentv<span class="w"> </span>init<span class="w"> </span>--standard<span class="w"> </span>ISO_20022
+</code></pre></div>
+<ul>
+<li><strong>Supported Sectors</strong>: Finance (ISO 20022), Healthcare (HL7 FHIR), Manufacturing (Digital Twins).</li>
+<li><strong>Auto-Alignment</strong>: Scaffolding via the registry ensures that <code>compliance_level</code> and <code>industry</code> metadata are correctly populated for regulatory audits.</li>
+</ul>
+<hr />
+<h2 id="6-forensic-trace-logging-runjsonl">6. Forensic Trace Logging (<code>run.jsonl</code>)<a class="headerlink" href="#6-forensic-trace-logging-runjsonl" title="Permanent link">&para;</a></h2>
+<p>The <code>run.jsonl</code> file is the machine-readable "Flight Recorder" for every evaluation. It contains:
+- <strong>Prompts &amp; Responses</strong>: Full text of all agent interactions.
+- <strong>Tool Calls</strong>: Every shim interaction, including latency and status.
+- <strong>State Diffs</strong>: (Forensic Mode) Delta snapshots of simulator states.</p>
 
 
 
@@ -4456,10 +4036,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

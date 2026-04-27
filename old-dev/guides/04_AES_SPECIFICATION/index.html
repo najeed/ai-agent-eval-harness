@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#guide-agent-eval-specification-aes-v14" class="md-skip">
+        <a href="#agent-evaluation-specification-aes-v14" class="md-skip">
           Skip to content
         </a>
       
@@ -2952,10 +2952,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-design-philosophy" class="md-nav__link">
+  <a href="#1-core-principles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Design Philosophy
+        1. Core Principles
       
     </span>
   </a>
@@ -2963,66 +2963,44 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-core-components-v14" class="md-nav__link">
+  <a href="#2-root-structure" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Core Components (v1.4)
+        2. Root Structure
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Core Components (v1.4)">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-metadata-block-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Metadata Block (metadata)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-workflow-dag-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Workflow DAG (workflow)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Workflow DAG (workflow)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#metadata-metadata" class="md-nav__link">
+  <a href="#nodes-tasks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Metadata (metadata)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dag-based-execution-workflow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        DAG-Based Execution (workflow)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#typed-outcomes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Typed Outcomes
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pluralistic-judging-ija" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pluralistic Judging (IJA)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#externalized-mock-datasets" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Externalized Mock Datasets
+        Nodes (Tasks)
       
     </span>
   </a>
@@ -3035,77 +3013,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-infrastructure-hooks" class="md-nav__link">
+  <a href="#5-evaluation-block-evaluation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Infrastructure Hooks
+        5. Evaluation Block (evaluation)
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-environment-world-shims-first-class-member" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Environment &amp; World Shims (First-Class Member)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-path-decoupling-portability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Path Decoupling &amp; Portability
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-replaying-execution-runjsonl" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Replaying Execution (run.jsonl)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-complete-example-loan-approval" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Complete Example (Loan Approval)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#aes_version-14-metadata-id-loan-approval-v1-name-high-density-loan-credit-audit-description-evaluate-an-agents-ability-to-process-a-loan-while-adhering-to-strict-internal-credit-policies-industry-finance-compliance_level-standard-capabilities-credit_score_analysis-policy_lookup-standards_registry-iso_20022_loan_v1-agent_topology-loan_agent-reads-usercredit_score-bankpolicies-writes-loanstatus-workflow-nodes-id-task-1-task_description-approve-the-loan-for-alice-at-the-standard-rate-required_tools-check_credit_score-approve_loan-success_criteria-metric-tool_call_correctness-threshold-10-metric-policy_compliance-threshold-10-id-task-2-task_description-explain-the-decision-and-provide-the-next-steps-for-disbursement-success_criteria-metric-path_parsimony-threshold-05-edges-from-task-1-to-task-2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        { &quot;aes_version&quot;: 1.4, &quot;metadata&quot;: { &quot;id&quot;: &quot;loan-approval-v1&quot;, &quot;name&quot;: &quot;High-Density Loan Credit Audit&quot;, &quot;description&quot;: &quot;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&quot;, &quot;industry&quot;: &quot;finance&quot;, &quot;compliance_level&quot;: &quot;Standard&quot;, &quot;capabilities&quot;: [&quot;credit_score_analysis&quot;, &quot;policy_lookup&quot;], &quot;standards_registry&quot;: [&quot;ISO_20022_LOAN_V1&quot;], &quot;agent_topology&quot;: { &quot;loan_agent&quot;: { &quot;reads&quot;: [&quot;user.credit_score&quot;, &quot;bank.policies&quot;], &quot;writes&quot;: [&quot;loan.status&quot;] } } }, &quot;workflow&quot;: { &quot;nodes&quot;: [ { &quot;id&quot;: &quot;task-1&quot;, &quot;task_description&quot;: &quot;Approve the loan for Alice at the standard rate.&quot;, &quot;required_tools&quot;: [&quot;check_credit_score&quot;, &quot;approve_loan&quot;], &quot;success_criteria&quot;: [ {&quot;metric&quot;: &quot;tool_call_correctness&quot;, &quot;threshold&quot;: 1.0}, {&quot;metric&quot;: &quot;policy_compliance&quot;, &quot;threshold&quot;: 1.0} ] }, { &quot;id&quot;: &quot;task-2&quot;, &quot;task_description&quot;: &quot;Explain the decision and provide the next steps for disbursement.&quot;, &quot;success_criteria&quot;: [ {&quot;metric&quot;: &quot;path_parsimony&quot;, &quot;threshold&quot;: 0.5} ] } ], &quot;edges&quot;: [ { &quot;from&quot;: &quot;task-1&quot;, &quot;to&quot;: &quot;task-2&quot; } ] } }
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="{ &#34;aes_version&#34;: 1.4, &#34;metadata&#34;: { &#34;id&#34;: &#34;loan-approval-v1&#34;, &#34;name&#34;: &#34;High-Density Loan Credit Audit&#34;, &#34;description&#34;: &#34;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&#34;, &#34;industry&#34;: &#34;finance&#34;, &#34;compliance_level&#34;: &#34;Standard&#34;, &#34;capabilities&#34;: [&#34;credit_score_analysis&#34;, &#34;policy_lookup&#34;], &#34;standards_registry&#34;: [&#34;ISO_20022_LOAN_V1&#34;], &#34;agent_topology&#34;: { &#34;loan_agent&#34;: { &#34;reads&#34;: [&#34;user.credit_score&#34;, &#34;bank.policies&#34;], &#34;writes&#34;: [&#34;loan.status&#34;] } } }, &#34;workflow&#34;: { &#34;nodes&#34;: [ { &#34;id&#34;: &#34;task-1&#34;, &#34;task_description&#34;: &#34;Approve the loan for Alice at the standard rate.&#34;, &#34;required_tools&#34;: [&#34;check_credit_score&#34;, &#34;approve_loan&#34;], &#34;success_criteria&#34;: [ {&#34;metric&#34;: &#34;tool_call_correctness&#34;, &#34;threshold&#34;: 1.0}, {&#34;metric&#34;: &#34;policy_compliance&#34;, &#34;threshold&#34;: 1.0} ] }, { &#34;id&#34;: &#34;task-2&#34;, &#34;task_description&#34;: &#34;Explain the decision and provide the next steps for disbursement.&#34;, &#34;success_criteria&#34;: [ {&#34;metric&#34;: &#34;path_parsimony&#34;, &#34;threshold&#34;: 0.5} ] } ], &#34;edges&#34;: [ { &#34;from&#34;: &#34;task-1&#34;, &#34;to&#34;: &#34;task-2&#34; } ] } }">
+    <nav class="md-nav" aria-label="5. Evaluation Block (evaluation)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#environmental-dna-forensic-verification" class="md-nav__link">
+  <a href="#consensus-strategy-consensus" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🛡️ Environmental DNA &amp; Forensic Verification
+        Consensus Strategy (consensus)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metrics-thresholds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metrics &amp; Thresholds
       
     </span>
   </a>
@@ -3118,33 +3052,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#11-versioning-provenance-v130" class="md-nav__link">
+  <a href="#6-world-shims-enabled_shims" class="md-nav__link">
     <span class="md-ellipsis">
       
-        11. Versioning &amp; Provenance (v1.3.0)
+        6. World Shims (enabled_shims)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="11. Versioning &amp; Provenance (v1.3.0)">
+    <nav class="md-nav" aria-label="6. World Shims (enabled_shims)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#aes_version-the-standard" class="md-nav__link">
+  <a href="#activation-hierarchy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        aes_version (The Standard)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#harness_version-the-engine" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        harness_version (The Engine)
+        Activation Hierarchy
       
     </span>
   </a>
@@ -3153,6 +3076,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-versioning-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Versioning &amp; Provenance
+      
+    </span>
+  </a>
   
 </li>
       
@@ -4055,10 +3989,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-design-philosophy" class="md-nav__link">
+  <a href="#1-core-principles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Design Philosophy
+        1. Core Principles
       
     </span>
   </a>
@@ -4066,66 +4000,44 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-core-components-v14" class="md-nav__link">
+  <a href="#2-root-structure" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Core Components (v1.4)
+        2. Root Structure
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="2. Core Components (v1.4)">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-metadata-block-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Metadata Block (metadata)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-workflow-dag-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Workflow DAG (workflow)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Workflow DAG (workflow)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#metadata-metadata" class="md-nav__link">
+  <a href="#nodes-tasks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Metadata (metadata)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dag-based-execution-workflow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        DAG-Based Execution (workflow)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#typed-outcomes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Typed Outcomes
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pluralistic-judging-ija" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pluralistic Judging (IJA)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#externalized-mock-datasets" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Externalized Mock Datasets
+        Nodes (Tasks)
       
     </span>
   </a>
@@ -4138,77 +4050,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-infrastructure-hooks" class="md-nav__link">
+  <a href="#5-evaluation-block-evaluation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Infrastructure Hooks
+        5. Evaluation Block (evaluation)
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-environment-world-shims-first-class-member" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Environment &amp; World Shims (First-Class Member)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-path-decoupling-portability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Path Decoupling &amp; Portability
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6-replaying-execution-runjsonl" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6. Replaying Execution (run.jsonl)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-complete-example-loan-approval" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Complete Example (Loan Approval)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#aes_version-14-metadata-id-loan-approval-v1-name-high-density-loan-credit-audit-description-evaluate-an-agents-ability-to-process-a-loan-while-adhering-to-strict-internal-credit-policies-industry-finance-compliance_level-standard-capabilities-credit_score_analysis-policy_lookup-standards_registry-iso_20022_loan_v1-agent_topology-loan_agent-reads-usercredit_score-bankpolicies-writes-loanstatus-workflow-nodes-id-task-1-task_description-approve-the-loan-for-alice-at-the-standard-rate-required_tools-check_credit_score-approve_loan-success_criteria-metric-tool_call_correctness-threshold-10-metric-policy_compliance-threshold-10-id-task-2-task_description-explain-the-decision-and-provide-the-next-steps-for-disbursement-success_criteria-metric-path_parsimony-threshold-05-edges-from-task-1-to-task-2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        { &quot;aes_version&quot;: 1.4, &quot;metadata&quot;: { &quot;id&quot;: &quot;loan-approval-v1&quot;, &quot;name&quot;: &quot;High-Density Loan Credit Audit&quot;, &quot;description&quot;: &quot;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&quot;, &quot;industry&quot;: &quot;finance&quot;, &quot;compliance_level&quot;: &quot;Standard&quot;, &quot;capabilities&quot;: [&quot;credit_score_analysis&quot;, &quot;policy_lookup&quot;], &quot;standards_registry&quot;: [&quot;ISO_20022_LOAN_V1&quot;], &quot;agent_topology&quot;: { &quot;loan_agent&quot;: { &quot;reads&quot;: [&quot;user.credit_score&quot;, &quot;bank.policies&quot;], &quot;writes&quot;: [&quot;loan.status&quot;] } } }, &quot;workflow&quot;: { &quot;nodes&quot;: [ { &quot;id&quot;: &quot;task-1&quot;, &quot;task_description&quot;: &quot;Approve the loan for Alice at the standard rate.&quot;, &quot;required_tools&quot;: [&quot;check_credit_score&quot;, &quot;approve_loan&quot;], &quot;success_criteria&quot;: [ {&quot;metric&quot;: &quot;tool_call_correctness&quot;, &quot;threshold&quot;: 1.0}, {&quot;metric&quot;: &quot;policy_compliance&quot;, &quot;threshold&quot;: 1.0} ] }, { &quot;id&quot;: &quot;task-2&quot;, &quot;task_description&quot;: &quot;Explain the decision and provide the next steps for disbursement.&quot;, &quot;success_criteria&quot;: [ {&quot;metric&quot;: &quot;path_parsimony&quot;, &quot;threshold&quot;: 0.5} ] } ], &quot;edges&quot;: [ { &quot;from&quot;: &quot;task-1&quot;, &quot;to&quot;: &quot;task-2&quot; } ] } }
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="{ &#34;aes_version&#34;: 1.4, &#34;metadata&#34;: { &#34;id&#34;: &#34;loan-approval-v1&#34;, &#34;name&#34;: &#34;High-Density Loan Credit Audit&#34;, &#34;description&#34;: &#34;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&#34;, &#34;industry&#34;: &#34;finance&#34;, &#34;compliance_level&#34;: &#34;Standard&#34;, &#34;capabilities&#34;: [&#34;credit_score_analysis&#34;, &#34;policy_lookup&#34;], &#34;standards_registry&#34;: [&#34;ISO_20022_LOAN_V1&#34;], &#34;agent_topology&#34;: { &#34;loan_agent&#34;: { &#34;reads&#34;: [&#34;user.credit_score&#34;, &#34;bank.policies&#34;], &#34;writes&#34;: [&#34;loan.status&#34;] } } }, &#34;workflow&#34;: { &#34;nodes&#34;: [ { &#34;id&#34;: &#34;task-1&#34;, &#34;task_description&#34;: &#34;Approve the loan for Alice at the standard rate.&#34;, &#34;required_tools&#34;: [&#34;check_credit_score&#34;, &#34;approve_loan&#34;], &#34;success_criteria&#34;: [ {&#34;metric&#34;: &#34;tool_call_correctness&#34;, &#34;threshold&#34;: 1.0}, {&#34;metric&#34;: &#34;policy_compliance&#34;, &#34;threshold&#34;: 1.0} ] }, { &#34;id&#34;: &#34;task-2&#34;, &#34;task_description&#34;: &#34;Explain the decision and provide the next steps for disbursement.&#34;, &#34;success_criteria&#34;: [ {&#34;metric&#34;: &#34;path_parsimony&#34;, &#34;threshold&#34;: 0.5} ] } ], &#34;edges&#34;: [ { &#34;from&#34;: &#34;task-1&#34;, &#34;to&#34;: &#34;task-2&#34; } ] } }">
+    <nav class="md-nav" aria-label="5. Evaluation Block (evaluation)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#environmental-dna-forensic-verification" class="md-nav__link">
+  <a href="#consensus-strategy-consensus" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🛡️ Environmental DNA &amp; Forensic Verification
+        Consensus Strategy (consensus)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metrics-thresholds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metrics &amp; Thresholds
       
     </span>
   </a>
@@ -4221,33 +4089,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#11-versioning-provenance-v130" class="md-nav__link">
+  <a href="#6-world-shims-enabled_shims" class="md-nav__link">
     <span class="md-ellipsis">
       
-        11. Versioning &amp; Provenance (v1.3.0)
+        6. World Shims (enabled_shims)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="11. Versioning &amp; Provenance (v1.3.0)">
+    <nav class="md-nav" aria-label="6. World Shims (enabled_shims)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#aes_version-the-standard" class="md-nav__link">
+  <a href="#activation-hierarchy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        aes_version (The Standard)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#harness_version-the-engine" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        harness_version (The Engine)
+        Activation Hierarchy
       
     </span>
   </a>
@@ -4256,6 +4113,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-versioning-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Versioning &amp; Provenance
+      
+    </span>
+  </a>
   
 </li>
       
@@ -4276,236 +4144,135 @@
 
 
 
-<h1 id="guide-agent-eval-specification-aes-v14">Guide: Agent Eval Specification (AES) v1.4<a class="headerlink" href="#guide-agent-eval-specification-aes-v14" title="Permanent link">&para;</a></h1>
-<p>AES is the foundational standard for shareable, deterministic agent benchmarks.</p>
-<h2 id="1-design-philosophy">1. Design Philosophy<a class="headerlink" href="#1-design-philosophy" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Human Readable</strong>: YAML-based for easy editing.</li>
-<li><strong>Framework Agnostic</strong>: Works with LangGraph, CrewAI, or custom agents.</li>
-<li><strong>CI Ready</strong>: Validatable via JSON Schema.</li>
-<li><strong>Deterministic DAGs</strong>: Support for non-linear workflow execution with dependency gating.</li>
-</ul>
-<h2 id="2-core-components-v14">2. Core Components (v1.4)<a class="headerlink" href="#2-core-components-v14" title="Permanent link">&para;</a></h2>
-<h3 id="metadata-metadata">Metadata (<code>metadata</code>)<a class="headerlink" href="#metadata-metadata" title="Permanent link">&para;</a></h3>
-<p>AES v1.4 introduces a stricter metadata schema to ensure cross-platform reproducibility and forensic traceability. It acts as the <strong>Authoritative Identity Vault</strong> for the scenario:
-- <strong><code>id</code></strong>: (Required) Global unique forensic identifier.
-- <strong><code>name</code></strong>: (Required) Human-readable title.
-- <strong><code>compliance_level</code></strong>: (Required) Regulatory tier (<code>Standard</code>, <code>Gold</code>, <code>Regulatory_Audit</code>).
-- <strong><code>industry</code></strong>: (Recommended) Sector mapping (e.g., <code>finance</code>, <code>healthcare</code>).
-- <strong><code>capabilities</code></strong>: (Recommended) A list of specific agentic skills required (e.g., <code>web_navigation</code>, <code>sql_generation</code>) used for capability-based routing.
-- <strong><code>standards_registry</code></strong>: (Optional) Industry-standard identifiers (e.g., <code>ISO_20022</code>) for regulatory mapping.
-- <strong><code>aes_version</code></strong>: Must be set to <code>1.4</code>.</p>
-<h3 id="dag-based-execution-workflow">DAG-Based Execution (workflow)<a class="headerlink" href="#dag-based-execution-workflow" title="Permanent link">&para;</a></h3>
-<p>Scenarios define a directed acyclic graph (DAG) of <code>nodes</code> and <code>edges</code>, enabling complex multi-stage evaluations with dependency tracking.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">workflow</span><span class="p">:</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">nodes</span><span class="p">:</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;task-1&quot;</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="nt">task_description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Initial</span><span class="nv"> </span><span class="s">credit</span><span class="nv"> </span><span class="s">check&quot;</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;task-2&quot;</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">      </span><span class="nt">task_description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Policy</span><span class="nv"> </span><span class="s">enforcement</span><span class="nv"> </span><span class="s">audit&quot;</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="nt">edges</span><span class="p">:</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">from</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;task-1&quot;</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">      </span><span class="nt">to</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;task-2&quot;</span>
-</code></pre></div>
-<h3 id="typed-outcomes">Typed Outcomes<a class="headerlink" href="#typed-outcomes" title="Permanent link">&para;</a></h3>
-<p>Mandates adherence to industrial gold standards using typed result schemas.</p>
-<h3 id="pluralistic-judging-ija">Pluralistic Judging (IJA)<a class="headerlink" href="#pluralistic-judging-ija" title="Permanent link">&para;</a></h3>
-<p>Implements Inter-Judge Agreement metrics. Critical evaluations require a "Judge Panel" consensus.</p>
-<h3 id="externalized-mock-datasets">Externalized Mock Datasets<a class="headerlink" href="#externalized-mock-datasets" title="Permanent link">&para;</a></h3>
-<p>High-fidelity sector labs (e.g., Bank, EHR/HL7) load mock data dynamically from the <code>industries/</code> directory.</p>
-<h2 id="3-infrastructure-hooks">3. Infrastructure Hooks<a class="headerlink" href="#3-infrastructure-hooks" title="Permanent link">&para;</a></h2>
-<ul>
-<li><code>pre_eval</code>: Command run before evaluation starts.</li>
-<li><code>post_eval</code>: Command run after completion.</li>
-</ul>
-<h2 id="4-environment-world-shims-first-class-member">4. Environment &amp; World Shims (First-Class Member)<a class="headerlink" href="#4-environment-world-shims-first-class-member" title="Permanent link">&para;</a></h2>
-<p>Scenarios can declare which World Shims (environment simulators) they require.</p>
-<ul>
-<li>If <code>enabled_shims</code> is <strong>omitted</strong>, all 20 built-in shims are available by default.</li>
-<li>Shim keys correspond to the registry keys defined in <code>eval_runner/simulators.py</code>.</li>
-</ul>
-<p><strong>Available built-in shim keys:</strong> <code>git</code>, <code>api</code>, <code>database</code>, <code>slack</code>, <code>crm</code>, <code>email</code>, <code>calendar</code>, <code>jira</code>, <code>cloud</code>, <code>terminal</code>, <code>stripe</code>, <code>erp</code>, <code>browser</code>, <code>kb</code>, <code>support</code>, <code>social</code>, <code>vector</code>, <code>cicd</code>, <code>iot</code>, <code>security</code></p>
-<p>📖 See the full shim reference with per-shim actions and failure modes: <a href="../help/07_WORLD_SHIMS_REFERENCE/"><code>docs/guides/help/07_WORLD_SHIMS_REFERENCE.md</code></a></p>
+<h1 id="agent-evaluation-specification-aes-v14">Agent Evaluation Specification (AES) v1.4<a class="headerlink" href="#agent-evaluation-specification-aes-v14" title="Permanent link">&para;</a></h1>
+<p>The <strong>Agent Evaluation Specification (AES)</strong> is the formal standard for defining executable AI benchmarks. It ensures that evaluations are deterministic, forensically traceable, and portable across different execution environments.</p>
 <hr />
-<h2 id="5-path-decoupling-portability">5. Path Decoupling &amp; Portability<a class="headerlink" href="#5-path-decoupling-portability" title="Permanent link">&para;</a></h2>
-<p>AES benchmarks are now fully portable. 
-- <strong>Relative Datasets</strong>: <code>dataset.path</code> can now be relative to the scenario file (e.g., <code>./records.csv</code>), allowing you to share scenario bundles easily.
-- <strong>Auto-Industry</strong>: If <code>industry</code> is omitted from metadata, the harness will attempt to infer it from the parent directory or tag it as <code>local</code>.</p>
+<h2 id="1-core-principles">1. Core Principles<a class="headerlink" href="#1-core-principles" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Schema First</strong>: Validatable via JSON Schema.</li>
+<li><strong>Deterministic DAGs</strong>: Support for multi-stage workflow execution with dependency gating.</li>
+<li><strong>Path Decoupling</strong>: Fully portable assets using relative path resolution.</li>
+</ul>
 <hr />
-<h2 id="6-replaying-execution-runjsonl">6. Replaying Execution (<code>run.jsonl</code>)<a class="headerlink" href="#6-replaying-execution-runjsonl" title="Permanent link">&para;</a></h2>
-<p>Every AES evaluation produces a <code>run.jsonl</code> flight recorder log. You can replay this log to debug specific "crashes" or "wrong turns":
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>agentv<span class="w"> </span>replay<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
-</code></pre></div></p>
-<hr />
-<h2 id="7-complete-example-loan-approval">7. Complete Example (Loan Approval)<a class="headerlink" href="#7-complete-example-loan-approval" title="Permanent link">&para;</a></h2>
-<p>Below is a production-grade AES v1.4 scenario demonstrating a multi-stage loan approval process with metadata nesting and capability-based routing.</p>
-<h2 id="aes_version-14-metadata-id-loan-approval-v1-name-high-density-loan-credit-audit-description-evaluate-an-agents-ability-to-process-a-loan-while-adhering-to-strict-internal-credit-policies-industry-finance-compliance_level-standard-capabilities-credit_score_analysis-policy_lookup-standards_registry-iso_20022_loan_v1-agent_topology-loan_agent-reads-usercredit_score-bankpolicies-writes-loanstatus-workflow-nodes-id-task-1-task_description-approve-the-loan-for-alice-at-the-standard-rate-required_tools-check_credit_score-approve_loan-success_criteria-metric-tool_call_correctness-threshold-10-metric-policy_compliance-threshold-10-id-task-2-task_description-explain-the-decision-and-provide-the-next-steps-for-disbursement-success_criteria-metric-path_parsimony-threshold-05-edges-from-task-1-to-task-2"><div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;aes_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.4</span><span class="p">,</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;loan-approval-v1&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;High-Density Loan Credit Audit&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Evaluate an agent&#39;s ability to process a loan while adhering to strict internal credit policies.&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">&quot;industry&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;finance&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="nt">&quot;compliance_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Standard&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="nt">&quot;capabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;credit_score_analysis&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;policy_lookup&quot;</span><span class="p">],</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="nt">&quot;standards_registry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ISO_20022_LOAN_V1&quot;</span><span class="p">],</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="nt">&quot;agent_topology&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">      </span><span class="nt">&quot;loan_agent&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">        </span><span class="nt">&quot;reads&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;user.credit_score&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bank.policies&quot;</span><span class="p">],</span>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">        </span><span class="nt">&quot;writes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;loan.status&quot;</span><span class="p">]</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">      </span><span class="p">}</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">  </span><span class="p">},</span>
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">  </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">      </span><span class="p">{</span>
-<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-1&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">        </span><span class="nt">&quot;task_description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Approve the loan for Alice at the standard rate.&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">        </span><span class="nt">&quot;required_tools&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;check_credit_score&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;approve_loan&quot;</span><span class="p">],</span>
-<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">        </span><span class="nt">&quot;success_criteria&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">          </span><span class="p">{</span><span class="nt">&quot;metric&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tool_call_correctness&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">},</span>
-<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">          </span><span class="p">{</span><span class="nt">&quot;metric&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;policy_compliance&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">}</span>
-<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">        </span><span class="p">]</span>
-<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">      </span><span class="p">},</span>
-<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">      </span><span class="p">{</span>
-<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-2&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">        </span><span class="nt">&quot;task_description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Explain the decision and provide the next steps for disbursement.&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">        </span><span class="nt">&quot;success_criteria&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">          </span><span class="p">{</span><span class="nt">&quot;metric&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;path_parsimony&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">}</span>
-<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">        </span><span class="p">]</span>
-<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="w">      </span><span class="p">}</span>
-<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="w">    </span><span class="p">],</span>
-<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="w">    </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;to&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;task-2&quot;</span><span class="w"> </span><span class="p">}</span>
-<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a><span class="w">    </span><span class="p">]</span>
-<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a><span class="w">  </span><span class="p">}</span>
-<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a><span class="p">}</span>
-</code></pre></div><a class="headerlink" href="#aes_version-14-metadata-id-loan-approval-v1-name-high-density-loan-credit-audit-description-evaluate-an-agents-ability-to-process-a-loan-while-adhering-to-strict-internal-credit-policies-industry-finance-compliance_level-standard-capabilities-credit_score_analysis-policy_lookup-standards_registry-iso_20022_loan_v1-agent_topology-loan_agent-reads-usercredit_score-bankpolicies-writes-loanstatus-workflow-nodes-id-task-1-task_description-approve-the-loan-for-alice-at-the-standard-rate-required_tools-check_credit_score-approve_loan-success_criteria-metric-tool_call_correctness-threshold-10-metric-policy_compliance-threshold-10-id-task-2-task_description-explain-the-decision-and-provide-the-next-steps-for-disbursement-success_criteria-metric-path_parsimony-threshold-05-edges-from-task-1-to-task-2" title="Permanent link">&para;</a></h2>
-<p>## 8. Behavioral Fingerprinting (V1)</p>
-<h3 id="environmental-dna-forensic-verification">🛡️ Environmental DNA &amp; Forensic Verification<a class="headerlink" href="#environmental-dna-forensic-verification" title="Permanent link">&para;</a></h3>
-<p>To ensure that an evaluation trace genuinely reflects the intended scenario logic, AES v1.4 enforces the <strong>Forensic Evidence Ledger</strong>. This provides a verifiable "baseline" for the physical world state (IDs, API keys, and simulator configurations) during the evaluation.</p>
+<h2 id="2-root-structure">2. Root Structure<a class="headerlink" href="#2-root-structure" title="Permanent link">&para;</a></h2>
+<p>A valid AES scenario must contain the following top-level keys:</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Key</th>
+<th style="text-align: left;">Type</th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>version</code></td>
-<td style="text-align: left;">The Fingerprint schema version (currently <code>1.0</code>).</td>
+<td style="text-align: left;"><strong><code>aes_version</code></strong></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Must be <code>1.4</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>engine</code></td>
-<td style="text-align: left;">The version of the <code>agentv</code> engine used.</td>
+<td style="text-align: left;"><strong><code>metadata</code></strong></td>
+<td style="text-align: left;"><code>object</code></td>
+<td style="text-align: left;">Authoritative identity and industry tags.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>timestamp</code></td>
-<td style="text-align: left;">UTC ISO-8601 creation time.</td>
+<td style="text-align: left;"><strong><code>workflow</code></strong></td>
+<td style="text-align: left;"><code>object</code></td>
+<td style="text-align: left;">The DAG of tasks and dependencies.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>topology_hash</code></td>
-<td style="text-align: left;">SHA-256 hash of the <code>scenario.workflow</code> structure.</td>
+<td style="text-align: left;"><strong><code>evaluation</code></strong></td>
+<td style="text-align: left;"><code>object</code></td>
+<td style="text-align: left;">Judging consensus and validation rules.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>tool_dna_hash</code></td>
-<td style="text-align: left;">Hash of the tool definitions and descriptions available to the agent.</td>
+<td style="text-align: left;"><strong><code>enabled_shims</code></strong></td>
+<td style="text-align: left;"><code>array</code></td>
+<td style="text-align: left;">Explicit whitelist of world simulators.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>fingerprint_v1</code></td>
-<td style="text-align: left;">A cryptographic digest ensuring the behavioral baseline was not tampered with.</td>
+<td style="text-align: left;"><strong><code>initial_state</code></strong></td>
+<td style="text-align: left;"><code>object</code></td>
+<td style="text-align: left;">(Optional) Global state injection for all shims.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>environmental_snapshot</code></strong></td>
+<td style="text-align: left;"><code>object</code></td>
+<td style="text-align: left;">(Optional) Forensic capture of pre-run environment DNA.</td>
 </tr>
 </tbody>
 </table>
-<p>These fingerprints are used by the <code>gate</code> command to verify that a <code>run.jsonl</code> trace was generated against a sanctioned version of the scenario and tools.</p>
 <hr />
-<p>## 9. Forensic Environmental DNA (v1.4.0) </p>
-<p>v1.4 elevates the environment from a background configuration to a <strong>First-Class Member</strong> of the evaluation trace.</p>
-<p>### The Cumulative Industrial Registry
- Infrastructure state is managed via a <strong>Decoupled Cumulative Registry</strong>. Unlike legacy models, the registry is no longer a single file but a layered configuration stack:
- 1. <strong>Immutable Core Root</strong>: Sanctioned defaults are internalized at <a href="/eval_runner/resources/shim_resources.json">eval_runner/resources/shim_resources.json</a>.
- 2. <strong>Distributed Extensions</strong>: Extensions safely add or refine logic via the <a href="/.aes/config/shims.d/">.aes/config/shims.d/</a> directory.</p>
-<p>### 9.1 Capability-Based Routing
- To ensure infrastructure abstraction, AES v1.4+ scenarios should list required capabilities instead of hardcoded endpoints. The Core resolves these to physical infrastructure via the <a href="/.aes/config/routing/manifest.json">Routing Manifest</a>.</p>
-<p>This allows a single AES benchmark to be portable across diverse physical environments (local dev, staging, production) by simply layering the appropriate registry overlay.</p>
-<p>### Provisioning Snapshots
- Every <code>run.jsonl</code> trace now includes:
- 1.  <strong><code>environmental_snapshot</code></strong>: A point-in-time capture of the final merged registry state.
- 2.  <strong><code>provisioning_hash</code></strong>: A SHA-256 cryptographic link ensuring that the environment used for evaluation has not drifted from the sanctioned baseline.</p>
-<p>These features ensure that results are not just "reproducible" but "forensically verifiable" in regulated sectors like Finance and Healthcare.</p>
-<blockquote>
-<p>[!IMPORTANT]
-<strong>Trust Protocol Alignment</strong>: While the Open Core provides the <em>verification</em> logic for these fingerprints, the <em>generation</em> of advanced high-fidelity Behavioral DNA remains a feature of the Enterprise Edition to ensure proprietary industrial logic is protected.</p>
-</blockquote>
-<hr />
-<p>## 10. Industrial Standards Registry</p>
-<p>To support high-stakes AI evaluations, the harness includes a centralized <strong>Standards Registry</strong>. This system allows practitioners to bootstrap evaluation environments that are pre-aligned with recognized global standards.</p>
-<p>### Scaffold Environments
- <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>agentv<span class="w"> </span>init<span class="w"> </span>--standard<span class="w"> </span>ISO_20022
-</code></pre></div></p>
+<h2 id="3-metadata-block-metadata">3. Metadata Block (<code>metadata</code>)<a class="headerlink" href="#3-metadata-block-metadata" title="Permanent link">&para;</a></h2>
+<p>The metadata block acts as the <strong>Authoritative Identity Vault</strong> for the scenario.</p>
 <ul>
-<li><strong>Standards Coverage</strong>: Finance (ISO 20022), Healthcare (HL7 FHIR), Manufacturing (Digital Twins), Logistics (JSON-LD Traceability).</li>
-<li><strong>Compliance Mapping</strong>: Scenarios scaffolded via the registry are automatically populated with the necessary <code>compliance_level</code> and metadata required for regulatory auditability.</li>
-<li><strong>Infrastructure Alignment</strong>: Registry-driven scaffolding ensures all required <strong>World Shims</strong> (databases, APIs, security vaults) are correctly mounted.</li>
+<li><strong><code>id</code></strong>: (Required) Global unique forensic identifier (e.g., <code>fin-loan-001</code>).</li>
+<li><strong><code>name</code></strong>: (Required) Human-readable title.</li>
+<li><strong><code>compliance_level</code></strong>: (Required) Regulatory tier (<code>Standard</code>, <code>Gold</code>, <code>Regulatory_Audit</code>).</li>
+<li><strong><code>industry</code></strong>: (Recommended) Sector mapping (e.g., <code>finance</code>, <code>healthcare</code>).</li>
+<li><strong><code>capabilities</code></strong>: (Recommended) A list of specific agentic skills required (e.g., <code>sql_generation</code>). These are used for <strong>Agent Routing</strong> but do not drive environment provisioning.</li>
 </ul>
 <hr />
-<h2 id="11-versioning-provenance-v130">11. Versioning &amp; Provenance (v1.3.0)<a class="headerlink" href="#11-versioning-provenance-v130" title="Permanent link">&para;</a></h2>
-<p>To support high-stakes industrial audits, AgentV strictly decouples the <strong>Standard Specification</strong> from the <strong>Execution Engine</strong>:</p>
-<h3 id="aes_version-the-standard"><code>aes_version</code> (The Standard)<a class="headerlink" href="#aes_version-the-standard" title="Permanent link">&para;</a></h3>
-<p>Refers to the <strong>Agent Eval Standard</strong> itself (e.g., <code>1.4</code>). It defines the schema and vocabulary of the <a href="/eval_runner/loader.py">scenario.json</a>.
-- <strong>v1.2</strong>: Legacy-Stable. Supports basic tasks and simulators.
-- <strong>v1.3</strong>: Maintenance. Supports <strong>Forensic DNA</strong> and <strong>PBAC</strong>.
-- <strong>v1.4</strong>: Current-Stable. Supports <strong>Metadata Block Nesting</strong>, <strong>Capabilities</strong>, and <strong>Industrial Integrity</strong>.</p>
-<h3 id="harness_version-the-engine"><code>harness_version</code> (The Engine)<a class="headerlink" href="#harness_version-the-engine" title="Permanent link">&para;</a></h3>
-<p>Refers to the <strong>AgentV Engine</strong> build (e.g., <code>1.5.0</code>). This refers to the specific implementation of the harness.
-- <strong>v1.3.x</strong>: Legacy Engine.
-- <strong>v1.5.0</strong>: Current-Industrial. Hardens the v1.4 standard with <strong>Event Isolation</strong>, <strong>Session-Scoped Simulations</strong>, and <strong>Deep-Vaulting</strong> logic.</p>
+<h2 id="4-workflow-dag-workflow">4. Workflow DAG (<code>workflow</code>)<a class="headerlink" href="#4-workflow-dag-workflow" title="Permanent link">&para;</a></h2>
+<p>Scenarios define a directed acyclic graph (DAG) of <code>nodes</code> and <code>edges</code>.</p>
+<h3 id="nodes-tasks">Nodes (Tasks)<a class="headerlink" href="#nodes-tasks" title="Permanent link">&para;</a></h3>
+<p>Each node represents an atomic task for the agent.
+- <strong><code>id</code></strong>: Unique identifier for the task within the scenario.
+- <strong><code>task_description</code></strong>: The prompt or instruction sent to the agent.
+- <strong><code>required_tools</code></strong>: (Optional) List of specific shim tools the agent is expected to use.
+- <strong><code>expected_outcome</code></strong>: (Optional) A list of contract targets used to verify success.
+  - <strong><code>target</code></strong>: (Required) A shim-path or tool assertion (e.g., <code>shim:database.users</code>).
+  - <strong><code>expected</code></strong>: (Required) The expected value or success criteria.</p>
+<hr />
+<h2 id="5-evaluation-block-evaluation">5. Evaluation Block (<code>evaluation</code>)<a class="headerlink" href="#5-evaluation-block-evaluation" title="Permanent link">&para;</a></h2>
+<p>The evaluation block defines how the agent's performance is judged and validated across attempts.</p>
+<h3 id="consensus-strategy-consensus">Consensus Strategy (<code>consensus</code>)<a class="headerlink" href="#consensus-strategy-consensus" title="Permanent link">&para;</a></h3>
+<p>Used for batch runs or pluralistic judging.
+- <strong><code>strategy</code></strong>: The mathematical rule for success (<code>Majority_Vote</code>, <code>Absolute_Unanimity</code>, <code>Weighted_Average</code>).
+- <strong><code>min_judges</code></strong>: The minimum number of judges required for a valid consensus.
+- <strong><code>judge_panel</code></strong>: (Optional) List of specific judge model IDs to utilize.</p>
+<h3 id="metrics-thresholds">Metrics &amp; Thresholds<a class="headerlink" href="#metrics-thresholds" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong><code>ija_threshold</code></strong>: (0.0 to 1.0) The Inter-Judge Agreement threshold required to certify a result.</li>
+</ul>
+<hr />
+<h2 id="6-world-shims-enabled_shims">6. World Shims (<code>enabled_shims</code>)<a class="headerlink" href="#6-world-shims-enabled_shims" title="Permanent link">&para;</a></h2>
+<p>AES scenarios declare their required environment simulators. This allows the engine to provision isolated "jails" for the evaluation.</p>
+<h3 id="activation-hierarchy">Activation Hierarchy<a class="headerlink" href="#activation-hierarchy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Strict Discovery Mode</strong>: If <code>enabled_shims</code> is <strong>omitted</strong>, the engine auto-activates only the shims relevant to the <code>workflow</code> contract.</li>
+<li><strong>Explicit Whitelist</strong>: If <code>enabled_shims</code> is <strong>provided</strong>, it acts as a hard forensic boundary. Only shims in this list will be activated.</li>
+</ul>
+<hr />
+<h2 id="7-versioning-provenance">7. Versioning &amp; Provenance<a class="headerlink" href="#7-versioning-provenance" title="Permanent link">&para;</a></h2>
+<p>To support high-stakes industrial audits, AgentV decouples the <strong>Standard Specification</strong> from the <strong>Execution Engine</strong>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Example</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong><code>aes_version</code></strong></td>
+<td style="text-align: left;"><code>1.4</code></td>
+<td style="text-align: left;">The version of this JSON schema.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong><code>harness_version</code></strong></td>
+<td style="text-align: left;"><code>1.6.0</code></td>
+<td style="text-align: left;">The version of the engine executing the spec.</td>
+</tr>
+</tbody>
+</table>
 <blockquote>
 <p>[!IMPORTANT]
-<strong>Industrial Rule</strong>: A single <code>aes_version</code> standard can be satisfied by multiple <code>harness_version</code> engine builds (bugfixes, optimizations), but a trace is only <strong>Forensically Valid</strong> if the <code>harness_version</code> supports the requested <code>aes_version</code>.</p>
+<strong>Industrial Rule</strong>: A single <code>aes_version</code> can be satisfied by multiple <code>harness_version</code> builds, but a trace is only <strong>Forensically Valid</strong> if the engine explicitly supports the requested specification version.</p>
 </blockquote>
 <hr />
-<p>## 12. Forensic Trace Logging (<code>run.jsonl</code>)</p>
-<p>Every evaluation generates a machine-readable <code>run.jsonl</code> file. This log is the "Flight Recorder" for the agent's behavior.</p>
-<p>### Event-Stream Architecture
- The log is a stream of JSON objects, each representing an atomic event in the evaluation lifecycle.</p>
-<p>#### 🚀 <code>run_start</code> (The Forensic DNA)
- The first event in every trace. In <strong>AgentV v1.5.0</strong>, this event is hardened for auditability under the AES v1.4 standard:
- <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;run_start&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-04-06T20:00:00Z&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">&quot;payload&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fintech_11198&quot;</span><span class="p">,</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="nt">&quot;aes_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.4</span><span class="p">,</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="nt">&quot;forensic_markers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">      </span><span class="nt">&quot;isolate_events&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">      </span><span class="nt">&quot;span_context&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;trace-uuid-...&quot;</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="p">},</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="nt">&quot;environmental_snapshot&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">      </span><span class="nt">&quot;shims&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;database&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;api&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
-<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">      </span><span class="nt">&quot;provisioning_hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sha256:abcd...&quot;</span>
-<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">  </span><span class="p">}</span>
-<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="p">}</span>
-</code></pre></div></p>
-<p>#### 🛠️ <code>tool_call</code> &amp; <code>tool_result</code>
- Captured for every interaction with a <strong>World Shim</strong>.
- - <strong><code>tool</code></strong>: The registry key of the simulator used.
- - <strong><code>action</code></strong>: The specific action invoked.
- - <strong><code>observation</code></strong>: The raw return value from the shim.</p>
-<p>#### 🏁 <code>run_end</code>
- Contains the final evaluation results, including the NIST-aligned <strong>VerificationResult</strong>.</p>
-<hr />
-<p>## 13. Regulatory Compliance Gating (<code>gate</code>)
- The <code>gate</code> command validates these traces against the <strong>Trust Protocol</strong>. It ensures that:
- 1. The trace has a valid <strong>ED25519 signature</strong>.
- 2. The <code>provisioning_hash</code> matches the currently sanctioned environment configuration.
- 3. The <code>harness_version</code> is compatible with the <code>aes_version</code> of the scenario.</p>
-<blockquote>
-<p>[!SUCCESS]
-<strong>Certification Complete</strong>: A trace that passes the <code>gate</code> command is considered a <strong>Certified Industrial Artifact</strong>, ready for regulatory submission.</p>
-</blockquote>
+<p>📖 For execution details, CLI commands, and forensic auditing, see the <a href="../05_HARNESS_USER_GUIDE/">Harness User Guide</a>.</p>
 
 
 

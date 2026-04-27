@@ -4421,7 +4421,13 @@
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="nt">&quot;tasks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="err">...</span><span class="p">]</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">}</span>
 </code></pre></div>
-<p>If <code>enabled_shims</code> is omitted, <strong>all 20 shims</strong> are mounted (default behavior).</p>
+<blockquote>
+<p>[!IMPORTANT]
+<strong>Industrial Activation Policy</strong>:
+1. <strong>Global Gate</strong>: A shim must first be allowed by the system-wide <code>GLOBAL_ENABLED_SHIMS</code> setting. If a shim is globally blocked, it cannot be used, even if explicitly listed in the scenario.
+2. <strong>Scenario Specificity</strong>: Active shims are limited to those explicitly enabled in the scenario OR those identified as forensically relevant to the scenario contract. This ensures high-signal forensic snapshots.</p>
+</blockquote>
+<p>If <code>enabled_shims</code> is omitted, all shims sanctioned by the <code>GLOBAL_ENABLED_SHIMS</code> filter are available.</p>
 <hr />
 <h2 id="the-20-built-in-world-shims">The 20 Built-In World Shims<a class="headerlink" href="#the-20-built-in-world-shims" title="Permanent link">&para;</a></h2>
 <table>
