@@ -4036,7 +4036,7 @@
 <p>The harness orchestration flows through 8 logical intents, moving from design-time authoring to runtime execution and forensic verification.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>┌─────────────────────────────────────────────────────────────────────────────────────────────┐
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>│                                   CLI (eval_runner/cli.py)                                  │
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│  1. Authoring  2. Discovery  3. Execution  4. Debugging  5. Reporting  6. Trust  7. CI/CD     │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│  1. Authoring  2. Discovery  3. Execution  4. Debugging  5. Reporting  6. Trust  7. CI/CD   │
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>└──────────────┬──────────────────────────────┬──────────────────────────────┬────────────────┘
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>               │                              │                              │
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>               ▼                              ▼                              ▼
@@ -4051,17 +4051,17 @@
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>┌─────────────────────────────────────────────────────────────────────────────────────────────┐
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│                               Engine (eval_runner/session.py)                               │
 <a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│                                                                                             │
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│  ┌────────────────────────────────────────────────────────────────────────────────────────┐  │
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│  │                            DAG-Based Execution Loop (nodes/edges)                      │  │
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>│  │            [node_start] -&gt; [turn_loop] -&gt; [calculate_metrics] -&gt; [node_end]            │  │
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│  └────────────────────────────────────────────┬───────────────────────────────────────────┘  │
-<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│                                               │                                              │
-<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│  ┌──────────────────────────────┐             ▼              ┌────────────────────────────┐  
-<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>│  │   Metrics (/metrics)         │◀─────────────────────────▶│   Tool Sandbox (sandbox.py)│  
-<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>│  │ • Modular Category Evaluators│                            │ • Governance Policies      │  
-<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>│  │ • High-Fidelity Judging      │                            │ • SharedStateRegistry      │  
-<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│  └──────────────────────────────┘                            └────────────────────────────┘  │
-<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>└───────────────────────────────────────────────┬──────────────────────────────────────────────┘
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│  ┌────────────────────────────────────────────────────────────────────────────────────────┐ │
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│  │                            DAG-Based Execution Loop (nodes/edges)                      │ │
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>│  │            [node_start] -&gt; [turn_loop] -&gt; [calculate_metrics] -&gt; [node_end]            │ │
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│  └────────────────────────────────────────────┬───────────────────────────────────────────┘ │
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│                                               │                                             │
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│  ┌──────────────────────────────┐             ▼              ┌────────────────────────────┐ │ 
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>│  │   Metrics (/metrics)         │◀─────────────────────────▶│   Tool Sandbox (sandbox.py)│ │ 
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>│  │ • Modular Category Evaluators│                            │ • Governance Policies      │ │ 
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>│  │ • High-Fidelity Judging      │                            │ • SharedStateRegistry      │ │ 
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│  └──────────────────────────────┘                            └────────────────────────────┘ │
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>└───────────────────────────────────────────────┬─────────────────────────────────────────────┘
 <a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>                                                │ 
 <a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>                                                ▼ 
 <a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>┌─────────────────────────────────────────────────────────────────────────────────────────────┐
