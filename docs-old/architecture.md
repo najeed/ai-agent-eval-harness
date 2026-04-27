@@ -11,7 +11,7 @@ The harness orchestration flows through 8 logical intents, moving from design-ti
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                   CLI (eval_runner/cli.py)                                  │
-│  1. Authoring  2. Discovery  3. Execution  4. Debugging  5. Reporting  6. Trust  7. CI/CD     │
+│  1. Authoring  2. Discovery  3. Execution  4. Debugging  5. Reporting  6. Trust  7. CI/CD   │
 └──────────────┬──────────────────────────────┬──────────────────────────────┬────────────────┘
                │                              │                              │
                ▼                              ▼                              ▼
@@ -26,17 +26,17 @@ The harness orchestration flows through 8 logical intents, moving from design-ti
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
 │                               Engine (eval_runner/session.py)                               │
 │                                                                                             │
-│  ┌────────────────────────────────────────────────────────────────────────────────────────┐  │
-│  │                            DAG-Based Execution Loop (nodes/edges)                      │  │
-│  │            [node_start] -> [turn_loop] -> [calculate_metrics] -> [node_end]            │  │
-│  └────────────────────────────────────────────┬───────────────────────────────────────────┘  │
-│                                               │                                              │
-│  ┌──────────────────────────────┐             ▼              ┌────────────────────────────┐  
-│  │   Metrics (/metrics)         │◀─────────────────────────▶│   Tool Sandbox (sandbox.py)│  
-│  │ • Modular Category Evaluators│                            │ • Governance Policies      │  
-│  │ • High-Fidelity Judging      │                            │ • SharedStateRegistry      │  
-│  └──────────────────────────────┘                            └────────────────────────────┘  │
-└───────────────────────────────────────────────┬──────────────────────────────────────────────┘
+│  ┌────────────────────────────────────────────────────────────────────────────────────────┐ │
+│  │                            DAG-Based Execution Loop (nodes/edges)                      │ │
+│  │            [node_start] -> [turn_loop] -> [calculate_metrics] -> [node_end]            │ │
+│  └────────────────────────────────────────────┬───────────────────────────────────────────┘ │
+│                                               │                                             │
+│  ┌──────────────────────────────┐             ▼              ┌────────────────────────────┐ │ 
+│  │   Metrics (/metrics)         │◀─────────────────────────▶│   Tool Sandbox (sandbox.py)│ │ 
+│  │ • Modular Category Evaluators│                            │ • Governance Policies      │ │ 
+│  │ • High-Fidelity Judging      │                            │ • SharedStateRegistry      │ │ 
+│  └──────────────────────────────┘                            └────────────────────────────┘ │
+└───────────────────────────────────────────────┬─────────────────────────────────────────────┘
                                                 │ 
                                                 ▼ 
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐
