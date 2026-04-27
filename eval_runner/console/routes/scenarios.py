@@ -132,7 +132,7 @@ def evaluate_scenario():
     import time
 
     identifier = Path(path).stem
-    run_id = f"run-{identifier}-{int(time.time())}"
+    run_id = f"run-{identifier}-{time.time_ns()}"
 
     def run_wrapper(scenario_obj, turns, r_id):
         try:

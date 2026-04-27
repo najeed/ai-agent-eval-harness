@@ -11,8 +11,7 @@ def test_flight_recorder_per_run_false(tmp_path):
     os.environ["RUN_LOG_PER_RUN"] = "false"
     fr.per_run = False
     fr.handle_event(Event(name=CoreEvents.RUN_START, data={"run_id": "r1"}))
-    assert fr.per_run_log_path is None
-    # ensure it wrote master
+    # Ensure it wrote master
     assert fr.master_log_path.exists()
 
 

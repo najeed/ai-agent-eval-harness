@@ -57,14 +57,14 @@ class DefaultRunner(BaseRunner):
         # [Forensic Hardening] Centralized Identifier Resolution
         # Identity is resolved and normalized in the core Loader (AES v1.4.0)
         # Authoritative field: scenario["id"]
+        effective_run_id = run_id or f"run-{scenario['id']}-{int(asyncio.get_event_loop().time())}"
         ctx = EvaluationContext(
             identifier=scenario["id"],
             scenario_data=copy.deepcopy(scenario),
+            run_id=effective_run_id,
             metadata=dict(copy.deepcopy(metadata)) if metadata else {},
             span_context=scenario.get("span_context"),
         )
-
-        effective_run_id = run_id or f"run-{ctx.identifier}-{int(asyncio.get_event_loop().time())}"
         events.emit(
             events.CoreEvents.RUN_START,
             {"run_id": effective_run_id, "scenario": ctx.identifier, "k_attempts": attempts},

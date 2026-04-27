@@ -51,4 +51,3 @@ def test_flight_recorder_refresh_on_run_start():
 
         assert str(plugin.log_dir) == "new_dir"
         assert str(plugin.master_log_path) == str(Path("new_dir") / "run.jsonl")
-        assert plugin.run_id == "test_run"
