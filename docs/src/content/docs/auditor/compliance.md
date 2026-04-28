@@ -5,7 +5,7 @@ description: Forensic governance, NIST AI-100-1 alignment, and license obligatio
 
 AgentV is designed for high-stakes industrial environments where traceability and regulatory compliance are non-negotiable.
 
-## 1. Forensic Governance (v1.4.1)
+## 1. Forensic Governance (v1.6.0)
 
 AgentV mandates the **VC v3 forensic standard** for all production-grade evaluations.
 

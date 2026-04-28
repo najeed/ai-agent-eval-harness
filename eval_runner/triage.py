@@ -1,7 +1,7 @@
 """
 triage.py
 
-Industrial Triage Engine (AES v1.5).
+Industrial Triage Engine (AES v1.4).
 Categorizes and explains evaluation failures using a weighted evidence model.
 """
 
@@ -66,7 +66,7 @@ class TriageEngine:
     @staticmethod
     def categorize_failure(task_result: dict[str, Any]) -> str:
         """
-        Refined AgentV v1.5.0 baseline: Delegates classification to the FailureTaxonomy.
+        Refined AgentV v1.6.0 baseline: Delegates classification to the FailureTaxonomy.
         Returns standardized industrial codes (Standardized PBAC).
         """
         # 1. Prefer existing report if available

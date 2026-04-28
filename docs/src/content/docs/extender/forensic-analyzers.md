@@ -19,7 +19,7 @@ class DatabaseIntegrityAnalyzer(BaseForensicAnalyzer):
 ```
 
 ### Participation in the Weighted Model
-In AES v1.5, the triage engine uses a **Weighted Evidence Model**. When your analyzer returns a `FailureCategory`, it is automatically registered as a forensic trigger in the [Causal Chain](/spec/forensic-ledger-schema/). Enterprise-tier analyzers can return enriched metadata objects (containing confidence and severity) for superior ranking.
+In AES v1.4, the triage engine uses a **Weighted Evidence Model**. When your analyzer returns a `FailureCategory`, it is automatically registered as a forensic trigger in the [Causal Chain](/spec/forensic-ledger-schema/). Enterprise-tier analyzers can return enriched metadata objects (containing confidence and severity) for superior ranking.
 
 ### `analyze(history, task_result=None)`
 - **history**: A list of turn dictionaries. Each turn contains an `identity` (e.g., `agent_id`, `system_id`) and a `role` (`user`, `agent`).

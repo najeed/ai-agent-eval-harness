@@ -226,7 +226,7 @@ def load_scenario(
             print(f"      [Loader] Warning: Unknown benchmark scheme '{scheme}'")
             return []
 
-    # 2. Handle Scenario IDs (Industrial Alias resolution AgentV v1.5.0)
+    # 2. Handle Scenario IDs (Industrial Alias resolution AgentV v1.6.0)
     from .catalog import ScenarioCatalog
 
     catalog = ScenarioCatalog.get_instance()
@@ -319,7 +319,7 @@ def load_dataset(file_path: str | Path, format_type: str | None = None) -> list[
         scenarios = load_scenario(file_path)
         return scenarios if isinstance(scenarios, list) else [scenarios]
 
-    # 1. Alias Resolution (AgentV v1.5.0)
+    # 1. Alias Resolution (AgentV v1.6.0)
     # Check if 'file_path' is an ID before path-ifying it
     if isinstance(file_path, str):
         from .catalog import ScenarioCatalog

@@ -155,7 +155,7 @@ class BaseForensicAnalyzer(ABC):
 
 class FailureTaxonomy:
     """
-    Industrial Classification Engine (AES v1.5).
+    Industrial Classification Engine (AES v1.4).
     Refactored to support a registry-based analyzer architecture for Enterprise extensibility.
     """
 

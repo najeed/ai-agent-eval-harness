@@ -9,10 +9,10 @@ AgentV provides high-fidelity, industry-specific data extraction and behavioral 
 
 | Sector | Status | Primary Data Sources |
 | :--- | :--- | :--- |
-| [**Finance**](./finance/) | **HARDENED** | SEC EDGAR, FRED, World Bank |
-| [**Healthcare**](./healthcare/) | **HARDENED** | CMS, WHO, Clinical DB |
-| [**Manufacturing**](./manufacturing/) | **HARDENED** | IndStat, US Census, MacroSim |
-| [**Telecom**](./telecom/) | **HARDENED** | FCC, Ookla, ITU |
+| [**Finance**](./finance) | **HARDENED** | SEC EDGAR, FRED, World Bank |
+| [**Healthcare**](./healthcare) | **HARDENED** | CMS, WHO, Clinical DB |
+| [**Manufacturing**](./manufacturing) | **HARDENED** | IndStat, US Census, MacroSim |
+| [**Telecom**](./telecom) | **HARDENED** | FCC, Ookla, ITU |
 | **Public Sector** | **HARDENED** | US Census, UN Data, HUD |
 | **Energy** | **STABLE** | EIA, IEA, SmartGrid Sim |
 | **Transportation** | **STABLE** | BTS, IATA, Logistics Sim |

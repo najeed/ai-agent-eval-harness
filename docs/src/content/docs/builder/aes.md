@@ -67,7 +67,7 @@ AES supports relative path resolution for datasets (e.g., `./data.csv`), ensurin
 ### Environmental DNA Snapshot
 Every execution captures an immutable **Provisioning Hash** of the final merged registry state. This ensures that the agent was tested against the sanctioned environment configuration.
 
-### Behavioral Fingerprinting
+### Behavioral DNA
 A cryptographic signature (Ed25519) that binds the execution trace (`run.jsonl`) and all sidecar artifacts (reports, plots) to the scenario's DAG structure.
 
 :::important

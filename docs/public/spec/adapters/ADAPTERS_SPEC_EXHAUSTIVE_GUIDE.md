@@ -1,6 +1,6 @@
 # Adapters Specification Masterclass: Governance & Tripartite Activation
 
-This guide provides an exhaustive inventory of the **AgentV Adapters Specification** (v1.5.0). It details how administrators can granularly control the communication landscape of the evaluation engine.
+This guide provides an exhaustive inventory of the **AgentV Adapters Specification** (v1.6.0). It details how administrators can granularly control the communication landscape of the evaluation engine.
 
 ---
 
@@ -70,7 +70,7 @@ $env:AES_ADAPTER_POLICY_OVERRIDE="frameworks:autogen,protocols:local"
 
 ## Lesson 3: Zero-Trust Baseline & Security-by-Default
 
-In AES v1.5.0, the engine adopts a **Zero-Trust Baseline**. If no administrative policy (`policy.json`) is detected, the engine defaults to a hardened posture:
+In AES v1.4, the engine adopts a **Zero-Trust Baseline**. If no administrative policy (`policy.json`) is detected, the engine defaults to a hardened posture:
 - **Whitelisted Protocols**: `http`, `openapi` (Standard communication only).
 - **Blacklisted Infrastructure**: `local` (Subprocess) is disabled.
 - **Blacklisted Ecosystem**: All Providers and Frameworks are disabled.

@@ -123,7 +123,7 @@ async def sse_http_adapter(payload: dict, endpoint: str, **kwargs):
                         break
                     try:
                         chunk = json.loads(data)
-                        # Merge logic (AES v1.5.0 Standard)
+                        # Merge logic (AES v1.4 Standard)
                         if isinstance(chunk, dict):
                             final_json.update(chunk)
                             if "content" in chunk:

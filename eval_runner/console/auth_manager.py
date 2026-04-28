@@ -30,7 +30,7 @@ class Permission:
 
     @classmethod
     def ADMIN(cls) -> list[str]:
-        """Authoritative set of all granular permission nodes (AgentV v1.5.0 Standard)."""
+        """Authoritative set of all granular permission nodes (AgentV v1.6.0 Standard)."""
         return [
             cls.SCENARIOS_READ,
             cls.RUNS_READ,
@@ -120,12 +120,12 @@ def require_permission(permission_node: str):
             provider = get_auth_provider()
             user = session.get("user")
 
-            # --- INDUSTRIAL DEMO HARNESS (Local Trust v1.4.1) ---
+            # --- INDUSTRIAL DEMO HARNESS (Local Trust v1.6.0) ---
             from flask import current_app
 
             from .. import config
 
-            # [HARDENING] Skip Local Trust if we are running in a TEST environment (AgentV v1.5.0)
+            # [HARDENING] Skip Local Trust if we are running in a TEST environment (AgentV v1.6.0)
             is_testing = current_app.config.get("TESTING", False)
 
             if (

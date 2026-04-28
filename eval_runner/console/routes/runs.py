@@ -118,7 +118,7 @@ def get_run_status(run_id):
             size = os.path.getsize(vault_trace)
             mtime = os.path.getmtime(vault_trace)
 
-            # Dynamic Tail Resolution (AgentV v1.5.0 Industrial)
+            # Dynamic Tail Resolution (AgentV v1.6.0 Industrial)
             # For small logs (< 128KB), read entirely. For large logs, seek to last 128KB.
             window = 128 * 1024  # 128KB
             with open(vault_trace, "rb") as f:

@@ -43,7 +43,7 @@ class DebuggerStateStore:
 
     @classmethod
     def handle_event(cls, event):
-        """Standard Forensic Event Handler (AgentV v1.5.0)."""
+        """Standard Forensic Event Handler (AgentV v1.6.0)."""
         # Unwrap object if necessary (for MockEvent compatibility in tests)
         if hasattr(event, "items"):
             name = event.get("event")
@@ -285,7 +285,7 @@ def cleanup_runs():
 @system_bp.route("/v1/doctor", methods=["GET"])
 @require_permission(Permission.SCENARIOS_READ)
 def get_doctor_audit():
-    """Roadmap: Environmental health check (AgentV v1.5.0)."""
+    """Roadmap: Environmental health check (AgentV v1.6.0)."""
     try:
         # Perform basic health checks (Sync wrapper for potential async logic)
         audit = {

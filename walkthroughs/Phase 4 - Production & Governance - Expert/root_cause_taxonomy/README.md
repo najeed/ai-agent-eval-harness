@@ -25,7 +25,7 @@ python "walkthroughs/Phase 4 - Production & Governance - Expert/root_cause_taxon
 Once the analysis is complete, check the `failure_heatmap.json`. You'll see which technical capabilities (e.g., "Reasoning") are currently the biggest bottleneck for your fleet.
 
 ## 📊 Key Concepts
-- **Taxonomy Standards**: We use the **AES-Forensic-v1.2** categories to ensure that every failure is recorded using the same nomenclature.
+- **Taxonomy Standards**: We use the **AES-Forensic-v1.6** categories to ensure that every failure is recorded using the same nomenclature.
 - **Systemic Vulnerabilities**: By looking at the heatmap, you can decide whether to spend your next engineering sprint on "Better Reasoning" or "More Domain Knowledge."
 
 ---

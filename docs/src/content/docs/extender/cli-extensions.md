@@ -5,7 +5,7 @@ description: How to register custom subcommands for the AgentV CLI.
 
 # CLI Extension Architecture
 
-As of v1.5.1, AgentV supports **Zero-Touch CLI Extensions**. This allows Enterprise teams and external contributors to register custom subcommands (e.g., `agentv enterprise-check`) without modifying the Core `cli.py`.
+As of v1.6.0, AgentV supports **Zero-Touch CLI Extensions**. This allows Enterprise teams and external contributors to register custom subcommands (e.g., `agentv enterprise-check`) without modifying the Core `cli.py`.
 
 ## Overview
 

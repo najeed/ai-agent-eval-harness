@@ -190,7 +190,7 @@ class ForensicRelevanceEngine:
         ledger = {}
         is_dedicated_dir = run_id and directory.name == run_id
 
-        # [AgentV v1.5.0] Trace-Jailing enforcement: If not a dedicated dir,
+        # [AgentV v1.6.0] Trace-Jailing enforcement: If not a dedicated dir,
         # we refuse to walk subdirectories.
         # This prevents accidental "inhaling" of neighbors in shared /tmp directories.
         max_depth = 1 if not is_dedicated_dir else 5

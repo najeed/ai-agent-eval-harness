@@ -49,7 +49,7 @@ class MyCustomPlugin(BaseEvalPlugin):
 | `on_turn_end` | `context: TurnContext` | Triggered after each turn. |
 | `on_tool_request` | `context`, `tool_name`, `args` | **Interception Point**. Return `False` to block. |
 | `on_tool_result` | `context`, `tool_name`, `result` | Observe the output of a tool call. |
-| `on_diagnose_failure` | `taxonomy` | **New (v1.5.0)**. Register [Custom Forensic Analyzers](spec/failure_taxonomy.md). |
+| `on_diagnose_failure` | `taxonomy` | **New (v1.6.0)**. Register [Custom Forensic Analyzers](spec/failure_taxonomy.md). |
 | `on_error` | `context`, `exception` | Called on unhandled exceptions. |
 | `on_register_console_routes` | `app: Flask`, `nav: list` | Inject custom REST routes and React navigation links. |
 

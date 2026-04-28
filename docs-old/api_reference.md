@@ -18,7 +18,7 @@ Returns consolidated system health, versioning, and telemetry.
 
 ### `GET /api/ping`
 Liveness check for the dashboard and API engine.
-- **Security**: Public (v1.5.0 verified)
+- **Security**: Public (v1.6.0 verified)
 
 ### `POST /api/cleanup-runs`
 Prunes historical traces and rotates log artifacts.

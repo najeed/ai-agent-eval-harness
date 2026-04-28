@@ -1,9 +1,9 @@
 ---
 title: Triage Engine Specification
-description: Authoritative technical reference for the AES v1.5.0 Triage Engine and Industrial Failure Taxonomy.
+description: Authoritative technical reference for the AES v1.4 Triage Engine and Industrial Failure Taxonomy.
 ---
 
-The **Triage Engine** is the primary diagnostic layer of AgentV, responsible for classifying agentic deviations into actionable failure codes. In AES v1.5.0, the engine has transitioned to a **Registry-Based Plugin Architecture**, allowing for lean baseline heuristics and high-fidelity Enterprise diagnostics.
+The **Triage Engine** is the primary diagnostic layer of AgentV, responsible for classifying agentic deviations into actionable failure codes. In AES v1.4, the engine has transitioned to a **Registry-Based Plugin Architecture**, allowing for lean baseline heuristics and high-fidelity Enterprise diagnostics.
 
 ## 🏗️ Architecture Overview
 

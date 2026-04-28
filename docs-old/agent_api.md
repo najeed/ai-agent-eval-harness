@@ -221,7 +221,7 @@ The `luna_judge_score` metric can be customized per-scenario or per-criterion us
 | Field | Type | Default | Description |
 |---|---|---|---|
 | `judge_provider` | string | `.env` default | Model provider (e.g., `openai`, `gemini`, `ollama`) |
-| `judge_model` | string | `.env` default | Specific model ID (e.g., `gpt-5.4-pro`, `claude-4-6-sonnet`) |
+| `judge_model` | string | `.env` default | Specific model ID (e.g., `gpt-5.4-pro`, `Claude-4.6-Sonnet`) |
 | `judge_temperature` | float | `0.0` | Randomness of the judge (higher = less predictable) |
 | `judge_rubric` | string | `generic` | The named rubric to use (see below) |
 

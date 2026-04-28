@@ -1,4 +1,4 @@
-# Guide: Resource Telemetry & Gradient Analysis (v1.5.0)
+# Guide: Resource Telemetry & Gradient Analysis (v1.6.0)
 
 AgentV 1.5.0 introduces **Hardware-Aware Forensics**, allowing you to monitor the physical footprint of agent execution. This is critical for detecting resource leaks (CPU/Memory/Disk) that lead to non-deterministic infrastructure failures.
 
@@ -24,7 +24,7 @@ The analyzer will flag this as an `INFRA_OOM` precursor in the [Causal Chain](05
 
 ## 3. Configuration
 
-Telemetry is enabled by default in AES v1.5.0. Configuration for the industrial samplers is located in `config.yaml`:
+Telemetry is enabled by default in AES v1.4. Configuration for the industrial samplers is located in `config.yaml`:
 
 ```yaml
 forensics:

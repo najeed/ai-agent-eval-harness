@@ -1,6 +1,6 @@
 # 🛠️ Cumulative Industrial Registry (.d)
 
-This directory is the **single source of truth** for all project-level and environment-specific shim configurations for the AgentV Harness (v1.5.0+).
+This directory is the **single source of truth** for all project-level and environment-specific shim configurations for the AgentV Harness (v1.6.0).
 
 ## 🚀 How it Works
 1.  **Baseline**: The engine loads immutable core defaults from the package.

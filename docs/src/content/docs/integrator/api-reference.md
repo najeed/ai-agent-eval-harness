@@ -1,6 +1,6 @@
 ---
 title: Integrator API Reference
-description: High-fidelity REST protocol for the AgentV Roadmap (v1.5.0+).
+description: High-fidelity REST protocol for the AgentV Roadmap (v1.6.0+).
 ---
 
 The Integrator API provides programmatic access to the AgentV engine, enabling seamless integration with CI/CD pipelines, custom dashboards, and automated forensic workflows.

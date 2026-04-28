@@ -1,9 +1,9 @@
 ---
 title: Authoritative Discovery Engine
-description: Understanding shim activation policies, strict relevance, and environment discovery in AgentV v1.5.0.
+description: Understanding shim activation policies, strict relevance, and environment discovery in AgentV v1.6.0.
 ---
 
-The **Authoritative Discovery Engine** is a core component of the AgentV v1.5.0 industrial architecture. It ensures that only necessary and sanctioned simulators (shims) are activated during an evaluation, minimizing the forensic surface area and preventing unauthorized tool execution.
+The **Authoritative Discovery Engine** is a core component of the AgentV v1.6.0 industrial architecture. It ensures that only necessary and sanctioned simulators (shims) are activated during an evaluation, minimizing the forensic surface area and preventing unauthorized tool execution.
 
 ## 1. Activation Hierarchy
 

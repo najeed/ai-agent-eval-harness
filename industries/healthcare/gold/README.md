@@ -1,6 +1,6 @@
 # Gold Standard: HEALTHCARE
 
-This directory contains the **Regulatory-Grade** autonomous agent scenarios for the healthcare sector, strictly adhering to the **AES v1.2 Regulatory Enforcement Layer** specification.
+This directory contains the **Regulatory-Grade** autonomous agent scenarios for the healthcare sector, strictly adhering to the **AES v1.4 Regulatory Enforcement Layer** specification.
 
 ##  Verification OS Compliance
 - **State-Machine DAG**: All scenarios implement a non-linear `workflow` with explicit `nodes` and `edges`, ensuring deterministic state transitions and dependency gating.

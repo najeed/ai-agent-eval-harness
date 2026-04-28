@@ -23,7 +23,7 @@ ANTHROPIC_API_KEY=sk-ant-xxx
 
 ## 🛠 Model Support
 As of April 2026, the following models are prioritized in the industrial baseline:
-- `claude-4-6-sonnet` (Standard)
+- `Claude-4.6-Sonnet` (Standard)
 - `claude-4-6-opus` (High-Reasoning)
 - `claude-4-5-haiku` (Fast)
 

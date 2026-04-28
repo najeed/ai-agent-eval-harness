@@ -161,7 +161,7 @@ def calculate_verification_accuracy(criterion: dict[str, Any], agent_summary: st
 @MetricRegistry.register("output_matches")
 def calculate_output_matches(criterion: dict[str, Any], agent_summary: str) -> float:
     """
-    High-fidelity output verification (AES v1.4.1 compliance).
+    High-fidelity output verification (AES v1.6.0 compliance).
     Checks if the agent summary matches one or more expected criteria.
     Supports:
     - Lists of strings (All must match)

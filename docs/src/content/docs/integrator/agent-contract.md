@@ -45,7 +45,7 @@ The agent must return an **Action Object** indicating its next step.
 
 ---
 
-## 🧬 Behavioral Fingerprinting (V1)
+## 🧬 Behavioral DNA (V1)
  
 To ensure that an evaluation trace genuinely reflects the intended scenario logic, AgentV enforces the **Forensic Evidence Ledger**. This provides a verifiable baseline for the environment state (IDs, API keys, and simulator configurations).
  
@@ -59,7 +59,7 @@ To ensure that an evaluation trace genuinely reflects the intended scenario logi
 
 ## 📡 Forensic Environmental DNA
 
-v1.5.0 elevates the environment to a **First-Class Member** of the evaluation trace.
+v1.6.0 elevates the environment to a **First-Class Member** of the evaluation trace.
 
 ### Capability-Based Routing
 To ensure infrastructure abstraction, scenarios should list **required capabilities** instead of hardcoded endpoints. The Core resolves these via the [Routing Manifest](/spec/routing_v1/).
@@ -111,11 +111,11 @@ Harness connects via TCP or Unix sockets. Payloads are newline-delimited JSON st
 ---
 
 ## 🔐 Identity Discovery
-The harness automatically discovers the agent's identity and scenario ID with the following priority (Strict AES v1.4.0+):
+The harness automatically discovers the agent's identity and scenario ID with the following priority (Strict AES v1.4+):
 1.  **Scenario Metadata (Authoritative)**: `metadata.id` and `metadata.name`.
 2.  **Scenario Root**: Top-level `id` or `run_id`.
 3.  **Dynamic Discovery**: `metadata.model` or `metadata.agent_name`.
 4.  **CLI Overrides**: The `--agent-name` CLI flag or endpoint URL.
 
 > [!CAUTION]
-> **Forensic Stability**: In AES v1.4.0+, the `metadata.id` is the primary key for all audit-grade visualizations. Failing to provide a unique `id` will result in "SILVER" tier compliance warnings.
+> **Forensic Stability**: In AES v1.4+, the `metadata.id` is the primary key for all audit-grade visualizations. Failing to provide a unique `id` will result in "SILVER" tier compliance warnings.

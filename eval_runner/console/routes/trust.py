@@ -109,7 +109,7 @@ def verify_run_public(run_id):
             if manifest.get("provenance_chain"):
                 method = "ED25519 cryptographic signature proof"
 
-        # [Staff Hardening] Score-First Compliance Check (AgentV v1.5.0)
+        # [Staff Hardening] Score-First Compliance Check (AgentV v1.6.0)
         compliance = manifest.get("compliance", {})
         status = compliance.get("status") or manifest.get("compliance_status")
         score = compliance.get("score")

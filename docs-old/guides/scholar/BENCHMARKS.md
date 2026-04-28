@@ -24,9 +24,9 @@ agentv evaluate --path gaia://2023_validation
 
 ### Forensic Mapping
 When a benchmark is loaded via the URI schema, the engine automatically:
-1. **Normalizes Schema**: Maps benchmark fields to high-fidelity [AES Specification](/guides/04_AES_SPECIFICATION.md) criteria.
+1. **Normalizes Schema**: Maps benchmark fields to high-fidelity [AES Specification](../04_AES_SPECIFICATION.md) criteria.
 2. **Version Pinning**: Ensures reproducibility by targeting specific dataset snapshots.
-3. **Forensic Integration**: Signs the results using the [Trust Protocol](/spec/trust_protocol_spec_v1.md).
+3. **Forensic Integration**: Signs the results using the [Trust Protocol](../../spec/trust_protocol_spec_v1.md).
 
 ---
 

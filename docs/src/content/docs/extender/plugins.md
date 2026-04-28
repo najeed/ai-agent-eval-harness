@@ -106,7 +106,7 @@ The plugin system provides hooks at every stage of the evaluation loop.
 | **`on_turn_end`** | `context: TurnContext` | Observe results after an agent turn. |
 | **`on_tool_request`** | `context`, `tool`, `args` | **Interception Point**. Return `False` to block. |
 | **`on_tool_result`** | `context`, `tool`, `result` | Observe tool outputs for drift detection. |
-| **`on_diagnose_failure`**| `taxonomy` | **v1.5.0**. Register custom forensic analyzers. |
+| **`on_diagnose_failure`**| `taxonomy` | **v1.6.0**. Register custom forensic analyzers. |
 | **`on_error`** | `context`, `exception` | Handle unhandled core exceptions. |
 
 ---

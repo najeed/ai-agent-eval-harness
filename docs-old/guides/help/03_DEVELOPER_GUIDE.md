@@ -41,7 +41,7 @@ The version is defined in exactly ONE place: **`pyproject.toml`**.
 
 Entry point: `eval_runner/cli.py`. The CLI is refactored for **Industrial Extensibility** using a Functional Dispatcher.
 
-### 🧩 Unified Functional Dispatcher (v1.5.1)
+### 🧩 Unified Functional Dispatcher (v1.6.0)
 Unlike legacy CLIs that use massive `if/elif` chains, AgentV uses a data-driven dispatch model. Every command registers a `func` callback in its parser defaults. The `main()` loop simply executes `args.func(args)`.
 
 ### 1. Authoring & Scaffolding
@@ -367,7 +367,7 @@ def admin_settings():
 
 The harness uses an **ED25519-based signing protocol** to ensure the integrity of evaluation artifacts.
 
-### 12.1 Industrial Signing Workflow (AES v1.5.0 Strict)
+### 12.1 Industrial Signing Workflow (AES v1.4 Strict)
 - **Zero-Inference Policy**: Certification MUST include an explicit `run_id`. Speculative inference from parent directories is prohibited.
 - **Vault Affinity**: Traces MUST reside in a compliant industrial vault (`runs/<run_id>/run.jsonl`) or in the master log (`runs/run.jsonl`).
 - **Zero-Copy Signing**: Traces are signed directly within the vault to ensure forensic sidecars remain relative and portable.
@@ -457,7 +457,7 @@ For internal logic of utilities like `doctor` or `quickstart`, see the correspon
 
 ## 🛠️ 16 Building CLI Extensions
 
-Starting with v1.5.1, you can add your own commands to `agentv` without modifying the core repository.
+Starting with v1.6.0, you can add your own commands to `agentv` without modifying the core repository.
 
 ### 16.1 The Registration Hook
 Define a function in your extension that adds a subparser to the CLI.

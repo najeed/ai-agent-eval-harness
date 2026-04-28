@@ -110,7 +110,7 @@ Keeping the engine tuned and governed.
 ## 🚀 Stage 9: Extension & Customization
 *Intent: I want to add my own commands to the AgentV ecosystem.*
 
-Starting with **v1.5.1**, the CLI is no longer a closed monolith. It uses an **Industrial Discovery Pattern** based on Python Entry Points.
+Starting with **v1.6.0**, the CLI is no longer a closed monolith. It uses an **Industrial Discovery Pattern** based on Python Entry Points.
 
 1.  **Extensible Commands**: You can now build separate Python packages that "plug in" to the `agentv` command without modifying the Core repository.
 2.  **Zero-Touch Discovery**: Commands registered via `pyproject.toml` are automatically discovered at runtime.

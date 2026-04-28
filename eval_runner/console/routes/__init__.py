@@ -211,7 +211,7 @@ def proxy_refresh():
 # --- PUBLIC /v1 SHIMS (Unprotected Root Namespace) ---
 @core_bp.route("/v1/doctor")
 def shim_doctor():
-    """Unprefixed root shim for Industrial Doctor (AgentV v1.5.0 parity)."""
+    """Unprefixed root shim for Industrial Doctor (AgentV v1.6.0 parity)."""
     return get_doctor_audit()
 
 

@@ -30,7 +30,7 @@ class AgentAdapterRegistry:
         "frameworks": None,
     }
 
-    # Authoritative Taxonomy (v1.5.0 Standard)
+    # Authoritative Taxonomy (v1.6.0 Standard)
     ADAPTER_TAXONOMY = {
         "http": "protocols",
         "local": "protocols",
@@ -101,7 +101,7 @@ class AgentAdapterRegistry:
         # 0. Load Administrative Activation Policy
         from .config import RegistryManager
 
-        # Hardened Zero-Trust Baseline (v1.5.0 Standard)
+        # Hardened Zero-Trust Baseline (v1.6.0 Standard)
         cls._active_whitelists["protocols"] = {"http", "sse", "openapi"}
         cls._active_whitelists["providers"] = set()
         cls._active_whitelists["frameworks"] = set()
@@ -151,7 +151,7 @@ class AgentAdapterRegistry:
         turn_ctx: Any | None = None,
     ) -> dict[str, Any]:
         """
-        Industrial Multi-Agent Dispatcher (v1.5.0).
+        Industrial Multi-Agent Dispatcher (v1.6.0).
         Routes the task to the appropriate adapter based on protocol.
         """
         if not cls._discovered:

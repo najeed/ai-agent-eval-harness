@@ -17,7 +17,7 @@ The harness orchestration flows through 8 logical intents, moving from design-ti
                ▼                              ▼                              ▼
 ┌──────────────────────────────┐  ┌─────────────────────────────┐  ┌──────────────────────────┐
 │   Authoring (mutate/spec)    │  │   Discovery (list/catalog)  │  │   CI/CD (ci/import)      │
-│ • Mutator Engine             │  │ • Hybrid Registry (v1.3)    │  │ • Production Trace Bridge│
+│ • Mutator Engine             │  │ • Hybrid Registry           │  │ • Production Trace Bridge│
 │ • AES Specification          │  │ • Optimized Catalog Service │  │ • Automated Scaling      │
 └──────────────┬───────────────┘  └──────────────┬──────────────┘  └──────────────┬───────────┘
                │                                 │                                │
@@ -56,7 +56,7 @@ The harness orchestration flows through 8 logical intents, moving from design-ti
 | Intent | Key Modules | Purpose |
 | :--- | :--- | :--- |
 | **Authoring** | `analyzer.py`, `mutator.py` | Scaffold scenarios from code and generate adversarial variants. |
-| **Discovery** | `catalog.py`, `config.py` | Unified Registry (v1.3) and high-performance scenario indexing. |
+| **Discovery** | `catalog.py`, `config.py` | Unified Registry and high-performance scenario indexing. |
 | **Execution** | `runner.py`, `session.py` | Orchestrates the eval loop with pass@k and multi-agent support. |
 | **Debugging** | `explainer.py`, `triage.py` | Automated root cause isolation and step-by-step trace analysis. |
 | **Reporting** | `reporting_plugin.py` | Generates Premium HTML reports and behavioral DNA heatmaps. |

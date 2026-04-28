@@ -118,7 +118,7 @@ Verify that the `openai`, `claude`, `gemini`, and `grok` adapters are production
 | Provider | Protocol | Verification Command |
 | :--- | :--- | :--- |
 | **OpenAI** | `openai://` | `agentv run --protocol openai --agent openai://gpt-5.4-mini` |
-| **Anthropic**| `claude://` | `agentv run --protocol claude --agent claude://claude-4-6-sonnet` |
+| **Anthropic**| `claude://` | `agentv run --protocol claude --agent claude://Claude-4.6-Sonnet` |
 | **Google** | `gemini://` | `agentv run --protocol gemini --agent gemini://gemini-2.5-flash` |
 | **xAI** | `grok://` | `agentv run --protocol grok --agent grok://grok-4.20-multi-agent` |
 

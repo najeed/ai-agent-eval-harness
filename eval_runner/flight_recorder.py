@@ -55,7 +55,7 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
     def _enforce_safety_floor(self):
         """
-        [Forensic Safety Floor] (AgentV v1.5.0)
+        [Forensic Safety Floor] (AgentV v1.6.0)
         Prevents "Black Hole" configurations where no telemetry is recorded.
         If both logging paths are disabled, forces Vaulted isolation.
         """

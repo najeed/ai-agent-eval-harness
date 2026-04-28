@@ -3,7 +3,7 @@ title: Trust Protocol Standard
 description: The industrial standard for non-repudiable evaluation traces and forensic integrity.
 ---
 
-The Trust Protocol (v1.4.1) provides **immutable proof of run integrity** for the AgentV Harness. It employs a "Detached Signature" architecture that separates bulky execution data from metadata certificates.
+The Trust Protocol (v1.6.0) provides **immutable proof of run integrity** for the AgentV Harness. It employs a "Detached Signature" architecture that separates bulky execution data from metadata certificates.
 
 ## 1. Forensic Architecture
 

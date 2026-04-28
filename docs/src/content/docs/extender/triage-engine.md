@@ -22,7 +22,7 @@ Failure diagnosis is no longer a single "scan." It is an ordered execution of **
 
 ## 2. Weighted Evidence & Ranking
 
-In AES v1.5.0, the triage engine no longer returns the first failure it finds. Instead, it collects **Evidence** from multiple analyzers and uses a weighted scoring system to resolve conflicts.
+In AES v1.4, the triage engine no longer returns the first failure it finds. Instead, it collects **Evidence** from multiple analyzers and uses a weighted scoring system to resolve conflicts.
 
 ### Ranking Logic
 Each diagnostic trigger is assigned a **Global Rank** (0-10) and a **Confidence Score**. 
@@ -54,7 +54,7 @@ Every classification is documented in a **Causal Chain**, allowing auditors to t
 
 ---
 
-## 4. Forensic Affinity & Identity Authority (AES v1.5.0)
+## 4. Forensic Affinity & Identity Authority (AES v1.4)
 
 To maintain industrial-grade stability, all triage operations must be anchored to an identity:
 

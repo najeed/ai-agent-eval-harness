@@ -1,6 +1,6 @@
 # Runs Specification Masterclass: Forensic Traces & the Unified Specification
 
-This guide provides an exhaustive inventory of the **AgentV Runs Specification** (v1.5.0). It details how high-fidelity event streams (`run.jsonl`) are governed by the **Trace Specification** and how they anchor the industrial forensic chain.
+This guide provides an exhaustive inventory of the **AgentV Runs Specification** (v1.6.0). It details how high-fidelity event streams (`run.jsonl`) are governed by the **Trace Specification** and how they anchor the industrial forensic chain.
 
 ---
 

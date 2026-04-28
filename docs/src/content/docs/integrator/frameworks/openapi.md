@@ -52,7 +52,7 @@ agentv evaluate --path openapi://http://localhost:8080/api/v1/agent
 Upon execution, the adapter performs an automatic handshake. It attempts to fetch `openapi.json` from the endpoint to verify the contract before transmitting the task payload.
 
 ### 3. Forensic Trace
-Every REST interaction is captured in the **Behavioral DNA** trace. You can inspect the raw JSON requests and responses using the [Integrated Console](/extender/api-reference/).
+Every REST interaction is captured in the **Behavioral DNA** trace. You can inspect the raw JSON requests and responses using the [Integrated Console](/integrator/api-reference/).
 
 > [!TIP]
 > **Industrial Standard**: When evaluating third-party REST agents, always use a **Zero-Temperature** setting for the LLM judge to ensure that the normalization logic remains stable across multiple runs.

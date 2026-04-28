@@ -130,7 +130,7 @@ class AbstractSandbox(ABC):
         self.forensics = forensics
         self.resources = ResourceRegistry()
 
-        # [INDUSTRIAL HARDENING] Absolute Session Identity (AgentV v1.5.0)
+        # [INDUSTRIAL HARDENING] Absolute Session Identity (AgentV v1.6.0)
         # Prevents 'unknown_run' directory pollution in the root runs/ directory.
         self.run_id = self.scenario.get("run_id")
         if not self.run_id:

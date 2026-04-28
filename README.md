@@ -176,7 +176,7 @@ Comprehensive coverage for **50+ verticals** including:
 - **Interactive Complexity**: Multi-turn flows involving conflicting human-in-the-loop (HITL) requirements.
 - **Simulations**: High-fidelity sector labs (e.g., Bank, EHR/HL7, CRM) for testing agents in realistic, isolated environments.
 
-*All scenarios are 100% compliant with the [AES v1.4.0 Specification](docs-old/guides/04_AES_SPECIFICATION.md).*
+*All scenarios are 100% compliant with the [AES v1.4 Specification](docs-old/guides/04_AES_SPECIFICATION.md).*
 
 ### Manual Evaluation (Running the Sample Agent)
 

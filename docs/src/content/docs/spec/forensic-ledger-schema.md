@@ -1,11 +1,11 @@
 ---
 title: Forensic Ledger Schema
-description: Technical specification for the task_result v1.5.0 metadata.
+description: Technical specification for the task_result v1.6.0 metadata.
 ---
 
 The **Forensic Ledger** is the single source of truth for failure diagnosis in AgentV. It is stored as a JSON object within the `task_result` property of every evaluation run.
 
-## 1. Schema Overview (v1.5.0)
+## 1. Schema Overview (v1.6.0)
 
 The ledger bundles metrics, trajectory history, and forensic metadata into a deterministic forensic packet.
 

@@ -8,27 +8,27 @@
 [![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-VC%20v3.0.0-gold.svg)](docs-old/spec/trust_protocol_spec_v1.md)
+[![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-VC%20v3.0.0-gold.svg)](../spec/trust_protocol_spec_v1.md)
 [![Security Audit](https://img.shields.io/badge/Security-Audit--Verified-brightgreen.svg)](tests/security/test_security_audit.py)
-[![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](docs-old/guides/help/00_COMPREHENSIVE_GUIDE.md)
+[![Documentation](https://img.shields.io/badge/Docs-Comprehensive-brightgreen.svg)](../guides/help/00_COMPREHENSIVE_GUIDE.md)
 [![Security Scan](https://img.shields.io/badge/Security-Scanning--Passing-brightgreen.svg)](tests/security/test_security_audit.py)
 
 ## 🛡️ Industrial AI Agent Verification & Trustworthiness
 
 AgentV is a **Verification OS** for mission-critical AI agents. As of **April 2026**, the framework is aligned with the **NIST AI-100-1** trustworthiness framework, providing high-fidelity telemetry (**Behavioral DNA**) and deterministic verification of agent reliability across core industrial sectors.
 
-[![NIST AI-100-1](https://img.shields.io/badge/Alignment-NIST%20AI--100--1--Aligned-brightgreen.svg)](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md#nist-ai-100-1-alignment-suite-r4)
-[![Behavioral DNA](https://img.shields.io/badge/Telemetry-Behavioral%20DNA--v2-blue.svg)](docs-old/architecture.md#eventemitter-bus-passive-observation)
+[![NIST AI-100-1](https://img.shields.io/badge/Alignment-NIST%20AI--100--1--Aligned-brightgreen.svg)](../guides/07_SECURITY_AND_AUTHENTICATION.md#nist-ai-100-1-alignment-suite-r4)
+[![Behavioral DNA](https://img.shields.io/badge/Telemetry-Behavioral%20DNA--v2-blue.svg)](../architecture.md#eventemitter-bus-passive-observation)
 
 | Attribute | Specification |
 | :--- | :--- |
 | **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.4.1 (April 2026 Forensic Baseline) |
-| **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
-| **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
-| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
+| **Version** | v1.6.0 (April 2026 Forensic Baseline) |
+| **Trust Model** | [Behavioral DNA & VC v3.0.0](../architecture.md) |
+| **Architecture** | [Identity-Centric Core](../architecture.md) |
+| **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](../guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
 
 ### 🛡️ Add the Badge to Your Agent
 
@@ -148,7 +148,7 @@ The harness is organized into the following key components:
 > **What it does:** Spawns a deterministic in-process mock agent, executes a telecom troubleshooting evaluation, and generates a rich HTML report in `reports/`. 100% offline-ready.
 
 > [!TIP]
-> **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `agentv console`. This includes the **Visual AES Builder** for zero-code scenario design. See the [User Manual](docs-old/guides/help/02_USER_MANUAL.md#visual-suite) for details.
+> **Prefer a visual experience?** After running the quickstart, launch the **Integrated Visual Suite** to replay the trace interactively: `agentv console`. This includes the **Visual AES Builder** for zero-code scenario design. See the [User Manual](../guides/help/02_USER_MANUAL.md#visual-suite) for details.
 
 ## 📂 The Global Scenario Corpus
 
@@ -166,7 +166,7 @@ Comprehensive coverage for **50+ verticals** including:
 - **Interactive Complexity**: Multi-turn flows involving conflicting human-in-the-loop (HITL) requirements.
 - **Simulations**: High-fidelity sector labs (e.g., Bank, EHR/HL7, CRM) for testing agents in realistic, isolated environments.
 
-*All scenarios are 100% compliant with the [AES Specification](docs-old/guides/04_AES_SPECIFICATION.md).*
+*All scenarios are 100% compliant with the [AES Specification](../guides/04_AES_SPECIFICATION.md).*
 
 ### Manual Evaluation (Running the Sample Agent)
 
@@ -328,7 +328,7 @@ The platform is built with a **Secure-by-Design** philosophy, complying with ent
 - **WORM Logs**: Write-Once-Read-Many immutable flight recorder traces (`run.jsonl`).
 - **Audit Points**: 100% compliance with the 8-point Enterprise Security Audit (DoS caps, Fork Bomb prevention, RCE guards).
 - **Mandatory Authentication**: Protection of all console and bridge routes via the `DASHBOARD_API_KEY`.
-See the [Security and Authentication Guide](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md) for generation and configuration instructions.
+See the [Security and Authentication Guide](../guides/07_SECURITY_AND_AUTHENTICATION.md) for generation and configuration instructions.
 
 ### 🗄️ Forensic Storage & Vaulting
 AgentV employs a **Strict Industrial Vault** methodology to protect run integrity:

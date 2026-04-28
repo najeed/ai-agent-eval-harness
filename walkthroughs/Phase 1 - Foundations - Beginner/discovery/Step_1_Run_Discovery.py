@@ -4,7 +4,7 @@ import sys
 
 
 def run_cmd(cmd):
-    """Executes a CLI command and returns the output string (Secured v1.3)."""
+    """Executes a CLI command and returns the output string (Secured v1.6.0)."""
     try:
         # Securely resolve python-m commands using the current interpreter
         args = shlex.split(cmd)

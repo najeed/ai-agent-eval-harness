@@ -53,12 +53,12 @@ class SessionManager:
         # Authoritatively inject run_id for downstream forensic affinity (e.g., ToolSandbox)
         self.scenario["run_id"] = run_id
 
-        # [AgentV v1.5.0] Authoritative Metadata Propagation (Ensured mutable)
+        # [AgentV v1.6.0] Authoritative Metadata Propagation (Ensured mutable)
         self.metadata = dict(metadata or {})
         # Centralized identifier (resolved and normalized in Loader)
         self.identifier = scenario["id"]
 
-        # [AgentV v1.5.0] Authoritative Metadata Discovery
+        # [AgentV v1.6.0] Authoritative Metadata Discovery
         self.session_metadata = {
             "protocol": "http",
             "agent": None,
@@ -71,7 +71,7 @@ class SessionManager:
         self.max_turns = int(scenario.get("max_turns", config.EVAL_MAX_TURNS)) or 10
         self.fork_depth = scenario.get("_fork_depth", 0)
 
-        # [AgentV v1.5.0] Identifier Tracking
+        # [AgentV v1.6.0] Identifier Tracking
         # Note: Purged global os.environ writes (AES_RUN_ID, AES_IDENTIFIER)
         # to ensure parallel evaluation safety. Identity is now strictly context-bound.
 
@@ -120,7 +120,7 @@ class SessionManager:
         # 3. Provenance Injection: Ensure all plugins are recorded in the session metadata
         self.metadata["plugin_provenance"] = self.plugin_manager.provenance_map
 
-        # [AES v1.4.1] Dynamic Metric Discovery
+        # [AES v1.6.0] Dynamic Metric Discovery
         self.plugin_manager.trigger("on_discover_metrics", metrics.MetricRegistry)
 
         # Auto-subscribe plugins to the session bus (Bridge to legacy Hooks)
@@ -135,7 +135,7 @@ class SessionManager:
 
         from .routing import RoutingRegistry
 
-        # 🚀 [AES v1.4.1] Authoritative Routing Resolution
+        # 🚀 [AES v1.6.0] Authoritative Routing Resolution
         # Sequence: CLI Override > Capability Discovery > Scenario Metadata > Global Default
         scenario_meta_agent = scenario.get("metadata", {}).get("agent", {})
 
@@ -334,7 +334,7 @@ class SessionManager:
             # or if initialization crashes before execution begins.
             await self.teardown(sandbox)
 
-        # 🧬 Global Evaluation Pass (Industrial AES v1.4.1)
+        # 🧬 Global Evaluation Pass (Industrial AES v1.6.0)
         # Process metrics defined at the scenario level (e.g. DNA_STABLE)
         global_evaluation = self.scenario.get("evaluation", {})
         global_metrics = global_evaluation.get("metrics", [])
@@ -391,7 +391,7 @@ class SessionManager:
         )
 
         # If it's a new node, we might want to refresh history or keep context?
-        # AES v1.4.1 typically maintains session-scoped history.
+        # AES v1.6.0 typically maintains session-scoped history.
         conversation_history.append({"role": "user", "content": current_message})
 
         node_success = False
@@ -805,7 +805,7 @@ class SessionManager:
         turn_ctx: Any,
     ) -> str:
         """
-        Industrial HITL Handshake (v1.5.0).
+        Industrial HITL Handshake (v1.6.0).
         """
         prompt = agent_response.get("prompt", "Human intervention required.")
         """Handles Human-In-The-Loop interaction."""
@@ -924,7 +924,7 @@ class SessionManager:
                 span_context=self.session_metadata.get("span_context"),
             )
 
-        # --- [AES v1.4.1] Forensic Performance Evaluation ---
+        # --- [AES v1.6.0] Forensic Performance Evaluation ---
         # We exclusively iterate through declared success_criteria.
         criteria = node.get("success_criteria", [])
         expected_outcome = node.get("expected_outcome")

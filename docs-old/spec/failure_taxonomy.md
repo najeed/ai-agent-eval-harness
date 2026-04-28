@@ -1,6 +1,6 @@
-# Specification: Stratified Failure Taxonomy (v1.5.0)
+# Specification: Stratified Failure Taxonomy (v1.6.0)
 
-To replace brittle, heuristic-based error string matching, AgentV v1.5.0 implements an **Industrial-Grade Forensic Taxonomy Engine**. This system provides pluggable, hierarchical classification of agent failures, enabling forensic-grade root-cause diagnostics and causal-chain attribution.
+To replace brittle, heuristic-based error string matching, AgentV v1.6.0 implements an **Industrial-Grade Forensic Taxonomy Engine**. This system provides pluggable, hierarchical classification of agent failures, enabling forensic-grade root-cause diagnostics and causal-chain attribution.
 
 ## 1. Classification Hierarchy
 

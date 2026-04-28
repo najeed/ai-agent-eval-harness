@@ -56,7 +56,7 @@ The walkthrough script also runs **Step 4**. Note how the metrics change when a 
 > **Recommended Threshold**: This is the "Magic Number". If the calibrator suggests `0.65`, you should update your scenario's `threshold` parameter to match!
 
 ---
-*AgentV (v1.2.3) - Guided Experience Layer*
+*AgentV (v1.6.0) - Guided Experience Layer*
 
 
 

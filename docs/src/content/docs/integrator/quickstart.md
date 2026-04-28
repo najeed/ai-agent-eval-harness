@@ -49,14 +49,14 @@ Welcome to AgentV. This guide gets you from a fresh installation to your first *
 When you ran `evaluate`, the AgentV engine executed several industrial-grade protocols:
 
 - **Isolated Routing**: The engine consulted `.aes/config/routing/manifest.json` to map the scenario's requirements to a local simulator.
--- **Event-Driven Observation**: Every tool call and reasoning step was emitted to the [Global Event Bus](/builder/architecture/), allowing the dashboard to mirror the execution in real-time.
+- **Event-Driven Observation**: Every tool call and reasoning step was emitted to the [Global Event Bus](/builder/architecture/), allowing the dashboard to mirror the execution in real-time.
 - **Forensic Ledger Creation**: A SHA-256 hash was generated for the trace, binding the results to your local **Identity Registry**.
 
 ## 🚀 Next Steps
 
 - [**The Scholar Path**](/scholar/): Learn about Deterministic Seeds and Academic Benchmarks.
 - [**The Architect Path**](/builder/architecture/): Deep-dive into Singleton Process Guards and Dynamic CLI Dispatch.
-- [**The Auditor Path**](/auditor/trust-protocol/): Implement the v1.5.0 Trust Protocol for CI/CD gating.
+- [**The Auditor Path**](/auditor/trust-protocol/): Implement the v1.6.0 Trust Protocol for CI/CD gating.
 
 > [!TIP]
 > **Note**: Now that your environment is verified, you can swap the mock adapter for a live model by setting your `OPENAI_API_KEY` or `GEMINI_API_KEY` and updating your [Routing Registry](/spec/routing_v1/).

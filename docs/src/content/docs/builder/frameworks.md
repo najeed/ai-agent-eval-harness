@@ -81,7 +81,7 @@ agentv evaluate \
 ```
 
 ## 📊 Generating Results
-After the run completes, generate a [Verified Report](/evaluator/reports/) to analyze the results:
+After the run completes, generate a [Verified Report](/evaluator/cli/#report) to analyze the results:
 ```bash
 agentv report --run-id <id> --share
 ```

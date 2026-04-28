@@ -15,7 +15,7 @@ app = FastAPI()
 @app.post("/execute_task")
 async def execute(request: dict):
     message = client.messages.create(
-        model="claude-4-6-sonnet",
+        model="Claude-4.6-Sonnet",
         max_tokens=1024,
         messages=[{"role": "user", "content": request["task_description"]}]
     )

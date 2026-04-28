@@ -132,7 +132,7 @@ def generate_interactive():
             },
         }
 
-        # Internal Schema Validation (Fail-Fast v1.5.0)
+        # Internal Schema Validation (Fail-Fast v1.6.0)
         try:
             schema_path = Path(__file__).parent.parent / "spec" / "aes" / "aes.schema.json"
             if schema_path.exists():
@@ -140,7 +140,7 @@ def generate_interactive():
                     schema = json.load(sf)
 
                 registry = _get_aes_registry(schema_path, schema)
-                # Inject $id to enable relative $ref resolution (v1.5.0 Hardening)
+                # Inject $id to enable relative $ref resolution (v1.6.0 Hardening)
                 schema["$id"] = schema_path.as_uri()
                 validate(instance=scenario, schema=schema, registry=registry)
         except jsonschema.exceptions.ValidationError as ve:
@@ -213,7 +213,7 @@ def scaffold_benchmark(dir_path: str, industry: str, protocol: str):
     with open(base_dir / "eval_config.json", "w", encoding="utf-8") as f:
         json.dump(config_data, f, indent=4)
 
-    # Generate starter scenario using v1.4 schema (Industrial Identity AgentV v1.5.0)
+    # Generate starter scenario using v1.4 schema (Industrial Identity AgentV v1.6.0)
     starter_id = f"scenario-{uuid.uuid4().hex[:8]}"
     starter = {
         "aes_version": 1.4,

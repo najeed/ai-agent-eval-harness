@@ -1,4 +1,4 @@
-# AES Schema Masterclass: Industrial Standards & Plumbing (v1.4.0)
+# AES Schema Masterclass: Industrial Standards & Plumbing (v1.6.0)
 **Specification Version:** 1.4.0
 
 Welcome to the definitive guide to the **Agent Evaluation Specification (AES)**. This document is designed to take you from a novice understanding to a master-level grasp of how we define, configure, and audit agentic intelligence using the AgentV harness. It ties abstract schema fields to the physical **Plumbing** in the `.aes/` registry and outlines the **Proposed Governance Architecture** for industrial-grade compliance.
@@ -69,7 +69,7 @@ The AES JSON file is a **Blueprint**, but the actual **Resources** live in the p
     - **Config**: Enum: `Standard`, `Gold`, `Regulatory_Audit`.
 3.  **`standards_registry`**:
     - **Purpose**: This is the most powerful part of the metadata. It maps your test to real-world laws.
-    - **Config**: An array of strings like `["GDPR", "PCI_DSS_V4", "BASEL_III"]`. By listing these, you trigger specialized forensic checks in the harness. As of v1.4.0, the registry supports **60+ industrial standards**, including ISO 42001, NIST AI-RMF, and HIPAA.
+    - **Config**: An array of strings like `["GDPR", "PCI_DSS_V4", "BASEL_III"]`. By listing these, you trigger specialized forensic checks in the harness. As of v1.6.0, the registry supports **60+ industrial standards**, including ISO 42001, NIST AI-RMF, and HIPAA.
 4.  **`agent_topology`**:
     - **Purpose**: Defines what the agent is *allowed* to touch.
     - **Config**: A map of agent names to their `reads` and `writes` (e.g., `agent_1: { "writes": ["ledger_db"] }`). This implements **Permissions-Based Access Control (PBAC)**, ensuring that agents are isolated within leurs specific resource namespaces.

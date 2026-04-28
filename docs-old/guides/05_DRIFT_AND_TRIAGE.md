@@ -1,4 +1,4 @@
-# Guide: Drift Management & Deep Forensics Triage (v1.5.0)
+# Guide: Drift Management & Deep Forensics Triage (v1.6.0)
 
 This guide details how to use the Semantic Bridge features and the pluggable **Deep Forensics** engine to analyze agent failures.
 

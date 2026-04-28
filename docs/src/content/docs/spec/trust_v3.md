@@ -24,7 +24,7 @@ To ensure forensic performance and prevent bloat, artifacts are gathered via the
     - **Whitelisted Extensions**: `.jsonl`, `.log`, `.json`, `.png`, `.jpg`, `.pdf`, `.csv`, `.db`, `.sqlite`, `.txt`, `.parquet`, `.yaml`, `.yml`, `.sql`, `.patch`, `.diff`, `.zip`, `.tar.gz`, `.tgz`, `.html`, `.svg`
     - **Supported Aliases**: `.jpeg` -> `.jpg`, `.stdout`/`.stderr`/`.err` -> `.log`, `.sqlite3`/`.db3` -> `.db`.
 
-# 3. Industrial Gating & Identity (AES v1.5.0)
+# 3. Industrial Gating & Identity (AES v1.4)
 To ensure audit-grade forensic stability, the protocol enforces strict identity resolution rules:
 
 - **Zero-Inference Policy**: The `run_id` MUST be explicitly provided during certification. Speculative inference from parent directory names is prohibited unless reconciled against an vault.

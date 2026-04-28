@@ -102,7 +102,7 @@ def create_app():
             }
         ), 405
 
-    # Hardened Route Precedence (AgentV v1.5.0 Sync)
+    # Hardened Route Precedence (AgentV v1.6.0 Sync)
     # Industrial Standard: Use blueprint-first registration only.
 
     # Load external hooks for zero-touch discovery
@@ -143,7 +143,7 @@ def create_app():
     # Endpoint to serve the unified navigation menu (API Priority)
     app.config["NAV_REGISTRY"] = nav_registry
 
-    # Industrial Diagnostic: Audit the physical route map (v1.4.1 Hardening)
+    # Industrial Diagnostic: Audit the physical route map (v1.6.0 Hardening)
     print("\n--- Industrial Route Map Audit ---", flush=True)
     for rule in app.url_map.iter_rules():
         print(f"   [Route] {rule.rule} ({rule.endpoint})", flush=True)

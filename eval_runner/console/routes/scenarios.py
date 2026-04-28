@@ -61,7 +61,7 @@ def save_scenario():
 
     from eval_runner import config
 
-    # Follow AgentV v1.5.0 structure: industries/{industry}/scenarios/{id}.json
+    # Follow AgentV v1.6.0 structure: industries/{industry}/scenarios/{id}.json
     save_dir = config.PROJECT_ROOT / "industries" / industry / "scenarios"
     save_dir.mkdir(parents=True, exist_ok=True)
 
@@ -100,7 +100,7 @@ def evaluate_scenario():
     if not path:
         return jsonify({"error": "Missing scenario path"}), 400
 
-    # Industrial Trigger: Prioritize Scenario ID resolution (AgentV v1.5.0)
+    # Industrial Trigger: Prioritize Scenario ID resolution (AgentV v1.6.0)
     catalog = ScenarioCatalog.get_instance()
     abs_path = catalog.get_absolute_path(path)
 

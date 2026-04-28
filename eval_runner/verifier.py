@@ -199,7 +199,7 @@ class TraceVerifier:
                 "Identity Basis Failure: Explicit 'run_id' is required for certification."
             )
 
-        # 2. Authoritative Vault Affinity (AgentV v1.5.0 Strict)
+        # 2. Authoritative Vault Affinity (AgentV v1.6.0 Strict)
         # The trace MUST be in the vault folder or the master log.
         # [REMEDIATION]: Use absolute resolution to handle mock/test environments
         vault_path = (config.RUN_LOG_DIR / run_id / "run.jsonl").resolve()
@@ -254,7 +254,7 @@ class TraceVerifier:
             "behavioral_fingerprint_id": behavioral_fingerprint_id or "default_v1",
         }
 
-        # 3. Emit Lifecycle Event to Trace (AgentV v1.5.0 Industrial)
+        # 3. Emit Lifecycle Event to Trace (AgentV v1.6.0 Industrial)
         # We append the event BEFORE computing the final hash,
         # but we include a "Seal Hash" of the history up to this point.
         try:
