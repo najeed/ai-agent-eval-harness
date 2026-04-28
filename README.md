@@ -217,15 +217,15 @@ Comprehensive coverage for **50+ verticals** including:
 
 ## Agent Communication Protocols
 
-The harness supports multiple ways to talk to your agent, enabling seamless integration with local scripts, legacy binaries, or remote services.
+The harness supports multiple ways to talk to your agent. Use the `--protocol` flag to select the adapter and `--agent` (or specialized flags) to specify the endpoint.
 
 | Protocol | Description | Configuration Flag | Env Variable |
 | :--- | :--- | :--- | :--- |
-| **HTTP** | Standard REST API (POST) | `(default)` | `AGENT_API_URL` |
-| **SSE** | Server-Sent Events | `(default)` | `AGENT_API_URL` |
-| **Local** | Local process via stdin/stdout | `--agent-cmd` | `AGENT_LOCAL_CMD` |
-| **Socket** | TCP or Unix Domain Socket | `--agent-socket` | `AGENT_SOCKET_ADDR` |
-| **OpenAPI** | OpenAPI spec | `--agent-socket` | `AGENT_SOCKET_ADDR` |
+| **HTTP** | Standard REST API (POST) | `--protocol http` (default) | `AGENT_API_URL` |
+| **SSE** | Server-Sent Events | `--protocol sse` | *(None)* |
+| **Local** | Local process via stdin/stdout | `--protocol local` or `--agent-cmd` | `AGENT_LOCAL_CMD` |
+| **Socket** | TCP or Unix Domain Socket | `--protocol socket` or `--agent-socket` | `AGENT_SOCKET_ADDR` |
+| **OpenAPI** | OpenAPI spec (REST) | `--protocol openapi` | *(None)* |
 
 ---
 
