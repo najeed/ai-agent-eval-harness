@@ -25,7 +25,7 @@
     
     
       
-        <title>Guide: Resource Telemetry & Gradient Analysis (v1.5.0) - AgentV</title>
+        <title>Guide: Resource Telemetry & Gradient Analysis (v1.6.0) - AgentV</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#guide-resource-telemetry-gradient-analysis-v150" class="md-skip">
+        <a href="#guide-resource-telemetry-gradient-analysis-v160" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Guide: Resource Telemetry &amp; Gradient Analysis (v1.5.0)
+              Guide: Resource Telemetry &amp; Gradient Analysis (v1.6.0)
             
           </span>
         </div>
@@ -3871,7 +3871,7 @@
 
 
 
-<h1 id="guide-resource-telemetry-gradient-analysis-v150">Guide: Resource Telemetry &amp; Gradient Analysis (v1.5.0)<a class="headerlink" href="#guide-resource-telemetry-gradient-analysis-v150" title="Permanent link">&para;</a></h1>
+<h1 id="guide-resource-telemetry-gradient-analysis-v160">Guide: Resource Telemetry &amp; Gradient Analysis (v1.6.0)<a class="headerlink" href="#guide-resource-telemetry-gradient-analysis-v160" title="Permanent link">&para;</a></h1>
 <p>AgentV 1.5.0 introduces <strong>Hardware-Aware Forensics</strong>, allowing you to monitor the physical footprint of agent execution. This is critical for detecting resource leaks (CPU/Memory/Disk) that lead to non-deterministic infrastructure failures.</p>
 <h2 id="1-the-resource-collector">1. The Resource Collector<a class="headerlink" href="#1-the-resource-collector" title="Permanent link">&para;</a></h2>
 <p>The <code>SessionManager</code> now samples hardware metrics at every turn using <code>psutil</code>. These snapshots are bundled into the <a href="../../docs/src/content/docs/spec/forensic-ledger-schema.md">Forensic Ledger</a> for post-run analysis.</p>
@@ -3888,7 +3888,7 @@
 <p>The analyzer will flag this as an <code>INFRA_OOM</code> precursor in the <a href="../05_DRIFT_AND_TRIAGE/#3-automated-diagnostics-the-causal-chain-explain">Causal Chain</a>, even if the run successfully completes before hitting the hard limit.</p>
 <hr />
 <h2 id="3-configuration">3. Configuration<a class="headerlink" href="#3-configuration" title="Permanent link">&para;</a></h2>
-<p>Telemetry is enabled by default in AES v1.5.0. Configuration for the industrial samplers is located in <code>config.yaml</code>:</p>
+<p>Telemetry is enabled by default in AES v1.4. Configuration for the industrial samplers is located in <code>config.yaml</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">forensics</span><span class="p">:</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">telemetry_sampling_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span><span class="w">  </span><span class="c1"># seconds</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">capture_disk_metrics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>

@@ -1,6 +1,6 @@
-# Agent Eval Specification (AES) v1.4
+# Agent Eval Specification (AES) v1.6
 
-AES is a standardized format for defining portable and robust AI agent benchmarks. v1.4 introduces **Ref-Based Modular Definitions**, **Capability-Based Routing**, and **Quantitative Success Criteria** for industrial-grade forensic auditing.
+AES is a standardized format for defining portable and robust AI agent benchmarks. v1.6 introduces **Ref-Based Modular Definitions**, **Capability-Based Routing**, and **Quantitative Success Criteria** for industrial-grade forensic auditing.
 
 ## Core Principles
 1. **Determinism**: Scenarios should be reproducible and verifiable across diverse environments.
@@ -30,16 +30,16 @@ Declare which environment simulators to mount for this benchmark.
 The state-machine defining the agentic interaction.
 - `id`: Unique node identifier.
 - `task_description`: The instructions for the agent at this state.
-- `required_tools`: [v1.4] List of shims/tools explicitly allowed for this node.
-- `success_criteria`: [v1.4] Declarative checks for task completion.
+- `required_tools`: [v1.6] List of shims/tools explicitly allowed for this node.
+- `success_criteria`: [v1.6] Declarative checks for task completion.
 
-### 5. Success Criteria [v1.4]
+### 5. Success Criteria [v1.6]
 Specific, measurable predicates for validating a node's output.
 - `tool_called`: Verify a specific tool was used.
 - `output_matches`: Regex or exact match validation.
 - `factual_reference`: Verification against a golden dataset.
 
-### 6. Capability-Based Routing [v1.4]
+### 6. Capability-Based Routing [v1.6]
 Infrastructure targets are resolved dynamically via the `routing/manifest.json`.
 - Scenarios remain immutable across Dev/Staging/Prod.
 - Environments map `capabilities` to physical endpoints.
@@ -62,6 +62,6 @@ All infrastructure configuration is now consolidated for security:
 ## Changelog
 | Version | Changes |
 |---|---|
-| v1.4 | **Capability-Based Routing**, **Quantitative Success Criteria**, Ref-Based Schemas. |
+| v1.6 | **Capability-Based Routing**, **Quantitative Success Criteria**, Ref-Based Schemas. |
 | v1.3 | Environmental DNA, Provisioning Snapshots, Redaction. |
 | v1.2 | Standardized Workflow DAG, Consensual Judges. |
