@@ -401,7 +401,7 @@ LUNA_JUDGE_TEMPERATURE = float(os.getenv("LUNA_JUDGE_TEMPERATURE", "0.0"))
 
 # --- Provider Defaults ---
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama4")
 OLLAMA_API_URL = os.getenv("OLLAMA_API_URL", f"{OLLAMA_HOST}/api/chat")
 AUTOGEN_API_URL = os.getenv("AUTOGEN_API_URL", "http://localhost:5002/execute_task")
 

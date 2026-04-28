@@ -318,13 +318,13 @@ All configurable parameters are centralized in `eval_runner/config.py`. You can 
 | Variable | Default | Description |
 |---|---|---|
 | `AGENT_API_URL` | `http://localhost:5001/execute_task` | Agent entry point URL (HTTP) |
-| `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
+| `EVAL_MAX_TURNS` | `10` | Max conversation turns per task |
 | `MAX_ENGINE_ATTEMPTS` | `50` | Security cap on evaluation attempts |
 | `JUDGE_PROVIDER` | `ollama` | LLM Judge provider (`openai`, `anthropic`, `gemini`, `ollama`, `grok`) |
 | `JUDGE_MODEL` | *(None)* | Specific model for the judge |
 | `LUNA_JUDGE_TEMPERATURE`| `0.0` | Temperature for judge generation |
 | `OLLAMA_HOST` | `http://localhost:11434` | Local Ollama host URL |
-| `OLLAMA_MODEL` | `llama3` | Default Ollama model |
+| `OLLAMA_MODEL` | `llama4` | Default Ollama model |
 | `OPENAI_API_KEY` | *(None)* | API key for OpenAI provider |
 | `ANTHROPIC_API_KEY`| *(None)* | API key for Anthropic/Claude provider |
 | `GOOGLE_API_KEY` | *(None)* | API key for Google/Gemini provider |
@@ -358,7 +358,7 @@ AgentV employs a **Strict Industrial Vault** methodology to protect run integrit
 
 - **`ConnectionRefusedError`**: The harness cannot reach the agent. Ensure `AGENT_API_URL` is set correctly and the agent API is running.
 - **`PluginTimeoutError`**: A registered plugin took too long to execute a hook. Check your plugin logic or increase the timeout.
-- **`Invalid JSON Error (LLM)`**: The `auto-translate` command expects strict JSON. Ensure your local Ollama model (e.g., `llama3`) is running and capable of JSON mode.
+- **`Invalid JSON Error (LLM)`**: The `auto-translate` command expects strict JSON. Ensure your local Ollama model (e.g., `llama4`) is running and capable of JSON mode.
 - **`docker: command not found`**: You need to install Docker if you intend to use Lab Mode.
 
 ---

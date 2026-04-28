@@ -1,18 +1,18 @@
-# Comparative Agent Inventory for Model Wars
+# Comparative Agent Inventory for Model Wars (April 2026)
 agents:
-  - name: "GPT-4o (Production)"
+  - name: "GPT-5.4-Mini (Production)"
     protocol: "openai"
     agent: "https://api.openai.com/v1/chat/completions"
   
-  - name: "Claude 3.5 Sonnet (Optimized)"
+  - name: "Claude 4.6 Sonnet (Optimized)"
     protocol: "claude"
     agent: "anthropic"
 
-  - name: "Gemini 1.5 Pro"
+  - name: "Gemini 2.5 Pro"
     protocol: "gemini"
     agent: "google"
 
-  - name: "Llama3-70b (Local Ollama)"
+  - name: "Llama4-70b (Local Ollama)"
     protocol: "ollama"
     agent: "http://localhost:11434/api/generate"
 

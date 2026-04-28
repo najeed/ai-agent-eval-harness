@@ -43,7 +43,7 @@ async def analyze_repo(repo_url: str) -> list:
         found_patterns = [
             {
                 "type": "llm_call",
-                "match": "ChatOpenAI(model='gpt-4')",
+                "match": "ChatOpenAI(model='gpt-5.4')",
                 "file": "agent/core.py",
             },
             {

@@ -43,7 +43,7 @@ python dataproc_engine/cli/main.py extract --industry [INDUSTRY] [FLAGS]
 | `--source` | Data acquisition mode (`api` for live or `file` for local ingestion). | `--source file` |
 | `--input-uri` | Local path or Web URL for `file` source ingestion (BYOD override). | `--input-uri https://example.com/data.csv` |
 | `--llm-strategy` | Transformation execution strategy (`auto`, `cloud`, `ollama`, `heuristic`, `mock`). | `--llm-strategy ollama` |
-| `--model` | Specific model identifier for the LLM provider. | `--model gemini-1.5-pro` |
+| `--model` | Specific model identifier for the LLM provider. | `--model gemini-2.5-flash` |
 | `--overwrite` | Force-overwrite existing output files (also triggers safety backup). | `--overwrite` |
 | `--max-backups` | Maximum number of rolling rotational backups to maintain. | `--max-backups 10` |
 | `--allow-simulation`| V2.0-STABLE: explicit toggle for high-fidelity simulation fallbacks. | `--allow-simulation` |

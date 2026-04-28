@@ -6,7 +6,7 @@ Welcome Expert Lead. The Board of Directors needs a decision. 🏛️
 We've been given a budget to upgrade the entire company's AI fleet. We have three finalists in the **Gemini Arena**:
 1.  **Gemini 3.1 Pro**: The reliable workhorse.
 2.  **Gemini 2.5 Flash**: Internal industrial prototype ($N=400$ verified).
-3.  **GPT-4o (Legacy Bridge)**: For compatibility with older tools.
+3.  **GPT-5.4-Mini (Legacy Bridge)**: For compatibility with older tools.
 
 ## 🏆 Your Task
 Generate the **Industrial Leaderboard** using `generate_leaderboard.py`.

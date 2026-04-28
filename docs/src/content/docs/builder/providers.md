@@ -12,7 +12,7 @@ Set the following variables in your `.env` file or CI/CD secrets to enable provi
 | Provider | .env Variable | Default Fallback |
 | :--- | :--- | :--- |
 | **Anthropic** | `CLAUDE_API_URL` | `https://api.anthropic.com/v1/messages` |
-| **Google** | `GEMINI_BASE_URL` | `https://generativelanguage.googleapis.com/v1beta/models` |
+| **Google** | `GEMINI_BASE_URL` | `https://generativelanguage.googleapis.com/v1/models` |
 | **Ollama** | `OLLAMA_API_URL` | `http://localhost:11434/api/chat` |
 | **xAI (Grok)** | `GROK_API_URL` | *(Requires active Grok Adapter)* |
 | **AutoGen** | `AUTOGEN_API_URL` | `http://localhost:5002/execute_task` |

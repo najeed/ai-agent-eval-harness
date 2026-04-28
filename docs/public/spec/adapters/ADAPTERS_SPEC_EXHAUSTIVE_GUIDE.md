@@ -18,7 +18,7 @@ The bedrock of communication. These handle the literal transport of bits between
 
 ### 2. Model Providers (`active_providers`)
 Adapters that handle the specific payload formats and authentication requirements of LLM backend providers.
-- **`openai`**: GPT-4/o1 class communication.
+- **`openai`**: GPT-5.4/o1 class communication.
 - **`claude`**: Anthropic XML-based protocols.
 - **`gemini`**: Google Vertex/AI-Studio integration.
 - **`grok`**: xAI adversarial benchmarks.

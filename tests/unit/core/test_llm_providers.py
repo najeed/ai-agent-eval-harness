@@ -27,7 +27,7 @@ async def test_ollama_provider():
 
 @pytest.mark.asyncio
 async def test_openai_provider():
-    provider = OpenAIProvider(api_key="sk-test", model="gpt-4o")
+    provider = OpenAIProvider(api_key="sk-test", model="gpt-5.4-mini")
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_response = AsyncMock()
         mock_response.status = 200

@@ -85,7 +85,7 @@ def cli():
 )
 @click.option(
     "--model",
-    help="Specific model identifier for the selected LLM provider (e.g., gemini-1.5-pro).",
+    help="Specific model identifier for the selected LLM provider (e.g., gemini-2.5-flash).",
 )
 @click.option("--ciks", help="Comma-separated list of CIK identifiers (Finance industry only).")
 @click.option("--taxonomy", default="us-gaap", help="Financial reporting taxonomy (us-gaap, ifrs).")

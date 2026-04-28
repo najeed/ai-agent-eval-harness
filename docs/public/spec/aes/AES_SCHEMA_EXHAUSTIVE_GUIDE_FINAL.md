@@ -246,7 +246,7 @@ This block tells the harness how to calculate the final grade. Without this, the
 | :--- | :--- | :--- | :--- |
 | `strategy` | Enum | `Majority_Vote` | How to resolve disagreements between judges. |
 | `min_judges` | Integer | 1 | minimum number of LLM judges required for a valid certification. |
-| `judge_panel` | Array | `["default"]` | List of specific models (e.g., `gpt-4o`, `claude-3.5-sonnet`). |
+| `judge_panel` | Array | `["default"]` | List of specific models (e.g., `gpt-5.4-mini`, `claude-4.6-sonnet`). |
 | `ija_threshold` | Float | 0.8 | minimum agreement (0.0 to 1.0) before the result is flagged as "Inconclusive". |
 
 
@@ -274,7 +274,7 @@ How does `Majority_Vote` work?
 - **The Inconclusive Trigger**: If the distance between judges is too great (Agreement < `ija_threshold`), the harness refuses to certify the result and flags it for Human Review.
 
 ### Judge Configuration
-Models like `gpt-4o` in the `judge_panel` are resolved via the **Routing Registry** (`.aes/config/routing/manifest.json`). This protects your scenario from breaking if you swap providers (e.g., moving from OpenAI to an internal Ollama cluster).
+Models like `gpt-5.4-mini` in the `judge_panel` are resolved via the **Routing Registry** (`.aes/config/routing/manifest.json`). This protects your scenario from breaking if you swap providers (e.g., moving from OpenAI to an internal Ollama cluster).
 
 ### 🏗️ Walkthrough Part 3: Setting the Jury
 We use a panel of three judges to ensure the underwriting decision isn't a fluke.
@@ -284,7 +284,7 @@ We use a panel of three judges to ensure the underwriting decision isn't a fluke
   "consensus": {
     "strategy": "Majority_Vote",
     "min_judges": 3,
-    "judge_panel": ["gpt-4o", "claude-3.5-sonnet", "gemini-1.5-pro"]
+    "judge_panel": ["gpt-5.4-mini", "claude-4.6-sonnet", "gemini-2.5-flash"]
   },
   "ija_threshold": 0.9
 }
@@ -358,7 +358,7 @@ Putting it all together into a production-grade file.
     "consensus": {
       "strategy": "Majority_Vote",
       "min_judges": 3,
-      "judge_panel": ["gpt-4o", "claude-3.5-sonnet", "gemini-1.5-pro"]
+      "judge_panel": ["gpt-5.4-mini", "claude-4.6-sonnet", "gemini-2.5-flash"]
     },
     "ija_threshold": 0.9
   }

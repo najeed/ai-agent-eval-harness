@@ -47,7 +47,7 @@ def test_calculate_pass_at_k(plugin):
 
 def test_export_results_and_regression(plugin, tmp_path):
     """Verifies export and regression detection logic."""
-    summary = {"id": "test-scen", "metrics": {"pass_rate": 0.5}, "agent": "gpt-4"}
+    summary = {"id": "test-scen", "metrics": {"pass_rate": 0.5}, "agent": "gpt-5.4"}
 
     # 1. Export
     plugin._export_results(summary)

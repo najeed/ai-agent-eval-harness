@@ -25,11 +25,10 @@ class LLMManager:
 
         # 2026 Tier 1 Economic Mapping (Cents per 1k tokens)
         self.pricing = {
-            "gemini-1.5-pro": {"in": 0.35, "out": 1.05},
-            "gemini-1.5-flash": {"in": 0.0075, "out": 0.03},
-            "gpt-4o": {"in": 0.50, "out": 1.50},
-            "gpt-4o-mini": {"in": 0.015, "out": 0.06},
-            "claude-3-5-sonnet": {"in": 0.30, "out": 1.50},
+            "gemini-2.5-pro": {"in": 0.35, "out": 1.05},
+            "gemini-2.5-flash": {"in": 0.0075, "out": 0.03},
+            "gpt-5.4-mini": {"in": 0.015, "out": 0.06},
+            "claude-4.6-sonnet": {"in": 0.30, "out": 1.50},
         }
 
     async def extract_structured_data(
@@ -220,7 +219,7 @@ class LLMManager:
         self, content: str, schema: dict[str, Any], api_key: str
     ) -> dict[str, Any] | None:
         url = "https://api.openai.com/v1/chat/completions"
-        model = self.preferred_model or "gpt-4o"
+        model = self.preferred_model or "gpt-5.4-mini"
         prompt = self._build_prompt(content, schema)
 
         async with aiohttp.ClientSession() as session:
@@ -243,9 +242,9 @@ class LLMManager:
     async def _call_gemini(
         self, content: str, schema: dict[str, Any], api_key: str
     ) -> dict[str, Any] | None:
-        model = self.preferred_model or "gemini-1.5-pro"
+        model = self.preferred_model or "gemini-2.5-flash"
         url = (
-            "https://generativelanguage.googleapis.com/v1beta/models/"
+            "https://generativelanguage.googleapis.com/v1/models/"
             f"{model}:generateContent?key={api_key}"
         )
         prompt = self._build_prompt(content, schema)
@@ -269,7 +268,7 @@ class LLMManager:
         self, content: str, schema: dict[str, Any], api_key: str
     ) -> dict[str, Any] | None:
         url = "https://api.anthropic.com/v1/messages"
-        model = self.preferred_model or "claude-3-5-sonnet-20240620"
+        model = self.preferred_model or "claude-4.6-sonnet"
         prompt = self._build_prompt(content, schema)
 
         async with aiohttp.ClientSession() as session:
@@ -297,7 +296,7 @@ class LLMManager:
         self, content: str, schema: dict[str, Any], api_key: str
     ) -> dict[str, Any] | None:
         url = "https://api.x.ai/v1/chat/completions"
-        model = self.preferred_model or "grok-1"
+        model = self.preferred_model or "grok-4.20-multi-agent"
         prompt = self._build_prompt(content, schema)
 
         async with aiohttp.ClientSession() as session:

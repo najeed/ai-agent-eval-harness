@@ -28,7 +28,7 @@ Use **Pilot Mode** for rapid iteration, testing new scenarios, or verifying your
 
 ### Example: Running a pilot
 ```bash
-python scripts/publication_suite/publication_suite.py --mode pilot --agent-name "GPT-4o-Pilot" --agent "http://localhost:5001/execute"
+python scripts/publication_suite/publication_suite.py --mode pilot --agent-name "GPT-5.4-Mini-Pilot" --agent "http://localhost:5001/execute"
 ```
 **Outcome:** Generates a `pilot_preview.html` and statistical summary in 3-5 minutes.
 
@@ -42,11 +42,11 @@ The suite supports **Model Wars** mode, allowing you to benchmark multiple agent
 Provide an **Agent Inventory** YAML file (Default: `scripts/publication_suite/agents_inventory.yaml`).
 ```yaml
 agents:
-  - name: "GPT-4o"
+  - name: "GPT-5.4-Mini"
     protocol: "openai"
     agent: "https://api.openai.com/v1/chat/completions"
   
-  - name: "Local-Llama3"
+  - name: "Local-Llama4"
     protocol: "ollama"
     agent: "http://localhost:11434"
 ```

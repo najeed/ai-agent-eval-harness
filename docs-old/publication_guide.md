@@ -23,9 +23,9 @@ default_runs: 100
 pilot_runs: 5
 parallel_workers: 4
 pricing:
-  openai_gpt4o: 5.0     # USD per 1M tokens
-  claude_sonnet: 3.0
-  gemini_pro: 2.0
+  openai_gpt5_4_mini: 0.15  # USD per 1M tokens (April 2026 baseline)
+  claude_4_6_sonnet: 3.0
+  gemini_2_5_flash: 0.10
 regression_threshold: 0.03
 ```
 
@@ -52,7 +52,7 @@ Use **Pilot Mode** for rapid iteration, testing new scenarios, or verifying your
 
 ### Example: Running a pilot for a new adapter
 ```bash
-python scripts/publication_suite/publication_suite.py --mode pilot --agent-name "GPT-4o-Pilot" --agent "http://localhost:5001/execute"
+python scripts/publication_suite/publication_suite.py --mode pilot --agent-name "GPT-5.4-Mini-Pilot" --agent "http://localhost:5001/execute"
 ```
 **Target Time:** 3-5 minutes (serial execution to ensure clean Flight Recorder traces).
 **Outcome:** Generates a `pilot_preview.html` and statistical summary based on 25-50 total runs.
@@ -95,7 +95,7 @@ Run a full benchmarking campaign (default 100 runs per scenario) to generate pub
 
 ### Example: Full scale evaluation with parallel workers
 ```bash
-python scripts/publication_suite/publication_suite.py --mode standard --agent-name "Claude-3.5-Sonnet-v1" --parallel 8
+python scripts/publication_suite/publication_suite.py --mode standard --agent-name "Claude-4.6-Sonnet-v1" --parallel 8
 ```
 **Outcome:** Generates a full `leaderboard.html` and a signed artifact bundle.
 
@@ -147,11 +147,11 @@ The suite supports **Model Wars** mode, allowing you to benchmark multiple agent
 To use Model Wars, you must provide an **Agent Inventory** YAML file (Default: `scripts/publication_suite/agents_inventory.yaml`). This file defines the fleet of agents you wish to compare.
 ```yaml
 agents:
-  - name: "GPT-4o"
+  - name: "GPT-5.4-Mini"
     protocol: "openai"
     agent: "https://api.openai.com/v1/chat/completions"
   
-  - name: "Local-Llama3"
+  - name: "Local-Llama4"
     protocol: "ollama"
     agent: "http://localhost:11434"
 ```

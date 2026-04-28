@@ -39,7 +39,7 @@ agentv analyze <github_url>
 ### `auto-translate`
 Translate raw technical documents (PDF, MD, TXT) to AES JSON via local LLMs.
 ```bash
-agentv auto-translate --input <path> --model llama3 --industry <industry>
+agentv auto-translate --input <path> --model llama4 --industry <industry>
 ```
 
 ---

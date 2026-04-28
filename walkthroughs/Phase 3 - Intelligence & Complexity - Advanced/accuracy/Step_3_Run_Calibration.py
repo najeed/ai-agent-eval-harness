@@ -8,7 +8,7 @@ def main():
     print("WALKTHROUGH: STEP 3 - RUN CALIBRATION")
     print("=" * 60)
     print("\nIn this step, we will use the AgentV CLI to measure")
-    print("how closely the 'GPT-4o' judge matched our 'Human' ground truth.")
+    print("how closely the 'GPT-5.4-Mini' judge matched our 'Human' ground truth.")
     print("\n[Executing CLI Command]:")
     print(
         "agentv calibrate --path Step_1_Evaluation_Trace.jsonl --golden Step_2_Human_Ground_Truth.json"  # noqa: E501

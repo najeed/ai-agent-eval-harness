@@ -56,7 +56,7 @@ def extract_text(file_path: Path) -> str:
 
 async def translate_to_scenario(
     text: str,
-    model: str = "llama3",
+    model: str = "llama4",
     api_url: str = "http://localhost:11434/api/generate",
 ) -> dict[str, Any]:
     """Uses a local Ollama LLM to synthesize a scenario JSON from raw text."""

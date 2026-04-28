@@ -15,16 +15,16 @@ app = FastAPI()
 @app.post("/execute_task")
 async def execute(request: dict):
     message = client.messages.create(
-        model="claude-3-5-sonnet-20240620",
+        model="claude-4-6-sonnet",
         max_tokens=1024,
-        messages=[{"role": "user", "content": request["input"]}]
+        messages=[{"role": "user", "content": request["task_description"]}]
     )
     return {"content": message.content[0].text}
 ```
 
 ## 2. Register Your Agent
 ```bash
-agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "Claude-Sonnet-Chef"
+agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "Claude-4.6-Chef"
 ```
 
 ## 3. Generate Verified Report

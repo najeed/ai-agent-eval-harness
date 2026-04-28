@@ -15,9 +15,9 @@ regression_threshold: 0.03  # Flag if pass rate drops more than 3 points
 # Pricing Model (USD per 1M tokens - illustrative)
 # Note: Internal logic will convert these to per-token for calculation
 pricing:
-  openai_gpt4o: 5.0
+  openai_gpt4o: 0.15
   claude_sonnet: 3.0
-  gemini_pro: 2.0
+  gemini_pro: 0.10
   custom_adapter: 1.0
 
 # Pilot Mode Subsets

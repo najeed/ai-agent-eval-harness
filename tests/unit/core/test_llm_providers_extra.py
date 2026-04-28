@@ -56,7 +56,7 @@ async def provider_stub(aiohttp_server):
 @pytest.mark.asyncio
 async def test_ollama_provider_success(provider_stub):
     base_url = f"http://{provider_stub.host}:{provider_stub.port}"
-    p = OllamaProvider(host=base_url, model="llama3")
+    p = OllamaProvider(host=base_url, model="llama4")
     res = await p.generate("hi")
     assert res == "Ollama Response"
 
@@ -64,7 +64,7 @@ async def test_ollama_provider_success(provider_stub):
 @pytest.mark.asyncio
 async def test_openai_provider_success(provider_stub):
     base_url = f"http://{provider_stub.host}:{provider_stub.port}"
-    p = OpenAIProvider(api_key="test", base_url=base_url, model="gpt-4")
+    p = OpenAIProvider(api_key="test", base_url=base_url, model="gpt-5.4")
     res = await p.generate("hi")
     assert res == "OpenAI Response"
 
@@ -78,7 +78,7 @@ async def test_anthropic_provider_success():
 
 @pytest.mark.asyncio
 async def test_gemini_provider_success():
-    p = GeminiProvider(api_key="test", model="gemini-1.5")
+    p = GeminiProvider(api_key="test", model="gemini-2.5-flash")
     with patch("eval_runner.llm_providers.GeminiProvider.generate", wraps=p.generate):
         pass
 

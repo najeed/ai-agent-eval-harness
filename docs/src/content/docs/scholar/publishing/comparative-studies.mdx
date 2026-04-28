@@ -23,17 +23,17 @@ A "Model War" ensures that all agents in a study are evaluated under identical c
 Create an `agents_inventory.yaml` file defining the fleet of agents to benchmark.
 ```yaml
 agents:
-  - name: "GPT-4o-v1"
+  - name: "GPT-5.4-Mini-v1"
     protocol: "openai"
-    agent: "gpt-4o"
+    agent: "gpt-5.4-mini"
   
-  - name: "Claude-3.5-v1"
+  - name: "Claude-4.6-Sonnet-v1"
     protocol: "claude"
-    agent: "claude-3-5-sonnet-20240620"
+    agent: "claude-4-6-sonnet"
 
-  - name: "Local-Llama3-8B"
+  - name: "Local-Llama4-8B"
     protocol: "ollama"
-    agent: "llama3"
+    agent: "llama4"
 ```
 
 ### 2. Run the Campaign

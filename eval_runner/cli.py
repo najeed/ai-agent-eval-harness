@@ -450,7 +450,7 @@ Usage: agentv <command> [options]
     translate_parser.add_argument("--path", "--input", dest="input", required=True)
     translate_parser.add_argument("--output")
     translate_parser.add_argument("--industry")
-    translate_parser.add_argument("--model", default="llama3")
+    translate_parser.add_argument("--model", default="llama4")
 
     ci_parser = subparsers.add_parser("ci", help="CI/CD utilities")
     ci_sub = ci_parser.add_subparsers(dest="ci_command")

@@ -101,7 +101,7 @@ Turn 2: Harness → Agent: "Tool 'get_customer_details' returned: {...}. Continu
          Agent → Harness: {"action": "final_answer", "summary": "Customer identified."}
 ```
 
-The loop ends when the agent sends `final_answer`, `provide_instructions`, `error`, or the max turn limit (default: 5) is reached.
+The loop ends when the agent sends `final_answer`, `provide_instructions`, `error`, or the max turn limit (default: 10) is reached.
 
 ### Policy Violations (Governance feedback)
 
@@ -190,7 +190,7 @@ When using Ecosystem Adapters (`openai://`, `gemini://`, `claude://`), the harne
 ```json
 {
   "task": "Process user request...",
-  "model": "grok-4.20-multi-agent",
+  "model": "grok-4.0",
   "temperature": 0.0
 }
 ```
@@ -212,7 +212,7 @@ All ecosystem URLs are sourced from environment variables to enable zero-touch s
 | Ollama | `OLLAMA_API_URL` | `http://localhost:11434/api/chat` |
 | AutoGen | `AUTOGEN_API_URL` | `http://localhost:5002/execute_task` |
 | Claude | `CLAUDE_API_URL` | `https://api.anthropic.com/v1/messages` |
-| Gemini | `GEMINI_BASE_URL` | `https://generativelanguage.googleapis.com/v1beta/models` |
+| Gemini | `GEMINI_BASE_URL` | `https://generativelanguage.googleapis.com/v1/models` |
 
 ## Scenario-Level Judge Configuration
 The `luna_judge_score` metric can be customized per-scenario or per-criterion using the `judge_config` object. This allows for granular control over the evaluation model and scoring rubrics.

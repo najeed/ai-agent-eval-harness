@@ -127,10 +127,10 @@ agentv gate --run-id <id> [--hash <commit_hash>] [--verify-ledger]
 | Variable | Default | Description |
 |---|---|---|
 | `AGENT_API_URL` | `http://localhost:5001/execute_task` | Default agent endpoint |
-| `EVAL_MAX_TURNS` | `5` | Max conversation turns per task |
+| `EVAL_MAX_TURNS` | `10` | Max conversation turns per task |
 | `RUN_LOG_DIR` | `runs` | Directory for execution traces |
-| `JUDGE_PROVIDER` | `ollama` | LLM Judge provider (`openai`, `gemini`, `ollama`, etc.) |
-| `JUDGE_MODEL` | `llama3` | Specific model for the judge |
+| `JUDGE_PROVIDER` | `gemini` | LLM Judge provider (`openai`, `gemini`, `ollama`, etc.) |
+| `JUDGE_MODEL` | `gemini-2.5-flash` | Specific model for the judge |
 | `AEH_STRICT_JAIL` | `0` | Set to `1` for project-only path isolation |
 
 ---

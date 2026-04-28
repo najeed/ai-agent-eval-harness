@@ -32,4 +32,4 @@ When a benchmark is loaded via the URI schema, the engine automatically:
 
 ## 3. Comparative Studies
 
-AgentV's **Model Wars** suite allows researchers to compare multiple agents (GPT-4 vs. Claude-3.5 vs. Llama-3) against the same benchmark snapshot, producing a unified [Comparative Leaderboard].
+AgentV's **Model Wars** suite allows researchers to compare multiple agents (e.g., GPT-5.4 vs. Claude-4.6 vs. Llama-4) against the same benchmark snapshot, producing a unified [Comparative Leaderboard].

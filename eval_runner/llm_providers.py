@@ -106,7 +106,6 @@ class OpenAIProvider(LLMProvider):
         future_models = [
             {"id": "gpt-5.4-pro", "name": "GPT-5.4 Pro"},
             {"id": "gpt-5.4-mini", "name": "GPT-5.4 Mini"},
-            {"id": "gpt-4.1-pro", "name": "GPT-4.1 Pro"},
         ]
         if not self.api_key:
             return future_models
@@ -263,7 +262,7 @@ class GrokProvider(LLMProvider):
         return [
             {"id": "grok-4.20-beta-0309", "name": "Grok 4.20 Beta"},
             {"id": "grok-4-fast", "name": "Grok 4 Fast"},
-            {"id": "grok-3-mini", "name": "Grok 3 Mini"},
+            {"id": "grok-4-mini", "name": "Grok 4 Mini"},
         ]
 
 

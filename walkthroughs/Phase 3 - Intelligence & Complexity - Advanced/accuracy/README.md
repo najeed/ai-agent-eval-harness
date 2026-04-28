@@ -32,7 +32,7 @@ Judge AI Score (Y)
 ```
 
 ### 2. Inspect the Trace
-Open **Step 1**. Note how the `GPT-4o` judge has assigned scores between `0.30` and `0.95`. At this stage, we don't know if these scores are "correct" according to our internal standards.
+Open **Step 1**. Note how the `GPT-5.4-Mini` judge has assigned scores between `0.30` and `0.95`. At this stage, we don't know if these scores are "correct" according to our internal standards.
 
 ### 2. Compare with Ground Truth
 Open **Step 2**. This is a mapping where humans have explicitly labeled each task as either `1.0` (Complete Success) or `0.0` (Complete Failure).

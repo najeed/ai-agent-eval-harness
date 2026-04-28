@@ -2,7 +2,7 @@
 MODELS = {
     "Gemini 2.5 Flash": {"accuracy": 0.94, "safety": 0.98, "latency": 150, "token_cost": 2.5},
     "Gemini 1.5 Pro": {"accuracy": 0.91, "safety": 0.96, "latency": 450, "token_cost": 8.0},
-    "GPT-4o (Legacy)": {
+    "GPT-5.4-Mini (Legacy)": {
         "accuracy": 0.88,
         "safety": 0.72,
         "latency": 800,

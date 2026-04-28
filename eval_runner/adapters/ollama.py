@@ -25,7 +25,7 @@ class OllamaAdapterPlugin(BaseEvalPlugin):
         Expects payload to contain 'model' and 'task' (or 'messages').
         """
         base_url = url or payload.get("ollama_url") or config.OLLAMA_API_URL
-        model = payload.get("model", "llama3")
+        model = payload.get("model", "llama4")
 
         # Translate harness task into Ollama chat format
         messages = payload.get("messages", [])

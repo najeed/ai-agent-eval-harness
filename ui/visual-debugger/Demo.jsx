@@ -220,7 +220,7 @@ const Demo = ({ apiFetch }) => {
                                         </div>
                                     ))}
                                 </div>
-                                {['v1.2.0 (Stable)', 'v2.0-beta', 'GPT-4o', 'Claude 3.5'].map((col, i) => (
+                                {['v1.2.0 (Stable)', 'v2.0-beta', 'GPT-5.4-Mini', 'Claude 4.6'].map((col, i) => (
                                     <div key={i} className="space-y-4">
                                         <div className="text-[10px] font-black text-slate-100 uppercase tracking-widest text-center px-4 py-2 bg-blue-600/10 border border-blue-500/20 rounded-xl">{col}</div>
                                         {[1, 2, 3, 4, 5, 6].map(row => (

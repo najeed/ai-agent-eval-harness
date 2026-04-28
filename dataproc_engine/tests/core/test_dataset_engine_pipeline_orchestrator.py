@@ -36,11 +36,11 @@ async def test_llm_manager_v2_cost_tracking():
             "dataproc_engine.core.llm_manager.LLMManager._call_openai", side_effect=mock_call
         ):
             # Manually trigger record_usage
-            manager._record_usage(mock_usage, "gpt-4o")
+            manager._record_usage(mock_usage, "gpt-5.4-mini")
 
-            # gpt-4o: ($0.50 * 1) + ($1.50 * 0.5) = 1.25 cents
+            # gpt-5.4-mini: ($0.015 * 1) + ($0.06 * 0.5) = 0.045 cents
             economics = manager.get_session_economics()
-            assert economics["total_cost_cents"] == 1.25
+            assert economics["total_cost_cents"] == 0.045
             assert economics["roi_status"] == "positive"
 
 

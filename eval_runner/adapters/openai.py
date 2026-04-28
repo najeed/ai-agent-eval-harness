@@ -28,7 +28,7 @@ class OpenAIAdapterPlugin(BaseEvalPlugin):
         base_url = (
             base_url or payload.get("base_url") or "https://api.openai.com/v1/chat/completions"
         )
-        model = payload.get("model", "gpt-4-turbo-preview")
+        model = payload.get("model", "gpt-5.4-mini")
 
         messages = payload.get("messages", [])
         if not messages and "task" in payload:

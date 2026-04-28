@@ -56,11 +56,11 @@ AUTOGEN_API_URL=http://localhost:5002/query
 1. **Install Ollama**: Download from [ollama.com](https://ollama.com).
 2. **Pull Model**:
    ```bash
-   ollama pull llama3
+   ollama pull llama4
    ```
 3. **Verify Adapter**:
    ```bash
-   agentv run --scenario scenarios/luna_demo.json --protocol ollama --agent ollama://llama3
+   agentv run --scenario scenarios/luna_demo.json --protocol ollama --agent ollama://llama4
    ```
 4. **Verify Luna-Judge (Ollama fallback)**:
    - Ensure `JUDGE_PROVIDER=ollama` in `.env`.
