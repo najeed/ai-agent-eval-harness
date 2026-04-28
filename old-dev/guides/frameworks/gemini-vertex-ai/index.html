@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#quickstart-gemini-vertex-ai-agentv" class="md-skip">
+        <a href="#quickstart-gemini-vertex-ai-agentv-april-2026" class="md-skip">
           Skip to content
         </a>
       
@@ -3406,10 +3406,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-setup-your-agent-api" class="md-nav__link">
+  <a href="#1-native-integration-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Setup Your Agent API
+        1. Native Integration (Recommended)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Native Integration (Recommended)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-setup-via-agent-api-legacycustom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Setup via Agent API (Legacy/Custom)
       
     </span>
   </a>
@@ -3417,10 +3445,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-register-your-enterprise-agent" class="md-nav__link">
+  <a href="#3-register-your-enterprise-agent" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Register Your Enterprise Agent
+        3. Register Your Enterprise Agent
       
     </span>
   </a>
@@ -3428,10 +3456,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-generate-verified-report" class="md-nav__link">
+  <a href="#4-generate-verified-report" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Generate Verified Report
+        4. Generate Verified Report
       
     </span>
   </a>
@@ -3886,10 +3914,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-setup-your-agent-api" class="md-nav__link">
+  <a href="#1-native-integration-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Setup Your Agent API
+        1. Native Integration (Recommended)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Native Integration (Recommended)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-setup-via-agent-api-legacycustom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Setup via Agent API (Legacy/Custom)
       
     </span>
   </a>
@@ -3897,10 +3953,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-register-your-enterprise-agent" class="md-nav__link">
+  <a href="#3-register-your-enterprise-agent" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Register Your Enterprise Agent
+        3. Register Your Enterprise Agent
       
     </span>
   </a>
@@ -3908,10 +3964,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-generate-verified-report" class="md-nav__link">
+  <a href="#4-generate-verified-report" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Generate Verified Report
+        4. Generate Verified Report
       
     </span>
   </a>
@@ -3935,26 +3991,35 @@
 
 
 
-<h1 id="quickstart-gemini-vertex-ai-agentv">Quickstart: Gemini Vertex AI + AgentV<a class="headerlink" href="#quickstart-gemini-vertex-ai-agentv" title="Permanent link">&para;</a></h1>
-<p>Evaluate your enterprise Gemini models on Google Cloud Vertex AI.</p>
-<h2 id="1-setup-your-agent-api">1. Setup Your Agent API<a class="headerlink" href="#1-setup-your-agent-api" title="Permanent link">&para;</a></h2>
-<p>Wrap your Vertex AI interaction in a standard endpoint.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">vertexai.generative_models</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenerativeModel</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">model</span> <span class="o">=</span> <span class="n">GenerativeModel</span><span class="p">(</span><span class="s2">&quot;gemini-1.5-pro-002&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/execute_task&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">response</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate_content</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">])</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">}</span>
+<h1 id="quickstart-gemini-vertex-ai-agentv-april-2026">Quickstart: Gemini Vertex AI + AgentV (April 2026)<a class="headerlink" href="#quickstart-gemini-vertex-ai-agentv-april-2026" title="Permanent link">&para;</a></h1>
+<p>Evaluate your enterprise Gemini models on Google Cloud Vertex AI using either native protocols or standard API wrappers.</p>
+<h2 id="1-native-integration-recommended">1. Native Integration (Recommended)<a class="headerlink" href="#1-native-integration-recommended" title="Permanent link">&para;</a></h2>
+<p>As of v1.6.0, AgentV supports Vertex AI natively through the <code>gemini</code> adapter using the <code>google-genai</code> SDK.</p>
+<h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
+<p>You can trigger Vertex AI mode by setting <code>vertexai: true</code> in your agent metadata or by using a <code>vertex</code> hint in the URL.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--protocol<span class="w"> </span>gemini<span class="w"> </span>--agent<span class="w"> </span>gemini://gemini-2.5-pro<span class="w"> </span>--metadata<span class="w"> </span><span class="s1">&#39;{&quot;vertexai&quot;: true}&#39;</span>
 </code></pre></div>
-<h2 id="2-register-your-enterprise-agent">2. Register Your Enterprise Agent<a class="headerlink" href="#2-register-your-enterprise-agent" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--agent<span class="w"> </span>http://localhost:8000/execute_task<span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;VertexAI-Gemini-Pro&quot;</span>
+<h2 id="2-setup-via-agent-api-legacycustom">2. Setup via Agent API (Legacy/Custom)<a class="headerlink" href="#2-setup-via-agent-api-legacycustom" title="Permanent link">&para;</a></h2>
+<p>If you prefer to wrap your Vertex AI interaction in a custom endpoint:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">google</span><span class="w"> </span><span class="kn">import</span> <span class="n">genai</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">client</span> <span class="o">=</span> <span class="n">genai</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">vertexai</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="s2">&quot;your-project&quot;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s2">&quot;us-central1&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/execute_task&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">generate_content</span><span class="p">(</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        <span class="n">model</span><span class="o">=</span><span class="s2">&quot;gemini-2.5-pro&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        <span class="n">contents</span><span class="o">=</span><span class="n">request</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="p">)</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">}</span>
 </code></pre></div>
-<h2 id="3-generate-verified-report">3. Generate Verified Report<a class="headerlink" href="#3-generate-verified-report" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>agentv<span class="w"> </span>report<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--share
+<h2 id="3-register-your-enterprise-agent">3. Register Your Enterprise Agent<a class="headerlink" href="#3-register-your-enterprise-agent" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--agent<span class="w"> </span>http://localhost:8000/execute_task<span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;VertexAI-Gemini-Pro&quot;</span>
+</code></pre></div>
+<h2 id="4-generate-verified-report">4. Generate Verified Report<a class="headerlink" href="#4-generate-verified-report" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>agentv<span class="w"> </span>report<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--share
 </code></pre></div>
 
 

@@ -4662,7 +4662,7 @@
 <a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>Turn 2: Harness → Agent: &quot;Tool &#39;get_customer_details&#39; returned: {...}. Continue.&quot;
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>         Agent → Harness: {&quot;action&quot;: &quot;final_answer&quot;, &quot;summary&quot;: &quot;Customer identified.&quot;}
 </code></pre></div>
-<p>The loop ends when the agent sends <code>final_answer</code>, <code>provide_instructions</code>, <code>error</code>, or the max turn limit (default: 5) is reached.</p>
+<p>The loop ends when the agent sends <code>final_answer</code>, <code>provide_instructions</code>, <code>error</code>, or the max turn limit (default: 10) is reached.</p>
 <h3 id="policy-violations-governance-feedback">Policy Violations (Governance feedback)<a class="headerlink" href="#policy-violations-governance-feedback" title="Permanent link">&para;</a></h3>
 <p>If the agent attempts to call a tool in a way that violates a governance policy (e.g., exceeding a refund limit), the harness will return a <code>"status": "policy_violation"</code> in the environment message, allowing the agent to self-correct:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Turn 1: Harness → Agent: &quot;Process a $100 refund...&quot;
@@ -4728,7 +4728,7 @@
 <h3 id="example-grok-adapter-payload">Example: Grok Adapter Payload<a class="headerlink" href="#example-grok-adapter-payload" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span>
 <a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="nt">&quot;task&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Process user request...&quot;</span><span class="p">,</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;grok-4.20-multi-agent&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;grok-4.0&quot;</span><span class="p">,</span>
 <a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span><span class="nt">&quot;temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span>
 <a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="p">}</span>
 </code></pre></div>
@@ -4768,7 +4768,7 @@
 <tr>
 <td>Gemini</td>
 <td><code>GEMINI_BASE_URL</code></td>
-<td><code>https://generativelanguage.googleapis.com/v1beta/models</code></td>
+<td><code>https://generativelanguage.googleapis.com/v1/models</code></td>
 </tr>
 </tbody>
 </table>

@@ -4314,10 +4314,10 @@ While 3.14 is the current stable baseline (released Oct 2025), some downstream d
 <ol>
 <li><strong>Install Ollama</strong>: Download from <a href="https://ollama.com">ollama.com</a>.</li>
 <li><strong>Pull Model</strong>:
-   <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ollama<span class="w"> </span>pull<span class="w"> </span>llama3
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ollama<span class="w"> </span>pull<span class="w"> </span>llama4
 </code></pre></div></li>
 <li><strong>Verify Adapter</strong>:
-   <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>agentv<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>scenarios/luna_demo.json<span class="w"> </span>--protocol<span class="w"> </span>ollama<span class="w"> </span>--agent<span class="w"> </span>ollama://llama3
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>agentv<span class="w"> </span>run<span class="w"> </span>--scenario<span class="w"> </span>scenarios/luna_demo.json<span class="w"> </span>--protocol<span class="w"> </span>ollama<span class="w"> </span>--agent<span class="w"> </span>ollama://llama4
 </code></pre></div></li>
 <li><strong>Verify Luna-Judge (Ollama fallback)</strong>:</li>
 <li>Ensure <code>JUDGE_PROVIDER=ollama</code> in <code>.env</code>.</li>
