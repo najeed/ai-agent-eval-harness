@@ -49,10 +49,15 @@ graph TD
 | **Architect** | [Najeed Khan](https://github.com/najeed) |
 | **License** | Apache License 2.0 |
 | **Status** | 🟢 Production-Ready (NIST AI-100-1 Aligned) |
-| **Version** | v1.6.0 (April 2026 Industrial Extension Baseline) |
+| **Version** | v1.6.0 (April 2026 Baseline) |
 | **Trust Model** | [Behavioral DNA & VC v3.0.0](docs-old/architecture.md) |
 | **Architecture** | [Identity-Centric Core](docs-old/architecture.md) |
 | **Quick Links** | [Quickstart](#60-second-quickstart-get-running-now) • [AES v1.4 Spec](docs-old/guides/04_AES_SPECIFICATION.md) • [Security](#security-and-governance-audit-ready) • [Editions](#licensing-and-editions) |
+
+### The DNA of Agentic Reliability
+- 🌍 **Environmental DNA**: Immutable snapshots of the execution environment—registry state, tool versions, and resource availability to ensure deterministic state parity.
+- 🧬 **Behavioral DNA**: High-granularity telemetry (Phase → Action → Step) mapping the agent's decision-making process for precise policy adjudication and drift analysis.
+- 🛡️ **Forensic DNA**: Cryptographic anchoring of the entire execution trace using Ed25519 signatures and SHA-256 hashes, ensuring non-repudiable WORM logs for regulatory compliance.
 
 ## Table of Contents
 - [Mission](#mission)
@@ -156,7 +161,7 @@ The harness is organized into the following key components:
 - **Zero-Touch Extension Architecture**: Native support for Python Entry Points (`agentv.extensions`), allowing Enterprise and third-party commands to be registered without modifying Core code.
 - **Unified Functional Dispatcher**: Complete refactor of the CLI engine into a data-driven dispatch model for 100% decoupling.
 - **Lazy-Loading Optimization**: Sub-500ms CLI startup times via intelligent handler deferred loading.
-- **Discovery Engine**: Industrial activation policy ensuring only relevant or explicitly sanctioned shims are active during evaluation.
+- **Discovery Engine**: Activation policy ensuring only relevant or explicitly sanctioned shims are active during evaluation.
 - **Seal Hash Protocol**: Cryptographic anchoring of trace history before certification to ensure non-repudiation of the audit process.
 - **AES v1.4 Specification**: Unified metadata schema with `capabilities` and `standards_registry` fields.
 
@@ -229,7 +234,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **Evaluation Specification (AES)**: Standardized YAML/Markdown benchmarks for agents.
 - **20-Shim Enterprise Suite**: Environment simulators for **Git, API, Database, Knowledge Base, Support Desk, Social Media, Vector DB, CI/CD, IoT, Security**, and more (Enterprise Edition supports high-fidelity versions).
 - **Schema-Driven Core Registry**: Decoupled environmental state management using declarative manifests (`shim_resources.json`) with **Async Simulation Hardening** for non-blocking non-linear evaluations.
-- **Industrial PBAC & Operational Governance**: Granular **Permission-Based Access Control** (v1.2.3) and **Operational Throttling** (`EVAL_TURN_THROTTLE`) for regulated enterprise environments.
+- **PBAC & Operational Governance**: Granular **Permission-Based Access Control** (v1.2.3) and **Operational Throttling** (`EVAL_TURN_THROTTLE`) for regulated enterprise environments.
 - **Zero-Touch Hot-Swap Architecture**: Dynamically register and swap simulators via plugins without core code modifications.
 - **Benchmark Ecosystem**: Native loaders for GAIA (HuggingFace Integration) and AssistantBench. Supports benchmark URI schemes (e.g., `gaia://2023`, `assistantbench://v1`) for zero-config execution.
 - **Native Framework Adapters**: Full industrial-grade support for **LangChain**, **LangGraph**, **Microsoft AutoGen** (via `autogen://`), and **CrewAI** via a dynamic plugin-discovery system.
@@ -250,7 +255,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **`explain`**: AI-powered trace diagnostics (loops, timeouts, PII leaks) via `--run-id <id>`.
 - **`certify`**: Generate a non-repudiable Verification Certificate (VC) for a specific run trace using `--run-id`.
 - **`verify`**: Verify the cryptographic integrity of a run trace using autonomous artifact resolution via `--run-id`.
-- **`gate`**: Industrial "Hard Gating" tool for CI/CD pipelines to enforce signature and hash matches via `--run-id`.
+- **`gate`**: "Hard Gating" tool for CI/CD pipelines to enforce signature and hash matches via `--run-id`.
 - **`auto-translate`**: Leverage local LLMs (via Ollama) to convert raw documents into executable AES scenarios.
 - **`aes add-standard`**: Expand the global industrial registry with new standard definitions (ID, Name, Industry, Description).
 - **`init --standard <id>`**: Rapidly scaffold a dedicated, industry-compliant evaluation environment for a specific standard (e.g., `init --standard ISO_20022`).
