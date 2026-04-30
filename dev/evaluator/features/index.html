@@ -86,7 +86,7 @@
 <div class="sl-heading-wrapper level-h2"><h2 id="2-security--compliance-hardened">2. Security &#x26; Compliance (Hardened)</h2><a class="sl-anchor-link" href="#2-security--compliance-hardened"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “2. Security &#x26; Compliance (Hardened)”</span></a></div>
 <p>Enterprise-grade protection and regulatory audit tools.</p>
 <ul>
-<li><strong>Hardened Sandbox (Docker)</strong>: Isolated execution for agent tools using Docker containers to prevent host contamination.</li>
+<li><strong>Hardened Sandbox (VFS / Jails)</strong>: Isolated execution for agent tools using local process jails and virtualized file systems to prevent host contamination.</li>
 <li><strong>Shell Metacharacter Filtering</strong>: Multi-layered defense against command injection in tool parameters.</li>
 <li><strong>Credential Stripping</strong>: Automated logic to strip sensitive keys from metadata before trace signing.</li>
 <li><strong>WORM Audit Logs</strong>: Write-Once-Read-Many event streaming for immutable regulatory compliance.</li>
@@ -112,7 +112,7 @@
 <p>Scientific-grade measurement of agent capabilities.</p>
 <ul>
 <li><strong>Robust Semantic Judging (Luna-Judge)</strong>: Industrial LLM-as-Judge layer with automated regex-based score extraction, reasoning-aware parsing, and fallback Jaccard similarity heuristics.</li>
-<li><strong>Wilson Score Confidence Intervals</strong>: Provides 95% statistical confidence bounds for all reported pass rates.</li>
+<li><strong>Scientific Pass Rate Metrics (Pass@k)</strong>: Provides high-fidelity success measurement across multiple evaluation attempts.</li>
 <li><strong>Grounding Coverage</strong>: Heatmaps visualizing tool and knowledge-base utilization within scenarios.</li>
 <li><strong>Cost/Latency Analytics</strong>: P95 latency monitoring and precise token-based costing.</li>
 </ul>
