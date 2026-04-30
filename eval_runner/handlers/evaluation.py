@@ -123,6 +123,8 @@ async def handle_evaluate(args):
         random.seed(seed)
         print(f"[CLI] Set random seed to: {seed}")
 
+    base_seed = seed if isinstance(seed, int) else None
+
     # Load plugins early (v1.3.0 Industrial Standards)
     load_plugins_from_args(args)
 
@@ -162,6 +164,7 @@ async def handle_evaluate(args):
                 await engine.run_evaluation(
                     scenario,
                     run_id=getattr(args, "run_id", None),
+                    seed=base_seed,
                     metadata={
                         "args": args_dict,
                         "plugin_provenance": plugins.manager.provenance_map,
@@ -198,6 +201,8 @@ async def handle_run(args):
         random.seed(seed)
         print(f"[CLI] Set random seed to: {seed}")
 
+    base_seed = seed if isinstance(seed, int) else None
+
     # Load plugins early (v1.3.0 Industrial Standards)
     load_plugins_from_args(args)
 
@@ -222,6 +227,7 @@ async def handle_run(args):
                 scenario,
                 run_id=getattr(args, "run_id", None),
                 attempts=attempts,
+                seed=base_seed,
                 metadata={
                     "args": args_dict,
                     "plugin_provenance": plugins.manager.provenance_map,

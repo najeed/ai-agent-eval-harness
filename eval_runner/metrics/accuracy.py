@@ -7,7 +7,9 @@ from .utils import compare_numerics, extract_numbers
 
 
 @MetricRegistry.register("luna_judge_score")
-async def calculate_luna_judge_score(criterion: dict[str, Any], agent_summary: str) -> float:
+async def calculate_luna_judge_score(
+    criterion: dict[str, Any], agent_summary: str, session_metadata: dict[str, Any] | None = None
+) -> float:
     """
     LLM-based evaluation using a configurable provider.
     Defaults to Jaccard similarity if provider fails or no expected outcome is provided.
@@ -57,7 +59,9 @@ async def calculate_luna_judge_score(criterion: dict[str, Any], agent_summary: s
         if hasattr(provider, "model") and model_name:
             provider.model = model_name
 
-        response_text = await provider.generate(prompt, temperature=temperature)
+        # [Industrial Determinism] Propagate seed from session context
+        seed = (session_metadata or {}).get("seed")
+        response_text = await provider.generate(prompt, temperature=temperature, seed=seed)
         try:
             # Try to parse float with robustness for reasoning-heavy responses
             import re

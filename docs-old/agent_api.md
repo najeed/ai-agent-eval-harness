@@ -50,10 +50,12 @@ The agent must return a JSON object with an `action` field indicating what it di
 {
   "action": "call_multiple_tools",
   "tool_names": ["run_line_test", "run_remote_speed_test"],
-  "tool_outputs": [{ ... }, { ... }],
   "summary": "Remote diagnostics complete."
 }
 ```
+:::note
+Currently, `call_multiple_tools` executes tools with empty parameters. For parameterized parallel calls, use multiple sequential `call_tool` actions.
+:::
 
 ### `"action": "final_answer"` — Task complete
 ```json
@@ -81,14 +83,6 @@ Tells the harness to pause execution and wait for human input. The harness will 
 }
 ```
 
-### `"action": "branch"` — Fork Trajectory
-Signals the `SessionManager` to create a checkpoint and explore a new path.
-```json
-{
-  "action": "branch",
-  "metadata": {"reason": "Testing alternative resolution path A"}
-}
-```
 
 ## Multi-turn Flow
 

@@ -185,6 +185,7 @@ async def run_evaluation(
     scenario: dict,
     run_id: str | None = None,
     attempts: int = 1,
+    seed: int | None = None,
     metadata: dict | None = None,
     max_turns: int | None = None,
 ) -> list:
@@ -206,7 +207,7 @@ async def run_evaluation(
 
     runner = DefaultRunner()
     results = await runner.run(
-        scenario, attempts, run_id=run_id, metadata=metadata, max_turns=max_turns
+        scenario, attempts, run_id=run_id, seed=seed, metadata=metadata, max_turns=max_turns
     )
 
     # Backward compatibility: return first attempt if k=1

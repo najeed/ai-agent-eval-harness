@@ -69,7 +69,7 @@ def test_taxonomy_check_environment_infra():
 
     # Docker
     h2 = [{"identity": "env_id", "content": {"status": "error", "message": "Docker socket error"}}]
-    assert FailureTaxonomy._check_environment(h2) == FailureCategory.INFRA_DOCKER_FAILURE
+    assert FailureTaxonomy._check_environment(h2) == FailureCategory.INFRA_SANDBOX_FAILURE
 
     # Connection
     h3 = [

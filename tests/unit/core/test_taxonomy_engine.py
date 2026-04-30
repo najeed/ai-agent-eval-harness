@@ -28,7 +28,7 @@ SCENARIOS = [
     (
         "infra_docker",
         {"status": "error", "error": "docker daemon connection failure"},
-        FailureCategory.INFRA_DOCKER_FAILURE,
+        FailureCategory.INFRA_SANDBOX_FAILURE,
     ),
     (
         "infra_exception",

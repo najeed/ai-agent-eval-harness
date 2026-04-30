@@ -30,7 +30,10 @@ class OllamaProvider(LLMProvider):
                         "model": self.model,
                         "prompt": prompt,
                         "stream": False,
-                        "options": {"temperature": kwargs.get("temperature", 0.0)},
+                        "options": {
+                            "temperature": kwargs.get("temperature", 0.0),
+                            "seed": kwargs.get("seed"),
+                        },
                     },
                     timeout=aiohttp.ClientTimeout(total=30),
                 ) as response:
@@ -86,6 +89,7 @@ class OpenAIProvider(LLMProvider):
                         "model": self.model,
                         "messages": [{"role": "user", "content": prompt}],
                         "temperature": kwargs.get("temperature", 0.0),
+                        "seed": kwargs.get("seed"),
                     },
                     timeout=aiohttp.ClientTimeout(total=30),
                 ) as response:
@@ -216,6 +220,7 @@ class GeminiProvider(LLMProvider):
                 config=types.GenerateContentConfig(
                     temperature=kwargs.get("temperature", 0.1),
                     max_output_tokens=kwargs.get("max_output_tokens", 1024),
+                    seed=kwargs.get("seed"),
                 ),
             )
 

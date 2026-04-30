@@ -44,8 +44,8 @@ def test_classify_from_events_tool_results():
     ]
 
     cat = FailureTaxonomy.classify_from_events(events)
-    # Identity 'system_id' + error containing 'docker' -> INFRA_DOCKER_FAILURE
-    assert cat == FailureCategory.INFRA_DOCKER_FAILURE
+    # Identity 'system_id' + error containing 'docker' -> INFRA_SANDBOX_FAILURE
+    assert cat == FailureCategory.INFRA_SANDBOX_FAILURE
 
 
 def test_check_environment_granular_mapping():

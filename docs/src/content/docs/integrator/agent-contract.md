@@ -31,17 +31,18 @@ The agent must return an **Action Object** indicating its next step.
 - **`call_multiple_tools`**: Execute a bundle of tool calls (parallel execution).
 - **`final_answer`**: Terminates the session with a summary of accomplishment.
 - **`hitl_pause`**: Pause evaluation for human-in-the-loop intervention.
-- **`branch`**: Signals the engine to fork the trajectory for alternative exploration.
 
 ### Example: Multi-Tool Call
 ```json
 {
   "action": "call_multiple_tools",
   "tool_names": ["run_line_test", "check_firmware"],
-  "tool_outputs": [{}, {}],
   "summary": "Performing remote diagnostics."
 }
 ```
+:::note
+Currently, `call_multiple_tools` executes tools with empty parameters. For parameterized parallel calls, use multiple sequential `call_tool` actions or extend the `SessionManager`.
+:::
 
 ---
 
@@ -117,5 +118,6 @@ The harness automatically discovers the agent's identity and scenario ID with th
 3.  **Dynamic Discovery**: `metadata.model` or `metadata.agent_name`.
 4.  **CLI Overrides**: The `--agent-name` CLI flag or endpoint URL.
 
-> [!CAUTION]
-> **Forensic Stability**: In AES v1.4+, the `metadata.id` is the primary key for all audit-grade visualizations. Failing to provide a unique `id` will result in "SILVER" tier compliance warnings.
+:::caution
+**Forensic Stability**: In AES v1.4+, the `metadata.id` is the primary key for all audit-grade visualizations. Failing to provide a unique `id` will result in "SILVER" tier compliance warnings.
+:::

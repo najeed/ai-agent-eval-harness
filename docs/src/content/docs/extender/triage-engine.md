@@ -30,16 +30,18 @@ Each diagnostic trigger is assigned a **Global Rank** (0-10) and a **Confidence 
 1. **Primary Root Cause**: The trigger with the highest combined Rank and Confidence.
 2. **Contributing Factors**: Secondary triggers that occurred but are ranked lower (e.g., an Infrastructure Timeout that was caused by an upstream Agent Stall).
 
-> [!IMPORTANT]
-> Infrastructure and Policy violations (e.g., OOM or PII Leaks) are always weighted higher than behavioral symptoms (e.g., Stalls), as they represent deterministic execution boundaries.
+:::important
+Infrastructure and Policy violations (e.g., OOM or PII Leaks) are always weighted higher than behavioral symptoms (e.g., Stalls), as they represent deterministic execution boundaries.
+:::
 
 The triage engine is refactored for **Core Extensibility**. Every diagnostic logic is encapsulated in an analyzer that implements the `BaseForensicAnalyzer` interface.
 
 - **Core Analyzers**: Baseline regex matching, cyclical loop detection, and basic protocol checks.
 - **Enterprise Analyzers**: High-fidelity semantic clustering (LLM), sustained resource gradient tracking, and state-action intent verification.
 
-> [!TIP]
-> You can extend the triage engine by writing your own analyzer. See the [Custom Forensic Analyzers](/extender/forensic-analyzers/) guide.
+:::tip
+You can extend the triage engine by writing your own analyzer. See the [Custom Forensic Analyzers](/extender/forensic-analyzers/) guide.
+:::
 
 ---
 

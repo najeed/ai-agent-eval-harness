@@ -26,11 +26,13 @@ The following Enums are the first-class failure codes emitted by the evaluation 
 - `INFRA_SIMULATOR_EXCEPTION`: Internal 500 error in a World Shim (e.g., Database crash).
 - `INFRA_TIMEOUT`: Evaluation exceeded the `EVAL_MAX_TURNS` or wall-clock limit.
 - `INFRA_CONNECTION_FAILED`: Agent adapter could not reach the target endpoint.
+- `INFRA_RESOURCE_EXHAUSTED`: Hardware usage (CPU/RAM) spiked during a critical tool call.
 
 ### Logic Failures
 - `LOGIC_STALL`: Agent detected in a reasoning loop (multi-turn repetition).
 - `LOGIC_REFUSAL`: Agent explicitly refused a valid mission task.
 - `LOGIC_PLANNING_ERROR`: Agent logic diverged from the required [AES DAG Path](/evaluator/aes-spec/).
+- `LOGIC_STATE_STALL`: The environment state failed to change despite the agent reporting success.
 
 ### Policy Failures
 - `POLICY_VIOLATION`: Agent attempted an action blocked by a scenario-level guardrail.

@@ -22,11 +22,12 @@ All failures are classified using the `FailureCategory` standard. These codes ar
 ### Infrastructure (`INFRA_`)
 | Code | Trigger |
 | :--- | :--- |
+| `INFRA_SIMULATOR_EXCEPTION` | Internal error or unhandled exception within a World Shim (e.g., Database crash). |
 | `INFRA_TIMEOUT` | The evaluation run exceeded the global or task-level time budget. |
-| `INFRA_CONNECTION_FAILED` | Network or service-level disruption preventing interaction. |
+| `INFRA_CONNECTION_FAILED` | Network or service-level disruption preventing interaction with the agent endpoint. |
 | `INFRA_OOM` | Out-of-Memory condition detected in the sandbox or agent process. |
 | `INFRA_DISK_QUOTA` | Workspace disk usage exceeded allowed limits. |
-| `INFRA_DOCKER_FAILURE` | Containerization layer disruption (e.g., daemon crash). |
+| `INFRA_SANDBOX_FAILURE` | Containerization or isolation layer disruption (e.g., daemon crash). |
 | `INFRA_RESOURCE_EXHAUSTED` | Hardware spike (CPU > 90% or OOM) correlated with tool failure. |
 
 ### Logic & Reasoning (`LOGIC_`)
@@ -36,16 +37,25 @@ All failures are classified using the `FailureCategory` standard. These codes ar
 | `LOGIC_REFUSAL` | The agent explicitly refused to perform the task (often due to safety alignment). |
 | `LOGIC_PLANNING_ERROR` | A flaw in the agent's strategy led to a dead-end or invalid state. |
 | `LOGIC_STATE_MISMATCH` | Contradiction between agent intent and actual environment effects. |
+| `LOGIC_STATE_STALL` | Environment state remains unchanged despite agent tool calls (Fuzzy No-Op). |
 | `LOGIC_UNCERTAINTY` | Agent expresses confusion or doubt in thoughts/utterances. |
 | `LOGIC_ABANDONMENT` | Agent issues a 'finished' status but lacks task metrics (Soft Quit). |
 
 ### Policy & Security (`POLICY_` / `SECURITY_`)
 | Code | Trigger |
 | :--- | :--- |
+| `POLICY_VIOLATION` | Agent attempted an action blocked by a scenario-level guardrail. |
 | `POLICY_HALLUCINATION` | The agent attempted to use non-existent tools or data. |
+| `POLICY_DACON_LEAK` | Detected exposure of internal system prompts or logic. |
 | `SECURITY_PII_LEAK` | Triggered when Personally Identifiable Information is detected in agent output. |
 | `SECURITY_UNAUTHORIZED_ACCESS` | The agent attempted to access unauthorized namespaces or files. |
 | `SECURITY_SANDBOX_ESCAPE` | Critical breach where the agent attempted to jailbreak the sandbox. |
+
+### Forensic Parity (`PARITY_`)
+| Code | Trigger |
+| :--- | :--- |
+| `PARITY_STATE_DIVERGENCE` | High-fidelity mismatch between expected and actual VFS/Shim state. |
+| `PARITY_PROTOCOL_VIOLATION` | Agent diverged from the mandated interaction protocol (e.g., HTTP vs SSE). |
 
 ---
 
@@ -63,8 +73,9 @@ AgentV includes a high-fidelity PII scanner designed for industrial compliance (
 | **Digital** | GDPR | IP Addresses, MAC Addresses, and social handles. |
 | **Crypto** | FinCEN | Bitcoin (bc1) and Ethereum (0x) wallet addresses. |
 
-> [!IMPORTANT]
-> When PII is detected, the engine emits a `SECURITY_PII_LEAK` event. In Enterprise environments, these values are automatically redacted in the visual console while being retained as encrypted hashes in the forensic audit trail.
+:::important
+When PII is detected, the engine emits a `SECURITY_PII_LEAK` event. In Enterprise environments, these values are automatically redacted in the visual console while being retained as encrypted hashes in the forensic audit trail.
+:::
 
 ---
 

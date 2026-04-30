@@ -27,6 +27,7 @@ class BaseRunner(ABC):
         scenario: dict,
         attempts: int = 1,
         run_id: str | None = None,
+        seed: int | None = None,
         metadata: dict | None = None,
         max_turns: int | None = None,
     ) -> list[Any]:
@@ -47,6 +48,7 @@ class DefaultRunner(BaseRunner):
         scenario: dict,
         attempts: int = 1,
         run_id: str | None = None,
+        seed: int | None = None,
         metadata: dict | None = None,
         max_turns: int | None = None,
     ) -> list[Any]:
@@ -62,6 +64,7 @@ class DefaultRunner(BaseRunner):
             identifier=scenario["id"],
             scenario_data=copy.deepcopy(scenario),
             run_id=effective_run_id,
+            seed=seed,
             metadata=dict(copy.deepcopy(metadata)) if metadata else {},
             span_context=scenario.get("span_context"),
         )
@@ -88,12 +91,23 @@ class DefaultRunner(BaseRunner):
             span_context=ctx.span_context,
         )
         for k in range(1, attempts + 1):
+            current_seed = None
+            # [Industrial Determinism] Final Seed = Base Seed + Run Index
+            if ctx.seed is not None:
+                current_seed = ctx.seed + (k - 1)
+                import random
+
+                random.seed(current_seed)
+                print(f"      [Runner] Seeding attempt {k} with {current_seed}")
+
             # Inject max_turns into scenario copy for SessionManager consumption
             scenario_copy = copy.deepcopy(scenario)
             if max_turns:
                 scenario_copy["max_turns"] = max_turns
 
-            session = SessionManager(effective_run_id, scenario_copy, metadata=ctx.metadata)
+            session = SessionManager(
+                effective_run_id, scenario_copy, metadata=ctx.metadata, seed=current_seed
+            )
             attempt_results = await session.execute_tasks(k)
 
             # [Forensic Sync] propagate resolved routing (e.g. Port 8000)

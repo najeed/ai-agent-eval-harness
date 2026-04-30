@@ -41,8 +41,9 @@ class MyForensicPlugin(BaseEvalPlugin):
         taxonomy.register_analyzer(DatabaseIntegrityAnalyzer())
 ```
 
-> [!NOTE]
-> Analyzers are executed in the order they are registered. Core analyzers run first, followed by plugin-registered analyzers.
+:::note
+Analyzers are executed in the order they are registered. Core analyzers run first, followed by plugin-registered analyzers.
+:::
 
 ---
 

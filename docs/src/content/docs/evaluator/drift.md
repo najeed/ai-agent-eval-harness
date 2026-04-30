@@ -63,5 +63,6 @@ agentv explain --run-id <id>
 - **Remediation Advice**: Provides targeted prompts for refinement (e.g., "Refine sandbox policy for `read_file` to allow restricted access").
 - **Pinpoint Divergence**: Identifies the exact turn index where the agent's logic diverged from the [Trust Protocol](/auditor/trust-protocol/).
 
-> [!TIP]
-> **Visual Triage**: Failure tags are integrated into the [Integrated Console](/extender/api-reference/). High-priority tags like `POLICY_VIOLATION` are highlighted in the trajectory timeline for manual review.
+:::tip
+**Visual Triage**: Failure tags are integrated into the [Integrated Console](/extender/api-reference/). High-priority tags like `POLICY_VIOLATION` are highlighted in the trajectory timeline for manual review.
+:::

@@ -135,7 +135,7 @@ To protect sensitive infrastructure data, the engine enforces a **Trust Boundary
 2.  **System Parameters**: (`session_metadata`, `forensic_telemetry`) are only available to **Trusted Extensions**.
 3.  **Isolation**: Mutable data like `history` and `actual_state` are passed as **Deep Copies** to non-core metrics to prevent accidental or malicious state mutation during evaluation.
 
-To grant an extension "Trusted" status, set `"trusted": true` in the plugin or shim registry entry.
+To grant an extension "Trusted" status, set `"trusted": true` in the plugin or shim registry entry. This also enables zero-copy access to mutable data, improving performance for large datasets.
 
 ## Community Benchmarks
 

@@ -59,5 +59,6 @@ While the Stability Guard is proactive by default, you can tune it via environme
 - `AEH_DEBUG_PROCS=1`: Logs detailed process-tree snapshots during cleanup.
 - `AEH_STRICT_SINGLETON=0`: Disables the guard (Not recommended for production/research).
 
-> [!IMPORTANT]
-> **Industrial Standard**: All AgentV contributors must ensure that any new long-running sub-processes are registered with the `SessionManager` to participate in this automated cleanup lifecycle.
+:::important
+**Industrial Standard**: All AgentV contributors must ensure that any new long-running sub-processes are registered with the `SessionManager` to participate in this automated cleanup lifecycle.
+:::

@@ -54,5 +54,6 @@ Upon execution, the adapter performs an automatic handshake. It attempts to fetc
 ### 3. Forensic Trace
 Every REST interaction is captured in the **Behavioral DNA** trace. You can inspect the raw JSON requests and responses using the [Integrated Console](/integrator/api-reference/).
 
-> [!TIP]
-> **Industrial Standard**: When evaluating third-party REST agents, always use a **Zero-Temperature** setting for the LLM judge to ensure that the normalization logic remains stable across multiple runs.
+:::tip
+**Industrial Standard**: When evaluating third-party REST agents, always use a **Zero-Temperature** setting for the LLM judge to ensure that the normalization logic remains stable across multiple runs.
+:::

@@ -11,6 +11,9 @@ The ledger bundles metrics, trajectory history, and forensic metadata into a det
 
 ```json
 {
+  "task_id": "scenario_id",
+  "attempt": 1,
+  "turns_taken": 5,
   "metrics": [],
   "conversation_history": [
     {
@@ -23,9 +26,15 @@ The ledger bundles metrics, trajectory history, and forensic metadata into a det
       "content": {"status": "policy_violation"}
     }
   ],
-  "protocol_sequence": [],
-  "state_snapshots": [],
-  "resource_telemetry": [],
+  "protocol_sequence": ["http", "http"],
+  "state_snapshots": ["hash1", "hash2"],
+  "resource_telemetry": [
+    {
+      "timestamp": 1618224000.0,
+      "cpu_percent": 12.5,
+      "rss_mb": 450.2
+    }
+  ],
   "tool_registry": {},
   "diagnostic_report": {
     "root_cause": "logic_planning_error",
@@ -60,7 +69,11 @@ A chronological list of hardware metrics sampled at each agent turn and tool exe
 - **cpu_percent** (float): Normalized CPU load of the process and its children.
 - **rss_mb** (float): Resident Set Size (Physical memory) in Megabytes.
 - **vms_mb** (float): Virtual Memory Size in Megabytes.
-- **disk_usage_percent** (float): Percentage of the workspace disk specifically consumed.
+- **disk_usage_percent** (float): (Optional) Workspace disk specifically consumed.
+
+:::note
+In metric dispatch contexts, this field is exposed as `forensic_telemetry` for Trusted extensions to avoid collision with standard resource shims.
+:::
 
 ### `state_snapshots` (list[str])
 A list of SHA-256 hashes representing the environment state (files, database keys) at the end of each turn.

@@ -52,7 +52,7 @@ Advanced analyzers (available via Enterprise extensions) often reveal causal lin
 4.  **Turn 12**: The session crashes.
 
 **Traditional Result**: `INFRA_DOCKER_FAILURE`
-**AgentV Causal Chain**: Identifies the `STRATEGIC_PLANNING_LOOP` as the trigger, allowing the developer to fix the agent's persistence logic rather than debugging the Docker infrastructure.
+**AgentV Causal Chain**: Identifies the `STRATEGIC_PLANNING_LOOP` as the trigger, allowing the developer to fix the agent's persistence logic rather than debugging the sandbox infrastructure.
 
 ---
 

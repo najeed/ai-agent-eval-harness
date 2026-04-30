@@ -26,7 +26,7 @@ class FailureCategory(StrEnum):
     INFRA_CONNECTION_FAILED = auto()
     INFRA_OOM = auto()
     INFRA_DISK_QUOTA = auto()
-    INFRA_DOCKER_FAILURE = auto()
+    INFRA_SANDBOX_FAILURE = auto()
     INFRA_RESOURCE_EXHAUSTED = auto()
 
     # --- LOGIC ---
@@ -418,7 +418,7 @@ class FailureTaxonomy:
                     if "disk quota" in err:
                         return FailureCategory.INFRA_DISK_QUOTA
                     if "docker" in err:
-                        return FailureCategory.INFRA_DOCKER_FAILURE
+                        return FailureCategory.INFRA_SANDBOX_FAILURE
 
                     if "timeout" in err:
                         return FailureCategory.INFRA_TIMEOUT
@@ -688,6 +688,25 @@ class LoopAnalyzer(BaseForensicAnalyzer):
         return FailureTaxonomy._detect_loops(agent_msgs)
 
 
+class PIIAnalyzer(BaseForensicAnalyzer):
+    """Industrial PII Detector (GDPR/PCI/HIPAA compliant)."""
+
+    def analyze(
+        self, history: list[dict[str, Any]], task_result: dict[str, Any] | None = None
+    ) -> FailureCategory | None:
+        # Scan agent outputs for PII leaks using the authoritative pattern registry
+        all_agent_text = " ".join(
+            [str(m.get("content", "")) for m in history if m.get("role") == "agent"]
+        )
+
+        for name, pattern in FailureTaxonomy.PII_PATTERNS.items():
+            if pattern.search(all_agent_text):
+                logger.warning(f"Security PII Leak: Detected {name} pattern in agent history.")
+                return FailureCategory.SECURITY_PII_LEAK
+        return None
+
+
 # DEFAULT REGISTRATION
 FailureTaxonomy.register_analyzer(ProtocolAnalyzer())
 FailureTaxonomy.register_analyzer(LoopAnalyzer())
+FailureTaxonomy.register_analyzer(PIIAnalyzer())

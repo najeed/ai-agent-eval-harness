@@ -19,7 +19,7 @@ The foundation of the harness, designed for framework-agnostic execution and hig
 ## 2. Security & Compliance (Hardened)
 
 Enterprise-grade protection and regulatory audit tools.
-- **Hardened Sandbox (Docker)**: Isolated execution for agent tools using Docker containers to prevent host contamination.
+- **Hardened Sandbox (VFS / Jails)**: Isolated execution for agent tools using local process jails and virtualized file systems to prevent host contamination.
 - **Shell Metacharacter Filtering**: Multi-layered defense against command injection in tool parameters.
 - **Credential Stripping**: Automated logic to strip sensitive keys from metadata before trace signing.
 - **WORM Audit Logs**: Write-Once-Read-Many event streaming for immutable regulatory compliance.
@@ -45,7 +45,7 @@ First-class, zero-touch support for leading AI agent frameworks.
 
 Scientific-grade measurement of agent capabilities.
 - **Robust Semantic Judging (Luna-Judge)**: Industrial LLM-as-Judge layer with automated regex-based score extraction, reasoning-aware parsing, and fallback Jaccard similarity heuristics.
-- **Wilson Score Confidence Intervals**: Provides 95% statistical confidence bounds for all reported pass rates.
+- **Scientific Pass Rate Metrics (Pass@k)**: Provides high-fidelity success measurement across multiple evaluation attempts.
 - **Grounding Coverage**: Heatmaps visualizing tool and knowledge-base utilization within scenarios.
 - **Cost/Latency Analytics**: P95 latency monitoring and precise token-based costing.
 

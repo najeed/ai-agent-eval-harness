@@ -90,8 +90,9 @@ When registering plugins persistently, AgentV enforces a strict **Split Schema**
 }
 ```
 
-> [!IMPORTANT]
-> The harness no longer supports the combined `"module": "path.Class"` string format for persistent registration. You **must** provide the `module` and `class` fields as separate entities in the registry.
+:::important
+The harness no longer supports the combined `"module": "path.Class"` string format for persistent registration. You **must** provide the `module` and `class` fields as separate entities in the registry.
+:::
 
 ---
 
@@ -136,6 +137,33 @@ Encapsulates the state of a single conversation turn.
 | `history` | `tuple` | **Immutable**. Full message history. |
 | `agent_response` | `dict` | Parsed agent action (available in `on_turn_end`). |
 | `span_context` | `dict` | **Immutable**. Distributed tracing metadata. |
+
+---
+
+## 🔐 Trusted Extensions (v1.6.0)
+
+To ensure both performance and security, AgentV implements a **3-Tier Trust Hierarchy**. Plugins and Shims can be marked as `trusted` in their registration metadata.
+
+### 1. The Trust Tiers
+*   **CORE**: Internal engine logic (Always Trusted). Full access to session metadata and hardware telemetry.
+*   **TRUSTED**: Sanctioned Enterprise extensions. **Zero-copy access** to history and state.
+*   **UNTRUSTED**: Third-party or community extensions. **Isolated via Deep-Copy** to prevent accidental or malicious state mutation.
+
+### 2. Performance Optimization
+By marking an industrial plugin as trusted, you eliminate the CPU/Memory overhead of `deepcopy` on large conversation traces. This is highly recommended for high-throughput evaluation pipelines.
+
+```json
+{
+  "id": "enterprise-logger",
+  "module": "ent.log",
+  "class": "Logger",
+  "trusted": true
+}
+```
+
+:::caution
+**Security Gate**: Only mark extensions as trusted if you have full control over the source code. Trusted extensions have the capability to modify the `EvaluationContext` and environment state in-place.
+:::
 
 ---
 

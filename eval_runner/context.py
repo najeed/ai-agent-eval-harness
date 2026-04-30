@@ -28,6 +28,7 @@ class EvaluationContext:
     identifier: str
     scenario_data: dict[str, Any]
     run_id: str | None = None
+    seed: int | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
     global_state: dict[str, Any] = field(default_factory=dict)
     plugin_data: dict[str, Any] = field(

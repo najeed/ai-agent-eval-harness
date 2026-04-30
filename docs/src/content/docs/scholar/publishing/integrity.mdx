@@ -47,5 +47,7 @@ The engine will return **`SIGNATURE_MATCH`** only if:
 2.  The report artifacts in the `evidence_ledger` match their test-time hashes.
 3.  The signature was produced by the claimed public key.
 
-> [!TIP]
+:::tip
+**Trace Provenance**: Verification Certificates are linked to the raw `run.jsonl` trace via a content hash. Any modification to the trace file will invalidate the certificate.
+:::
 > **Use in Papers**: Include your **Public Key Fingerprint** in your research paper's "Data Availability" statement. This allow auditors to search global agent registers (where applicable) and verify your findings independently.

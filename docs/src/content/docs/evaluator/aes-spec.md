@@ -64,8 +64,9 @@ If the structural parser fails to find tasks, the engine automatically triggers 
 
 ---
 
-> [!NOTE]
-> **Infrastructure Decoupling**: AES v1.4 decouples environment lifecycle management (setup/teardown) from the scenario JSON. These side-effects are managed by the execution engine's plugin architecture.
+:::note
+**Infrastructure Decoupling**: AES v1.4 decouples environment lifecycle management (setup/teardown) from the scenario JSON. These side-effects are managed by the execution engine's plugin architecture.
+:::
 
 ## 🚀 Workflow
 
@@ -79,5 +80,6 @@ agentv spec-to-eval \
   --force
 ```
 
-> [!IMPORTANT]
-> **Schema Validation**: Validated AES files are required for [Trust Protocol Certification](/auditor/trust-protocol/). Unauthorized modifications to a certified AES file will trigger a **Behavioral Drift** alert in Phase 5.
+:::important
+**Schema Validation**: Validated AES files are required for [Trust Protocol Certification](/auditor/trust-protocol/). Unauthorized modifications to a certified AES file will trigger a **Behavioral Drift** alert.
+:::

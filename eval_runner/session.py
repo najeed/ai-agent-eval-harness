@@ -44,7 +44,9 @@ class SessionManager:
     Updated for Session-Scoped Lifecycle (Inversion of Control).
     """
 
-    def __init__(self, run_id: str, scenario: dict, metadata: dict | None = None):
+    def __init__(
+        self, run_id: str, scenario: dict, metadata: dict | None = None, seed: int | None = None
+    ):
         from .plugins import PluginManager
 
         self.run_id = run_id
@@ -63,6 +65,7 @@ class SessionManager:
             "protocol": "http",
             "agent": None,
             "identifier": self.identifier,
+            "seed": seed,
             "span_context": self.metadata.get("span_context"),
         }
         if metadata:

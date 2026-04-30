@@ -50,27 +50,3 @@ In an **AES v1.4** scenario, the `core_function` tag is an **optional metadata f
 ```
 
 The `TriageEngine` leverages this optional tag to correlate failures with historic performance benchmarks for that specific function. It is not required for scenario validation but is recommended for high-fidelity industrial tracking.
-
----
-
-## 📝 Full Registry Reference
-
-> [!NOTE]
-> The complete 1,800-line registry is maintained in the [Sector Guide Repository](/evaluator/industries/). Below are several key highlights by industry.
-
-### Agriculture
-- **Planting & Seeding**: Variety selection and prescription generation.
-- **Irrigation Management**: Soil moisture monitoring and water optimization.
-- **Livestock Health**: Diagnosis and vaccination scheduling.
-
-### Aerospace
-- **Design & Engineering**: CAD/Stress analysis and aerodynamic modeling.
-- **Testing & Certification**: FAA/EASA documentation and NDT planning.
-- **Mission Design**: Orbital mechanics and trajectory analysis (Space Systems).
-
-### Audit
-- **ITGC Review**: Access control and change management auditing.
-- **Vulnerability Assessment**: NIST evaluation and incident response plan review.
-- **Process Efficiency**: Bottleneck identification and process mapping.
-
-[See all 30+ Industrial Sectors...](/evaluator/industries/)

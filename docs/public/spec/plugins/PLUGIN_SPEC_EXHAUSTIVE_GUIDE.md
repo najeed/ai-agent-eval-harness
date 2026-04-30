@@ -87,6 +87,9 @@ The **Metric Dispatcher** uses this provenance map to enforce security boundarie
 > [!IMPORTANT]
 > **Isolation Enforcement**: To prevent side-effects, mutable objects like `history` and `actual_state` are passed as **Deep Copies** to any non-CORE metric. This ensures that a metric cannot mutate the live sandbox state during evaluation.
 
+> [!TIP]
+> **Performance Optimization**: Deep-copying large conversation histories can be CPU-intensive. For internal/vetted enterprise metrics, set `"trusted": true` in the registry. This grants the metric direct access to the session data without the isolation overhead, effectively removing the "air-gap" for trusted code.
+
 > **Audit Rule**: Runs with `EXTERNAL` plugins are flagged as "Non-Standard" in the Verification Certificate (VC) unless the plugin file hash matches an enterprise-whitelisted baseline.
 
 ### The Enterprise Whitelist (Forensic Baselines)

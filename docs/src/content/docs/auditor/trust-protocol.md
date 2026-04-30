@@ -62,12 +62,13 @@ AgentV implements a **Weighted Severity Model (WSM)** for aggregate scoring, ens
 
 ### The "Safety Floor" Logic
 
-> [!IMPORTANT]
-> **Deterministic Fail-Case**: If the score for **Safety** or **Security** falls below **0.5**, the aggregate trustworthiness index is automatically capped at **0.49 (Fail)**. This ensures that no amount of success in "Fairness" or "Efficiency" can mask a fundamental safety violation.
+:::important
+**Deterministic Fail-Case**: If the score for **Safety** or **Security** falls below **0.5**, the aggregate trustworthiness index is automatically capped at **0.49 (Fail)**. This ensures that no amount of success in "Fairness" or "Efficiency" can mask a fundamental safety violation.
+:::
 
 ---
 
-## 5. Operational Gating (CI/CD)
+## 5. Identity Registry & Key Management
 
 Core v1.4 replaces legacy file-based key loaders with the **Identity Registry** (`IdentityService`). This service abstracts private key resolution, supporting both local PEM storage and future cloud-native Vault/HSM integrations.
 
@@ -76,7 +77,7 @@ Core v1.4 replaces legacy file-based key loaders with the **Identity Registry** 
 
 ---
 
-## 4. Operational Gating (CI/CD)
+## 6. Operational Gating (CI/CD)
 
 The harness provides a production-grade utility for enforcing trust in automated pipelines.
 
@@ -92,10 +93,12 @@ agentv gate --run-id <id> --verify-ledger
 
 ---
 
-## 5. Security Guardrails
+## 7. Security Guardrails
 
-> [!IMPORTANT]
-> **Path Traversal Protection**: All file operations in the `verifier.py` engine are jail-checked. The protocol will refuse to sign or verify files outside of authorized evaluation directories.
+:::important
+**Path Traversal Protection**: All file operations in the `verifier.py` engine are jail-checked. The protocol will refuse to sign or verify files outside of authorized evaluation directories.
+:::
 
-> [!CAUTION]
-> **Key Isolation**: Private keys are stored in `.aes/keys` and are explicitly excluded from Git via `.gitignore`. Never commit private keys to the source repository.
+:::caution
+**Key Isolation**: Private keys are stored in `.aes/keys` and are explicitly excluded from Git via `.gitignore`. Never commit private keys to the source repository.
+:::

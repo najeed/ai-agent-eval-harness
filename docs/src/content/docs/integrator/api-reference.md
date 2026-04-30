@@ -33,7 +33,7 @@ Lists all registered evaluation metrics available for dynamic hydration.
 
 ### `GET /api/v1/taxonomy`
 **Priority: P0**
-Returns the failure taxonomy (AEH v1.5) for categorical diagnostics.
+Returns the failure taxonomy for categorical diagnostics.
 
 ### `POST /api/v1/spec-to-eval`
 **Priority: P1**
@@ -80,5 +80,5 @@ Faceted search across the global scenario catalog.
 ### `GET /api/info`
 Consolidated system health, engine versioning, and telemetry.
 
-### `GET /v1/verify/<run_id>` (Public)
+### `GET /api/v1/verify/<run_id>` (Public)
 Public integrity audit for signed traces.
