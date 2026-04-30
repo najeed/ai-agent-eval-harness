@@ -92,6 +92,51 @@ agentv console
 | `performance_efficiency` | `calculate_efficiency` | Weighted score of turns taken vs. goal reached |
 | `security_guardrail` | `calculate_guardrail_violation` | Detection of prompt injection or sensitive data leaks |
 
+## Extensible Metric Dispatch (v1.6.0)
+
+The AgentV v1.6.0 engine uses a **Zero-Touch** dynamic dispatch system for metrics. Instead of hardcoded mappings, metrics "request" the data they need by naming parameters in their function signature.
+
+### How it works
+When the engine evaluates a metric, it introspects the function's signature and automatically fulfills its arguments from the session's **Context Map**.
+
+### Available Context Parameters
+You can use any of the following parameter names in your metric functions:
+
+| Parameter Name | Description |
+| :--- | :--- |
+| `eval_context` | The full configuration dictionary for the current metric criterion. |
+| `agent_summary` | The sanitized text summary provided by the agent. |
+| `history` | The full conversation history list. |
+| `actual_state` | The current state of the Tool Sandbox (World State). |
+| `used_tools` | List of tool names used during the task. |
+| `expected_tools` | List of tools the agent was required to use. |
+| `expected` | The primary goal/outcome expected for the task. |
+| `actual` | Alias for `agent_summary`. |
+| `agent_sequence` | List of identifiers for agents involved in the session. |
+| `turns_taken` | Number of turns consumed by the agent. |
+| `max_turns` | The maximum turns allowed for the task. |
+| `attempt_number` | The current evaluation attempt (1-indexed). |
+| `metadata` | The full scenario metadata (Industry, Compliance Level). |
+| `action_trace` | Granular record of all tool calls and timestamps. |
+| `session_metadata` | **[System]** Infrastructure details (Protocols, Endpoints). |
+| `forensic_telemetry` | **[System]** Resource usage (CPU, RAM). |
+
+### Example
+```python
+def my_custom_metric(actual_state, used_tools, eval_context):
+    # Logic to verify state and tools...
+    return 1.0
+```
+
+### Metric Security & Extension Trust
+To protect sensitive infrastructure data, the engine enforces a **Trust Boundary** for metrics:
+
+1.  **Standard Parameters**: (Summary, History, Metadata) are available to all metrics.
+2.  **System Parameters**: (`session_metadata`, `forensic_telemetry`) are only available to **Trusted Extensions**.
+3.  **Isolation**: Mutable data like `history` and `actual_state` are passed as **Deep Copies** to non-core metrics to prevent accidental or malicious state mutation during evaluation.
+
+To grant an extension "Trusted" status, set `"trusted": true` in the plugin or shim registry entry.
+
 ## Community Benchmarks
 
 Instead of relying solely on local `.json` or `.aes.yaml` files, the `agentv` can now pull and format datasets from major community benchmarks on-the-fly using URIs.

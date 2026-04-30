@@ -1058,7 +1058,7 @@ _INTERNAL_SIMULATOR_CLASSES = {
 }
 
 
-def get_simulator_registry() -> dict:
+def get_simulator_registry(plugin_manager=None) -> dict:
     """
     Returns a fresh registry of world shims (new instances).
     """
@@ -1068,7 +1068,8 @@ def get_simulator_registry() -> dict:
     # [Hardening] We use name-based keys to align with the registry-manager discovery pattern.
     registry = {k: v for k, v in _INTERNAL_SIMULATOR_CLASSES.items()}
 
-    # Trigger plugin hook to allow external shims to register themselves (they should provide instances or factory), E501, E501  # noqa: E501
-    plugins.manager.trigger("on_register_simulators", registry)
+    # Trigger plugin hook to allow external shims to register themselves
+    pm = plugin_manager or plugins.manager
+    pm.trigger("on_register_simulators", registry)
 
     return registry

@@ -231,6 +231,25 @@ class ForensicCollector:
         self._state_snapshots: dict[int, Path] = {}
         self._last_state: dict[str, Any] = {}
 
+    @property
+    def resource_telemetry(self) -> dict[str, Any]:
+        """Returns the current resource usage (CPU/RAM) for the harness process."""
+        import os
+        import time
+
+        try:
+            import psutil
+
+            process = psutil.Process(os.getpid())
+            return {
+                "timestamp": time.time(),
+                "memory_mb": process.memory_info().rss / 1024 / 1024,
+                "cpu_percent": process.cpu_percent(interval=None),
+                "threads": process.num_threads(),
+            }
+        except Exception:
+            return {"timestamp": time.time(), "status": "telemetry_unavailable"}
+
     def register_artifact(self, path: Path, alias: str):
         """Registers a file path to be collected at the end of the session."""
         if not path.exists():

@@ -43,7 +43,11 @@ def sanitize_payload(data: dict) -> dict:
             return {k: recursive_sanitize(v) for k, v in obj.items()}
         elif isinstance(obj, list):
             return [recursive_sanitize(v) for v in obj]
-        return obj
+        elif obj is None or isinstance(obj, (int, float, bool)):
+            return obj
+        else:
+            # Handle non-serializable objects (e.g. functions, custom classes)
+            return str(obj)
 
     return recursive_sanitize(data)
 

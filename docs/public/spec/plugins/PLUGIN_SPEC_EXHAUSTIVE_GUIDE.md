@@ -25,6 +25,7 @@ The physical source of truth for plugin registration is the `.aes/config/plugins
 | `module` | String | Yes | The Python module to import (e.g., `eval_runner.flight_recorder`). |
 | `class` | String | Yes | The authoritative Class name (e.g., `FlightRecorderPlugin`). |
 | `enabled` | Boolean | No | Toggle to activate/deactivate the plugin. |
+| `trusted` | Boolean | No | If `true`, grants elevated access to sensitive session context (System Parameters). |
 | `config` | Object | No | Plugin-specific configuration parameters. |
 
 ---
@@ -71,9 +72,20 @@ AgentV tracks the **Origin** of every plugin to establish an audit trail.
 | Origin | Trust Level | Description |
 | :--- | :--- | :--- |
 | **CORE** | 100% | Hardcoded in the `ai-agent-eval-harness` core. |
-| **MEMBER** | 90% | Installed as a formal package (e.g., via `pip install`). |
+| **MEMBER** | 90% | Installed as a formal package or registered in `registry.json`. |
 | **PROJECT** | 70% | Local code in the project `/plugins/` directory. |
 | **EXTERNAL** | 50% | Ad-hoc file paths injected via CLI (e.g., `--plugin path/to/file.py`). |
+
+### Trusted Metrics & Sensitive Context (v1.6.0)
+The **Metric Dispatcher** uses this provenance map to enforce security boundaries. Metrics registered by plugins are categorized by their trust level:
+
+| Trust Level | Context Access | Parameters Available |
+| :--- | :--- | :--- |
+| **Trusted** | **System Context** | `session_metadata`, `forensic_telemetry`, `actual_state`, `history` |
+| **Standard** | **Redacted Context** | `summary`, `expected`, `actual`, `turns_taken`, `metadata` |
+
+> [!IMPORTANT]
+> **Isolation Enforcement**: To prevent side-effects, mutable objects like `history` and `actual_state` are passed as **Deep Copies** to any non-CORE metric. This ensures that a metric cannot mutate the live sandbox state during evaluation.
 
 > **Audit Rule**: Runs with `EXTERNAL` plugins are flagged as "Non-Standard" in the Verification Certificate (VC) unless the plugin file hash matches an enterprise-whitelisted baseline.
 

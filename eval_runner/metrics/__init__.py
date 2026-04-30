@@ -8,14 +8,16 @@ class MetricRegistry:
     """Registry for evaluation metrics."""
 
     _metrics: dict[str, Callable] = {}
+    _provenance: dict[str, str] = {}  # name -> source (e.g. "CORE", plugin class name)
     _discovered: bool = False
 
     @classmethod
-    def register(cls, name: str):
-        """Decorator to register a metric function."""
+    def register(cls, name: str, source: str = "CORE"):
+        """Decorator to register a metric function with optional source provenance."""
 
         def decorator(func: Callable):
             cls._metrics[name] = func
+            cls._provenance[name] = source
             return func
 
         return decorator
@@ -33,6 +35,12 @@ class MetricRegistry:
         """Retrieves a metric function by name."""
         cls._discover()
         return cls._metrics.get(name)
+
+    @classmethod
+    def get_source(cls, name: str) -> str:
+        """Retrieves the source provenance of a metric."""
+        cls._discover()
+        return cls._provenance.get(name, "UNKNOWN")
 
     @classmethod
     def list_metrics(cls) -> list:

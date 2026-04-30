@@ -247,7 +247,12 @@ class SessionManager:
         global_cumulative_history = []
 
         # 🚀 Move Sandbox into the forensic recovery block
-        sandbox = ToolSandbox(self.scenario, event_bus=self.event_bus, forensics=self.forensics)
+        sandbox = ToolSandbox(
+            self.scenario,
+            event_bus=self.event_bus,
+            forensics=self.forensics,
+            plugin_manager=self.plugin_manager,
+        )
         try:
             await sandbox.setup()
             workflow = self.scenario.get("workflow", {})
@@ -939,7 +944,7 @@ class SessionManager:
                     logger.warning(f"   [Session] Warning: Metric '{m_name}' not found. Skipping.")
                     continue
 
-                # Prepare standard evaluation context
+                # 1. Prepare Data Context (The "Menu" of available session data)
                 summary = self._extract_agent_summary(history)
 
                 # Dynamic Dispatch Context
@@ -952,27 +957,77 @@ class SessionManager:
                     )
                     eval_context["expected"] = primary_msg
 
-                async def _invoke(func, *args):
+                async def _invoke(func, *args, **kwargs):
                     import inspect
 
                     if inspect.iscoroutinefunction(func):
-                        return await func(*args)
-                    return func(*args)
+                        return await func(*args, **kwargs)
+                    return func(*args, **kwargs)
 
-                # Specialized Metric handling (Minimal set for architectural requirements)
-                if m_name == "tool_call_correctness":
-                    score = await _invoke(
-                        metric_func, node.get("required_tools", []), actions["used_tools"]
-                    )
-                elif m_name == "state_verification":
-                    score = await _invoke(
-                        metric_func, node.get("expected_state_changes", []), sandbox.state
-                    )
-                elif m_name == "policy_compliance":
-                    score = await _invoke(metric_func, history)
-                else:
-                    # Generic Metric: (config_dict, stimulus_text)
-                    score = await _invoke(metric_func, eval_context, summary)
+                # Dynamic Metric Dispatch (v1.6.0 Decoupled)
+                # Introspects signature to fulfill metric requirements without hardcoding names.
+                import inspect
+
+                sig = inspect.signature(metric_func)
+                params = sig.parameters
+
+                # --- [AES v1.6.0] Unified Trust Hierarchy ---
+                # Hierarchy: CORE > TRUSTED > EXTERNAL (Untrusted)
+                m_source = metrics.MetricRegistry.get_source(m_name)
+                is_core = m_source == "CORE"
+                # Check plugin/shim provenance for trust status
+                provenance = self.plugin_manager.provenance_map.get(m_source, {})
+                is_trusted = is_core or provenance.get("trusted", False)
+
+                # --- [AES v1.6.0] Conditional Deep-Copy Isolation ---
+                # We only copy if the metric requests a mutable parameter and is not core.
+                # This prevents malicious or accidental state mutation by external plugins.
+                def get_isolated(key, data, _params=params, _is_core=is_core):
+                    if key in _params and not _is_core and isinstance(data, (dict, list)):
+                        return copy.deepcopy(data)
+                    return data
+
+                context_map = {
+                    "criterion": eval_context,
+                    "eval_context": eval_context,
+                    "summary": summary,
+                    "agent_summary": summary,
+                    "history": get_isolated("history", history),
+                    "conversation_history": get_isolated("conversation_history", history),
+                    "identifier": self.identifier,
+                    "actual_state": get_isolated("actual_state", sandbox.state),
+                    "sandbox_state": get_isolated("sandbox_state", sandbox.state),
+                    "actual_tools": actions["used_tools"],
+                    "used_tools": actions["used_tools"],
+                    "expected_tools": node.get("required_tools", []),
+                    "required_tools": node.get("required_tools", []),
+                    "expected_changes": node.get("expected_state_changes", []),
+                    "expected_state_changes": node.get("expected_state_changes", []),
+                    "turns_taken": turns,
+                    "max_turns": self.max_turns,
+                    "attempt_number": attempt_number,
+                    # --- [AES v1.6.0] Extensible Industrial Parameters ---
+                    "expected": eval_context.get("expected"),
+                    "actual": summary,
+                    "agent_sequence": [m.get("agent_id") for m in history if m["role"] == "agent"],
+                    "protocol_sequence": list(self.protocol_sequence),
+                    "metadata": self.scenario.get("metadata", {}),
+                    "action_trace": actions,
+                }
+
+                # --- [AES v1.6.0] Trust Gate for System Parameters ---
+                if is_trusted:
+                    context_map["session_metadata"] = self.session_metadata
+                    context_map["forensic_telemetry"] = self.forensics.resource_telemetry
+
+                # 2. Fulfill Dependencies
+                kwargs = {}
+                for p_name in params:
+                    if p_name in context_map:
+                        kwargs[p_name] = context_map[p_name]
+
+                # 3. Execution
+                score = await _invoke(metric_func, **kwargs)
 
                 results["metrics"].append(
                     {

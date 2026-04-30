@@ -119,7 +119,13 @@ class SharedStateRegistry:
 class AbstractSandbox(ABC):
     """Abstract base class for tool execution sandboxes."""
 
-    def __init__(self, scenario: dict, event_bus: Any | None = None, forensics: Any | None = None):
+    def __init__(
+        self,
+        scenario: dict,
+        event_bus: Any | None = None,
+        forensics: Any | None = None,
+        plugin_manager: Any | None = None,
+    ):
         self.scenario = scenario
         self.state = scenario.get("initial_state", {}).copy()
         self.shared_state = SharedStateRegistry(
@@ -129,6 +135,7 @@ class AbstractSandbox(ABC):
         self.event_bus = event_bus
         self.forensics = forensics
         self.resources = ResourceRegistry()
+        self.plugin_manager = plugin_manager
 
         # [INDUSTRIAL HARDENING] Absolute Session Identity (AgentV v1.6.0)
         # Prevents 'unknown_run' directory pollution in the root runs/ directory.
@@ -459,7 +466,9 @@ class ToolSandbox(AbstractSandbox):
         from . import config, simulators
 
         global_enabled = config.GLOBAL_ENABLED_SHIMS
-        all_registered = set(simulators.get_simulator_registry().keys())
+        all_registered = set(
+            simulators.get_simulator_registry(plugin_manager=self.plugin_manager).keys()
+        )
 
         if "*" in global_enabled:
             shim_prefixes = all_registered
@@ -508,7 +517,7 @@ class ToolSandbox(AbstractSandbox):
         shim_configs = resolved_registry.get("shims", {})
 
         # 2. Get the industrial class mapping
-        shim_classes = simulators.get_simulator_registry()
+        shim_classes = simulators.get_simulator_registry(plugin_manager=self.plugin_manager)
 
         # 3. Resolve Activation Policies
         global_enabled = config.GLOBAL_ENABLED_SHIMS
@@ -539,7 +548,6 @@ class ToolSandbox(AbstractSandbox):
             # Priority 2: Scenario Activation Policy
             # Only shims that are relevant to the contract or explicitly enabled are activated.
             is_relevant = shim_name in relevant_shims
-
             if scenario_enabled is None:
                 # Case 1: Strict Discovery Mode (Auto-activate relevant only)
                 should_activate = is_relevant

@@ -39,14 +39,20 @@ def dashboard_server():
     import requests
 
     start_time = time.time()
-    while time.time() - start_time < 30:
+    started = False
+    while time.time() - start_time < 45:  # Increased to 45s for slower CI environments
         try:
             response = requests.get(f"http://localhost:{port}", timeout=5)
             if response.status_code == 200:
+                started = True
                 break
         except requests.RequestException:
             pass
         time.sleep(1)
+
+    if not started:
+        process.terminate()
+        pytest.fail(f"Streamlit dashboard failed to start on port {port} within 45 seconds.")
 
     yield f"http://localhost:{port}"
 

@@ -161,6 +161,7 @@ async def test_session_metrics_dispatch(mock_env_config):
     node = {"id": "n1", "success_criteria": [{"metric": "m1"}]}
     sandbox = MagicMock(spec=ToolSandbox)
     sandbox.get_full_state = AsyncMock(return_value={})
+    sandbox.state = {}
 
     with patch("eval_runner.session.metrics.MetricRegistry.get") as mock_get:
         # Mocking the metric function itself
@@ -177,6 +178,7 @@ async def test_session_metrics_error_handling(mock_env_config):
     node = {"id": "n1", "success_criteria": [{"metric": "m1"}]}
     sandbox = MagicMock(spec=ToolSandbox)
     sandbox.get_full_state = AsyncMock(return_value={})
+    sandbox.state = {}
 
     with patch(
         "eval_runner.session.metrics.MetricRegistry.get", side_effect=Exception("METRIC_FAIL")

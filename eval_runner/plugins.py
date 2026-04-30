@@ -141,6 +141,7 @@ class PluginManager:
             "hash": file_hash,
             "class": loaded_class,
             "origin": "EXTERNAL",  # Ad-hoc injection
+            "trusted": False,  # External plugins are untrusted by default
         }
         self.provenance_map[loaded_class] = metadata
         return metadata
@@ -177,6 +178,7 @@ class PluginManager:
                 "hash": file_hash,
                 "class": class_name,
                 "origin": origin,
+                "trusted": origin in ["CORE", "MEMBER"],  # Default trust for internal/member
             }
         except Exception:
             # Fallback for built-in or dynamically generated classes without physical files
@@ -185,6 +187,7 @@ class PluginManager:
                 "hash": "unknown",
                 "class": class_name,
                 "origin": "CORE",
+                "trusted": True,
             }
 
     def load_plugins(self, force: bool = False):
@@ -260,7 +263,10 @@ class PluginManager:
                         if not any(isinstance(p, plugin_cls) for p in self.plugins):
                             instance = plugin_cls()
                             self.plugins.append(instance)
+                            # Forensic Provenance: Apply 'trusted' flag from registry
+                            is_trusted = plugin_def.get("trusted", False)
                             self._record_provenance(instance, origin="MEMBER")
+                            self.provenance_map[class_name]["trusted"] = is_trusted
                     except Exception as e:
                         msg = (
                             f"   [PluginManager] Failed to load plugin "
@@ -383,7 +389,27 @@ class PluginManager:
             if hasattr(plugin, hook_name):
                 try:
                     hook = getattr(plugin, hook_name)
-                    _invoke_with_timeout(hook, *args, **kwargs)
+                    # For metric discovery, we want to capture the provenance
+                    if hook_name == "on_discover_metrics":
+                        # We pass a shim that injects the plugin's class name as the source
+
+                        registry = args[0]
+                        plugin_cls_name = plugin.__class__.__name__
+
+                        class ScopedRegistry:
+                            def __init__(self, reg, name):
+                                self._reg = reg
+                                self._name = name
+
+                            def register(self, name: str, **kwargs):
+                                return self._reg.register(name, source=self._name)
+
+                            def __getattr__(self, name):
+                                return getattr(self._reg, name)
+
+                        _invoke_with_timeout(hook, ScopedRegistry(registry, plugin_cls_name))
+                    else:
+                        _invoke_with_timeout(hook, *args, **kwargs)
                 except Exception as e:
                     print(
                         f"   [PluginManager] Error in {hook_name} for {plugin.__class__.__name__}: {e}"  # noqa: E501
