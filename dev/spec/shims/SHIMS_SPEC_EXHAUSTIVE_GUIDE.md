@@ -35,18 +35,35 @@ Resources can be any valid JSON type, allowing for deep configuration:
 
 ---
 
+## Lesson 3: The Trust Mechanism (v1.6.0)
+
+To maintain security during evaluation, shims are assigned a **Trust Level** via the optional `trusted` property in the namespace block.
+
+| Property | Type | Default | Purpose |
+| :--- | :--- | :--- | :--- |
+| **`trusted`** | Boolean | `false` | If `true`, any metrics registered by this shim's code receive **System Context** access. |
+
+### Why Trust Matters
+When a shim registers a custom evaluation metric (via the `on_register_simulators` or through the `MetricRegistry`), the engine must decide what data that metric can see. 
+- **Trusted Shims**: Can see global `session_metadata` and infrastructure telemetry.
+- **Untrusted Shims**: Are restricted to the "Standard" context (Redacted) to prevent exfiltration of sensitive session data.
+
+---
+
 ## Reference Walkthrough: Multi-Namespace Shim
 
 ```json
 {
   "shims": {
     "api": {
+      "trusted": true,
       "resources": {
         "api_key": "sk-industrial-001",
         "endpoint": "https://api.vault.internal/v1"
       }
     },
     "git": {
+      "trusted": false,
       "resources": {
         "auth": {
           "token": "ghp_1234567890",

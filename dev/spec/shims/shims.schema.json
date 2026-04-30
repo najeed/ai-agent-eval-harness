@@ -22,6 +22,11 @@
                 { "type": "array" }
               ]
             }
+          },
+          "trusted": {
+            "type": "boolean",
+            "description": "If true, the shim is granted access to sensitive system context during metric dispatch.",
+            "default": false
           }
         }
       }

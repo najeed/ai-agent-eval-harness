@@ -41,6 +41,11 @@
           "enabled": {
             "type": "boolean",
             "default": true
+          },
+          "trusted": {
+            "type": "boolean",
+            "description": "If true, the plugin is granted access to sensitive system context during metric dispatch.",
+            "default": false
           }
         }
       }
