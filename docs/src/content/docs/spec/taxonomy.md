@@ -92,6 +92,9 @@ Detects **Cyclical Reasoning** and **Logical Stalls**.
 - **Action Normalization**: Strips command flags (e.g., `git commit -m`) to catch stalls where an agent repeats the same base action with jittered parameters.
 - **Cycle Detection**: Uses a logic-aware window (default: 10 turns) to identify if an agent is stuck in an A -> B -> A loop.
 
+### 3. PIIAnalyzer
+Ensures **Data Sovereignty** and **Regulatory Compliance** by scanning all agent outputs for sensitive data. It uses the authoritative industrial pattern registry (GDPR, HIPAA, PCI DSS) to detect leaks before they are persisted to logs or dashboards.
+
 ---
 
 ## 🚀 Extending with Plugins
