@@ -126,14 +126,26 @@ class DefaultRunner(BaseRunner):
             span_context=ctx.span_context,
         )
 
-        # Cross-attempt aggregation (e.g. consistency)
-        if attempts > 1:
-            plugins.manager.trigger("on_metrics_calculated", ctx, all_attempt_results)
+        pass_at_k = 0.0
+        try:
+            # Cross-attempt aggregation (e.g. consistency)
+            if attempts > 1:
+                plugins.manager.trigger("on_metrics_calculated", ctx, all_attempt_results)
 
-        plugins.manager.trigger("after_evaluation", ctx, all_attempt_results)
+            plugins.manager.trigger("after_evaluation", ctx, all_attempt_results)
 
-        # Calculate pass@k
-        pass_at_k = self.calculate_pass_at_k(all_attempt_results, attempts)
+            # Calculate pass@k
+            pass_at_k = self.calculate_pass_at_k(all_attempt_results, attempts)
+        except Exception as e:
+            import traceback
+
+            tb = traceback.format_exc()
+            print(f"      [Runner Error] Failed to generate reports or calculate pass@k: {e}")
+            print(tb)
+            events.emit(
+                events.CoreEvents.ERROR,
+                {"message": f"Runner Post-Process Error: {e}", "traceback": tb},
+            )
 
         events.emit(
             events.CoreEvents.RUN_END,

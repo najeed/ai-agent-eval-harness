@@ -320,53 +320,60 @@ class SessionManager:
                     print(f"      [Node Failure] {node_id}: {task_res.get('message')}")
                     all_task_results.append(task_res)
                     break
+            # 🧬 Global Evaluation Pass (Industrial AES v1.6.0)
+            # Process metrics defined at the scenario level (e.g. DNA_STABLE)
+            global_evaluation = self.scenario.get("evaluation", {})
+            global_metrics = global_evaluation.get("metrics", [])
+
+            if global_metrics:
+                print(f"      [Session] Running {len(global_metrics)} Global Evaluation Metrics...")
+                # We treat the run summary as a pseudo-node for metric evaluation
+                global_node = {"id": "global_evaluation", "success_criteria": global_metrics}
+
+                global_results = await self._calculate_metrics(
+                    global_node,
+                    attempt_number,
+                    sum(tr.get("turns_taken", 0) for tr in all_task_results),
+                    global_cumulative_history,
+                    sandbox,
+                    {
+                        "used_tools": list(
+                            set(t for tr in all_task_results for t in tr.get("used_tools", []))
+                        )
+                    },
+                )
+                success = all(m.get("success") for m in global_results.get("metrics", []))
+                global_results["status"] = "success" if success else "failed"
+                all_task_results.append(global_results)
 
         except Exception as e:
             err_msg = f"Forensic Exception during node execution: {str(e)}"
-            print(f"      [Fatal Exception] {err_msg}")
             import traceback
 
-            print(traceback.format_exc())
-            self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg})
+            tb = traceback.format_exc()
+            print(f"      [Fatal Exception] {err_msg}")
+            print(tb)
+
+            self.event_bus.emit(CoreEvents.ERROR, {"message": err_msg, "traceback": tb})
             # [Industrial Resilience] Do not crash the entire process for a single node failure.
             # Capture the failure in the forensic report and stop the node sequence.
             all_task_results.append(
                 {
                     "task_id": node_id if "node_id" in locals() else "unknown",
                     "status": "failure",
+                    "triage_tag": "FATAL_ENGINE_ERROR",
                     "message": err_msg,
+                    "metrics": [],
+                    "turns_taken": 0,
+                    "used_tools": [],
+                    "conversation_history": history if "history" in locals() else [],
+                    "traceback": tb,
                 }
             )
         finally:
             # [Industrial Resilience] Ensure teardown runs even if topological sort fails
             # or if initialization crashes before execution begins.
             await self.teardown(sandbox)
-
-        # 🧬 Global Evaluation Pass (Industrial AES v1.6.0)
-        # Process metrics defined at the scenario level (e.g. DNA_STABLE)
-        global_evaluation = self.scenario.get("evaluation", {})
-        global_metrics = global_evaluation.get("metrics", [])
-
-        if global_metrics:
-            print(f"      [Session] Running {len(global_metrics)} Global Evaluation Metrics...")
-            # We treat the run summary as a pseudo-node for metric evaluation
-            global_node = {"id": "global_evaluation", "success_criteria": global_metrics}
-
-            global_results = await self._calculate_metrics(
-                global_node,
-                1,
-                sum(tr.get("turns_taken", 0) for tr in all_task_results),
-                global_cumulative_history,
-                sandbox,
-                {
-                    "used_tools": list(
-                        set(t for tr in all_task_results for t in tr.get("used_tools", []))
-                    )
-                },
-            )
-            success = all(m.get("success") for m in global_results.get("metrics", []))
-            global_results["status"] = "success" if success else "failed"
-            all_task_results.append(global_results)
 
         return all_task_results
 

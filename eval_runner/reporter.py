@@ -172,19 +172,29 @@ def generate_html_report(
                 break
 
     total_tasks = len(results)
-    successful_tasks = sum(1 for tr in results if all(m["success"] for m in tr.get("metrics", [])))
+    successful_tasks = sum(
+        1
+        for tr in results
+        if tr.get("status", "success") == "success"
+        and len(tr.get("metrics", [])) > 0
+        and all(m["success"] for m in tr.get("metrics", []))
+    )
     success_rate = (successful_tasks / total_tasks * 100) if total_tasks > 0 else 0
 
     tasks_html = ""
     for tr in results:
         task_id = tr["task_id"]
         metrics = tr.get("metrics", [])
-        is_success = all(m["success"] for m in metrics)
+        is_success = (
+            tr.get("status", "success") == "success"
+            and len(metrics) > 0
+            and all(m["success"] for m in metrics)
+        )
         status_class = "success" if is_success else "failure"
         status_text = "PASSED" if is_success else f"FAILED [{tr.get('triage_tag', 'UNKNOWN')}]"
 
         metrics_html = ""
-        for m in tr["metrics"]:
+        for m in metrics:
             m_status = "pass" if m["success"] else "fail"
             metrics_html += f"""
                 <div class="metric {m_status}">
@@ -418,7 +428,11 @@ def generate_report(
     for task_result in results:
         task_id = task_result["task_id"]
         metrics_list = task_result.get("metrics", [])
-        task_is_overall_success = all(m["success"] for m in metrics_list)
+        task_is_overall_success = (
+            task_result.get("status", "success") == "success"
+            and len(metrics_list) > 0
+            and all(m["success"] for m in metrics_list)
+        )
 
         if task_is_overall_success:
             status = "SUCCESS"
@@ -428,7 +442,7 @@ def generate_report(
 
         print(f"\nTask: {task_id} [{status}]")
 
-        for metric in task_result["metrics"]:
+        for metric in metrics_list:
             metric_status = "PASSED" if metric["success"] else "FAILED"
             print(
                 f"  {metric_status} Metric: {metric['metric']:<35} "

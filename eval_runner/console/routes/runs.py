@@ -138,10 +138,20 @@ def get_run_status(run_id):
             logger.warning(f"Error checking run status for {run_id}: {e}")
             pass
 
+        import time
+
+        status = "RUNNING"
+        if is_finished:
+            status = "COMPLETED"
+        elif mtime > 0 and time.time() - mtime > 300:
+            # [Industrial Heuristic] If no terminal event and no disk activity for 5m,
+            # the engine has likely crashed or hung.
+            status = "STALLED"
+
         return jsonify(
             {
                 "run_id": run_id,
-                "status": "COMPLETED" if is_finished else "RUNNING",
+                "status": status,
                 "size": size,
                 "mtime": mtime,
             }

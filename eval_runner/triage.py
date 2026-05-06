@@ -69,7 +69,10 @@ class TriageEngine:
         Refined AgentV v1.6.0 baseline: Delegates classification to the FailureTaxonomy.
         Returns standardized industrial codes (Standardized PBAC).
         """
-        # 1. Prefer existing report if available
+        # 1. Prefer existing report or explicit tag if available
+        if "triage_tag" in task_result:
+            return str(task_result["triage_tag"]).upper()
+
         report = task_result.get("diagnostic_report")
         if report and "root_cause" in report:
             return str(report["root_cause"]).upper()

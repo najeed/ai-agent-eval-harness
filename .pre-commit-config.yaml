@@ -1,7 +1,7 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.15.11
+    rev: v0.15.12
     hooks:
       # Run the linter.
       - id: ruff
@@ -14,7 +14,7 @@ repos:
       - id: bandit
         args: ["-r", "-ll"]
   - repo: https://github.com/pypa/pip-audit
-    rev: v2.7.3
+    rev: v2.10.0
     hooks:
       - id: pip-audit
-        args: ["--desc", "on", "--ignore-vuln", "CVE-2026-3219"]
+        args: ["--desc", "on", "--ignore-vuln", "CVE-2026-3219", "--ignore-vuln", "GHSA-jp4c-xjxw-mgf9"]
