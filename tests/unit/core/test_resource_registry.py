@@ -1,21 +1,19 @@
-from pathlib import Path
-
 import pytest
 
 from eval_runner.tool_sandbox import ToolSandbox
 
 
 @pytest.mark.asyncio
-async def test_resource_registry_cleanup():
+async def test_resource_registry_cleanup(tmp_path):
     # Setup
     scenario = {"id": "test_cleanup", "initial_state": {}}
-    sandbox = ToolSandbox(scenario)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path)
 
     # Create transient artifacts
-    temp_file = Path("test_artifact.db")
+    temp_file = tmp_path / "test_artifact.db"
     temp_file.write_text("dummy data")
 
-    temp_dir = Path("test_artifact_dir")
+    temp_dir = tmp_path / "test_artifact_dir"
     temp_dir.mkdir(exist_ok=True)
     (temp_dir / "child.txt").write_text("child data")
 
@@ -35,7 +33,7 @@ async def test_resource_registry_cleanup():
 
 
 @pytest.mark.asyncio
-async def test_resource_registry_audit_proxy():
+async def test_resource_registry_audit_proxy(tmp_path):
     # Setup with a mock forensics object
     class MockForensics:
         def __init__(self):
@@ -46,10 +44,10 @@ async def test_resource_registry_audit_proxy():
 
     mock_forensics = MockForensics()
     scenario = {"id": "test_proxy", "initial_state": {}}
-    sandbox = ToolSandbox(scenario, forensics=mock_forensics)
+    sandbox = ToolSandbox(scenario, forensics=mock_forensics, workspace_root=tmp_path)
 
     # Create and register
-    temp_file = Path("test_proxy.db")
+    temp_file = tmp_path / "test_proxy.db"
     temp_file.write_text("data")
 
     sandbox.register_artifact(temp_file, alias="my_db")

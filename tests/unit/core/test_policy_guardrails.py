@@ -4,7 +4,7 @@ from eval_runner.tool_sandbox import ToolSandbox
 
 
 @pytest.mark.asyncio
-async def test_policy_enforcement_success():
+async def test_policy_enforcement_success(tmp_path):
     scenario = {
         "policies": {"apply_refund": {"max_limit": 50.0}},
         "workflow": {
@@ -12,7 +12,7 @@ async def test_policy_enforcement_success():
             "edges": [],
         },
     }
-    sandbox = ToolSandbox(scenario)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path)
 
     # Within limit
     result = await sandbox.execute("apply_refund", {"amount": 40.0})
@@ -24,7 +24,7 @@ async def test_policy_enforcement_success():
 
 
 @pytest.mark.asyncio
-async def test_policy_enforcement_violation():
+async def test_policy_enforcement_violation(tmp_path):
     scenario = {
         "policies": {"apply_refund": {"max_limit": 50.0}},
         "workflow": {
@@ -32,7 +32,7 @@ async def test_policy_enforcement_violation():
             "edges": [],
         },
     }
-    sandbox = ToolSandbox(scenario)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path)
 
     # Over limit
     result = await sandbox.execute("apply_refund", {"amount": 100.0})
@@ -41,7 +41,7 @@ async def test_policy_enforcement_violation():
 
 
 @pytest.mark.asyncio
-async def test_policy_enforcement_no_policy():
+async def test_policy_enforcement_no_policy(tmp_path):
     scenario = {
         "policies": {},
         "workflow": {
@@ -49,7 +49,7 @@ async def test_policy_enforcement_no_policy():
             "edges": [],
         },
     }
-    sandbox = ToolSandbox(scenario)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path)
 
     # No policy for this tool
     result = await sandbox.execute("apply_refund", {"amount": 100.0})

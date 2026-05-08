@@ -2,6 +2,7 @@ from typing import Any
 
 from .. import config
 from ..plugins import BaseEvalPlugin
+from .common import DualNormalizationHub
 
 
 class GeminiAdapterPlugin(BaseEvalPlugin):
@@ -67,12 +68,16 @@ class GeminiAdapterPlugin(BaseEvalPlugin):
             if not response or not response.text:
                 return {
                     "status": "error",
+                    "action": "error",
                     "message": f"Empty or invalid response from Gemini SDK: {response}",
                 }
 
+            output = response.text.strip()
+            action = DualNormalizationHub.normalize_text(output)
             return {
                 "status": "success",
-                "output": response.text.strip(),
+                "output": output,
+                "action": action,
                 "metadata": {
                     "model": model,
                     "framework": "gemini",
@@ -80,4 +85,4 @@ class GeminiAdapterPlugin(BaseEvalPlugin):
                 },
             }
         except Exception as e:
-            return {"status": "error", "message": f"Gemini SDK Error: {str(e)}"}
+            return {"status": "error", "action": "error", "message": f"Gemini SDK Error: {str(e)}"}

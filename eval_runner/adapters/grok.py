@@ -5,6 +5,7 @@ import aiohttp
 
 from .. import config
 from ..plugins import BaseEvalPlugin
+from .common import DualNormalizationHub
 
 
 class GrokAdapterPlugin(BaseEvalPlugin):
@@ -25,7 +26,7 @@ class GrokAdapterPlugin(BaseEvalPlugin):
         """
         api_key = payload.get("api_key") or os.getenv("XAI_API_KEY")
         if not api_key:
-            return {"status": "error", "message": "xAI API key missing."}
+            return {"status": "error", "action": "error", "message": "xAI API key missing."}
 
         model = payload.get("model") or config.XAI_MODEL
         endpoint = url or (config.XAI_BASE_URL + "/chat/completions")
@@ -50,15 +51,22 @@ class GrokAdapterPlugin(BaseEvalPlugin):
                     if response.status == 200:
                         data = await response.json()
                         output = data["choices"][0]["message"]["content"]
+                        action = DualNormalizationHub.normalize_text(output)
                         return {
                             "status": "success",
                             "output": output,
+                            "action": action,
                             "metadata": {"model": model, "framework": "grok"},
                         }
                     else:
                         return {
                             "status": "error",
+                            "action": "error",
                             "message": f"xAI API error: {response.status}",
                         }
             except Exception as e:
-                return {"status": "error", "message": f"Grok request failed: {str(e)}"}
+                return {
+                    "status": "error",
+                    "action": "error",
+                    "message": f"Grok request failed: {str(e)}",
+                }

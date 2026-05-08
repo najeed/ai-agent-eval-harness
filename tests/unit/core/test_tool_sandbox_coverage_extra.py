@@ -22,13 +22,13 @@ def test_resource_registry_cleanup_exception(tmp_path):
 
 # --- SharedStateRegistry (via ToolSandbox) ---
 @pytest.mark.asyncio
-async def test_sandbox_shared_state_failures():
+async def test_sandbox_shared_state_failures(tmp_path):
     scenario = {
         "id": "test",
         "agent_topology": {"agent_1": {"writes": ["ns_1:*"], "reads": ["ns_1:*"]}},
         "tools": {"write_tool": {}, "read_tool": {}},
     }
-    sandbox = ToolSandbox(scenario)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
 
     # Try writing to unauthorized namespace
     res_write = await sandbox.execute(
@@ -87,9 +87,9 @@ async def test_sandbox_get_full_state_exception():
 
 
 @pytest.mark.asyncio
-async def test_sandbox_teardown_simulator_cleanup_exception():
+async def test_sandbox_teardown_simulator_cleanup_exception(tmp_path):
     scenario = {"id": "test"}
-    sandbox = ToolSandbox(scenario)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
 
     mock_sim = AsyncMock()
     mock_sim.cleanup.side_effect = Exception("Simulator cleanup failed")
@@ -103,9 +103,9 @@ async def test_sandbox_teardown_simulator_cleanup_exception():
 
 # --- ToolSandbox Edge Cases ---
 @pytest.mark.asyncio
-async def test_sandbox_active_simulators_instantiation_error():
+async def test_sandbox_active_simulators_instantiation_error(tmp_path):
     scenario = {"id": "test", "enabled_shims": ["dummy"]}
-    sandbox = ToolSandbox(scenario)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
 
     # Mock registry to return a shim that will raise an error on init
     with patch("eval_runner.config.RegistryManager.get_resolved_registry") as mock_reg:
@@ -130,7 +130,7 @@ def test_sandbox_sanitize_value_dict_list():
     assert sanitized["nested_list"][0] == "windows_secret"
 
 
-def test_sandbox_scenario_relevant_shims_non_dict_outcome():
+def test_sandbox_scenario_relevant_shims_non_dict_outcome(tmp_path):
     scenario = {
         "workflow": {
             "nodes": [
@@ -139,6 +139,6 @@ def test_sandbox_scenario_relevant_shims_non_dict_outcome():
             ]
         }
     }
-    sandbox = ToolSandbox(scenario)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
     relevant = sandbox._get_scenario_relevant_shims()
     assert "db" in relevant

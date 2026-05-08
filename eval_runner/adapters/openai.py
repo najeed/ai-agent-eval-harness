@@ -5,6 +5,7 @@ from typing import Any
 import aiohttp
 
 from ..plugins import BaseEvalPlugin
+from .common import DualNormalizationHub
 
 
 class OpenAIAdapterPlugin(BaseEvalPlugin):
@@ -54,16 +55,18 @@ class OpenAIAdapterPlugin(BaseEvalPlugin):
                         err_text = await response.text()
                         return {
                             "status": "error",
+                            "action": "error",
                             "message": f"OpenAI returned {response.status}: {err_text}",
                         }
 
                     data = await response.json()
+                    output = data.get("choices", [{}])[0].get("message", {}).get("content", "")
+                    action = DualNormalizationHub.normalize_text(output)
                     return {
                         "status": "success",
-                        "output": data.get("choices", [{}])[0]
-                        .get("message", {})
-                        .get("content", ""),
+                        "output": output,
+                        "action": action,
                         "metadata": {"model": model, "framework": "openai"},
                     }
         except Exception as e:
-            return {"status": "error", "message": str(e)}
+            return {"status": "error", "action": "error", "message": str(e)}

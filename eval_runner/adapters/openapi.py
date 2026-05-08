@@ -7,107 +7,9 @@ from urllib.parse import urljoin, urlparse
 import aiohttp
 
 from ..events import CoreEvents, emit
+from .common import DualNormalizationHub
 
 logger = logging.getLogger(__name__)
-
-
-class DualNormalizationHub:
-    """
-    Standardized Mapping Engine for Industrial Agent Responses.
-    Maps heterogeneous agent states to Harness Core actions (hitl_pause, final_answer, error).
-    """
-
-    # Lexical Heuristics (Agnostic Wait-State Markers)
-    POLLING_KEYWORDS = ["pending", "processing", "gear", "queued", "progress"]
-    HITL_KEYWORDS = [
-        "hitl",
-        "review",
-        "manual",
-        "human",
-        "intervention",
-        "pause",
-        "clearance",
-        "waiting",
-    ]
-
-    TERMINAL_KEYWORDS = ["approved", "rejected", "completed", "final", "success"]
-    ERROR_KEYWORDS = ["error", "failed", "failure", "exception", "crash"]
-
-    VALID_ACTIONS = {"hitl_pause", "final_answer", "error", "completed", "processing"}
-
-    @classmethod
-    def normalize(
-        cls, response: dict[str, Any], status_code: int, overrides: dict[str, str] | None = None
-    ) -> str:
-        """
-        Normalizes any JSON response to a Harness Action.
-        Precedence: Overrides > Status Codes > Schema Metadata > Heuristics.
-        """
-
-        # 1. Break-Glass Overrides (P0)
-        if overrides:
-            for condition, action in overrides.items():
-                # [Hardening] Explicit Validation of the target action
-                if action not in cls.VALID_ACTIONS:
-                    logger.warning(
-                        f"   [Normalization Hub] Invalid override action '{action}' "
-                        f"for condition '{condition}'. Ignoring."
-                    )
-                    continue
-
-                # Supports simple equality or pattern matching on status-like fields
-                # Current implementation: case-insensitive key/value mapping
-                # Example: {"status": "processing"} matches "PROCESSING", "Processing", etc.
-                for key, val in response.items():
-                    if str(key).lower() in ["status", "state", "result"]:
-                        if str(val).lower() == condition.lower():
-                            emit(
-                                CoreEvents.ADAPTER_DEBUG,
-                                {"message": (f"Applied Semantic Match: {condition} -> {action}")},
-                            )
-                            return action
-
-        # 2. Standard HTTP Status Codes (P1)
-        if status_code >= 400:
-            return "error"
-
-        # 3. Lexical Heuristics (P2 - Agnostic Mapping)
-        # Search primary status indicators
-        status_val = ""
-        for key in ["status", "state", "phase", "outcome", "decision", "result"]:
-            if key in response:
-                status_val = str(response[key]).lower()
-                break
-
-        if not status_val:
-            # Fallback: scan whole first level of keys for common status names
-            for k, v in response.items():
-                if any(x in k.lower() for x in ["status", "state", "result"]):
-                    status_val = str(v).lower()
-                    break
-
-        if any(kw in status_val for kw in cls.HITL_KEYWORDS):
-            emit(
-                CoreEvents.ADAPTER_DEBUG,
-                {"message": f"Agnostic Mapping: hitl_pause (Status: '{status_val}')"},
-            )
-            return "hitl_pause"
-
-        if any(kw in status_val for kw in cls.POLLING_KEYWORDS):
-            emit(
-                CoreEvents.ADAPTER_DEBUG,
-                {"message": f"Agnostic Mapping: processing (Status: '{status_val}')"},
-            )
-            return "processing"
-
-        if any(kw in status_val for kw in cls.ERROR_KEYWORDS):
-            return "error"
-
-        if any(kw in status_val for kw in cls.TERMINAL_KEYWORDS):
-            return "final_answer"
-
-        # Default fallback for untagged successful responses
-        return "final_answer"
 
 
 async def adapter(payload: dict[str, Any], endpoint: str, **kwargs) -> dict[str, Any]:
@@ -282,8 +184,8 @@ async def _poll_for_result(session, poll_url: str, overrides: dict | None) -> di
 
             action = DualNormalizationHub.normalize(data, status_code, overrides)
 
-            # Terminal State Found
-            if action in ["hitl_pause", "final_answer"]:
+            # Terminal State Found (Success or Error)
+            if action in ["hitl_pause", "final_answer", "error"]:
                 return {
                     "action": action,
                     "content": data.get("decision_reason") or data.get("message") or str(data),

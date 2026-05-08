@@ -45,7 +45,12 @@ class SessionManager:
     """
 
     def __init__(
-        self, run_id: str, scenario: dict, metadata: dict | None = None, seed: int | None = None
+        self,
+        run_id: str,
+        scenario: dict,
+        metadata: dict | None = None,
+        seed: int | None = None,
+        log_root: Path | None = None,
     ):
         from .plugins import PluginManager
 
@@ -85,12 +90,13 @@ class SessionManager:
             self.event_bus.subscribe(lambda e: events.emit(e.name, e.data, e.span_context))
 
         self.plugin_manager = PluginManager()
-        self.forensics = ForensicCollector(run_id, config.RUN_LOG_DIR / run_id)
+        self.log_root = log_root or config.RUN_LOG_DIR
+        self.run_vault = self.log_root / run_id
+        self.forensics = ForensicCollector(run_id, self.run_vault)
 
         # [Industrial Persistence] Save ORIGINAL scenario baseline
-        run_vault = config.RUN_LOG_DIR / run_id
-        run_vault.mkdir(parents=True, exist_ok=True)
-        with open(run_vault / "scenario_original.json", "w", encoding="utf-8") as f:
+        self.run_vault.mkdir(parents=True, exist_ok=True)
+        with open(self.run_vault / "scenario_original.json", "w", encoding="utf-8") as f:
             json.dump(self.scenario, f, indent=2)
 
         # Initialize plugins for this session
@@ -210,7 +216,7 @@ class SessionManager:
             self.scenario["metadata"]["agent"] = self.metadata["agent"]
 
         # [Industrial Persistence] Save RESOLVED scenario (post-routing discovery)
-        with open(run_vault / "scenario_resolved.json", "w", encoding="utf-8") as f:
+        with open(self.run_vault / "scenario_resolved.json", "w", encoding="utf-8") as f:
             json.dump(self.scenario, f, indent=2)
 
         # 🚀 [Forensic Hardening] Protocol Trace capture
@@ -255,6 +261,7 @@ class SessionManager:
             event_bus=self.event_bus,
             forensics=self.forensics,
             plugin_manager=self.plugin_manager,
+            jail_root=(self.log_root / self.run_id / "terminal_jail").resolve(),
         )
         try:
             await sandbox.setup()
@@ -476,6 +483,10 @@ class SessionManager:
                 elif action == "processing":
                     # Industrial Wait-State: Continue loop if max_turns allows
                     continue
+                elif action == "error":
+                    # Terminal System/Business Failure
+                    node_success = False
+                    break
                 else:
                     # [Industrial Hardening] Treat unrecognized actions as critical failures
                     err_msg = f"Unknown Agent Action: '{action}' | Protocol: {protocol}"
@@ -882,7 +893,9 @@ class SessionManager:
             content = last["content"]
             if isinstance(content, list):
                 return f"Tools returned: {json.dumps(content)}"
-            return content.get("message") or content.get("content") or str(content)
+            if isinstance(content, dict):
+                return content.get("message") or content.get("content") or str(content)
+            return str(content)
         return ""
 
     async def _calculate_metrics(self, node, attempt_number, turns, history, sandbox, actions):

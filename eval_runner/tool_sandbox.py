@@ -125,6 +125,8 @@ class AbstractSandbox(ABC):
         event_bus: Any | None = None,
         forensics: Any | None = None,
         plugin_manager: Any | None = None,
+        workspace_root: Path | None = None,
+        jail_root: Path | None = None,
     ):
         self.scenario = scenario
         self.state = scenario.get("initial_state", {}).copy()
@@ -147,17 +149,20 @@ class AbstractSandbox(ABC):
             from . import utils
 
             self.run_id = utils.generate_id(prefix="transient")
-            self.terminal_jail = (
+            self.terminal_jail = jail_root or (
                 Path(tempfile.gettempdir()) / "agentv" / self.run_id / "terminal_jail"
             )
         else:
-            self.terminal_jail = (config.RUN_LOG_DIR / self.run_id / "terminal_jail").resolve()
+            self.terminal_jail = (
+                jail_root or (config.RUN_LOG_DIR / self.run_id / "terminal_jail").resolve()
+            )
 
         # Workspace management
         self.identifier = self.scenario.get("id", "default")
         # [Industrial Isolation] Workspaces MUST be partitioned by run_id to ensure
         # parallel execution safety and forensic purity.
-        self.workspace_dir = Path("workspace") / self.run_id
+        base_ws = workspace_root or Path("workspace")
+        self.workspace_dir = base_ws / self.run_id
 
         # Phase 2: Grounding Coverage Tracking
         # Stores hit counts for 'policies' and 'tools' (KB/Grounding)

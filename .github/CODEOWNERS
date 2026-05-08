@@ -2,10 +2,10 @@
         * @najeed
 
         # Owners for specific directories
-        /tests/ @aayam-bajaj
+        /tests/ @najeed
         /schemas/ @najeed
-        /docs/ @devbm7
-        /eval-runner/ @devbm7
+        /docs/ @najeed
+        /eval-runner/ @najeed
         /sample_agent/ @najeed
         /industries/ @najeed
 

@@ -4,6 +4,7 @@ import aiohttp
 
 from .. import config
 from ..plugins import BaseEvalPlugin
+from .common import DualNormalizationHub
 
 
 class OllamaAdapterPlugin(BaseEvalPlugin):
@@ -40,14 +41,18 @@ class OllamaAdapterPlugin(BaseEvalPlugin):
                     if response.status != 200:
                         return {
                             "status": "error",
+                            "action": "error",
                             "message": f"Ollama returned {response.status}",
                         }
 
                     data = await response.json()
+                    output = data.get("message", {}).get("content", "")
+                    action = DualNormalizationHub.normalize_text(output)
                     return {
                         "status": "success",
-                        "output": data.get("message", {}).get("content", ""),
+                        "output": output,
+                        "action": action,
                         "metadata": {"model": model, "framework": "ollama"},
                     }
         except Exception as e:
-            return {"status": "error", "message": str(e)}
+            return {"status": "error", "action": "error", "message": str(e)}

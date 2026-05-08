@@ -17,4 +17,5 @@ repos:
     rev: v2.10.0
     hooks:
       - id: pip-audit
-        args: ["--desc", "on", "--ignore-vuln", "CVE-2026-3219", "--ignore-vuln", "GHSA-jp4c-xjxw-mgf9"]
+        additional_dependencies: ["pip>=26.1"]
+        args: ["--desc", "on"]

@@ -6,6 +6,7 @@ import aiohttp
 from .. import config
 from ..events import CoreEvents, emit
 from ..plugins import BaseEvalPlugin
+from .common import DualNormalizationHub
 
 
 class AutoGenAdapterPlugin(BaseEvalPlugin):
@@ -75,9 +76,11 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
                 span_context=span_context,
             )
 
+            output = f"Chat initiated with {agent_id} via AutoGen v1 Protocol"
             return {
                 "status": "success",
-                "output": f"Chat initiated with {agent_id} via AutoGen v1 Protocol",
+                "output": output,
+                "action": "final_answer",
                 "metadata": {
                     "framework": "autogen",
                     "version": getattr(autogen, "__version__", "unknown"),
@@ -109,6 +112,7 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
                 )
                 return {
                     "status": "error",
+                    "action": "error",
                     "message": (
                         "AutoGen SDK not installed and no Remote API URL provided. "
                         "Native execution failed."
@@ -134,6 +138,13 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
                     ) as response:
                         if response.status == 200:
                             data = await response.json()
+                            output = data.get("output", data)
+                            # Normalize: Use full hub for dicts; text heuristics for strings
+                            if isinstance(output, dict):
+                                action = DualNormalizationHub.normalize(output, 200)
+                            else:
+                                action = DualNormalizationHub.normalize_text(str(output))
+
                             emit(
                                 CoreEvents.CHAIN_END,
                                 {"adapter": "autogen", "agent_id": agent_id},
@@ -146,7 +157,8 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
                             )
                             return {
                                 "status": "success",
-                                "output": data.get("output", data),
+                                "output": output,
+                                "action": action,
                                 "metadata": {"framework": "autogen", "mode": "remote"},
                             }
                         else:
@@ -157,6 +169,7 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
                             )
                             return {
                                 "status": "error",
+                                "action": "error",
                                 "message": f"AutoGen Remote API error: {response.status}",
                             }
                 except Exception as e:
@@ -167,5 +180,6 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
                     )
                     return {
                         "status": "error",
+                        "action": "error",
                         "message": f"Failed to connect to AutoGen: {str(e)}",
                     }

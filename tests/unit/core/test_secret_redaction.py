@@ -57,7 +57,7 @@ def test_provisioning_hash_integrity(tmp_path, monkeypatch):
     config._SHIM_REGISTRY_CACHE = None
 
     # 2. Initialize Sandbox
-    sandbox = ToolSandbox(scenario={"id": "test_hash"})
+    sandbox = ToolSandbox(scenario={"id": "test_hash"}, workspace_root=tmp_path)
 
     # 3. Verify SANITIZED snapshot in scenario
     snapshot = sandbox.scenario["environmental_snapshot"]

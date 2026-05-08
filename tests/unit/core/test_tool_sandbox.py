@@ -13,7 +13,7 @@ from eval_runner.tool_sandbox import ToolSandbox
 
 
 @pytest.mark.asyncio
-async def test_sandbox_known_tool():
+async def test_sandbox_known_tool(tmp_path):
     """Test that a known tool returns the expected result from the scenario."""
     scenario = {
         "aes_version": 1.4,
@@ -33,7 +33,7 @@ async def test_sandbox_known_tool():
             "edges": [],
         },
     }
-    sandbox = ToolSandbox(scenario)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
 
     result = await sandbox.execute("get_customer_details", {"customer_id": "cust_123"})
     assert result["status"] == "success"
@@ -41,7 +41,7 @@ async def test_sandbox_known_tool():
 
 
 @pytest.mark.asyncio
-async def test_sandbox_unknown_tool():
+async def test_sandbox_unknown_tool(tmp_path):
     """Test that an unknown tool returns a default or success message (per current impl)."""
     scenario = {
         "aes_version": 1.4,
@@ -52,7 +52,7 @@ async def test_sandbox_unknown_tool():
             "edges": [],
         },
     }
-    sandbox = ToolSandbox(scenario)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
 
     result = await sandbox.execute("nonexistent_tool", {})
     assert result["status"] == "success"  # Default behavior in updated tool_sandbox.py
@@ -60,7 +60,7 @@ async def test_sandbox_unknown_tool():
 
 
 @pytest.mark.asyncio
-async def test_sandbox_state_initialization():
+async def test_sandbox_state_initialization(tmp_path):
     """Test that state is initialized correctly from the scenario."""
     scenario = {
         "aes_version": 1.4,
@@ -70,12 +70,12 @@ async def test_sandbox_state_initialization():
             "edges": [],
         },
     }
-    sandbox = ToolSandbox(scenario)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
     assert sandbox.state == {"customer_name": "Jane Doe", "balance": 100}
 
 
 @pytest.mark.asyncio
-async def test_sandbox_state_mutation():
+async def test_sandbox_state_mutation(tmp_path):
     """Test that explicit 'state_changes' mutate the state."""
     scenario = {
         "aes_version": 1.4,
@@ -91,7 +91,7 @@ async def test_sandbox_state_mutation():
             "edges": [],
         },
     }
-    sandbox = ToolSandbox(scenario)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
 
     await sandbox.execute("update_plan", {"current_plan": "Premium"})
     assert sandbox.state["current_plan"] == "Premium"
@@ -100,15 +100,12 @@ async def test_sandbox_state_mutation():
 @pytest.mark.asyncio
 async def test_sandbox_lifecycle(tmp_path):
     """Verify setup/teardown with a controlled tmp directory."""
-    test_ws = tmp_path / "sandbox_test_ws"
     scenario = {
         "aes_version": 1.4,
         "id": "lifecycle-test",
         "metadata": {"cleanup_workspace": True},
     }
-    sandbox = ToolSandbox(scenario)
-    # Inject temp path to avoid polluting real workspaces/ dir
-    sandbox.workspace_dir = str(test_ws)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
 
     await sandbox.setup()
     assert Path(sandbox.workspace_dir).exists()
@@ -120,10 +117,8 @@ async def test_sandbox_lifecycle(tmp_path):
 @pytest.mark.asyncio
 async def test_sandbox_cleanup_persistence(tmp_path):
     """Verify that cleanup_workspace=False preserves the directory."""
-    test_ws = tmp_path / "persist_test_ws"
     scenario = {"id": "persist-test", "metadata": {"cleanup_workspace": False}}
-    sandbox = ToolSandbox(scenario)
-    sandbox.workspace_dir = str(test_ws)
+    sandbox = ToolSandbox(scenario, workspace_root=tmp_path, jail_root=tmp_path / "jail")
 
     await sandbox.setup()
     ws_dir = sandbox.workspace_dir
@@ -196,7 +191,7 @@ def test_shared_state_events():
     )
 
 
-def test_abstract_sandbox_propagate_bus():
+def test_abstract_sandbox_propagate_bus(tmp_path):
     """Verify that AbstractSandbox propagates the event_bus to the registry."""
     from unittest.mock import MagicMock
 
@@ -204,7 +199,9 @@ def test_abstract_sandbox_propagate_bus():
 
     mock_bus = MagicMock()
     scenario = {"id": "bus-test", "agent_topology": {"agent_a": {"writes": ["*"]}}}
-    sandbox = ToolSandbox(scenario, event_bus=mock_bus)
+    sandbox = ToolSandbox(
+        scenario, event_bus=mock_bus, workspace_root=tmp_path, jail_root=tmp_path / "jail"
+    )
 
     # Check propagation
     assert sandbox.shared_state.event_bus == mock_bus

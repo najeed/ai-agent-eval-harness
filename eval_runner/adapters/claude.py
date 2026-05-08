@@ -4,6 +4,7 @@ import aiohttp
 
 from .. import config
 from ..plugins import BaseEvalPlugin
+from .common import DualNormalizationHub
 
 
 class ClaudeAdapterPlugin(BaseEvalPlugin):
@@ -58,16 +59,19 @@ class ClaudeAdapterPlugin(BaseEvalPlugin):
                         err_text = await response.text()
                         return {
                             "status": "error",
+                            "action": "error",
                             "message": f"Claude API returned {response.status}: {err_text}",
                         }
 
                     data = await response.json()
                     # Claude response structure: content[0].text
                     output = data.get("content", [{}])[0].get("text", "")
+                    action = DualNormalizationHub.normalize_text(output)
                     return {
                         "status": "success",
                         "output": output,
+                        "action": action,
                         "metadata": {"model": model, "framework": "claude"},
                     }
         except Exception as e:
-            return {"status": "error", "message": str(e)}
+            return {"status": "error", "action": "error", "message": str(e)}

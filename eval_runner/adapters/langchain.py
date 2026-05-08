@@ -5,7 +5,7 @@ import aiohttp
 
 from ..events import CoreEvents, emit
 from ..plugins import BaseEvalPlugin
-from .common import AESCallbackHandler
+from .common import AESCallbackHandler, DualNormalizationHub
 
 
 class LangChainAdapterPlugin(BaseEvalPlugin):
@@ -41,6 +41,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
         if not url and not payload.get("task_id"):
             return {
                 "status": "error",
+                "action": "error",
                 "message": "Missing 'url' or 'base_url' in payload for langchain adapter",
             }
 
@@ -66,9 +67,11 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
             handler.on_node_end({"output": "simulated"})
             handler.on_chain_end({"output": "simulated"})
 
+            output = f"Processed {task_id} via LangChain v1 Protocol"
             return {
                 "status": "success",
-                "output": f"Processed {task_id} via LangChain v1 Protocol",
+                "output": output,
+                "action": "final_answer",
                 "metadata": {
                     "framework": "langchain",
                     "version": getattr(langchain, "__version__", "unknown"),
@@ -79,6 +82,7 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
             emit(CoreEvents.ERROR, {"message": "LangChain SDK not installed"})
             return {
                 "status": "error",
+                "action": "error",
                 "message": "LangChain SDK (langchain) not installed. Native execution failed.",
                 "metadata": {"framework": "langchain", "mode": "failed"},
             }
@@ -100,16 +104,25 @@ class LangChainAdapterPlugin(BaseEvalPlugin):
                         emit(CoreEvents.ERROR, {"message": f"LangServe {response.status}"})
                         return {
                             "status": "error",
+                            "action": "error",
                             "message": f"LangServe returned {response.status}",
                         }
 
                     data = await response.json()
+                    output = data.get("output", "")
+                    # Normalize: Use full hub for dicts; text heuristics for strings
+                    if isinstance(output, dict):
+                        action = DualNormalizationHub.normalize(output, 200)
+                    else:
+                        action = DualNormalizationHub.normalize_text(str(output))
+
                     emit(CoreEvents.CHAIN_END, {"adapter": "langchain", "mode": "remote"})
                     return {
                         "status": "success",
-                        "output": str(data.get("output", "")),
+                        "output": output,
+                        "action": action,
                         "metadata": {"framework": "langchain", "endpoint": url, "mode": "remote"},
                     }
         except Exception as e:
             emit(CoreEvents.ERROR, {"message": str(e)})
-            return {"status": "error", "message": str(e)}
+            return {"status": "error", "action": "error", "message": str(e)}

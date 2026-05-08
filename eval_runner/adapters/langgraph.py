@@ -4,7 +4,7 @@ from typing import Any
 from .. import events
 from ..events import CoreEvents
 from ..plugins import BaseEvalPlugin
-from .common import AESCallbackHandler
+from .common import AESCallbackHandler, DualNormalizationHub
 
 
 class LangGraphAdapterPlugin(BaseEvalPlugin):
@@ -47,9 +47,12 @@ class LangGraphAdapterPlugin(BaseEvalPlugin):
             handler.on_node_end({"output": "simulated"})
             handler.on_chain_end({"output": "simulated"})
 
+            output = f"Processed {node_id} via LangGraph v2 (BackendProtocolV2)"
+            action = DualNormalizationHub.normalize_text(output)
             return {
                 "status": "success",
-                "output": f"Processed {node_id} via LangGraph v2 (BackendProtocolV2)",
+                "output": output,
+                "action": action,
                 "metadata": {
                     "framework": "langgraph",
                     "version": getattr(langgraph, "__version__", "2.0.0"),
@@ -61,6 +64,7 @@ class LangGraphAdapterPlugin(BaseEvalPlugin):
             events.emit(CoreEvents.ERROR, {"message": "LangGraph SDK not installed"})
             return {
                 "status": "error",
+                "action": "error",
                 "message": "LangGraph SDK (langgraph) not installed. Native execution failed.",
                 "metadata": {"framework": "langgraph", "mode": "failed"},
             }

@@ -97,6 +97,8 @@ logs/
 docs-old/_build/
 docs-old/build/
 
+# --- Temporary artifacts ---
+/jail/
 /runs/
 /results/
 /reports/
@@ -104,6 +106,7 @@ tmp/
 .tmp/
 /scratch/
 /scratch_tmp/
+/scripts/
 /workspace/
 
 # --- Dependencies ---

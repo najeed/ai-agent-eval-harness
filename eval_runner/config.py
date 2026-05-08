@@ -431,6 +431,18 @@ REFUSAL_KEYWORDS = os.getenv(
     "REFUSAL_KEYWORDS", "cannot,unable,refuse,policy,against,not allowed,sorry"
 ).split(",")
 
+# [Industrial State Parity] Agent response heuristics
+POLLING_KEYWORDS = os.getenv("POLLING_KEYWORDS", "pending,processing,gear,queued,progress").split(
+    ","
+)
+HITL_KEYWORDS = os.getenv(
+    "HITL_KEYWORDS", "hitl,review,manual,human,intervention,pause,clearance,waiting"
+).split(",")
+TERMINAL_KEYWORDS = os.getenv(
+    "TERMINAL_KEYWORDS", "approved,rejected,completed,final,success,decided,denied"
+).split(",")
+ERROR_KEYWORDS = os.getenv("ERROR_KEYWORDS", "error,failed,failure,exception,crash").split(",")
+
 # --- Reporter Configuration ---
 REPORTS_DIR = (PROJECT_ROOT / os.getenv("REPORTS_DIR", "reports")).absolute()
 TRAJECTORIES_DIR = REPORTS_DIR / "trajectories"

@@ -4,6 +4,7 @@ from typing import Any
 from .. import events
 from ..events import CoreEvents
 from ..plugins import BaseEvalPlugin
+from .common import DualNormalizationHub
 
 
 class CrewAIAdapterPlugin(BaseEvalPlugin):
@@ -52,9 +53,12 @@ class CrewAIAdapterPlugin(BaseEvalPlugin):
 
             events.emit(CoreEvents.CHAIN_END, {"adapter": "crewai", "task_id": task_id})
 
+            output = f"Crew kickoff completed for {task_id} via CrewAI v1 Protocol"
+            action = DualNormalizationHub.normalize_text(output)
             return {
                 "status": "success",
-                "output": f"Crew kickoff completed for {task_id} via CrewAI v1 Protocol",
+                "output": output,
+                "action": action,
                 "metadata": {
                     "framework": "crewai",
                     "version": getattr(crewai, "__version__", "unknown"),
@@ -66,6 +70,7 @@ class CrewAIAdapterPlugin(BaseEvalPlugin):
             events.emit(CoreEvents.ERROR, {"message": "CrewAI SDK not installed"})
             return {
                 "status": "error",
+                "action": "error",
                 "message": "CrewAI SDK (crewai) not installed. Native execution failed.",
                 "metadata": {"framework": "crewai", "mode": "failed"},
             }
