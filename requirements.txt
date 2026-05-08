@@ -30,7 +30,7 @@ cryptography==46.0.7
 opentelemetry-api==1.41.0
 opentelemetry-sdk==1.41.0
 google-genai==1.70.0
-GitPython==3.1.44
+GitPython==3.1.49
 psutil==7.2.2
 
 # --- Document Processing ---

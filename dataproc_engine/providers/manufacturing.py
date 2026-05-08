@@ -94,11 +94,9 @@ class ManufacturingProvider(BaseProvider):
                     }
                     verified = self.llm_manager._verify_schema(raw_data, TARGET_SCHEMA, strict=True)
                     if verified:
-                        record_id = (
-                            hashlib.sha256(
-                                f"IND-{raw_data['country']}-{raw_data['sector']}-{raw_data['year']}".encode()
-                            ).hexdigest()[:16],
-                        )
+                        record_id = hashlib.sha256(
+                            f"IND-{raw_data['country']}-{raw_data['sector']}-{raw_data['year']}".encode()
+                        ).hexdigest()[:16]
                         results.append(
                             StandardSchema(
                                 id=record_id,

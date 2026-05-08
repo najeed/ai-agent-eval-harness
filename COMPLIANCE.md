@@ -1,11 +1,11 @@
-# Forensic Compliance Manifesto (AES v1.6.0)
+# Forensic Compliance Manifesto (AgentV v1.6.0)
 
 This document defines the industrial governance and verification protocols for the AgentV 1.6.0 engine.
 
 ---
 
 ## 🔐 Industrial Forensic Trust Protocol
-This document outlines the license obligations and compliance steps for the AgentV Verification Framework (`agentv`), as of **April 2026**.
+This document outlines the license obligations and compliance steps for the AgentV Verification Framework (`agentv`), as of **May 2026**.
 
 ## 1. Core Framework License
 The AgentV Verification Framework is distributed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file in the root directory for details.
@@ -15,6 +15,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 
 | **aiohttp** | 3.13.5 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Flask** | 3.1.3 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **flask-cors** | 6.0.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **Werkzeug** | 3.1.8 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **requests** | 2.33.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **jsonschema** | 4.26.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
@@ -41,7 +42,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **pydantic** | 2.13.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **pyarrow** | 24.0.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **httpx** | 0.28.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **GitPython** | 3.1.44 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **GitPython** | 3.1.49 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 
 ## 3. Obligations & Compliance Steps
 To remain compliant with these licenses, the following steps are handled automatically by this repository:
@@ -58,7 +59,7 @@ To remain compliant with these licenses, the following steps are handled automat
 > [!WARNING]
 > While the `datasets` library is Apache 2.0, individual datasets (e.g., loaded via `load_dataset`) may have their own licenses (CC-BY, GPL, etc.). **Always verify the specific dataset terms before commercial use.**
 
-## 4. Forensic Governance & NIST Alignment (Protocol v1.4.1)
+## 4. Forensic Governance & NIST Alignment (Protocol v1.6.0)
 - **Verification Certificate (VC) v3.0.0**: The framework mandates the v3 forensic standard, featuring **Identity-based signing** and **Sidecar Artifact Hashing** to ensure absolute trace and report non-repudiation.
 - **Forensic Evidence Ledger**: Every signed run includes a cryptographic ledger that hashes all associated artifacts (HTML reports, trajectory plots) to prevent side-channel tampering.
 - **Seal Hash Protocol**: To ensure the non-repudiability of the certification process itself, AgentV implements a "Seal Hash" anchor. Before appending the `verification_certificate_issued` event to the trace, the engine computes a hash of the trace history. This hash is embedded within the certificate event, mathematically binding the certification to the specific execution history.
