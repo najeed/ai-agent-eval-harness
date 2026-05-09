@@ -368,7 +368,7 @@ class DatabaseSimulator(BaseSimulator):
 
     def _provision_forensic_log(self, engine):
         """
-        [Industrial Hardening] Installs SQLite triggers for row-level mutation tracking (CUD).
+        Installs SQLite triggers for row-level mutation tracking (CUD).
         Ensures all changes are recorded in _forensic_audit_log for lean forensics.
         """
 
@@ -385,7 +385,7 @@ class DatabaseSimulator(BaseSimulator):
                     row_identity TEXT,
                     old_data TEXT,
                     new_data TEXT,
-                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                    timestamp TEXT DEFAULT CURRENT_TIMESTAMP
                 )
             """)
             )
@@ -489,7 +489,7 @@ class DatabaseSimulator(BaseSimulator):
 
                 conn.commit()
 
-                # [Industrial Hardening] If a new table was created,
+                # If a new table was created,
                 # provision forensics for it immediately.
                 if "CREATE TABLE" in q.upper():
                     self._provision_forensic_log(engine)

@@ -27,7 +27,7 @@ class PublicationPlugin(BaseEvalPlugin):
 
     def _load_config(self):
         # Check both root and publication_suite folder for self-containment
-        paths = [Path("config.yaml"), Path("scripts/publication_suite/config.yaml")]
+        paths = [Path("config.yaml"), Path("eval_runner/publication_suite/config.yaml")]
         for p in paths:
             try:
                 if p.exists():

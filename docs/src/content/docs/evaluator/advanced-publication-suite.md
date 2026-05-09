@@ -28,7 +28,7 @@ Use **Pilot Mode** for rapid iteration, testing new scenarios, or verifying your
 
 ### Example: Running a pilot
 ```bash
-python scripts/publication_suite/publication_suite.py --mode pilot --agent-name "GPT-5.4-Mini-Pilot" --agent "http://localhost:5001/execute"
+python eval_runner/publication_suite/publication_suite.py --mode pilot --agent-name "GPT-5.4-Mini-Pilot" --agent "http://localhost:5001/execute"
 ```
 **Outcome:** Generates a `pilot_preview.html` and statistical summary in 3-5 minutes.
 
@@ -39,7 +39,7 @@ python scripts/publication_suite/publication_suite.py --mode pilot --agent-name 
 The suite supports **Model Wars** mode, allowing you to benchmark multiple agents against the same scenario library in a single pass.
 
 ### 1. Define Agent Inventory
-Provide an **Agent Inventory** YAML file (Default: `scripts/publication_suite/agents_inventory.yaml`).
+Provide an **Agent Inventory** YAML file (Default: `eval_runner/publication_suite/agents_inventory.yaml`).
 ```yaml
 agents:
   - name: "GPT-5.4-Mini"
@@ -53,7 +53,7 @@ agents:
 
 ### 2. Run Comparative Benchmark
 ```bash
-python scripts/publication_suite/publication_suite.py --mode pilot --compare scripts/publication_suite/agents_inventory.yaml
+python eval_runner/publication_suite/publication_suite.py --mode pilot --compare eval_runner/publication_suite/agents_inventory.yaml
 ```
 
 ---
@@ -75,7 +75,7 @@ The suite offers granular control over the evaluation campaign:
 
 - **Path Slicing**: Target specific verticals or difficulty tiers.
   ```bash
-  python scripts/publication_suite/publication_suite.py --run-id <id>
+  python eval_runner/publication_suite/publication_suite.py --run-id <id>
   ```
 - **Custom Protocols**: Support for `socket://`, `local://`, and `framework://` prefixes.
 - **Parallel Scaling**: Utilize `--parallel <N>` to scale workers across multiple cores.

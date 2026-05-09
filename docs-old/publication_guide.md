@@ -52,7 +52,7 @@ Use **Pilot Mode** for rapid iteration, testing new scenarios, or verifying your
 
 ### Example: Running a pilot for a new adapter
 ```bash
-python scripts/publication_suite/publication_suite.py --mode pilot --agent-name "GPT-5.4-Mini-Pilot" --agent "http://localhost:5001/execute"
+python eval_runner/publication_suite/publication_suite.py --mode pilot --agent-name "GPT-5.4-Mini-Pilot" --agent "http://localhost:5001/execute"
 ```
 **Target Time:** 3-5 minutes (serial execution to ensure clean Flight Recorder traces).
 **Outcome:** Generates a `pilot_preview.html` and statistical summary based on 25-50 total runs.
@@ -95,7 +95,7 @@ Run a full benchmarking campaign (default 100 runs per scenario) to generate pub
 
 ### Example: Full scale evaluation with parallel workers
 ```bash
-python scripts/publication_suite/publication_suite.py --mode standard --agent-name "Claude-4.6-Sonnet-v1" --parallel 8
+python eval_runner/publication_suite/publication_suite.py --mode standard --agent-name "Claude-4.6-Sonnet-v1" --parallel 8
 ```
 **Outcome:** Generates a full `leaderboard.html` and a signed artifact bundle.
 
@@ -106,19 +106,19 @@ python scripts/publication_suite/publication_suite.py --mode standard --agent-na
 ### Slicing by Scenario Path
 Target specific verticals or difficulty tiers by pointing to a specific subdirectory.
 ```bash
-python scripts/publication_suite/publication_suite.py --run-id <id>
+python eval_runner/publication_suite/publication_suite.py --run-id <id>
 ```
 
 ### Specifying Agent Protocols
 Support for different agent communication protocols.
 ```bash
-python scripts/publication_suite/publication_suite.py --protocol socket --agent "127.0.0.1:9000"
+python eval_runner/publication_suite/publication_suite.py --protocol socket --agent "127.0.0.1:9000"
 ```
 
 ### Reproducibility with Seeds
 The conductor generates deterministic seeds per batch, but you can override the base seed.
 ```bash
-python scripts/publication_suite/conductor.py --seed 12345 --agent-name "Reproducible-Agent"
+python eval_runner/publication_suite/conductor.py --seed 12345 --agent-name "Reproducible-Agent"
 ```
 
 ---
@@ -144,7 +144,7 @@ Using consistent seeds across different adapters ensures that they are evaluated
 The suite supports **Model Wars** mode, allowing you to benchmark multiple agents against the same scenario library in a single pass. This produces a unified comparative leaderboard.
 
 ### 1. Define Agent Inventory
-To use Model Wars, you must provide an **Agent Inventory** YAML file (Default: `scripts/publication_suite/agents_inventory.yaml`). This file defines the fleet of agents you wish to compare.
+To use Model Wars, you must provide an **Agent Inventory** YAML file (Default: `eval_runner/publication_suite/agents_inventory.yaml`). This file defines the fleet of agents you wish to compare.
 ```yaml
 agents:
   - name: "GPT-5.4-Mini"
@@ -159,7 +159,7 @@ agents:
 ### 2. Run Comparative Benchmark
 Use the `--compare` flag:
 ```bash
-python scripts/publication_suite/publication_suite.py --mode pilot --compare scripts/publication_suite/agents_inventory.yaml
+python eval_runner/publication_suite/publication_suite.py --mode pilot --compare eval_runner/publication_suite/agents_inventory.yaml
 ```
 
 ### 3. Review Comparative Leaderboard

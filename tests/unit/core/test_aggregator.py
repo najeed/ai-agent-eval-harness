@@ -9,7 +9,8 @@ import json
 from datetime import datetime, timedelta
 
 import pytest
-from scripts.publication_suite.aggregator import Aggregator
+
+from eval_runner.publication_suite.aggregator import Aggregator
 
 
 @pytest.fixture

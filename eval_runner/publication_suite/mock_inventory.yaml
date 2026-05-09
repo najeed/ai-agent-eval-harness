@@ -1,0 +1,8 @@
+agents:
+  - name: "Local-Mock-Alpha"
+    protocol: "http"
+    agent: "http://localhost:5001/execute_task"
+  
+  - name: "Local-Mock-Beta"
+    protocol: "http"
+    agent: "http://localhost:5001/execute_task"
