@@ -124,6 +124,7 @@ desktop.ini
 
 # --- Sample output ---
 sample_agent/output/
+*.db
 
 # --- Generated index ---
 scenarios/index.json
