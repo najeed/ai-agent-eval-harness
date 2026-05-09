@@ -84,7 +84,6 @@ exclude = [
     "walkthroughs",
     "docs",
     "examples",
-    "examples",
     ".aes",
     "reports",
     "results",
@@ -93,6 +92,7 @@ exclude = [
 
 [tool.ruff.lint.isort]
 known-first-party = ["eval_runner", "dataproc_engine"]
+known-third-party = ["scripts"]
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 combine-as-imports = true
 

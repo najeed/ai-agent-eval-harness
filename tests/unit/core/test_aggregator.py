@@ -9,7 +9,6 @@ import json
 from datetime import datetime, timedelta
 
 import pytest
-
 from scripts.publication_suite.aggregator import Aggregator
 
 
