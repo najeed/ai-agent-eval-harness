@@ -4618,7 +4618,7 @@
 <h2 id="quick-start-pilot-mode">Quick Start: Pilot Mode<a class="headerlink" href="#quick-start-pilot-mode" title="Permanent link">&para;</a></h2>
 <p>Use <strong>Pilot Mode</strong> for rapid iteration, testing new scenarios, or verifying your agent integration. It runs 5 iterations across a 10-scenario subset.</p>
 <h3 id="example-running-a-pilot-for-a-new-adapter">Example: Running a pilot for a new adapter<a class="headerlink" href="#example-running-a-pilot-for-a-new-adapter" title="Permanent link">&para;</a></h3>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>scripts/publication_suite/publication_suite.py<span class="w"> </span>--mode<span class="w"> </span>pilot<span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;GPT-5.4-Mini-Pilot&quot;</span><span class="w"> </span>--agent<span class="w"> </span><span class="s2">&quot;http://localhost:5001/execute&quot;</span>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>eval_runner/publication_suite/publication_suite.py<span class="w"> </span>--mode<span class="w"> </span>pilot<span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;GPT-5.4-Mini-Pilot&quot;</span><span class="w"> </span>--agent<span class="w"> </span><span class="s2">&quot;http://localhost:5001/execute&quot;</span>
 </code></pre></div>
 <strong>Target Time:</strong> 3-5 minutes (serial execution to ensure clean Flight Recorder traces).
 <strong>Outcome:</strong> Generates a <code>pilot_preview.html</code> and statistical summary based on 25-50 total runs.</p>
@@ -4719,22 +4719,22 @@
 <h2 id="standard-execution">Standard Execution<a class="headerlink" href="#standard-execution" title="Permanent link">&para;</a></h2>
 <p>Run a full benchmarking campaign (default 100 runs per scenario) to generate publishable results with 95% confidence intervals.</p>
 <h3 id="example-full-scale-evaluation-with-parallel-workers">Example: Full scale evaluation with parallel workers<a class="headerlink" href="#example-full-scale-evaluation-with-parallel-workers" title="Permanent link">&para;</a></h3>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>scripts/publication_suite/publication_suite.py<span class="w"> </span>--mode<span class="w"> </span>standard<span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;Claude-4.6-Sonnet-v1&quot;</span><span class="w"> </span>--parallel<span class="w"> </span><span class="m">8</span>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>eval_runner/publication_suite/publication_suite.py<span class="w"> </span>--mode<span class="w"> </span>standard<span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;Claude-4.6-Sonnet-v1&quot;</span><span class="w"> </span>--parallel<span class="w"> </span><span class="m">8</span>
 </code></pre></div>
 <strong>Outcome:</strong> Generates a full <code>leaderboard.html</code> and a signed artifact bundle.</p>
 <hr />
 <h2 id="advanced-options">Advanced Options<a class="headerlink" href="#advanced-options" title="Permanent link">&para;</a></h2>
 <h3 id="slicing-by-scenario-path">Slicing by Scenario Path<a class="headerlink" href="#slicing-by-scenario-path" title="Permanent link">&para;</a></h3>
 <p>Target specific verticals or difficulty tiers by pointing to a specific subdirectory.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>scripts/publication_suite/publication_suite.py<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>eval_runner/publication_suite/publication_suite.py<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <h3 id="specifying-agent-protocols">Specifying Agent Protocols<a class="headerlink" href="#specifying-agent-protocols" title="Permanent link">&para;</a></h3>
 <p>Support for different agent communication protocols.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python<span class="w"> </span>scripts/publication_suite/publication_suite.py<span class="w"> </span>--protocol<span class="w"> </span>socket<span class="w"> </span>--agent<span class="w"> </span><span class="s2">&quot;127.0.0.1:9000&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>python<span class="w"> </span>eval_runner/publication_suite/publication_suite.py<span class="w"> </span>--protocol<span class="w"> </span>socket<span class="w"> </span>--agent<span class="w"> </span><span class="s2">&quot;127.0.0.1:9000&quot;</span>
 </code></pre></div></p>
 <h3 id="reproducibility-with-seeds">Reproducibility with Seeds<a class="headerlink" href="#reproducibility-with-seeds" title="Permanent link">&para;</a></h3>
 <p>The conductor generates deterministic seeds per batch, but you can override the base seed.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>python<span class="w"> </span>scripts/publication_suite/conductor.py<span class="w"> </span>--seed<span class="w"> </span><span class="m">12345</span><span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;Reproducible-Agent&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>python<span class="w"> </span>eval_runner/publication_suite/conductor.py<span class="w"> </span>--seed<span class="w"> </span><span class="m">12345</span><span class="w"> </span>--agent-name<span class="w"> </span><span class="s2">&quot;Reproducible-Agent&quot;</span>
 </code></pre></div></p>
 <hr />
 <h2 id="deep-dive-on-seeds">Deep Dive on Seeds<a class="headerlink" href="#deep-dive-on-seeds" title="Permanent link">&para;</a></h2>
@@ -4753,7 +4753,7 @@
 <h2 id="model-wars-multi-agent-benchmarking">⚔️ Model Wars: Multi-Agent Benchmarking<a class="headerlink" href="#model-wars-multi-agent-benchmarking" title="Permanent link">&para;</a></h2>
 <p>The suite supports <strong>Model Wars</strong> mode, allowing you to benchmark multiple agents against the same scenario library in a single pass. This produces a unified comparative leaderboard.</p>
 <h3 id="1-define-agent-inventory">1. Define Agent Inventory<a class="headerlink" href="#1-define-agent-inventory" title="Permanent link">&para;</a></h3>
-<p>To use Model Wars, you must provide an <strong>Agent Inventory</strong> YAML file (Default: <code>scripts/publication_suite/agents_inventory.yaml</code>). This file defines the fleet of agents you wish to compare.
+<p>To use Model Wars, you must provide an <strong>Agent Inventory</strong> YAML file (Default: <code>eval_runner/publication_suite/agents_inventory.yaml</code>). This file defines the fleet of agents you wish to compare.
 <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">agents</span><span class="p">:</span>
 <a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;GPT-5.4-Mini&quot;</span>
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;openai&quot;</span>
@@ -4765,7 +4765,7 @@
 </code></pre></div></p>
 <h3 id="2-run-comparative-benchmark">2. Run Comparative Benchmark<a class="headerlink" href="#2-run-comparative-benchmark" title="Permanent link">&para;</a></h3>
 <p>Use the <code>--compare</code> flag:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>python<span class="w"> </span>scripts/publication_suite/publication_suite.py<span class="w"> </span>--mode<span class="w"> </span>pilot<span class="w"> </span>--compare<span class="w"> </span>scripts/publication_suite/agents_inventory.yaml
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>python<span class="w"> </span>eval_runner/publication_suite/publication_suite.py<span class="w"> </span>--mode<span class="w"> </span>pilot<span class="w"> </span>--compare<span class="w"> </span>eval_runner/publication_suite/agents_inventory.yaml
 </code></pre></div></p>
 <h3 id="3-review-comparative-leaderboard">3. Review Comparative Leaderboard<a class="headerlink" href="#3-review-comparative-leaderboard" title="Permanent link">&para;</a></h3>
 <p>The suite will generate a single <code>leaderboard.html</code> (in the <code>results/</code> root) containing:
