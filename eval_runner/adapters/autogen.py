@@ -1,19 +1,20 @@
 # eval_runner/adapters/autogen.py
 from typing import Any
 
-import aiohttp
-
 from .. import config
 from ..events import CoreEvents, emit
 from ..plugins import BaseEvalPlugin
-from .common import DualNormalizationHub
+from .common import BaseAdapter, DualNormalizationHub
 
 
-class AutoGenAdapterPlugin(BaseEvalPlugin):
+class AutoGenAdapterPlugin(BaseEvalPlugin, BaseAdapter):
     """
     Industrial Adapter: Provides native Microsoft AutoGen support.
     Supports versioned protocols (e.g., 'autogen:v1') for immutable benchmarking.
     """
+
+    def __init__(self):
+        BaseAdapter.__init__(self, name="autogen")
 
     def on_discover_adapters(self, registry: Any):
         """Register versioned autogen protocols."""
@@ -89,97 +90,99 @@ class AutoGenAdapterPlugin(BaseEvalPlugin):
             }
 
         except ImportError:
-            # Telemetry: High-Fidelity Lifecycle Signals (Fallback Path)
-            emit(
-                CoreEvents.TURN_START,
-                {
-                    "adapter": "autogen",
-                    "agent_id": agent_id,
-                    "message": message,
-                    "mode": "remote-fallback",
-                },
-                span_context=span_context,
+            return await self._execute_remote_fallback(
+                payload, url, agent_id, message, span_context
             )
 
-            # Fallback to Remote API if SDK is not installed
-            url = url or payload.get("url") or getattr(config, "AUTOGEN_API_URL", None)
+    async def _execute_remote_fallback(
+        self,
+        payload: dict[str, Any],
+        url: str,
+        agent_id: str,
+        message: str,
+        span_context: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        """Fallback to Remote API if SDK is not installed with connection pooling and retries."""
+        from .common import SessionManager
 
-            if not url:
-                emit(
-                    CoreEvents.ERROR,
-                    {"message": "AutoGen SDK and Remote URL missing"},
-                    span_context=span_context,
-                )
-                return {
-                    "status": "error",
-                    "action": "error",
-                    "message": (
-                        "AutoGen SDK not installed and no Remote API URL provided. "
-                        "Native execution failed."
-                    ),
-                    "metadata": {"framework": "autogen", "mode": "failed"},
-                }
+        # Telemetry: High-Fidelity Lifecycle Signals (Fallback Path)
+        emit(
+            CoreEvents.TURN_START,
+            {
+                "adapter": "autogen",
+                "agent_id": agent_id,
+                "message": message,
+                "mode": "remote-fallback",
+            },
+            span_context=span_context,
+        )
 
-            print(f"      [Adapter] Info: 'autogen' SDK not found. Using Remote API at: {url}")
+        url = url or payload.get("url") or getattr(config, "AUTOGEN_API_URL", None)
 
-            # Telemetry: Signal start of the remote 'chain'
+        if not url:
             emit(
-                CoreEvents.CHAIN_START,
-                {"adapter": "autogen", "agent_id": agent_id, "protocol": "v1", "mode": "remote"},
+                CoreEvents.ERROR,
+                {"message": "AutoGen SDK and Remote URL missing"},
                 span_context=span_context,
             )
+            return {
+                "status": "error",
+                "action": "error",
+                "message": (
+                    "AutoGen SDK not installed and no Remote API URL provided. "
+                    "Native execution failed."
+                ),
+                "metadata": {"framework": "autogen", "mode": "failed"},
+            }
 
-            async with aiohttp.ClientSession() as session:
-                try:
-                    async with session.post(
-                        url,
-                        json=payload,
-                        timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT),
-                    ) as response:
-                        if response.status == 200:
-                            data = await response.json()
-                            output = data.get("output", data)
-                            # Normalize: Use full hub for dicts; text heuristics for strings
-                            if isinstance(output, dict):
-                                action = DualNormalizationHub.normalize(output, 200)
-                            else:
-                                action = DualNormalizationHub.normalize_text(str(output))
+        print(f"      [Adapter] Info: 'autogen' SDK not found. Using Remote API at: {url}")
 
-                            emit(
-                                CoreEvents.CHAIN_END,
-                                {"adapter": "autogen", "agent_id": agent_id},
-                                span_context=span_context,
-                            )
-                            emit(
-                                CoreEvents.TURN_END,
-                                {"adapter": "autogen", "agent_id": agent_id, "status": "success"},
-                                span_context=span_context,
-                            )
-                            return {
-                                "status": "success",
-                                "output": output,
-                                "action": action,
-                                "metadata": {"framework": "autogen", "mode": "remote"},
-                            }
-                        else:
-                            emit(
-                                CoreEvents.ERROR,
-                                {"message": f"AutoGen Remote API error: {response.status}"},
-                                span_context=span_context,
-                            )
-                            return {
-                                "status": "error",
-                                "action": "error",
-                                "message": f"AutoGen Remote API error: {response.status}",
-                            }
-                except Exception as e:
-                    emit(
-                        CoreEvents.ERROR,
-                        {"message": f"Failed to connect to AutoGen: {str(e)}"},
-                        span_context=span_context,
-                    )
-                    return {
-                        "status": "error",
-                        "action": "error",
-                        "message": f"Failed to connect to AutoGen: {str(e)}",
-                    }
+        emit(
+            CoreEvents.CHAIN_START,
+            {"adapter": "autogen", "agent_id": agent_id, "protocol": "v1", "mode": "remote"},
+            span_context=span_context,
+        )
+
+        async def _call():
+            session = await SessionManager.get_session()
+            async with session.post(url, json=payload) as response:
+                if response.status != 200:
+                    response.raise_for_status()
+                return await response.json(), response.status
+
+        try:
+            data, status = await self.call_with_retry(_call)
+            output = data.get("output", data)
+            # Normalize: Use full hub for dicts; text heuristics for strings
+            if isinstance(output, dict):
+                action = DualNormalizationHub.normalize(output, status)
+            else:
+                action = DualNormalizationHub.normalize_text(str(output))
+
+            emit(
+                CoreEvents.CHAIN_END,
+                {"adapter": "autogen", "agent_id": agent_id},
+                span_context=span_context,
+            )
+            emit(
+                CoreEvents.TURN_END,
+                {"adapter": "autogen", "agent_id": agent_id, "status": "success"},
+                span_context=span_context,
+            )
+            return {
+                "status": "success",
+                "output": output,
+                "action": action,
+                "metadata": {"framework": "autogen", "mode": "remote", "protocol": "v1"},
+            }
+        except Exception as e:
+            emit(
+                CoreEvents.ERROR,
+                {"message": f"Failed to connect to AutoGen: {str(e)}"},
+                span_context=span_context,
+            )
+            return {
+                "status": "error",
+                "action": "error",
+                "message": f"Failed to connect to AutoGen: {str(e)}",
+            }

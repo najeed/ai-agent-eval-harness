@@ -90,9 +90,9 @@ class MockAsyncContextManager:
 
 @pytest.fixture
 def mock_aiohttp_session():
-    with patch("aiohttp.ClientSession") as mock_session_cls:
+    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
         session_instance = MagicMock()
-        mock_session_cls.return_value.__aenter__.return_value = session_instance
+        mock_get_session.return_value = session_instance
         yield session_instance
 
 

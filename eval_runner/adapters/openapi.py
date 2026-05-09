@@ -1,197 +1,197 @@
 import asyncio
-import json
 import logging
+import os
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
-import aiohttp
-
-from ..events import CoreEvents, emit
-from .common import DualNormalizationHub
+from ..plugins import BaseEvalPlugin
+from .common import BaseAdapter, DualNormalizationHub, SessionManager
 
 logger = logging.getLogger(__name__)
 
 
-async def adapter(payload: dict[str, Any], endpoint: str, **kwargs) -> dict[str, Any]:
+class OpenAPIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
     """
-    Generic OpenAPI REST Adapter.
-    Handles standard OAS patterns: POST execution, 202 Polling, and Agnostic Normalization.
+    Industrial Adapter: Generic OpenAPI REST Adapter with OAuth2 and pooling.
+    Registers the 'openapi' protocol.
     """
-    overrides = kwargs.get("overrides")  # Passed from session.py via Registry
 
-    # 1. Spec Discovery (OAS Handshake)
-    # [Fix A] Always derive the spec URL from the base origin (scheme+host+port).
-    # If the caller pre-configures the endpoint as e.g. http://localhost:8000/apply
-    # we must not append /openapi.json to the path — we fetch from the root origin.
-    parsed = urlparse(endpoint)
-    base_origin = f"{parsed.scheme}://{parsed.netloc}"  # e.g. http://localhost:8000
-    spec_url = base_origin + "/openapi.json"
+    def __init__(self):
+        BaseAdapter.__init__(self, name="openapi")
+        self.max_poll_attempts = 150
 
-    async with aiohttp.ClientSession() as session:
-        # Note: In production, we would cache the spec. Here we fetch for freshness.
+    def on_discover_adapters(self, registry: Any):
+        """Register the openapi protocol."""
+        print("      [Plugin] Registering OpenAPI adapter via on_discover_adapters hook.")
+        registry.register("openapi", self.execute_openapi_query)
+
+    async def _get_auth_header(self, payload: dict[str, Any]) -> dict[str, str]:
+        """Resolves authentication headers (Bearer, OAuth2, Basic)."""
+        auth = payload.get("metadata", {}).get("auth", {})
+        headers = {}
+
+        # 1. Direct Bearer Token
+        token = auth.get("token") or os.getenv("OPENAPI_TOKEN")
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+            return headers
+
+        # 2. OAuth2 Client Credentials
+        client_id = auth.get("client_id") or os.getenv("OPENAPI_CLIENT_ID")
+        client_secret = auth.get("client_secret") or os.getenv("OPENAPI_CLIENT_SECRET")
+        token_url = auth.get("token_url") or os.getenv("OPENAPI_TOKEN_URL")
+
+        if client_id and client_secret and token_url:
+
+            async def _fetch_token():
+                session = await SessionManager.get_session()
+                data = {
+                    "grant_type": "client_credentials",
+                    "client_id": client_id,
+                    "client_secret": client_secret,
+                }
+                async with session.post(token_url, data=data) as resp:
+                    resp.raise_for_status()
+                    return await resp.json(), resp.status
+
+            try:
+                res, _ = await self.call_with_retry(_fetch_token)
+                headers["Authorization"] = f"Bearer {res['access_token']}"
+                return headers
+            except Exception as e:
+                logger.warning(f"OAuth2 Token Fetch Failed: {e}")
+
+        # 3. Basic Auth
+        username = auth.get("username")
+        password = auth.get("password")
+        if username and password:
+            import base64
+
+            creds = base64.b64encode(f"{username}:{password}".encode()).decode()
+            headers["Authorization"] = f"Basic {creds}"
+
+        return headers
+
+    async def execute_openapi_query(
+        self, payload: dict[str, Any], endpoint: str = None, **kwargs
+    ) -> dict[str, Any]:
+        """
+        Executes an OpenAPI query with standardized pooling and resilience.
+        """
+        overrides = kwargs.get("overrides")
+        endpoint = endpoint or payload.get("url")
+
+        if not endpoint:
+            return {"status": "error", "message": "Missing endpoint URL for OpenAPI adapter."}
+
+        parsed = urlparse(endpoint)
+        base_origin = f"{parsed.scheme}://{parsed.netloc}"
+        spec_url = base_origin + "/openapi.json"
+
+        session = await SessionManager.get_session()
+        spec = {}
         try:
-            async with session.get(spec_url, timeout=10) as resp:
+            async with session.get(spec_url, timeout=5) as resp:
                 if resp.status == 200:
                     spec = await resp.json()
-                    emit(
-                        CoreEvents.ADAPTER_DEBUG,
-                        {"message": f"Discovered OAS: {spec.get('info', {}).get('title')}"},
-                    )
-                else:
-                    spec = {}
-        except Exception:
-            spec = {}
+        except Exception as e:
+            logger.debug(f"OpenAPI Spec fetch failed (non-critical): {e}")
 
-        # 2. Protocol Execution (Industrial REST Phase)
-        # Spec-Aware Resolution: Resolve target_url from discovered spec or fallback to endpoint
         target_url = endpoint
         if spec.get("paths"):
-            # Heuristic: Find canonical execution point (e.g. POST /apply or POST /run)
             potential_paths = ["/apply", "/run", "/execute", "/applications", "/v1/apply"]
             for path in potential_paths:
                 if path in spec["paths"] and "post" in spec["paths"][path]:
                     target_url = urljoin(endpoint, path)
-                    emit(
-                        CoreEvents.ADAPTER_DEBUG,
-                        {"message": f"Spec Discovery: Resolved execution path -> {target_url}"},
-                    )
                     break
 
-        # Determine method (OAS check would be here, defaulting to POST for task execution)
-        method = "POST"
+        headers = await self._get_auth_header(payload)
+        headers["Content-Type"] = "application/json"
 
-        # Prepare Payload
+        method = "POST"
         data = payload.get("input_payload", payload)
 
-        # [Industrial Debug]: Verify payload compliance before transmission
-        print(f"      [OpenAPI Adapter] Transmitting Payload: {json.dumps(data)}")
-        emit(CoreEvents.ADAPTER_DEBUG, {"message": f"Transmitting Payload: {json.dumps(data)}"})
+        async def _call():
+            async with session.request(method, target_url, json=data, headers=headers) as resp:
+                if resp.status >= 500:
+                    resp.raise_for_status()
+                return await resp.json(), resp.status, resp.headers
 
-        async with session.request(method, target_url, json=data) as resp:
-            status_code = resp.status
-            response_json = await resp.json()
+        try:
+            response_json, status_code, resp_headers = await self.call_with_retry(_call)
 
-            # 3. Asynchronous Polling (202 Accepted Pattern)
-            if status_code == 202 or "Location" in resp.headers:
-                poll_url = resp.headers.get("Location")
+            if status_code == 202 or "Location" in resp_headers:
+                poll_url = resp_headers.get("Location")
                 if not poll_url:
-                    # Fallback: look for status link in body
                     poll_url = response_json.get("status_url") or response_json.get(
                         "links", {}
                     ).get("status")
-
                 if poll_url:
                     if not poll_url.startswith("http"):
-                        # Build relative URL
                         poll_url = urljoin(target_url, poll_url)
+                    return await self._poll_for_result(poll_url, overrides, headers)
 
-                    return await _poll_for_result(session, poll_url, overrides)
-
-            # 4. Immediate Normalization (Sync Pattern)
             action = DualNormalizationHub.normalize(response_json, status_code, overrides)
 
-            # [RFC-003]: Agnostic Polling Trigger
-            # If the normalization indicates 'processing', we initiate native polling
             if action == "processing":
-                # [Industrial Identity Resolution]
-                # Look for common ID fields to construct a resource-specific poll URL
                 res_id = (
                     response_json.get("application_id")
                     or response_json.get("id")
                     or response_json.get("uuid")
                     or response_json.get("job_id")
                 )
-
-                poll_url = target_url  # Default fallback
-
-                if spec.get("paths") and res_id:
-                    # Heuristic: Find canonical status point (e.g. /status/{id}) in Spec
-                    # Look for paths containing parameters with GET methods
-                    found_template = False
-                    for path_template in spec["paths"]:
-                        if "{" in path_template and "get" in spec["paths"][path_template]:
-                            # Verify if the path takes an ID parameter
-                            params = spec["paths"][path_template]["get"].get("parameters", [])
-                            if any(
-                                p.get("name") in ["id", "application_id", "job_id"] for p in params
-                            ):
-                                resolved_path = path_template.replace("{id}", str(res_id)).replace(
-                                    "{application_id}", str(res_id)
-                                )
-                                # [Fix A] Use base_origin as the join base, not target_url.
-                                # target_url may be /apply which would produce /apply/status/164.
-                                poll_url = urljoin(base_origin + "/", resolved_path.lstrip("/"))
-                                found_template = True
-                                break
-
-                    if found_template:
-                        emit(
-                            CoreEvents.ADAPTER_DEBUG,
-                            {"message": f"Spec Discovery: Resolved polling path -> {poll_url}"},
-                        )
-
-                elif res_id:
-                    # REST Fallback: no spec available, construct a best-guess status URL.
-                    # [Fix A] Use base_origin + /status/{id} rather than appending to target_url
-                    # (which may be /apply, producing the nonsensical /apply/{id}).
+                if res_id:
                     poll_url = f"{base_origin}/status/{res_id}"
-
-                emit(
-                    CoreEvents.ADAPTER_DEBUG,
-                    {
-                        "message": f"Wait-state detected (Status: {response_json.get('status')}). "
-                        f"Initiating native poll on resolved resource: {poll_url}"
-                    },
-                )
-                return await _poll_for_result(session, poll_url, overrides)
+                    return await self._poll_for_result(poll_url, overrides, headers)
 
             return {
                 "action": action,
                 "content": response_json.get("decision_reason")
                 or response_json.get("message")
-                or response_json.get("status")
                 or str(response_json)[:500],
                 "metadata": {
                     "raw_response": response_json,
                     "status_code": status_code,
-                    "protocol": "openapi_v1.5",
+                    "framework": "openapi",
                 },
             }
 
+        except Exception as e:
+            return {"status": "error", "action": "error", "message": str(e)}
 
-MAX_POLL_ATTEMPTS = 150
+    async def _poll_for_result(
+        self, poll_url: str, overrides: dict | None, headers: dict
+    ) -> dict[str, Any]:
+        session = await SessionManager.get_session()
+        interval = 2
 
-
-async def _poll_for_result(session, poll_url: str, overrides: dict | None) -> dict[str, Any]:
-    """Internal polling loop following standard industrial async patterns."""
-    interval = 2
-
-    for i in range(MAX_POLL_ATTEMPTS):
-        await asyncio.sleep(interval)
-        async with session.get(poll_url) as resp:
-            status_code = resp.status
+        for i in range(self.max_poll_attempts):
+            await asyncio.sleep(interval)
             try:
-                data = await resp.json()
-            except Exception:
+                async with session.get(poll_url, headers=headers) as resp:
+                    status_code = resp.status
+                    data = await resp.json()
+
+                    if status_code >= 400:
+                        continue
+
+                    action = DualNormalizationHub.normalize(data, status_code, overrides)
+                    if action in ["hitl_pause", "final_answer", "error"]:
+                        return {
+                            "action": action,
+                            "content": (
+                                data.get("decision_reason") or data.get("message") or str(data)
+                            ),
+                            "metadata": {"raw_response": data, "attempts": i + 1},
+                        }
+            except Exception as e:
+                logger.debug(f"OpenAPI Polling iteration failed: {e}")
                 continue
 
-            # [Fix B] Transient HTTP errors (4xx/5xx) during polling indicate the
-            # resource is not yet ready — continue polling rather than exiting.
-            # Only exit on a verified non-processing state from a successful response.
-            if status_code >= 400:
-                logger.debug(f"   [Poll] Transient HTTP {status_code} from {poll_url} — retrying.")
-                continue
+        return {"action": "error", "content": "Polling timeout exceeded."}
 
-            action = DualNormalizationHub.normalize(data, status_code, overrides)
 
-            # Terminal State Found (Success or Error)
-            if action in ["hitl_pause", "final_answer", "error"]:
-                return {
-                    "action": action,
-                    "content": data.get("decision_reason") or data.get("message") or str(data),
-                    "metadata": {"raw_response": data, "attempts": i + 1},
-                }
-            # Continue polling for 'processing' or unrecognized states
-            # (error is treated as transient during active polling)
-
-    return {"action": "error", "content": "Polling timeout exceeded (Industrial Safety Cutoff)"}
+async def adapter(payload: dict[str, Any], endpoint: str, **kwargs) -> dict[str, Any]:
+    """Compatibility wrapper."""
+    plugin = OpenAPIAdapterPlugin()
+    return await plugin.execute_openapi_query(payload, endpoint, **kwargs)

@@ -11,21 +11,23 @@ import json
 import shlex
 from typing import Any, Dict, Optional  # noqa: F401, UP035
 
+import aiohttp
+
 from .. import config
 
 
 async def http_adapter(payload: dict, endpoint: str, **kwargs):
     """Call an agent over HTTP (default)."""
-    import aiohttp
+    from .common import SessionManager
 
-    async with aiohttp.ClientSession() as session:
-        async with session.post(
-            endpoint,
-            json=payload,
-            timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT),
-        ) as response:
-            response.raise_for_status()
-            return await response.json()
+    session = await SessionManager.get_session()
+    async with session.post(
+        endpoint,
+        json=payload,
+        timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT),
+    ) as response:
+        response.raise_for_status()
+        return await response.json()
 
 
 async def local_subprocess_adapter(payload: dict, endpoint: str, **kwargs):
@@ -98,45 +100,45 @@ async def sse_http_adapter(payload: dict, endpoint: str, **kwargs):
     Call an agent over HTTP with SSE (Server-Sent Events) streaming support.
     Accumulates the stream into a final response.
     """
-    import aiohttp
+    from .common import SessionManager
 
-    async with aiohttp.ClientSession() as session:
-        async with session.post(
-            endpoint,
-            json=payload,
-            headers={"Accept": "text/event-stream"},
-            timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT),
-        ) as response:
-            response.raise_for_status()
+    session = await SessionManager.get_session()
+    async with session.post(
+        endpoint,
+        json=payload,
+        headers={"Accept": "text/event-stream"},
+        timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT),
+    ) as response:
+        response.raise_for_status()
 
-            full_content = ""
-            final_json = {}
+        full_content = ""
+        final_json = {}
 
-            async for line in response.content:
-                if not line:
-                    continue
-                line_str = line.decode("utf-8").strip()
+        async for line in response.content:
+            if not line:
+                continue
+            line_str = line.decode("utf-8").strip()
 
-                if line_str.startswith("data:"):
-                    data = line_str[5:].strip()
-                    if data == "[DONE]":
-                        break
-                    try:
-                        chunk = json.loads(data)
-                        # Merge logic (AES v1.4 Standard)
-                        if isinstance(chunk, dict):
-                            final_json.update(chunk)
-                            if "content" in chunk:
-                                full_content += str(chunk["content"])
-                        else:
-                            full_content += str(chunk)
-                    except json.JSONDecodeError:
-                        full_content += data
+            if line_str.startswith("data:"):
+                data = line_str[5:].strip()
+                if data == "[DONE]":
+                    break
+                try:
+                    chunk = json.loads(data)
+                    # Merge logic (AES v1.4 Standard)
+                    if isinstance(chunk, dict):
+                        final_json.update(chunk)
+                        if "content" in chunk:
+                            full_content += str(chunk["content"])
+                    else:
+                        full_content += str(chunk)
+                except json.JSONDecodeError:
+                    full_content += data
 
-            if not final_json and full_content:
-                return {"content": full_content, "status": "completed"}
+        if not final_json and full_content:
+            return {"content": full_content, "status": "completed"}
 
-            if full_content and "content" in final_json:
-                final_json["content"] = full_content
+        if full_content and "content" in final_json:
+            final_json["content"] = full_content
 
-            return final_json
+        return final_json

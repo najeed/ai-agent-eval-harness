@@ -285,9 +285,15 @@ AGENT_API_URLS = [
 ]
 # Legacy support for single-endpoint modules
 AGENT_API_URL = AGENT_API_URLS[0] if AGENT_API_URLS else "http://localhost:5001/execute_task"
-EVAL_MAX_TURNS = int(os.getenv("EVAL_MAX_TURNS", "10"))
+# --- Engine Runtime Parameters ---
+EVAL_MAX_TURNS = int(os.getenv("EVAL_MAX_TURNS", "20"))
 MAX_ENGINE_ATTEMPTS = int(os.getenv("MAX_ENGINE_ATTEMPTS", "50"))
-DEFAULT_INDUSTRY = os.getenv("DEFAULT_INDUSTRY", "telecom")
+
+# Industrial Adapter Resilience (v1.6.0)
+ADAPTER_MAX_RETRIES = int(os.getenv("ADAPTER_MAX_RETRIES", "3"))
+ADAPTER_RETRY_DELAY = float(os.getenv("ADAPTER_RETRY_DELAY", "1.0"))
+
+DEFAULT_ADAPTER_TIMEOUT = float(os.getenv("ADAPTER_TIMEOUT", "30.0"))
 
 # --- Identity & Trust ---
 VC_VERSION = os.getenv("VC_VERSION", "3.0.0")

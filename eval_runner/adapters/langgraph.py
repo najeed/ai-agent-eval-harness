@@ -1,17 +1,19 @@
 # eval_runner/adapters/langgraph.py
 from typing import Any
 
-from .. import events
-from ..events import CoreEvents
+from ..events import CoreEvents, emit
 from ..plugins import BaseEvalPlugin
-from .common import AESCallbackHandler, DualNormalizationHub
+from .common import AESCallbackHandler, BaseAdapter, DualNormalizationHub
 
 
-class LangGraphAdapterPlugin(BaseEvalPlugin):
+class LangGraphAdapterPlugin(BaseEvalPlugin, BaseAdapter):
     """
     Industrial Adapter: Provides native LangGraph support with high-fidelity telemetry.
     Supports versioned protocols (e.g., 'langgraph:v1') for immutable benchmarking.
     """
+
+    def __init__(self):
+        BaseAdapter.__init__(self, name="langgraph")
 
     def on_discover_adapters(self, registry: Any):
         """Register versioned langgraph protocols."""
@@ -27,44 +29,89 @@ class LangGraphAdapterPlugin(BaseEvalPlugin):
         """
         node_id = payload.get("node_id", "default_node")
         input_data = payload.get("input", {})
-        payload.get("config", {})
+        config_data = payload.get("config", {})
 
         try:
             # Check for real SDK
+            import importlib
+
             import langgraph
 
-            print(f"      [Adapter] Executing LangGraph ainvoke: {node_id}")
+            # Path to the compiled graph in metadata
+            graph_path = payload.get("metadata", {}).get("graph_path")
+            if not graph_path:
+                return await self._execute_simulation(node_id, input_data)
+
+            module_name, attr_name = graph_path.split(":")
+            module = importlib.import_module(module_name)
+            app = getattr(module, attr_name)
+
+            print(f"      [Adapter] Executing LangGraph ainvoke: {graph_path}")
 
             # Use common high-fidelity telemetry handler
             handler = AESCallbackHandler(adapter_name="langgraph", identifier=node_id)
 
             # Execute with callbacks for telemetry
-            # result = await app.ainvoke(input_data, config={"callbacks": [handler], **config})
+            # Wrap in call_with_retry if it's a remote graph or if we want resilience
+            async def _call():
+                return await app.ainvoke(input_data, config={"callbacks": [handler], **config_data})
 
-            # Simulate high-fidelity signals for the auditor
-            handler.on_chain_start({}, input_data)
-            handler.on_node_start({"id": [node_id]}, input_data)
-            handler.on_node_end({"output": "simulated"})
-            handler.on_chain_end({"output": "simulated"})
+            output = await self.call_with_retry(_call)
 
-            output = f"Processed {node_id} via LangGraph v2 (BackendProtocolV2)"
-            action = DualNormalizationHub.normalize_text(output)
+            # Normalize output
+            if isinstance(output, dict):
+                action = DualNormalizationHub.normalize(output, 200)
+            else:
+                action = DualNormalizationHub.normalize_text(str(output))
+
             return {
                 "status": "success",
                 "output": output,
                 "action": action,
                 "metadata": {
                     "framework": "langgraph",
-                    "version": getattr(langgraph, "__version__", "2.0.0"),
+                    "version": getattr(langgraph, "__version__", "unknown"),
+                    "graph_path": graph_path,
                     "protocol": "v2",
                 },
             }
 
-        except ImportError:
-            events.emit(CoreEvents.ERROR, {"message": "LangGraph SDK not installed"})
+        except ImportError as e:
+            emit(CoreEvents.ERROR, {"message": f"LangGraph SDK not installed: {e}"})
             return {
                 "status": "error",
                 "action": "error",
-                "message": "LangGraph SDK (langgraph) not installed. Native execution failed.",
+                "message": f"LangGraph SDK not installed: {e}",
                 "metadata": {"framework": "langgraph", "mode": "failed"},
             }
+        except (AttributeError, ValueError) as e:
+            emit(CoreEvents.ERROR, {"message": f"LangGraph execution failed: {e}"})
+            return {
+                "status": "error",
+                "action": "error",
+                "message": f"LangGraph execution failed: {e}",
+                "metadata": {"framework": "langgraph", "mode": "failed"},
+            }
+
+    async def _execute_simulation(self, node_id: str, input_data: Any) -> dict[str, Any]:
+        """Fallback simulation for testing environments."""
+        import langgraph
+
+        handler = AESCallbackHandler(adapter_name="langgraph", identifier=node_id)
+        handler.on_chain_start({}, input_data)
+        handler.on_node_start({"id": [node_id]}, input_data)
+        handler.on_node_end({"output": "simulated"})
+        handler.on_chain_end({"output": "simulated"})
+
+        output = f"Processed {node_id} via LangGraph v2 Simulation"
+        return {
+            "status": "success",
+            "output": output,
+            "action": "final_answer",
+            "metadata": {
+                "framework": "langgraph",
+                "version": getattr(langgraph, "__version__", "2.0.0"),
+                "protocol": "v2",
+                "mode": "simulated",
+            },
+        }

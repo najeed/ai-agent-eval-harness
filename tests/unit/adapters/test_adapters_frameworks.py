@@ -16,6 +16,16 @@ class MockResponse:
     async def json(self):
         return self._json_data
 
+    def raise_for_status(self):
+        if self.status >= 400:
+            from unittest.mock import MagicMock
+
+            import aiohttp
+
+            raise aiohttp.ClientResponseError(
+                request_info=MagicMock(), history=(), status=self.status, message="Error"
+            )
+
     async def __aenter__(self):
         return self
 
@@ -26,8 +36,10 @@ class MockResponse:
 @pytest.mark.asyncio
 async def test_langchain_adapter_remote_success():
     plugin = LangChainAdapterPlugin()
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value = MockResponse(json_data={"output": "langchain_ok"})
+    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
+        session_instance = MagicMock()
+        mock_get_session.return_value = session_instance
+        session_instance.post.return_value = MockResponse(json_data={"output": "langchain_ok"})
         res = await plugin.execute_langchain_query({"input": "hi", "url": "http://langserve"})
         assert res["status"] == "success"
         assert res["action"] == "final_answer"
@@ -37,8 +49,10 @@ async def test_langchain_adapter_remote_success():
 @pytest.mark.asyncio
 async def test_autogen_adapter_remote_success():
     plugin = AutoGenAdapterPlugin()
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value = MockResponse(json_data={"output": "autogen_ok"})
+    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
+        session_instance = MagicMock()
+        mock_get_session.return_value = session_instance
+        session_instance.post.return_value = MockResponse(json_data={"output": "autogen_ok"})
         res = await plugin.execute_autogen_query({"message": "hi", "url": "http://autogen"})
         assert res["status"] == "success"
         assert res["action"] == "final_answer"
@@ -67,14 +81,16 @@ async def test_langgraph_adapter_simulation():
 
 @pytest.mark.asyncio
 async def test_framework_adapters_error_reporting():
-    # LangChain missing URL
+    # LangChain missing URL -> Simulation Fallback
     plugin = LangChainAdapterPlugin()
     res = await plugin.execute_langchain_query({})
-    assert res["status"] == "error"
-    assert res["action"] == "error"
+    assert res["status"] == "success"
+    assert res["action"] == "final_answer"
 
-    # AutoGen missing URL
+    # AutoGen missing URL -> should reach error (no SDK, no config URL)
     plugin = AutoGenAdapterPlugin()
-    res = await plugin.execute_autogen_query({})
+    with patch("eval_runner.adapters.autogen.config") as mock_cfg:
+        mock_cfg.AUTOGEN_API_URL = None
+        res = await plugin.execute_autogen_query({})
     assert res["status"] == "error"
     assert res["action"] == "error"

@@ -139,7 +139,9 @@ async def test_missing_sdk_err_reporting(event_bus):
         assert "not installed" in crew_res["message"]
 
         # LangChain
-        lc_res = await lc_plugin.execute_langchain_query({"task_id": "test"})
+        lc_res = await lc_plugin.execute_langchain_query(
+            {"task_id": "test", "metadata": {"chain_path": "module:chain"}}
+        )
         assert lc_res["status"] == "error"
         assert "not installed" in lc_res["message"]
 

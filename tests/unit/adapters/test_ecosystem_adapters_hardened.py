@@ -21,6 +21,16 @@ class MockResponse:
     async def text(self):
         return self._text_data
 
+    def raise_for_status(self):
+        if self.status >= 400:
+            from unittest.mock import MagicMock
+
+            import aiohttp
+
+            raise aiohttp.ClientResponseError(
+                request_info=MagicMock(), history=(), status=self.status, message="Error"
+            )
+
     async def __aenter__(self):
         return self
 

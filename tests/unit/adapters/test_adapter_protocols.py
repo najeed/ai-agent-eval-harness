@@ -10,18 +10,46 @@ from eval_runner.adapters.ollama import OllamaAdapterPlugin
 from eval_runner.adapters.openai import OpenAIAdapterPlugin
 
 
+class MockResponse:
+    def __init__(self, status=200, json_data=None, text_data=""):
+        self.status = status
+        self._json_data = json_data or {}
+        self._text_data = text_data
+
+    async def json(self):
+        return self._json_data
+
+    async def text(self):
+        return self._text_data
+
+    def raise_for_status(self):
+        if self.status >= 400:
+            from unittest.mock import MagicMock
+
+            import aiohttp
+
+            raise aiohttp.ClientResponseError(
+                request_info=MagicMock(), history=(), status=self.status, message="Error"
+            )
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+
 @pytest.mark.asyncio
 async def test_openai_adapter_success():
     """Test successful OpenAI query execution."""
     adapter = OpenAIAdapterPlugin()
 
-    mock_response = AsyncMock()
-    mock_response.status = 200
-    mock_response.json.return_value = {"choices": [{"message": {"content": "Hello world"}}]}
+    mock_response = MockResponse(json_data={"choices": [{"message": {"content": "Hello world"}}]})
 
-    # Mock aiohttp ClientSession
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value.__aenter__.return_value = mock_response
+    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
+        session_instance = MagicMock()
+        mock_get_session.return_value = session_instance
+        session_instance.post.return_value = mock_response
 
         payload = {"api_key": "test", "task": "hi"}
         res = await adapter.execute_openai_query(payload)
@@ -35,16 +63,18 @@ async def test_openai_adapter_error():
     """Test OpenAI error handling (401 Unauthorized)."""
     adapter = OpenAIAdapterPlugin()
 
-    mock_response = AsyncMock()
-    mock_response.status = 401
-    mock_response.text.return_value = "Invalid API Key"
+    mock_response = MockResponse(status=401, text_data="Invalid API Key")
 
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value.__aenter__.return_value = mock_response
+    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
+        session_instance = MagicMock()
+        mock_get_session.return_value = session_instance
+        session_instance.post.return_value = mock_response
 
-        res = await adapter.execute_openai_query({"api_key": "wrong"})
-        assert res["status"] == "error"
-        assert "401" in res["message"]
+        # Patch retries so it fails fast
+        with patch.object(adapter, "max_retries", 1), patch("asyncio.sleep", AsyncMock()):
+            res = await adapter.execute_openai_query({"api_key": "wrong"})
+            assert res["status"] == "error"
+            assert "401" in res["message"]
 
 
 @pytest.mark.asyncio
@@ -52,12 +82,12 @@ async def test_claude_adapter_success():
     """Test Anthropic Claude adapter."""
     adapter = ClaudeAdapterPlugin()
 
-    mock_response = AsyncMock()
-    mock_response.status = 200
-    mock_response.json.return_value = {"content": [{"text": "Claude response"}]}
+    mock_response = MockResponse(json_data={"content": [{"text": "Claude response"}]})
 
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value.__aenter__.return_value = mock_response
+    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
+        session_instance = MagicMock()
+        mock_get_session.return_value = session_instance
+        session_instance.post.return_value = mock_response
 
         res = await adapter.execute_claude_query({"api_key": "test", "task": "hi"})
         assert res["status"] == "success"
@@ -89,12 +119,12 @@ async def test_ollama_adapter_success():
     """Test Ollama local adapter."""
     adapter = OllamaAdapterPlugin()
 
-    mock_response = AsyncMock()
-    mock_response.status = 200
-    mock_response.json.return_value = {"message": {"content": "Ollama response"}}
+    mock_response = MockResponse(json_data={"message": {"content": "Ollama response"}})
 
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value.__aenter__.return_value = mock_response
+    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
+        session_instance = MagicMock()
+        mock_get_session.return_value = session_instance
+        session_instance.post.return_value = mock_response
         res = await adapter.execute_ollama_query({"task": "hi"})
         assert res["status"] == "success"
 
@@ -104,12 +134,12 @@ async def test_grok_adapter_success():
     """Test xAI Grok adapter."""
     adapter = GrokAdapterPlugin()
 
-    mock_response = AsyncMock()
-    mock_response.status = 200
-    mock_response.json.return_value = {"choices": [{"message": {"content": "Grok response"}}]}
+    mock_response = MockResponse(json_data={"choices": [{"message": {"content": "Grok response"}}]})
 
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value.__aenter__.return_value = mock_response
+    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
+        session_instance = MagicMock()
+        mock_get_session.return_value = session_instance
+        session_instance.post.return_value = mock_response
         res = await adapter.execute_grok_query({"api_key": "test", "task": "hi"})
         assert res["status"] == "success"
 

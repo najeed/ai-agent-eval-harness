@@ -2,7 +2,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from eval_runner.adapters.openapi import DualNormalizationHub, adapter
+from eval_runner.adapters.common import DualNormalizationHub
+from eval_runner.adapters.openapi import adapter
 
 
 class MockResponse:
@@ -23,9 +24,9 @@ class MockResponse:
 
 @pytest.fixture
 def mock_session():
-    with patch("aiohttp.ClientSession") as mock_session_cls:
+    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
         session_instance = MagicMock()
-        mock_session_cls.return_value.__aenter__.return_value = session_instance
+        mock_get_session.return_value = session_instance
         yield session_instance
 
 
@@ -68,8 +69,8 @@ async def test_openapi_adapter_polling_location_absolute(mock_session):
         res = await adapter({}, "http://api/v1")
 
     assert res["action"] == "final_answer"
-    # Verify it pulled from the location header
-    mock_session.get.assert_any_call("http://api/v1/status/123")
+    # Verify it pulled from the location header (ignore extra kwargs like headers)
+    assert any(c[0][0] == "http://api/v1/status/123" for c in mock_session.get.call_args_list)
 
 
 @pytest.mark.asyncio
@@ -89,7 +90,7 @@ async def test_openapi_adapter_polling_location_relative(mock_session):
 
     assert res["action"] == "final_answer"
     # Verify it joined the URL correctly (Absolute from root of domain)
-    mock_session.get.assert_any_call("http://api/status/123")
+    assert any(c[0][0] == "http://api/status/123" for c in mock_session.get.call_args_list)
 
 
 @pytest.mark.asyncio
@@ -107,7 +108,7 @@ async def test_openapi_adapter_polling_body_link(mock_session):
         res = await adapter({}, "http://api/v1")
 
     assert res["action"] == "final_answer"
-    mock_session.get.assert_any_call("http://api/v1/status/body")
+    assert any(c[0][0] == "http://api/v1/status/body" for c in mock_session.get.call_args_list)
 
 
 @pytest.mark.asyncio
@@ -120,7 +121,9 @@ async def test_openapi_adapter_polling_timeout(mock_session):
 
     with patch("asyncio.sleep", AsyncMock()):
         # Mock max_attempts to be small for speed
-        with patch("eval_runner.adapters.openapi._poll_for_result") as mock_poll:
+        with patch(  # noqa: E501
+            "eval_runner.adapters.openapi.OpenAPIAdapterPlugin._poll_for_result"
+        ) as mock_poll:
             mock_poll.return_value = {"action": "error", "content": "timeout"}
             res = await adapter({}, "http://api/v1")
 

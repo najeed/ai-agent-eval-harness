@@ -1,17 +1,19 @@
 from typing import Any
 
-import aiohttp
-
 from .. import config
+from ..events import emit
 from ..plugins import BaseEvalPlugin
-from .common import DualNormalizationHub
+from .common import BaseAdapter, DualNormalizationHub, SessionManager
 
 
-class ClaudeAdapterPlugin(BaseEvalPlugin):
+class ClaudeAdapterPlugin(BaseEvalPlugin, BaseAdapter):
     """
     Ecosystem Adapter for Anthropic Claude API.
     Registers the 'claude' protocol.
     """
+
+    def __init__(self):
+        BaseAdapter.__init__(self, name="claude")
 
     def on_discover_adapters(self, registry: Any):
         """Register the claude:// protocol."""
@@ -22,8 +24,9 @@ class ClaudeAdapterPlugin(BaseEvalPlugin):
         self, payload: dict[str, Any], url: str = None
     ) -> dict[str, Any]:
         """
-        Executes a query against the Anthropic Claude Messages API.
+        Executes a query against the Anthropic Claude Messages API with industrial hardening.
         """
+
         api_key = payload.get("api_key") or config.ANTHROPIC_API_KEY
         model = payload.get("model", config.ANTHROPIC_MODEL)
         url = url or config.ANTHROPIC_BASE_URL
@@ -47,31 +50,41 @@ class ClaudeAdapterPlugin(BaseEvalPlugin):
         }
         if system_prompt:
             claude_payload["system"] = system_prompt
-        if payload.get("force_error"):
-            claude_payload["force_error"] = True
+
+        async def _call():
+            session = await SessionManager.get_session()
+            async with session.post(url, json=claude_payload, headers=headers) as response:
+                if response.status != 200:
+                    response.raise_for_status()
+                return await response.json(), response.status
 
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    url, json=claude_payload, headers=headers, timeout=30
-                ) as response:
-                    if response.status != 200:
-                        err_text = await response.text()
-                        return {
-                            "status": "error",
-                            "action": "error",
-                            "message": f"Claude API returned {response.status}: {err_text}",
-                        }
+            data, status = await self.call_with_retry(_call)
+            output = data.get("content", [{}])[0].get("text", "")
+            action = DualNormalizationHub.normalize_text(output)
 
-                    data = await response.json()
-                    # Claude response structure: content[0].text
-                    output = data.get("content", [{}])[0].get("text", "")
-                    action = DualNormalizationHub.normalize_text(output)
-                    return {
-                        "status": "success",
-                        "output": output,
-                        "action": action,
-                        "metadata": {"model": model, "framework": "claude"},
-                    }
+            # [Industrial Telemetry]: Extract token usage
+            usage = data.get("usage", {})
+            if usage:
+                emit(
+                    "metric_update",
+                    {
+                        "adapter": "claude",
+                        "tokens": usage.get("input_tokens", 0) + usage.get("output_tokens", 0),
+                        "prompt_tokens": usage.get("input_tokens", 0),
+                        "completion_tokens": usage.get("output_tokens", 0),
+                    },
+                )
+
+            return {
+                "status": "success",
+                "output": output,
+                "action": action,
+                "metadata": {
+                    "model": model,
+                    "framework": "claude",
+                    "usage": usage,
+                },
+            }
         except Exception as e:
             return {"status": "error", "action": "error", "message": str(e)}

@@ -30,6 +30,18 @@ def shutdown_tracer():
             pass
 
 
+@pytest_asyncio.fixture(autouse=True)
+async def reset_sessions():
+    """Closes all pooled sessions after each test to ensure mock isolation."""
+    yield
+    from eval_runner.adapters.common import SessionManager
+
+    try:
+        await SessionManager.close_all()
+    except Exception:
+        pass
+
+
 @pytest.fixture(autouse=True)
 def reset_plugins():
     """Resets all registries before each test."""

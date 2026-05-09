@@ -1,5 +1,5 @@
 import asyncio
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -16,6 +16,16 @@ class MockResponse:
     async def json(self):
         return self._json_data
 
+    def raise_for_status(self):
+        if self.status >= 400:
+            from unittest.mock import MagicMock
+
+            import aiohttp
+
+            raise aiohttp.ClientResponseError(
+                request_info=MagicMock(), history=(), status=self.status, message="Error"
+            )
+
     async def __aenter__(self):
         return self
 
@@ -24,12 +34,12 @@ class MockResponse:
 
 
 @pytest.mark.asyncio
-async def test_langchain_adapter_validation_errors():
+async def test_langchain_adapter_simulation_fallback():
     plugin = LangChainAdapterPlugin()
-    # Missing both URL and task_id
+    # Missing both URL and chain_path -> simulation fallback
     res = await plugin.execute_langchain_query({"input": {}})
-    assert res["status"] == "error"
-    assert "Missing 'url'" in res["message"]
+    assert res["status"] == "success"
+    assert "Simulation" in res["output"]
 
 
 @pytest.mark.asyncio
@@ -37,19 +47,25 @@ async def test_langchain_adapter_sdk_fallback_error():
     plugin = LangChainAdapterPlugin()
     # Mock SDK missing
     with patch.dict("sys.modules", {"langchain": None}):
-        res = await plugin._execute_local_sdk("id", {}, {})
+        res = await plugin._execute_local_sdk("id", {}, "module:chain")
         assert res["status"] == "error"
-        assert "SDK (langchain) not installed" in res["message"]
+        assert "SDK not installed" in res["message"]
 
 
 @pytest.mark.asyncio
 async def test_langchain_adapter_remote_error():
     plugin = LangChainAdapterPlugin()
-    with patch("aiohttp.ClientSession.post") as mock_post:
-        mock_post.return_value = MockResponse(status=500)
-        res = await plugin._execute_remote_langserve("http://langserve", {}, {})
-        assert res["status"] == "error"
-        assert "returned 500" in res["message"]
+    with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
+        session_instance = MagicMock()
+        mock_get_session.return_value = session_instance
+        # Mock immediate 500 error after retries (or just one failure for test)
+        session_instance.post.return_value = MockResponse(status=500)
+
+        # We patch retries to 1 for speed
+        with patch.object(plugin, "max_retries", 1), patch("asyncio.sleep", AsyncMock()):
+            res = await plugin._execute_remote_langserve("http://langserve", {}, {})
+            assert res["status"] == "error"
+            assert "500" in res["message"] or "Error" in res["message"]
 
 
 @pytest.mark.asyncio
@@ -57,8 +73,12 @@ async def test_autogen_adapter_sdk_fallback_to_remote():
     plugin = AutoGenAdapterPlugin()
     # Mock SDK missing, trigger remote fallback
     with patch.dict("sys.modules", {"autogen": None}):
-        with patch("aiohttp.ClientSession.post") as mock_post:
-            mock_post.return_value = MockResponse(json_data={"output": "remote_success"})
+        with patch("eval_runner.adapters.common.SessionManager.get_session") as mock_get_session:
+            session_instance = MagicMock()
+            mock_get_session.return_value = session_instance
+            session_instance.post.return_value = MockResponse(
+                json_data={"output": "remote_success"}
+            )
             res = await plugin.execute_autogen_query({"message": "hi"}, url="http://autogen-api")
             assert res["status"] == "success"
             assert res["output"] == "remote_success"

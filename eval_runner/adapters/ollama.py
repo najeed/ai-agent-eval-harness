@@ -1,17 +1,19 @@
 from typing import Any
 
-import aiohttp
-
 from .. import config
+from ..events import emit
 from ..plugins import BaseEvalPlugin
-from .common import DualNormalizationHub
+from .common import BaseAdapter, DualNormalizationHub, SessionManager
 
 
-class OllamaAdapterPlugin(BaseEvalPlugin):
+class OllamaAdapterPlugin(BaseEvalPlugin, BaseAdapter):
     """
     Ecosystem Adapter for Ollama (Local LLM Server).
     Registers the 'ollama' protocol to allow direct communication with Ollama agents.
     """
+
+    def __init__(self):
+        BaseAdapter.__init__(self, name="ollama")
 
     def on_discover_adapters(self, registry: Any):
         """Register the ollama:// protocol."""
@@ -22,9 +24,9 @@ class OllamaAdapterPlugin(BaseEvalPlugin):
         self, payload: dict[str, Any], url: str = None
     ) -> dict[str, Any]:
         """
-        Executes a query against a local Ollama instance.
-        Expects payload to contain 'model' and 'task' (or 'messages').
+        Executes a query against a local Ollama instance with industrial hardening.
         """
+
         base_url = url or payload.get("ollama_url") or config.OLLAMA_API_URL
         model = payload.get("model", "llama4")
 
@@ -35,24 +37,43 @@ class OllamaAdapterPlugin(BaseEvalPlugin):
 
         ollama_payload = {"model": model, "messages": messages, "stream": False}
 
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.post(base_url, json=ollama_payload, timeout=30) as response:
-                    if response.status != 200:
-                        return {
-                            "status": "error",
-                            "action": "error",
-                            "message": f"Ollama returned {response.status}",
-                        }
+        async def _call():
+            session = await SessionManager.get_session()
+            async with session.post(base_url, json=ollama_payload) as response:
+                if response.status != 200:
+                    response.raise_for_status()
+                return await response.json(), response.status
 
-                    data = await response.json()
-                    output = data.get("message", {}).get("content", "")
-                    action = DualNormalizationHub.normalize_text(output)
-                    return {
-                        "status": "success",
-                        "output": output,
-                        "action": action,
-                        "metadata": {"model": model, "framework": "ollama"},
-                    }
+        try:
+            data, status = await self.call_with_retry(_call)
+            output = data.get("message", {}).get("content", "")
+            action = DualNormalizationHub.normalize_text(output)
+
+            # [Industrial Telemetry]: Ollama typically provides 'eval_count' as tokens
+            tokens = data.get("eval_count", 0) + data.get("prompt_eval_count", 0)
+            if tokens:
+                emit(
+                    "metric_update",
+                    {
+                        "adapter": "ollama",
+                        "tokens": tokens,
+                        "prompt_tokens": data.get("prompt_eval_count", 0),
+                        "completion_tokens": data.get("eval_count", 0),
+                    },
+                )
+
+            return {
+                "status": "success",
+                "output": output,
+                "action": action,
+                "metadata": {
+                    "model": model,
+                    "framework": "ollama",
+                    "usage": {
+                        "prompt_eval_count": data.get("prompt_eval_count"),
+                        "eval_count": data.get("eval_count"),
+                    },
+                },
+            }
         except Exception as e:
             return {"status": "error", "action": "error", "message": str(e)}
