@@ -77,20 +77,27 @@ class EventEmitter:
     def __init__(self, run_id: str | None = None):
         self.run_id = run_id
         self._subscribers: list[Callable[[Event], None]] = []
+        self._keyed_subscribers: dict[str, Callable[[Event], None]] = {}
 
-    def subscribe(self, subscriber: Callable[[Event], None]):
+    def subscribe(self, subscriber: Callable[[Event], None], key: str | None = None):
         """Register a new subscriber (e.g., a logging plugin)."""
-        if subscriber not in self._subscribers:
+        if key:
+            self._keyed_subscribers[key] = subscriber
+        elif subscriber not in self._subscribers:
             self._subscribers.append(subscriber)
 
-    def unsubscribe(self, subscriber: Callable[[Event], None]):
-        """Unregister an existing subscriber."""
-        if subscriber in self._subscribers:
+    def unsubscribe(self, subscriber: Callable[[Event], None] | str):
+        """Unregister an existing subscriber or key."""
+        if isinstance(subscriber, str):
+            if subscriber in self._keyed_subscribers:
+                del self._keyed_subscribers[subscriber]
+        elif subscriber in self._subscribers:
             self._subscribers.remove(subscriber)
 
     def reset(self):
         """Clear all subscribers and notify them to cleanup if possible."""
-        for sub in self._subscribers:
+        all_subs = self._subscribers + list(self._keyed_subscribers.values())
+        for sub in all_subs:
             try:
                 # If subscriber is a bound method of a class with cleanup logic
                 if hasattr(sub, "__self__") and hasattr(sub.__self__, "close_all"):
@@ -99,6 +106,7 @@ class EventEmitter:
                 # Forensic Transparency: Log cleanup failures for auditing
                 print(f"   [Events] Warning: Subscriber cleanup failure: {e}")
         self._subscribers = []
+        self._keyed_subscribers = {}
 
     def emit(self, name: str, data: dict[str, Any], span_context: dict[str, Any] | None = None):
         """Emit an event to all subscribers with optional tracing context."""
@@ -109,7 +117,8 @@ class EventEmitter:
             sanitized_data["run_id"] = self.run_id
 
         event = Event(name, sanitized_data, span_context=span_context)
-        for sub in self._subscribers:
+        all_subs = self._subscribers + list(self._keyed_subscribers.values())
+        for sub in all_subs:
             try:
                 sub(event)
             except Exception as e:
@@ -128,12 +137,12 @@ class EventEmitter:
 
 
 # Standard Global interface (Module Level Aliases)
-def subscribe(subscriber: Callable[[Event], None]):
+def subscribe(subscriber: Callable[[Event], None], key: str | None = None):
     """Register a subscriber to the global event bus."""
-    EventEmitter.get_global().subscribe(subscriber)
+    EventEmitter.get_global().subscribe(subscriber, key=key)
 
 
-def unsubscribe(subscriber: Callable[[Event], None]):
+def unsubscribe(subscriber: Callable[[Event], None] | str):
     """Unregister a subscriber from the global event bus."""
     EventEmitter.get_global().unsubscribe(subscriber)
 

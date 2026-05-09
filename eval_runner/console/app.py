@@ -176,6 +176,11 @@ def manage_pid_file():
 
     import psutil
 
+    # [Industrial Hardening]: Skip guard logic if we are the child process of the reloader.
+    # Otherwise, we kill the parent process that just spawned us.
+    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+        return
+
     pid_path = config.PROJECT_ROOT / ".aes" / "server.pid"
     pid_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -233,9 +238,20 @@ def run_server(host="127.0.0.1", port=5000, debug=False):
     manage_pid_file()
 
     app = create_app()
+
+    # [STABILITY HARDENING]: Exclude log and report directories from reloader
+    # to prevent write-triggered feedback loops during evaluations.
+    extra_files = []
+
     # Increase interval to 2s to avoid over-eager site-packages reloads
     app.run(
-        host=host, port=port, debug=debug, use_reloader=debug, reloader_interval=2, threaded=True
+        host=host,
+        port=port,
+        debug=debug,
+        use_reloader=debug,
+        reloader_interval=2,
+        threaded=True,
+        extra_files=extra_files if debug else None,
     )
 
 

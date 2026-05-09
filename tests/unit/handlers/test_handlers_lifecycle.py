@@ -4,8 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from eval_runner import config
-from eval_runner.handlers import evaluation as h_eval
-from eval_runner.handlers import scenarios as h_scen
+from eval_runner.handlers import evaluation as h_eval, scenarios as h_scen
 
 
 @pytest.mark.asyncio

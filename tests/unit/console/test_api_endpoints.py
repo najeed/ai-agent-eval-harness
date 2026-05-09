@@ -4,9 +4,7 @@ import pytest
 from flask import Flask
 
 from eval_runner import config
-from eval_runner.console.routes import runs as rs_runs
-from eval_runner.console.routes import scenarios as rs_scen
-from eval_runner.console.routes import system as rs_sys
+from eval_runner.console.routes import runs as rs_runs, scenarios as rs_scen, system as rs_sys
 
 
 @pytest.fixture

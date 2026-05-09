@@ -3,16 +3,17 @@ from flask import Blueprint, jsonify, request
 from eval_runner import config as config
 from eval_runner.catalog import ScenarioCatalog as ScenarioCatalog
 
-from .demo import demo_bp as demo_bp
-from .demo import execute_demo_command, get_loan_demo_context
-from .runs import get_verification_certificate, list_metrics, list_runs
-from .runs import run_bp as run_bp
-from .scenarios import get_taxonomy, list_scenarios, refresh_index, save_scenario
-from .scenarios import scenario_bp as scenario_bp
-from .system import (
-    DebuggerStateStore as DebuggerStateStore,
+from .demo import demo_bp as demo_bp, execute_demo_command, get_loan_demo_context
+from .runs import get_verification_certificate, list_metrics, list_runs, run_bp as run_bp
+from .scenarios import (
+    get_taxonomy,
+    list_scenarios,
+    refresh_index,
+    save_scenario,
+    scenario_bp as scenario_bp,
 )
 from .system import (
+    DebuggerStateStore as DebuggerStateStore,
     cleanup_runs,
     debugger_state,
     get_doctor_audit,
@@ -21,12 +22,9 @@ from .system import (
     list_docs,
     ping,
     read_doc,
-)
-from .system import (
     system_bp as system_bp,
 )
-from .trust import get_identity_public_key, verify_run_public
-from .trust import trust_bp as trust_bp
+from .trust import get_identity_public_key, trust_bp as trust_bp, verify_run_public
 
 # Master Blueprint for Legacy Parity (Used by tests)
 core_bp = Blueprint("core", __name__)
@@ -136,7 +134,8 @@ def subscribe_debugger():
     from .system import DebuggerStateStore
 
     # [Industrial Hardening] Connect the event bus to the ephemeral state store
-    events.subscribe(DebuggerStateStore.handle_event)
+    # Keyed subscription prevents double-processing during Flask reloads
+    events.subscribe(DebuggerStateStore.handle_event, key="debugger")
     print("      [Console] Visual Debugger subscribed to event bus.")
 
 

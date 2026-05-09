@@ -33,7 +33,7 @@ dependencies = [
     "python-docx==1.2.0",
     "psutil==7.2.2",
     "httpx==0.28.1",
-    "GitPython==3.1.49",
+    "GitPython==3.1.50",
     "sqlalchemy==2.0.38",
     "python-dotenv==1.2.2",
 ]
@@ -90,6 +90,11 @@ exclude = [
     "results",
     "runs",
 ]
+
+[tool.ruff.lint.isort]
+known-first-party = ["eval_runner", "dataproc_engine", "industries", "scripts"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+combine-as-imports = true
 
 [tool.ruff.format]
 quote-style = "double"

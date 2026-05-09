@@ -59,6 +59,16 @@ class RemoteBridgePlugin(BaseEvalPlugin):
         if self.active is not None:
             return self.active
 
+        from . import events
+
+        # [Industrial Hardening]: Skip HTTP POSTs if we are running in the same
+        # process as the Console (Visual Debugger). The Console already has a
+        # local subscriber registered via subscribe_debugger().
+        if "debugger" in events.EventEmitter.get_global()._keyed_subscribers:
+            print("[RemoteBridgePlugin] Local subscriber detected. Skipping HTTP bridge.")
+            self.active = False
+            return False
+
         from . import config
 
         headers = {}
