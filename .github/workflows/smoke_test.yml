@@ -30,7 +30,7 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Run Unit Tests
         run: |
-          python -m pytest tests/test_catalog.py tests/test_linter.py tests/test_adapters_discovery.py
+          python -m pytest tests/unit/handlers/test_catalog.py tests/unit/core/test_linter_compliance.py tests/unit/adapters/test_adapters_discovery.py
       - name: Run Deterministic Smoke Test
         run: |
           agentv quickstart

@@ -120,7 +120,7 @@ Embark on a **4-Phase, 18-Milestone Hands-on Curriculum** designed to take you f
 > # 2. Set up a virtual environment (Recommended)
 > python -m venv venv
 > venv\Scripts\activate  # On Windows
-> # source venv/bin/activate  # On macOS/Linux
+> source venv/bin/activate  # On macOS/Linux
 >
 > # 3. Install the package in editable mode
 > pip install -e .
