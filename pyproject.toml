@@ -92,7 +92,7 @@ exclude = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["eval_runner", "dataproc_engine", "industries", "scripts"]
+known-first-party = ["eval_runner", "dataproc_engine"]
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 combine-as-imports = true
 
