@@ -3550,7 +3550,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/frameworks/autogen/" class="md-nav__link">
+      <a href="../guides/frameworks/autogen.md" class="md-nav__link">
         
   
   
@@ -4725,7 +4725,7 @@ Support for the combined <code>"module": "path.Class"</code> format has been dep
 <p>Built-in Ecosystem Adapters (2026 Baseline):
 - <strong><code>langgraph://</code></strong>: Integration with LangChain's <strong>LangGraph v2</strong> (v2 Protocol).
 - <strong><code>crewai://</code></strong>: Support for CrewAI agent swarms.
-- <strong><code>autogen://</code></strong>: Support for Microsoft AutoGen agents.
+- <strong><code>AG2://</code></strong>: Support for Microsoft AG2 agents.
 - <strong><code>grok://</code></strong>: Native xAI Grok API integration.
 - <strong><code>ollama://</code></strong>, <strong><code>openai://</code></strong>, <strong><code>claude://</code></strong>: Direct LLM provider shims.
 - <strong><code>gemini://</code></strong>: Official <strong>google-genai v1.70.0</strong> SDK implementation (Default: Gemini 2.5 Flash).</p>
@@ -4741,7 +4741,7 @@ Support for the combined <code>"module": "path.Class"</code> format has been dep
 </code></pre></div>
 If this plugin is active, scenarios can now specify an agent URL like <code>langgraph://my_agent_node</code>, and the engine will seamlessly route the task to this adapter bypassing standard HTTP mechanisms.</p>
 <h3 id="ecosystem-provider-adapters">Ecosystem Provider Adapters<a class="headerlink" href="#ecosystem-provider-adapters" title="Permanent link">&para;</a></h3>
-<p>Providers like <strong>OpenAI</strong>, <strong>Gemini</strong>, <strong>Claude</strong>, <strong>Ollama</strong>, and <strong>xAI Grok</strong> are also implemented using this hook. While framework adapters (like LangGraph or AutoGen) often wrap complex logic, provider adapters typically translate AES tasks into specific LLM API calls.</p>
+<p>Providers like <strong>OpenAI</strong>, <strong>Gemini</strong>, <strong>Claude</strong>, <strong>Ollama</strong>, and <strong>xAI Grok</strong> are also implemented using this hook. While framework adapters (like LangGraph or AG2) often wrap complex logic, provider adapters typically translate AES tasks into specific LLM API calls.</p>
 <h2 id="extending-the-judge-layer-v31">⚖️ Extending the Judge Layer (v3.1)<a class="headerlink" href="#extending-the-judge-layer-v31" title="Permanent link">&para;</a></h2>
 <p>The harness features a pluggable LLM-as-judge layer (<code>Luna-Judge</code>). Developers can extend this in two ways:</p>
 <h3 id="1-registering-custom-rubrics">1. Registering Custom Rubrics<a class="headerlink" href="#1-registering-custom-rubrics" title="Permanent link">&para;</a></h3>

@@ -3234,7 +3234,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../frameworks/autogen/" class="md-nav__link">
+      <a href="../../frameworks/autogen.md" class="md-nav__link">
         
   
   
@@ -3728,10 +3728,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#a-microsoft-autogen" class="md-nav__link">
+  <a href="#a-microsoft-ag2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        A. Microsoft AutoGen
+        A. Microsoft AG2
       
     </span>
   </a>
@@ -4143,10 +4143,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#a-microsoft-autogen" class="md-nav__link">
+  <a href="#a-microsoft-ag2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        A. Microsoft AutoGen
+        A. Microsoft AG2
       
     </span>
   </a>
@@ -4306,7 +4306,7 @@ While 3.14 is the current stable baseline (released Oct 2025), some downstream d
 <a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
 <a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># Ecosystem Defaults</span>
 <a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nv">OLLAMA_HOST</span><span class="o">=</span>http://localhost:11434
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="nv">AUTOGEN_API_URL</span><span class="o">=</span>http://localhost:5002/query
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="nv">AG2_API_URL</span><span class="o">=</span>http://localhost:5002/query
 </code></pre></div>
 <hr />
 <h2 id="2-local-llm-verification-ollama">🧠 2. Local LLM Verification (Ollama)<a class="headerlink" href="#2-local-llm-verification-ollama" title="Permanent link">&para;</a></h2>
@@ -4325,15 +4325,15 @@ While 3.14 is the current stable baseline (released Oct 2025), some downstream d
 </ol>
 <hr />
 <h2 id="3-framework-integrations-adapters">🛠 3. Framework Integrations (Adapters)<a class="headerlink" href="#3-framework-integrations-adapters" title="Permanent link">&para;</a></h2>
-<h3 id="a-microsoft-autogen">A. Microsoft AutoGen<a class="headerlink" href="#a-microsoft-autogen" title="Permanent link">&para;</a></h3>
-<p><strong>Goal</strong>: Verify the <code>autogen://</code> protocol and multi-agent interaction.</p>
+<h3 id="a-microsoft-ag2">A. Microsoft AG2<a class="headerlink" href="#a-microsoft-ag2" title="Permanent link">&para;</a></h3>
+<p><strong>Goal</strong>: Verify the <code>AG2://</code> protocol and multi-agent interaction.</p>
 <ol>
 <li><strong>Install Dependencies</strong>:
-   <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pyautogen
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pyAG2
 </code></pre></div></li>
-<li><strong>Run Sample AutoGen Agent</strong>: (Requires a separate server script or the <code>quickstart</code> mock).</li>
+<li><strong>Run Sample AG2 Agent</strong>: (Requires a separate server script or the <code>quickstart</code> mock).</li>
 <li><strong>Run Evaluation</strong>:
-   <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--protocol<span class="w"> </span>autogen<span class="w"> </span>--agent<span class="w"> </span>autogen://localhost:5002
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span>--protocol<span class="w"> </span>AG2<span class="w"> </span>--agent<span class="w"> </span>AG2://localhost:5002
 </code></pre></div></li>
 </ol>
 <h3 id="b-langchain-langgraph">B. LangChain / LangGraph<a class="headerlink" href="#b-langchain-langgraph" title="Permanent link">&para;</a></h3>
