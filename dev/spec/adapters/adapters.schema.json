@@ -47,6 +47,35 @@
               "langchain"
             ]
           }
+        },
+        "settings": {
+          "type": "object",
+          "description": "Component-specific behavioral settings.",
+          "properties": {
+            "protocols": {
+              "type": "object",
+              "description": "Configuration for communication protocols (e.g., http, sse)."
+            },
+            "providers": {
+              "type": "object",
+              "description": "Configuration for model providers (e.g., openai, gemini)."
+            },
+            "frameworks": {
+              "type": "object",
+              "description": "Configuration for orchestration frameworks (e.g., autogen, langgraph).",
+              "properties": {
+                "autogen": {
+                  "type": "object",
+                  "properties": {
+                    "use_docker": { "type": "boolean" },
+                    "api_url": { "type": "string", "format": "uri" }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false,

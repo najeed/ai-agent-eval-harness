@@ -1085,6 +1085,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#adapter-behavioral-mesh-v150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚙️ Adapter Behavioral Mesh (v1.5.0+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#auditing-your-registry" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5046,6 +5057,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#adapter-behavioral-mesh-v150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚙️ Adapter Behavioral Mesh (v1.5.0+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#auditing-your-registry" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5873,6 +5895,12 @@ The harness loads scenarios from <code>industries/&lt;industry&gt;/scenarios/</c
 </tr>
 </tbody>
 </table>
+<h3 id="adapter-behavioral-mesh-v150">⚙️ Adapter Behavioral Mesh (v1.5.0+)<a class="headerlink" href="#adapter-behavioral-mesh-v150" title="Permanent link">&para;</a></h3>
+<p>Configuration for agent adapters (e.g., <code>autogen</code>, <code>langgraph</code>) is now managed via the <code>.aes/config/adapters.d/</code> mesh. This allows you to set default behaviors like <code>use_docker</code> or <code>api_url</code> without modifying core code.</p>
+<p><strong>Resolution Order:</strong>
+1. <strong>Environment Variables</strong> (e.g., <code>AUTOGEN_USE_DOCKER=true</code>)
+2. <strong>Mesh Configuration</strong> (e.g., <code>.aes/config/adapters.d/*.json</code>)
+3. <strong>Hardcoded Defaults</strong></p>
 <h3 id="auditing-your-registry">🔍 Auditing Your Registry<a class="headerlink" href="#auditing-your-registry" title="Permanent link">&para;</a></h3>
 <p>To see exactly how your registry is merged and which sources are contributing to your environment, use the doctor utility:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>agentv<span class="w"> </span>doctor<span class="w"> </span>--registry

@@ -2759,6 +2759,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Advanced Orchestration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#behavioral-configuration-mesh-v150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚙️ Behavioral Configuration Mesh (v1.5.0+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -4107,6 +4124,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Advanced Orchestration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#behavioral-configuration-mesh-v150" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚙️ Behavioral Configuration Mesh (v1.5.0+)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -4305,6 +4339,20 @@
 </ul>
 </li>
 </ul>
+<h3 id="behavioral-configuration-mesh-v150">⚙️ Behavioral Configuration Mesh (v1.5.0+)<a class="headerlink" href="#behavioral-configuration-mesh-v150" title="Permanent link">&para;</a></h3>
+<p>To ensure industrial-grade governance, AgentV now supports a <strong>Behavioral Configuration Mesh</strong> (<code>.aes/config/*.d/</code>). This allows administrators to define structured settings (like Docker usage or endpoint URLs) that apply globally across the environment.</p>
+<p><strong>Example Policy (<code>autogen.json</code>):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">&quot;adapters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">&quot;settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">      </span><span class="nt">&quot;frameworks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">        </span><span class="nt">&quot;autogen&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;use_docker&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">      </span><span class="p">}</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">}</span>
+</code></pre></div>
+Settings are resolved with the following priority: <strong>Env Vars &gt; Mesh Config &gt; Internal Baselines</strong>.</p>
 <h2 id="visual-evaluation-debugging-visual-debugger">Visual Evaluation &amp; Debugging (<strong>Visual Debugger</strong>)<a class="headerlink" href="#visual-evaluation-debugging-visual-debugger" title="Permanent link">&para;</a></h2>
 <p>Beyond the CLI, the harness provides a <strong>Unified React SPA</strong> Visual Debugger for visual management:
 - <strong>Scenario Explorer</strong>: Browse the catalog with faceted filters and global search.
@@ -4312,7 +4360,7 @@
 - <strong>Reports &amp; Traces</strong>: Historical execution timeline with detailed analysis, discovered Agent Identity (names/models), and instant "View Report" navigation.
 - <strong>Visual Debugger</strong>: Real-time trajectory playback with interactive state inspection, human-readable agent labels, and trace export.</p>
 <p>Launch with:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>agentv<span class="w"> </span>console
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>agentv<span class="w"> </span>console
 </code></pre></div></p>
 <h2 id="available-metrics">Available Metrics<a class="headerlink" href="#available-metrics" title="Permanent link">&para;</a></h2>
 <table>
@@ -4457,9 +4505,9 @@
 </tbody>
 </table>
 <h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">my_custom_metric</span><span class="p">(</span><span class="n">actual_state</span><span class="p">,</span> <span class="n">used_tools</span><span class="p">,</span> <span class="n">eval_context</span><span class="p">):</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="c1"># Logic to verify state and tools...</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="k">return</span> <span class="mf">1.0</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">my_custom_metric</span><span class="p">(</span><span class="n">actual_state</span><span class="p">,</span> <span class="n">used_tools</span><span class="p">,</span> <span class="n">eval_context</span><span class="p">):</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="c1"># Logic to verify state and tools...</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="k">return</span> <span class="mf">1.0</span>
 </code></pre></div>
 <h3 id="metric-security-extension-trust">Metric Security &amp; Extension Trust<a class="headerlink" href="#metric-security-extension-trust" title="Permanent link">&para;</a></h3>
 <p>To protect sensitive infrastructure data, the engine enforces a <strong>Trust Boundary</strong> for metrics:</p>
@@ -4471,30 +4519,30 @@
 <p>To grant an extension "Trusted" status, set <code>"trusted": true</code> in the plugin or shim registry entry. This also enables zero-copy access to mutable data, improving performance for large datasets.</p>
 <h2 id="community-benchmarks">Community Benchmarks<a class="headerlink" href="#community-benchmarks" title="Permanent link">&para;</a></h2>
 <p>Instead of relying solely on local <code>.json</code> or <code>.aes.yaml</code> files, the <code>agentv</code> can now pull and format datasets from major community benchmarks on-the-fly using URIs.</p>
-<p><div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Load the 2023 GAIA validation set</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Load AssistantBench tasks</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Load the 2023 GAIA validation set</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Load AssistantBench tasks</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>agentv<span class="w"> </span>evaluate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div>
 The universal loader will dynamically download these datasets, wrap them in compatible <code>Scenario</code> objects, and apply the correct specific evaluation metrics.</p>
 <h2 id="multi-agent-scenario-schema">Multi-Agent Scenario Schema<a class="headerlink" href="#multi-agent-scenario-schema" title="Permanent link">&para;</a></h2>
 <p>Scenarios now support complex topologies. Example snippet:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;aes_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.4</span><span class="p">,</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;multi_agent_flow_01&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Collaborative Financial Audit&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="nt">&quot;compliance_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Gold&quot;</span><span class="p">,</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="nt">&quot;agent_topology&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">      </span><span class="nt">&quot;agent_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;writes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ns1&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;reads&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ns2&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">  </span><span class="p">},</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">  </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">  </span><span class="p">}</span>
-<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&quot;aes_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.4</span><span class="p">,</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;multi_agent_flow_01&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Collaborative Financial Audit&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="nt">&quot;compliance_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Gold&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="nt">&quot;agent_topology&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">      </span><span class="nt">&quot;agent_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;writes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ns1&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;reads&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ns2&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">  </span><span class="p">},</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">  </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="p">}</span>
 </code></pre></div>
 <h2 id="schema-validation">Schema Validation<a class="headerlink" href="#schema-validation" title="Permanent link">&para;</a></h2>
 <p>Scenarios are validated against <code>schemas/scenario.schema.json</code> at load time. Any scenario that fails validation will raise a <code>ValueError</code> with a clear error message.</p>
