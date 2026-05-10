@@ -428,16 +428,15 @@ LUNA_JUDGE_TEMPERATURE = float(os.getenv("LUNA_JUDGE_TEMPERATURE", "0.0"))
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama4")
 OLLAMA_API_URL = os.getenv("OLLAMA_API_URL", f"{OLLAMA_HOST}/api/chat")
-AUTOGEN_API_URL = os.getenv(
-    "AUTOGEN_API_URL",
-    get_adapter_settings("frameworks", "autogen").get(
-        "api_url", "http://localhost:5002/execute_task"
-    ),
+# --- AG2 (formerly AutoGen) Configuration ---
+AG2_API_URL = os.getenv(
+    "AG2_API_URL",
+    get_adapter_settings("frameworks", "ag2").get("api_url", "http://localhost:8000/execute_task"),
 )
-AUTOGEN_USE_DOCKER = (
+AG2_USE_DOCKER = (
     os.getenv(
-        "AUTOGEN_USE_DOCKER",
-        str(get_adapter_settings("frameworks", "autogen").get("use_docker", "false")),
+        "AG2_USE_DOCKER",
+        str(get_adapter_settings("frameworks", "ag2").get("use_docker", "false")),
     ).lower()
     == "true"
 )

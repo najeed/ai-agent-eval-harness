@@ -9,10 +9,10 @@ AgentV is framework-agnostic. You can evaluate agents built with any library (La
 
 For the highest level of integration, use native adapters. These typically require a [Plugin](/extender/plugins/) and allow the harness to communicate directly with the framework's internal message bus.
 
-### Supported Adapters (2026 Baseline)
+### Supported Adapters
 - **`langgraph://`**: Official LangGraph v2 Protocol support.
 - **`crewai://`**: Support for CrewAI agent swarms.
-- **`autogen://`**: Support for Microsoft AutoGen agents.
+- **`ag2://`**: Support for AG2 (formerly AutoGen) agents.
 
 **Usage:**
 ```bash
@@ -22,14 +22,14 @@ agentv evaluate --agent langgraph://my_retail_node
 ### ⚙️ Behavioral Configuration Mesh
 As of v1.5.0, native adapters can be granularly configured via the **Industrial Confog Mesh** (e.g., `.aes/config/adapters.d/`). This allows you to define behavioral parameters (like Docker usage or custom timeouts) that are mathematically bound to the evaluation environment.
 
-**Example: Disabling Docker for AutoGen**
-Create `.aes/config/adapters.d/autogen_policy.json`:
+**Example: Disabling Docker for AG2**
+Create `.aes/config/adapters.d/ag2_policy.json`:
 ```json
 {
   "adapters": {
     "settings": {
       "frameworks": {
-        "autogen": {
+        "ag2": {
           "use_docker": false
         }
       }
@@ -38,7 +38,7 @@ Create `.aes/config/adapters.d/autogen_policy.json`:
 }
 ```
 
-This configuration ensures that all `autogen://` evaluations in this environment default to non-Docker execution unless overridden by an environment variable.
+This configuration ensures that all `ag2://` evaluations in this environment default to non-Docker execution unless overridden by an environment variable.
 
 ---
 
@@ -60,16 +60,16 @@ async def execute(request: dict):
     return {"content": result["output"]}
 ```
 
-### 🟠 AutoGen Example
+### 🟠 AG2 Example
 ```python
-import autogen
+import ag2
 from fastapi import FastAPI
 
 app = FastAPI()
 
 @app.post("/execute_task")
 async def execute(request: dict):
-    # Map input to AutoGen initiate_chat
+    # Map input to AG2 initiate_chat
     user_proxy.initiate_chat(assistant, message=request["input"])
     return {"content": user_proxy.last_message()["content"]}
 ```

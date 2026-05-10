@@ -42,7 +42,7 @@ class AgentAdapterRegistry:
         "gemini": "providers",
         "grok": "providers",
         "ollama": "providers",
-        "autogen": "frameworks",
+        "ag2": "frameworks",
         "crewai": "frameworks",
         "langgraph": "frameworks",
         "langchain": "frameworks",

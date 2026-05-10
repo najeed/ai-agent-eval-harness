@@ -65,10 +65,10 @@ AgentV supports a wide range of communication patterns. Use the `--protocol` and
 
 AgentV includes native adapters for the leading agentic frameworks.
 
-### AutoGen
+### AG2 (formerly AutoGen)
 ```bash
-pip install pyautogen
-agentv evaluate --run-id <id> --protocol autogen --agent autogen://localhost:5002
+pip install ag2
+agentv evaluate --run-id <id> --protocol ag2 --agent ag2://localhost:8000
 ```
 
 ### LangChain / LangGraph

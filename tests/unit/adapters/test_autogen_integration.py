@@ -10,9 +10,14 @@ from eval_runner.adapters.autogen import AG2AdapterPlugin
 @pytest.mark.asyncio
 async def test_ag2_adapter_real_integration():
     """Verify that the adapter works with real AutoGen/AG2 components."""
-    # This test requires the real autogen package
-    pytest.importorskip("autogen")
-    import autogen
+    # This test requires the real ag2 or autogen package
+    try:
+        import ag2 as autogen
+    except ImportError:
+        try:
+            import autogen
+        except ImportError:
+            pytest.skip("Neither 'ag2' nor 'autogen' modules are installed.")
 
     # Setup real autogen agents
     # We mock the actual initiate_chat to avoid needing an LLM
@@ -26,7 +31,7 @@ async def test_ag2_adapter_real_integration():
         name="user_proxy",
         human_input_mode="NEVER",
         max_consecutive_auto_reply=1,
-        code_execution_config={"use_docker": config.AUTOGEN_USE_DOCKER},
+        code_execution_config={"use_docker": config.AG2_USE_DOCKER},
     )
 
     # Register the agents/logic in a mock module

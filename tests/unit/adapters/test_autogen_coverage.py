@@ -12,9 +12,8 @@ async def test_autogen_on_discover_adapters():
     adapter = AG2AdapterPlugin()
     registry = MagicMock()
     adapter.on_discover_adapters(registry)
-    # Registry should have ag2 and autogen
+    # Registry should have ag2
     registry.register.assert_any_call("ag2", adapter.execute_autogen_query)
-    registry.register.assert_any_call("autogen", adapter.execute_autogen_query)
 
 
 @pytest.mark.asyncio
@@ -46,18 +45,18 @@ async def test_autogen_sdk_missing_no_fallback():
         patch("eval_runner.adapters.autogen.config", spec=[]),
         patch("eval_runner.adapters.autogen.emit") as mock_emit,
     ):
-        # Simulate autogen not installed
-        with patch.dict(sys.modules, {"autogen": None}):
-            # We need to ensure the code that does 'import autogen' fails
+        # Simulate ag2 not installed
+        with patch.dict(sys.modules, {"ag2": None}):
+            # We need to ensure the code that does 'import ag2' fails
             # In autogen.py:
             # try:
-            #     import autogen
+            #     import ag2 as autogen
             #     is_installed = True
 
             # Since it's inside the function, we can patch the import
             def mock_import(name, *args, **kwargs):
-                if name == "autogen":
-                    raise ImportError("SDK not installed")
+                if name in ("ag2", "autogen"):
+                    raise ImportError(f"No module named '{name}'")
                 return MagicMock()
 
             with patch("builtins.__import__", side_effect=mock_import):
@@ -74,7 +73,7 @@ async def test_autogen_sdk_missing_with_fallback():
 
     # Mock config to have a fallback URL
     mock_config = MagicMock()
-    mock_config.AUTOGEN_API_URL = "http://fallback.com"
+    mock_config.AG2_API_URL = "http://fallback.com"
 
     with (
         patch("eval_runner.adapters.autogen.config", mock_config),
@@ -83,10 +82,10 @@ async def test_autogen_sdk_missing_with_fallback():
     ):
         mock_remote.return_value = {"status": "success", "mode": "remote-fallback"}
 
-        # Simulate autogen not installed
+        # Simulate ag2 not installed
         def mock_import(name, *args, **kwargs):
-            if name == "autogen":
-                raise ImportError("SDK not installed")
+            if name in ("ag2", "autogen"):
+                raise ImportError(f"No module named '{name}'")
             return MagicMock()
 
         with patch("builtins.__import__", side_effect=mock_import):
@@ -95,7 +94,7 @@ async def test_autogen_sdk_missing_with_fallback():
             mock_emit.assert_any_call(
                 CoreEvents.TURN_START,
                 {
-                    "adapter": "autogen",
+                    "adapter": "ag2",
                     "agent_id": "test_agent",
                     "message": "hello",
                     "mode": "remote-fallback",
@@ -121,7 +120,7 @@ async def test_autogen_logic_path_execution():
     mock_module.mock_handler = mock_handler
 
     with (
-        patch.dict(sys.modules, {"autogen": mock_autogen}),
+        patch.dict(sys.modules, {"ag2": mock_autogen}),
         patch("importlib.import_module", return_value=mock_module),
     ):
         result = await adapter.execute_autogen_query(payload)
@@ -140,7 +139,7 @@ async def test_autogen_simulation_mode():
     mock_autogen = MagicMock()
 
     with (
-        patch.dict(sys.modules, {"autogen": mock_autogen}),
+        patch.dict(sys.modules, {"ag2": mock_autogen}),
         patch("eval_runner.adapters.autogen.emit") as mock_emit,
     ):
         result = await adapter.execute_autogen_query(payload)
@@ -150,7 +149,7 @@ async def test_autogen_simulation_mode():
         assert result["metadata"]["mode"] == "simulated"
         mock_emit.assert_any_call(
             CoreEvents.CHAIN_START,
-            {"adapter": "autogen", "agent_id": "test_agent", "protocol": "v1", "mode": "simulated"},
+            {"adapter": "ag2", "agent_id": "test_agent", "protocol": "v1", "mode": "simulated"},
         )
 
 
@@ -223,14 +222,14 @@ async def test_autogen_simulation_sdk_missing():
     adapter = AG2AdapterPlugin()
     payload = {"agent_id": "test_agent"}
 
-    # Force ImportError for autogen in simulation
+    # Force ImportError for ag2/autogen in simulation
     def mock_import(name, *args, **kwargs):
-        if name == "autogen":
-            raise ImportError("AG2/AutoGen SDK not installed")
+        if name in ("ag2", "autogen"):
+            raise ImportError(f"No module named '{name}'")
         return MagicMock()
 
     with patch("builtins.__import__", side_effect=mock_import):
-        with pytest.raises(ImportError, match="AG2/AutoGen SDK not installed"):
+        with pytest.raises(ImportError, match="AG2 SDK not installed"):
             await adapter._execute_simulation(payload)
 
 
@@ -246,7 +245,7 @@ async def test_autogen_exception_handling():
             side_effect=Exception("Boom"),
         ):
             # We need to get past the SDK check
-            with patch.dict(sys.modules, {"autogen": MagicMock()}):
+            with patch.dict(sys.modules, {"ag2": MagicMock()}):
                 # And use a logic path to trigger the crash
                 payload["metadata"] = {"logic_path": "m:f"}
                 mock_handler = AsyncMock(return_value=MagicMock())

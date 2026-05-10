@@ -25,11 +25,11 @@ agentv doctor
 
 Verify that the harness can communicate with external frameworks using the appropriate protocols.
 
-### Microsoft AutoGen
-- **Protocol**: `autogen://`
+### AG2 (formerly AutoGen)
+- **Protocol**: `ag2://`
 - **Verification**:
   ```bash
-  agentv evaluate --run-id <id> --protocol autogen
+  agentv evaluate --run-id <id> --protocol ag2
   ```
 
 ### LangChain / LangGraph

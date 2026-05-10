@@ -10,17 +10,17 @@ AgentV provides native support for AutoGen agent workflows, allowing you to meas
 Expose your AutoGen agent via a standard HTTP endpoint.
 
 ```python
-import autogen
+import ag2
 from fastapi import FastAPI
 
-# ... setup your autogen config ...
+# ... setup your ag2 config ...
 
 app = FastAPI()
 
 @app.post("/execute_task")
 async def execute(request: dict):
-    # assistant = autogen.AssistantAgent(...)
-    # user_proxy = autogen.UserProxyAgent(...)
+    # assistant = ag2.AssistantAgent(...)
+    # user_proxy = ag2.UserProxyAgent(...)
     # user_proxy.initiate_chat(assistant, message=request["task_description"])
     # result = user_proxy.last_message()["content"]
     return {"action": "final_answer", "summary": result}
@@ -28,14 +28,14 @@ async def execute(request: dict):
 
 ## 2. Run Evaluation
 
-Use the `autogen://` protocol to connect the harness to your agent service.
+Use the `ag2://` protocol to connect the harness to your agent service.
 
 ```bash
 agentv evaluate \
   --run-id <id> \
-  --protocol autogen \
-  --agent autogen://localhost:8000/execute_task \
-  --agent-name "AutoGen-Finance-Expert"
+  --protocol ag2 \
+  --agent ag2://localhost:8000/execute_task \
+  --agent-name "AG2-Finance-Expert"
 ```
 
 ## 3. Review DNA Trajectories

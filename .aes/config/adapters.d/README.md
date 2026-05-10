@@ -24,7 +24,7 @@ To enable a local development adapter without changing the production baseline, 
     "active_protocols": ["http", "local"],
     "settings": {
       "frameworks": {
-        "autogen": {
+        "ag2": {
           "use_docker": false
         }
       }

@@ -15,7 +15,7 @@ Set the following variables in your `.env` file or CI/CD secrets to enable provi
 | **Google** | `GEMINI_BASE_URL` | `https://generativelanguage.googleapis.com/v1/models` |
 | **Ollama** | `OLLAMA_API_URL` | `http://localhost:11434/api/chat` |
 | **xAI (Grok)** | `GROK_API_URL` | *(Requires active Grok Adapter)* |
-| **AutoGen** | `AUTOGEN_API_URL` | `http://localhost:5002/execute_task` |
+| **AutoGen** | `AG2_API_URL` | `http://localhost:5002/execute_task` |
 
 ### API Keys
 Most providers also require their respective API keys (e.g., `ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, `OPENAI_API_KEY`).

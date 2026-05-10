@@ -15,14 +15,14 @@
       "ollama"
     ],
     "active_frameworks": [
-      "autogen",
+      "ag2",
       "crewai",
       "langgraph",
       "langchain"
     ],
     "settings": {
       "frameworks": {
-        "autogen": {
+        "ag2": {
           "use_docker": false
         }
       }

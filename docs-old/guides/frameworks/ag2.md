@@ -6,7 +6,7 @@ Evaluate your AG2 agent workflows using standardized benchmarks.
 Expose your AG2 agent via a simple `FASTAPI` endpoint.
 
 ```python
-import autogen # Powered by AG2
+import ag2
 from fastapi import FastAPI
 
 # ... setup your AG2 config ...

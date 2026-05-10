@@ -61,14 +61,14 @@ async def test_tripartite_isolation_enforcement(tmp_path, clean_registry):
     assert "local" not in registered, "Protocol 'local' should be blacklisted."
     for r in registered:
         base = r.split(":")[0]
-        if base in ["autogen", "crewai", "langgraph", "langchain"]:
+        if base in ["ag2", "crewai", "langgraph", "langchain"]:
             raise AssertionError(f"FAIL: Framework '{r}' should be blacklisted.")
 
 
 @pytest.mark.asyncio
 async def test_version_sanitization_governance(tmp_path, clean_registry):
     """
-    Verify that versioned protocols (e.g., autogen:v1) are correctly mapped
+    Verify that versioned protocols (e.g., ag2:v1) are correctly mapped
     to their base categories for governance checks.
     """
     config_dir = tmp_path / ".aes" / "config" / "adapters"
@@ -92,10 +92,10 @@ async def test_version_sanitization_governance(tmp_path, clean_registry):
     def mock_handler(p, e):
         return {}
 
-    AgentAdapterRegistry.register("autogen:v1", mock_handler)
+    AgentAdapterRegistry.register("ag2:v1", mock_handler)
 
-    assert "autogen:v1" not in AgentAdapterRegistry._adapters, (
-        "Security Bypass: Versioned framework was registered despite 'autogen' being blacklisted."
+    assert "ag2:v1" not in AgentAdapterRegistry._adapters, (
+        "Security Bypass: Versioned framework was registered despite 'ag2' being blacklisted."
     )
 
 

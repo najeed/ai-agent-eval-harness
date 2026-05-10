@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from eval_runner.adapters.autogen import AutoGenAdapterPlugin
+from eval_runner.adapters.autogen import AG2AdapterPlugin
 from eval_runner.context import EvaluationContext, TurnContext
 from eval_runner.events import CoreEvents, emit, reset, subscribe
 from eval_runner.verifier import BaseVerifier, VerificationResult
@@ -87,13 +87,13 @@ async def test_autogen_adapter_instrumentation():
 
     original_import = __builtins__["__import__"]
 
-    adapter = AutoGenAdapterPlugin()
+    adapter = AG2AdapterPlugin()
     payload = {"agent_id": "test_agent", "message": "hello"}
     span_ctx = {"adapter_trace": "xyz"}
 
     def mock_import(name, *args, **kwargs):
-        if name == "autogen":
-            raise ImportError("No module named 'autogen'")
+        if name in ("ag2", "autogen"):
+            raise ImportError(f"No module named '{name}'")
         return original_import(name, *args, **kwargs)
 
     with patch("eval_runner.events.EventEmitter.emit") as mock_emit:
@@ -106,7 +106,7 @@ async def test_autogen_adapter_instrumentation():
             mock_emit.assert_any_call(
                 CoreEvents.TURN_START,
                 {
-                    "adapter": "autogen",
+                    "adapter": "ag2",
                     "agent_id": "test_agent",
                     "message": "hello",
                     "mode": "remote-fallback",
@@ -117,7 +117,7 @@ async def test_autogen_adapter_instrumentation():
             mock_emit.assert_any_call(
                 CoreEvents.CHAIN_START,
                 {
-                    "adapter": "autogen",
+                    "adapter": "ag2",
                     "agent_id": "test_agent",
                     "protocol": "v1",
                     "mode": "remote",

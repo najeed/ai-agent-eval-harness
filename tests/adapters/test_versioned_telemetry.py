@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from eval_runner.adapters.autogen import AutoGenAdapterPlugin
+from eval_runner.adapters.autogen import AG2AdapterPlugin
 from eval_runner.adapters.crewai import CrewAIAdapterPlugin
 from eval_runner.adapters.langchain import LangChainAdapterPlugin
 from eval_runner.adapters.langgraph import LangGraphAdapterPlugin
@@ -54,10 +54,10 @@ async def test_langgraph_v2_telemetry(event_bus):
 
 @pytest.mark.asyncio
 async def test_autogen_v1_telemetry(event_bus):
-    plugin = AutoGenAdapterPlugin()
+    plugin = AG2AdapterPlugin()
     payload = {"agent_id": "assistant_agent", "message": "query"}
 
-    with patch.dict("sys.modules", {"autogen": MagicMock()}):
+    with patch.dict("sys.modules", {"ag2": MagicMock()}):
         result = await plugin.execute_autogen_query(payload)
 
     assert result["status"] == "success"
@@ -105,7 +105,7 @@ async def test_langchain_v1_telemetry(event_bus):
 async def test_missing_sdk_err_reporting(event_bus):
     """Verifies all adapters report 'error' when SDK is missing (No-Masking policy)."""
     lg_plugin = LangGraphAdapterPlugin()
-    ag_plugin = AutoGenAdapterPlugin()
+    ag_plugin = AG2AdapterPlugin()
     crew_plugin = CrewAIAdapterPlugin()
     lc_plugin = LangChainAdapterPlugin()
 
@@ -115,13 +115,14 @@ async def test_missing_sdk_err_reporting(event_bus):
             "sys.modules",
             {
                 "langgraph": None,
+                "ag2": None,
                 "autogen": None,
                 "crewai": None,
                 "langchain": None,
                 "langchain_core": None,
             },
         ),
-        patch("eval_runner.config.AUTOGEN_API_URL", None),
+        patch("eval_runner.config.AG2_API_URL", None),
     ):
         # LangGraph
         lg_res = await lg_plugin.execute_langgraph_node({"node_id": "test"})

@@ -106,7 +106,7 @@ class OpenAIProvider(LLMProvider):
                 raise Exception(f"OpenAI request failed: {e}")  # noqa: B904
 
     async def list_models(self) -> list:
-        """Lists available models in OpenAI (with future fallbacks)."""
+        """Lists available models in OpenAI."""
         future_models = [
             {"id": "gpt-5.4-pro", "name": "GPT-5.4 Pro"},
             {"id": "gpt-5.4-mini", "name": "GPT-5.4 Mini"},

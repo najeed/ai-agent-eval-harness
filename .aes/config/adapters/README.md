@@ -35,7 +35,7 @@ As of v1.5.0, you can specify behavioral parameters for each component using the
   "adapters": {
     "settings": {
       "frameworks": {
-        "autogen": {
+        "ag2": {
           "use_docker": false
         }
       }

@@ -10,17 +10,15 @@ from .common import BaseAdapter, DualNormalizationHub
 class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
     """
     Industrial Adapter: AG2 (formerly AutoGen) with Forensic Trust Protocol compliance.
-    Supports legacy 'autogen' registration for backward compatibility.
     """
 
     def __init__(self):
         BaseAdapter.__init__(self, name="ag2")
 
     def on_discover_adapters(self, registry: Any):
-        """Register the ag2:// protocol and preserve legacy autogen:// handle."""
+        """Register the ag2:// protocol."""
         print("      [Plugin] Registering AG2 adapters (v1) via on_discover_adapters hook.")
         registry.register("ag2", self.execute_autogen_query)
-        registry.register("autogen", self.execute_autogen_query)
 
     async def execute_autogen_query(
         self, payload: dict[str, Any], endpoint: str = None, **kwargs
@@ -40,20 +38,28 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
         is_explicit_remote = url_candidate and str(url_candidate).startswith("http")
 
         # If no explicit remote URL, check if we have a default fallback URL in config
-        config_url = getattr(config, "AUTOGEN_API_URL", None)
+        config_url = getattr(config, "AG2_API_URL", None)
 
         if is_explicit_remote:
             return await self._execute_remote_api(payload, url_candidate, span_context)
 
         try:
-            # Check for real SDK
+            # Check for real SDK (support both rebranded 'ag2' and legacy 'autogen' modules)
             try:
-                import autogen
+                import ag2 as autogen
 
                 is_installed = True
-                version = getattr(autogen, "__version__", "unknown")
             except ImportError:
-                is_installed = False
+                try:
+                    import autogen
+
+                    is_installed = True
+                except ImportError:
+                    is_installed = False
+
+            if is_installed:
+                version = getattr(autogen, "__version__", "unknown")
+            else:
                 version = "unknown"
 
             # [No-Masking Policy] If SDK missing for local execution, check for fallback
@@ -63,7 +69,7 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
                     emit(
                         CoreEvents.TURN_START,
                         {
-                            "adapter": "autogen",
+                            "adapter": "ag2",
                             "agent_id": agent_id,
                             "message": message,
                             "mode": "remote-fallback",
@@ -74,7 +80,7 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
                 # [Industrial Requirement] Use specific error message for diagnostic tools
                 raise ImportError(
-                    "AG2/AutoGen SDK not installed. Required for local industrial-grade execution. "
+                    "AG2 SDK not installed. Required for local industrial-grade execution. "
                     "Native execution failed."
                 ) from None
 
@@ -141,7 +147,7 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
         emit(
             CoreEvents.CHAIN_START,
             {
-                "adapter": "autogen",
+                "adapter": "ag2",
                 "agent_id": agent_id,
                 "protocol": "v1",
                 "mode": "remote",
@@ -197,21 +203,22 @@ class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
         """Fallback simulation for testing environments."""
         # [No-Masking] Even simulation requires SDK check if it uses SDK components
         try:
-            import autogen
-
-            _ = autogen
+            import ag2  # noqa: F401
         except ImportError:
-            raise ImportError(
-                "AG2/AutoGen SDK not installed. Required for simulation parity. "
-                "Native execution failed."
-            ) from None
+            try:
+                import autogen  # noqa: F401
+            except ImportError:
+                raise ImportError(
+                    "AG2 SDK not installed. Required for simulation parity. "
+                    "Native execution failed."
+                ) from None
 
         # [Telemetry Compliance] Signal start of simulated execution
         agent_id = payload.get("agent_id", payload.get("task_id", "default_agent"))
         emit(
             CoreEvents.CHAIN_START,
             {
-                "adapter": "autogen",
+                "adapter": "ag2",
                 "agent_id": agent_id,
                 "protocol": "v1",
                 "mode": "simulated",
