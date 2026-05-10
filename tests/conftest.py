@@ -4,6 +4,8 @@ conftest.py
 Shared fixtures and configuration for the AgentV test suite.
 """
 
+import asyncio
+
 import pytest
 import pytest_asyncio
 
@@ -32,12 +34,17 @@ def shutdown_tracer():
 
 @pytest_asyncio.fixture(autouse=True)
 async def reset_sessions():
-    """Closes all pooled sessions after each test to ensure mock isolation."""
+    """
+    Industrial-grade connection teardown.
+    Closes pooled sessions and allows a grace period for underlying transport cleanup.
+    """
     yield
     from eval_runner.adapters.common import SessionManager
 
     try:
         await SessionManager.close_all()
+        # Small grace period to allow aiohttp's _wait_for_close to complete (AES v1.4 Hardening)
+        await asyncio.sleep(0.05)
     except Exception:
         pass
 
@@ -101,30 +108,6 @@ def reset_cli_parser():
     from eval_runner import cli
 
     cli._invalidate_parser_cache()
-
-
-@pytest.fixture(autouse=True)
-def check_loop_hygiene():
-    """
-    Diagnostic & Remediation: Ensures that no event loop is left in a 'running' OR 'set' state.
-    Hardened for Python 3.14+ loop policy isolation.
-    """
-    import asyncio
-
-    yield
-
-    # Forensic loop cleanup (Python 3.14+ compliant)
-    try:
-        loop = asyncio.get_event_loop()
-        if loop and not loop.is_closed():
-            if loop.is_running():
-                # This should not happen if tests are awaited properly
-                pass
-            loop.close()
-    except RuntimeError:
-        pass
-    except Exception:
-        pass
 
 
 @pytest_asyncio.fixture

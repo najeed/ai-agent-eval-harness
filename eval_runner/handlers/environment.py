@@ -36,7 +36,18 @@ def list_industries() -> list[str]:
             set(
                 reg_industries
                 + mapped
-                + ["generic", "finance", "healthcare", "telecom", "manufacturing"]
+                + [
+                    "generic",
+                    "finance",
+                    "healthcare",
+                    "telecom",
+                    "manufacturing",
+                    "retail",
+                    "logistics",
+                    "legal",
+                    "education",
+                    "energy",
+                ]
             )
         )
     )
