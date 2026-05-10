@@ -31,10 +31,10 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **google-genai** | 2.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **pypdf** | 6.10.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **streamlit** | 1.56.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **streamlit** | 1.57.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **pandas** | 3.0.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pygments** | 2.20.0 | BSD-2-Clause | [BSD-2-Clause.txt](LICENSES/BSD-2-Clause.txt) |
-| **langchain-core** | 1.2.28 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-core** | 1.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **pyasn1** | 0.6.3 | BSD-2-Clause | [BSD-2-Clause.txt](LICENSES/BSD-2-Clause.txt) |
 | **python-dotenv** | 1.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |

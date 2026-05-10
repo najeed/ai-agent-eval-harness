@@ -8,7 +8,7 @@ This document provides a quick reference for testing the AgentV. For detailed in
 
 ### Install Dependencies
 ```bash
-pip install pytest pytest-cov pytest-mock jsonschema
+pip install -r requirements-dev.txt
 ```
 
 ### Run All Tests
@@ -26,9 +26,9 @@ pytest --cov=eval_runner --cov-report=html
 | Category | Command | Description |
 |----------|---------|-------------|
 | **All Tests** | `pytest` | Run complete test suite (200+) |
-| **Unit Tests** | `pytest tests/test_cli.py` | Core CLI functionality tests |
-| **Linter Check** | `python -m flake8 .` | Verify code quality and syntax |
-| **Compliance** | `pytest tests/test_scenario_compliance.py` | AES schema and protocol verification |
+| **Unit Tests** | `pytest tests/unit/` | Core unit tests for engine logic |
+| **Linter Check** | `ruff check .` | Verify code quality and industrial syntax |
+| **Compliance** | `pytest tests/test_telemetry_compliance.py` | AES schema and protocol verification |
 | **Coverage Report** | `pytest --cov=eval_runner` | Generate coverage analysis |
 | **Performance** | `pytest --benchmark-only` | Run performance benchmarks |
 
@@ -36,25 +36,13 @@ pytest --cov=eval_runner --cov-report=html
 
 ```
 tests/
-├── __init__.py                     # Python package marker
-├── test_cli.py                     # Unified CLI command tests
-├── test_engine.py                  # Core engine and Model Wars logic
-├── test_metrics.py                 # Core metrics and Luna-Judge scoring
-├── test_loader.py                  # Dataset and scenario loading
-├── test_scenario_compliance.py     # Scenario schema and compliance validation
-├── test_core_infrastructure.py     # Architecture and integration logic
-├── test_session_advanced.py        # Advanced session and forking logic
-├── test_tool_sandbox.py            # Tool execution and state permissions
-├── test_trace_recorder.py          # Real-time interaction recording
-├── test_verifier_asymmetric.py     # ED25519 signature and Trust Protocol tests
-├── test_gate_cli.py                # CI/CD gatekeeper and CLI integrity tests
-├── test_fintech_pack.py            # Industrial hardening scenarios validation
-├── test_playground.py              # Interactive playground tests
-├── test_quickstart.py              # Quickstart flow automation
-├── test_security_audit.py          # Security guardrail verification
-├── test_console_handoff.py         # JWT and SSO handoff verification
-├── test_stability.py               # Long-running simulation stability
-└── test_taxonomy.py                # Failure classification taxonomy
+├── unit/                       # Unit tests for individual modules
+├── integration/                # Multi-component and adapter integration tests
+├── functional/                 # E20E and CLI functional verification
+├── security/                   # Guardrail and forensic audit tests
+├── ui/                         # Streamlit and portal frontend tests
+├── conftest.py                 # Global fixtures and test configuration
+└── test_telemetry_compliance.py # Industrial telemetry verification
 ```
 
 ## Key Testing Areas
@@ -217,13 +205,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.9
+        python-version: '3.11'
     - name: Install dependencies
-      run: pip install pytest pytest-cov pytest-mock jsonschema
+      run: pip install -r requirements-dev.txt
+    - name: Run linter
+      run: ruff check .
     - name: Run tests
       run: pytest --cov=eval_runner --cov-report=xml
 ```

@@ -97,3 +97,34 @@ def on_discover_adapters(self, registry):
     # Industrial Standard: Always provide category metadata
     registry.register("my_proto", self.handler, category="framework")
 ```
+
+---
+
+## Lesson 6: Behavioral Configuration (The Settings Mesh)
+
+As of AES v1.5.0, adapters can be granularly configured via the `settings` block in the mesh. This allows you to define behavioral defaults (like Docker usage or custom endpoints) that are mathematically bound to the evaluation environment.
+
+### Structured Settings Example
+In `.aes/config/adapters.d/autogen_policy.json`:
+```json
+{
+  "adapters": {
+    "settings": {
+      "frameworks": {
+        "autogen": {
+          "use_docker": false,
+          "api_url": "http://production-autogen:5002/execute"
+        }
+      }
+    }
+  }
+}
+```
+
+### Hierarchy of Authority
+To ensure operational flexibility, settings are resolved in the following order:
+1. **Environment Variables**: `AUTOGEN_USE_DOCKER=true` (Ultimate Authority).
+2. **Mesh Configuration**: `.aes/config/adapters.d/*.json` (Shared Policy).
+3. **Internal Baselines**: Hardcoded defaults (System Safety).
+
+This allows Enterprise IT to set a global "No-Docker" policy in the mesh while allowing specialized researchers to override it for a single run via environment variables.

@@ -19,6 +19,27 @@ For the highest level of integration, use native adapters. These typically requi
 agentv evaluate --agent langgraph://my_retail_node
 ```
 
+### ⚙️ Behavioral Configuration Mesh
+As of v1.5.0, native adapters can be granularly configured via the **Industrial Confog Mesh** (e.g., `.aes/config/adapters.d/`). This allows you to define behavioral parameters (like Docker usage or custom timeouts) that are mathematically bound to the evaluation environment.
+
+**Example: Disabling Docker for AutoGen**
+Create `.aes/config/adapters.d/autogen_policy.json`:
+```json
+{
+  "adapters": {
+    "settings": {
+      "frameworks": {
+        "autogen": {
+          "use_docker": false
+        }
+      }
+    }
+  }
+}
+```
+
+This configuration ensures that all `autogen://` evaluations in this environment default to non-Docker execution unless overridden by an environment variable.
+
 ---
 
 ## 🛠️ Manual API Wrapping (HTTP/REST)

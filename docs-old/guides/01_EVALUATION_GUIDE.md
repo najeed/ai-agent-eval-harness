@@ -63,6 +63,23 @@ The `state_verification` metric now supports **dot-notation** for inspecting nes
     - **Local**: Executes a subprocess and communicates via stdin/stdout. Configuration: `AGENT_LOCAL_CMD`.
     - **Socket**: Connects to a raw TCP socket. Configuration: `AGENT_SOCKET_ADDR`.
 
+### ⚙️ Behavioral Configuration Mesh (v1.5.0+)
+To ensure industrial-grade governance, AgentV now supports a **Behavioral Configuration Mesh** (`.aes/config/*.d/`). This allows administrators to define structured settings (like Docker usage or endpoint URLs) that apply globally across the environment.
+
+**Example Policy (`autogen.json`):**
+```json
+{
+  "adapters": {
+    "settings": {
+      "frameworks": {
+        "autogen": { "use_docker": false }
+      }
+    }
+  }
+}
+```
+Settings are resolved with the following priority: **Env Vars > Mesh Config > Internal Baselines**.
+
 ## Visual Evaluation & Debugging (**Visual Debugger**)
 
 Beyond the CLI, the harness provides a **Unified React SPA** Visual Debugger for visual management:

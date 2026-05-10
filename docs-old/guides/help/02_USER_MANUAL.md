@@ -370,6 +370,14 @@ Place your configurations in the `shim_resources.d/` folder as `.json` or `.yaml
 | **`shim_resources.d/99_dev.local.json`** | Personal API keys, private credentials. | **No** |
 | **`AES_SHIM_RESOURCES_JSON`** | Dynamic CI/CD pipeline injections. | **No** |
 
+### ⚙️ Adapter Behavioral Mesh (v1.5.0+)
+Configuration for agent adapters (e.g., `autogen`, `langgraph`) is now managed via the `.aes/config/adapters.d/` mesh. This allows you to set default behaviors like `use_docker` or `api_url` without modifying core code.
+
+**Resolution Order:**
+1. **Environment Variables** (e.g., `AUTOGEN_USE_DOCKER=true`)
+2. **Mesh Configuration** (e.g., `.aes/config/adapters.d/*.json`)
+3. **Hardcoded Defaults**
+
 ### 🔍 Auditing Your Registry
 To see exactly how your registry is merged and which sources are contributing to your environment, use the doctor utility:
 ```bash

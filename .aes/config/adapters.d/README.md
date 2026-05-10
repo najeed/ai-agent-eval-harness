@@ -21,7 +21,14 @@ To enable a local development adapter without changing the production baseline, 
 ```json
 {
   "adapters": {
-    "active_protocols": ["http", "local"]
+    "active_protocols": ["http", "local"],
+    "settings": {
+      "frameworks": {
+        "autogen": {
+          "use_docker": false
+        }
+      }
+    }
   }
 }
 ```

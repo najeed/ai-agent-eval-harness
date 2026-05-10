@@ -20,10 +20,13 @@ async def test_ag2_adapter_real_integration():
         name="assistant",
         llm_config=False,  # No LLM for this test
     )
+    from eval_runner import config
+
     autogen.UserProxyAgent(
         name="user_proxy",
         human_input_mode="NEVER",
         max_consecutive_auto_reply=1,
+        code_execution_config={"use_docker": config.AUTOGEN_USE_DOCKER},
     )
 
     # Register the agents/logic in a mock module

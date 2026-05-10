@@ -167,6 +167,12 @@ async def test_autogen_adapter_fallback():
     adapter.on_discover_adapters(reg)
     reg.register.assert_any_call("autogen", adapter.execute_autogen_query)
 
-    # Test entry point error handling (fallback path)
-    res = await adapter.execute_autogen_query({"message": "hi"})
-    assert res["status"] == "error"
+    # Test entry point error handling (fallback path when SDK is missing)
+    with (
+        patch.dict("sys.modules", {"autogen": None}),
+        patch("eval_runner.adapters.autogen.config") as mock_cfg,
+    ):
+        mock_cfg.AUTOGEN_API_URL = None
+        res = await adapter.execute_autogen_query({"message": "hi"})
+        assert res["status"] == "error"
+        assert "not installed" in res["message"]

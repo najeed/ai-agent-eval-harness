@@ -25,3 +25,21 @@ If no administrative policy is detected, AgentV defaults to a **Zero-Trust Basel
 - Only `http` and `openapi` protocols are enabled.
 - All Providers and Frameworks are **DISABLED**.
 - This prevents unauthorized lateral movement or subprocess execution in misconfigured environments.
+
+## ⚙️ Behavioral Configuration (`settings`)
+
+As of v1.5.0, you can specify behavioral parameters for each component using the `settings` block. This allows for unified governance of SDK behavior (like Docker usage or timeout caps).
+
+```json
+{
+  "adapters": {
+    "settings": {
+      "frameworks": {
+        "autogen": {
+          "use_docker": false
+        }
+      }
+    }
+  }
+}
+```

@@ -19,6 +19,13 @@
       "crewai",
       "langgraph",
       "langchain"
-    ]
+    ],
+    "settings": {
+      "frameworks": {
+        "autogen": {
+          "use_docker": false
+        }
+      }
+    }
   }
 }

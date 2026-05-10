@@ -233,6 +233,25 @@ class RegistryManager:
 R_MANAGER = RegistryManager()
 
 
+def get_adapter_settings(category: str, adapter_name: str) -> dict:
+    """Retrieves component-specific behavioral settings from the adapter mesh."""
+    registry = RegistryManager.get_resolved_registry()
+    return registry.get("adapters", {}).get("settings", {}).get(category, {}).get(adapter_name, {})
+
+
+def get_shim_config(shim_name: str) -> dict:
+    """Standard protocol for shims to retrieve their environmental state from the registry."""
+    registry = RegistryManager.get_resolved_registry()
+    shim_def = registry.get("shims", {}).get(shim_name, {})
+
+    # [Industrial Hardening] Handle potentially double-nested 'resources'
+    res = shim_def.get("resources", shim_def)
+    if isinstance(res, dict) and "resources" in res:
+        res = res["resources"]
+
+    return res
+
+
 def get_safe_tmp_dir() -> Path:
     """
     Returns a writable temporary directory within the PROJECT_ROOT.
@@ -409,7 +428,19 @@ LUNA_JUDGE_TEMPERATURE = float(os.getenv("LUNA_JUDGE_TEMPERATURE", "0.0"))
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama4")
 OLLAMA_API_URL = os.getenv("OLLAMA_API_URL", f"{OLLAMA_HOST}/api/chat")
-AUTOGEN_API_URL = os.getenv("AUTOGEN_API_URL", "http://localhost:5002/execute_task")
+AUTOGEN_API_URL = os.getenv(
+    "AUTOGEN_API_URL",
+    get_adapter_settings("frameworks", "autogen").get(
+        "api_url", "http://localhost:5002/execute_task"
+    ),
+)
+AUTOGEN_USE_DOCKER = (
+    os.getenv(
+        "AUTOGEN_USE_DOCKER",
+        str(get_adapter_settings("frameworks", "autogen").get("use_docker", "false")),
+    ).lower()
+    == "true"
+)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
@@ -491,19 +522,6 @@ DASHBOARD_API_KEY = os.getenv("DASHBOARD_API_KEY")
 
 # Industrial Feature Toggles (v1.2.4)
 DEBUG_MODE = os.getenv("DEBUG", "false").lower() == "true"
-
-
-def get_shim_config(shim_name: str) -> dict:
-    """Standard protocol for shims to retrieve their environmental state from the registry."""
-    registry = RegistryManager.get_resolved_registry()
-    shim_def = registry.get("shims", {}).get(shim_name, {})
-
-    # [Industrial Hardening] Handle potentially double-nested 'resources'
-    res = shim_def.get("resources", shim_def)
-    if isinstance(res, dict) and "resources" in res:
-        res = res["resources"]
-
-    return res
 
 
 def get_routing_strategy() -> str:

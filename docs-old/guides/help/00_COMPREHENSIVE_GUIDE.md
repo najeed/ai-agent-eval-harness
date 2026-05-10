@@ -73,8 +73,9 @@ The harness uses a **Zero-Touch Core** design, where all major capabilities are 
 3. **EventEmitter**: Broadcasts state changes through a central bus.
 4. **Discovery Engine**: Centrally manages dynamic discovery of plugins and adapters via `eval_runner/discovery.py`.
 5. **AgentAdapterRegistry**: Dynamically registers agent protocols at runtime using discovery.
-6. **TraceVerifier**: The industrial engine for **Asymmetric Trust (ED25519)** and **Detached Integrity (SHA-256)**.
-7. **Plugins**: Standard lifecycle listeners and interceptors, discovered automatically.
+6. **Config Registry**: (v1.5.0+) Centralized behavioral configuration via `.aes/config/*.d/`.
+7. **TraceVerifier**: The industrial engine for **Asymmetric Trust (ED25519)** and **Detached Integrity (SHA-256)**.
+8. **Plugins**: Standard lifecycle listeners and interceptors, discovered automatically.
 
 ### 3.2 Extensibility
 - **Interception**: Use `on_tool_request` to block or proxy tool calls.

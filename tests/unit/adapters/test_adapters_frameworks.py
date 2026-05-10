@@ -89,8 +89,11 @@ async def test_framework_adapters_error_reporting():
 
     # AutoGen missing URL -> should reach error (no SDK, no config URL)
     plugin = AutoGenAdapterPlugin()
-    with patch("eval_runner.adapters.autogen.config") as mock_cfg:
+    with (
+        patch("eval_runner.adapters.autogen.config") as mock_cfg,
+        patch.dict("sys.modules", {"autogen": None}),
+    ):
         mock_cfg.AUTOGEN_API_URL = None
         res = await plugin.execute_autogen_query({})
-    assert res["status"] == "error"
-    assert res["action"] == "error"
+        assert res["status"] == "error"
+        assert res["action"] == "error"
