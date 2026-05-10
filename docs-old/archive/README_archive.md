@@ -216,7 +216,7 @@ The harness supports multiple ways to talk to your agent, enabling seamless inte
 - **Industrial PBAC & Operational Governance**: Granular **Permission-Based Access Control** (v1.2.3) and **Operational Throttling** (`EVAL_TURN_THROTTLE`) for regulated enterprise environments.
 - **Zero-Touch Hot-Swap Architecture**: Dynamically register and swap simulators via plugins without core code modifications.
 - **Benchmark Ecosystem**: Native loaders for GAIA (HuggingFace Integration) and AssistantBench. Supports benchmark URI schemes (e.g., `gaia://2023`, `assistantbench://v1`) for zero-config execution.
-- **Native Framework Adapters**: Full industrial-grade support for **LangChain**, **LangGraph**, **Microsoft AutoGen** (via `autogen://`), and **CrewAI** via a dynamic plugin-discovery system.
+- **Native Framework Adapters**: Full industrial-grade support for **LangChain**, **LangGraph**, **Microsoft AG2** (via `AG2://`), and **CrewAI** via a dynamic plugin-discovery system.
 - **High-Fidelity Industry Metrics**: Modular, pluggable evaluators for Defense (ROE, C2, Intelligence Fusion), Healthcare, and Finance. Features high-precision numerical extraction and domain-specific LLM rubrics.
 - **Tool Sandbox**: Governance-controlled execution with full VFS-aware state parity verification.
 - **Integrated Visual Suite**: Unified React dashboard for live trace replay and visual debugging.
@@ -253,7 +253,7 @@ The harness is built on a decoupled, event-driven architecture that allows custo
 - **🏥 High-Fidelity Metrics Framework**: Decoupled, category-based evaluators (Accuracy, Planning, Defense, Technical) with extensible registration.
 - **Industry-Standard Rubrics**: Specialized evaluators for Clinical Safety, Fiduciary Accuracy, Strategic Planning, and Causal Inference.
 - **Native HITL Support**: built-in pausing for human intervention via the `human` adapter.
-- **Advanced Discovery**: Plugin-driven registry for third-party agent adapters (LangGraph, CrewAI, AutoGen, Grok).
+- **Advanced Discovery**: Plugin-driven registry for third-party agent adapters (LangGraph, CrewAI, AG2, Grok).
 - **Pluggable World Shims**: Register custom environment simulators through the `on_register_simulators` hook.
 
 ### 🛠️ dataproc-engine: Industrial Extraction Core

@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2026-05-10
+
+### Industrial Hardening & Ecosystem Branding
+*   **AG2 Framework Rebranding**: Completed the transition from AutoGen to **AG2**. Updated all adapter registrations to support `ag2://` while maintaining `autogen://` for legacy compatibility.
+*   **"No-Masking" Error Policy**: Hardened adapter infrastructure to strictly propagate `ImportError` when required SDKs (LangChain, LangGraph, CrewAI, AG2) are missing. This ensures transparent environment reporting and prevents silent fallbacks to simulation in production.
+*   **CI/CD Stabilization**: Refactored the test suite to use `patch.dict(sys.modules, ...)` for robust environment isolation, resolved registry discovery regressions, and fixed unawaited coroutine warnings in mock-heavy test scenarios.
+*   **Industrial Compliance Notice**: Integrated the **Forensic Trust Protocol v3.0.0** governance baseline and configured `pyproject.toml` to filter noisy upstream deprecation warnings.
+
 ## [1.6.0] - 2026-04-26
 
 ### Modern Agent Support & Robust Metrics

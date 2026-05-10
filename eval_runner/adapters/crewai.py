@@ -34,7 +34,18 @@ class CrewAIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             # Dynamic import for Zero-Touch Core
             import importlib
 
-            import crewai
+            try:
+                import crewai
+
+                is_installed = True
+            except ImportError:
+                is_installed = False
+
+            # [No-Masking Policy] If SDK missing, fail explicitly
+            if not is_installed:
+                raise ImportError(
+                    "CrewAI SDK not installed. Required for industrial-grade execution."
+                )
 
             # Path to the crew instance/factory in metadata
             crew_path = payload.get("metadata", {}).get("crew_path")
@@ -104,7 +115,12 @@ class CrewAIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
     async def _execute_simulation(self, task_id: str) -> dict[str, Any]:
         """Fallback simulation for testing environments."""
-        import crewai
+        try:
+            import crewai
+        except ImportError:
+            raise ImportError(
+                "CrewAI SDK not installed. Required for industrial-grade execution."
+            ) from None
 
         # Signal start of the multi-agent 'chain'
         emit(CoreEvents.CHAIN_START, {"adapter": "crewai", "task_id": task_id, "protocol": "v1"})

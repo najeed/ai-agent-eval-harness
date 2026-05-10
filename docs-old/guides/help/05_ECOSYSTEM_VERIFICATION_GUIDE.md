@@ -44,7 +44,7 @@ XAI_API_KEY=...
 
 # Ecosystem Defaults
 OLLAMA_HOST=http://localhost:11434
-AUTOGEN_API_URL=http://localhost:5002/query
+AG2_API_URL=http://localhost:5002/query
 ```
 
 ---
@@ -70,17 +70,17 @@ AUTOGEN_API_URL=http://localhost:5002/query
 
 ## 🛠 3. Framework Integrations (Adapters)
 
-### A. Microsoft AutoGen
-**Goal**: Verify the `autogen://` protocol and multi-agent interaction.
+### A. Microsoft AG2
+**Goal**: Verify the `AG2://` protocol and multi-agent interaction.
 
 1. **Install Dependencies**:
    ```bash
-   pip install pyautogen
+   pip install pyAG2
    ```
-2. **Run Sample AutoGen Agent**: (Requires a separate server script or the `quickstart` mock).
+2. **Run Sample AG2 Agent**: (Requires a separate server script or the `quickstart` mock).
 3. **Run Evaluation**:
    ```bash
-   agentv evaluate --run-id <id> --protocol autogen --agent autogen://localhost:5002
+   agentv evaluate --run-id <id> --protocol AG2 --agent AG2://localhost:5002
    ```
 
 ### B. LangChain / LangGraph

@@ -1,15 +1,15 @@
-# Quickstart: AutoGen + AgentV
+# Quickstart: AG2 + AgentV
 
-Evaluate your AutoGen agent workflows using standardized benchmarks.
+Evaluate your AG2 agent workflows using standardized benchmarks.
 
 ## 1. Setup Your Agent API
-Expose your AutoGen agent via a simple `FASTAPI` endpoint.
+Expose your AG2 agent via a simple `FASTAPI` endpoint.
 
 ```python
-import autogen
+import autogen # Powered by AG2
 from fastapi import FastAPI
 
-# ... setup your autogen config ...
+# ... setup your AG2 config ...
 
 app = FastAPI()
 
@@ -24,7 +24,7 @@ async def execute(request: dict):
 
 ## 2. Register Your Agent
 ```bash
-agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "AutoGen-Dev-Agent"
+agentv evaluate --run-id <id> --agent http://localhost:8000/execute_task --agent-name "AG2-Dev-Agent"
 ```
 
 ## 3. Generate Verified Report

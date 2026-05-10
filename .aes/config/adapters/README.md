@@ -13,7 +13,7 @@ AgentV distinguishes between three categories of connectivity:
 2.  **Providers**: Model-specific payload handlers.
     - **`openai`**, **`claude`**, **`gemini`**, **`grok`**, **`ollama`**.
 3.  **Frameworks**: High-level orchestration SDKs.
-    - **`autogen`**, **`crewai`**, **`langgraph`**, **`langchain`**.
+    - **`ag2`** (formerly AG2), **`crewai`**, **`langgraph`**, **`langchain`**.
 
 ## 🔒 Security & Mandatory Protocols
 

@@ -1,4 +1,3 @@
-import sys
 from types import ModuleType
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -37,10 +36,9 @@ async def test_langchain_adapter_local_execution():
     mock_chain = AsyncMock()
     mock_chain.ainvoke.return_value = {"status": "success", "data": "real_output"}
 
-    # Mock a module containing the chain
+    # Mock a module containing the chain using patch.dict for isolation
     mock_module = ModuleType("mock_chains")
     mock_module.test_chain = mock_chain
-    sys.modules["mock_chains"] = mock_module
 
     payload = {
         "task_id": "test_real",
@@ -48,7 +46,7 @@ async def test_langchain_adapter_local_execution():
         "metadata": {"chain_path": "mock_chains:test_chain"},
     }
 
-    try:
+    with patch.dict("sys.modules", {"mock_chains": mock_module}):
         result = await adapter.execute_langchain_query(payload)
 
         assert result["status"] == "success"
@@ -59,8 +57,6 @@ async def test_langchain_adapter_local_execution():
         mock_chain.ainvoke.assert_called_once()
         args, kwargs = mock_chain.ainvoke.call_args
         assert "callbacks" in kwargs["config"]
-    finally:
-        del sys.modules["mock_chains"]
 
 
 @pytest.mark.asyncio

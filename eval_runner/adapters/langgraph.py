@@ -31,14 +31,28 @@ class LangGraphAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         input_data = payload.get("input", {})
         config_data = payload.get("config", {})
 
+        # Path to the compiled graph in metadata
+        graph_path = payload.get("metadata", {}).get("graph_path")
+
         try:
             # Check for real SDK
             import importlib
 
-            import langgraph
+            try:
+                import langgraph
 
-            # Path to the compiled graph in metadata
-            graph_path = payload.get("metadata", {}).get("graph_path")
+                version = getattr(langgraph, "__version__", "unknown")
+                is_installed = True
+            except ImportError:
+                version = "unknown"
+                is_installed = False
+
+            # [No-Masking Policy] If SDK missing, fail explicitly (including simulations)
+            if not is_installed:
+                raise ImportError(
+                    "LangGraph SDK not installed. Required for industrial-grade execution."
+                )
+
             if not graph_path:
                 return await self._execute_simulation(node_id, input_data)
 
@@ -70,7 +84,7 @@ class LangGraphAdapterPlugin(BaseEvalPlugin, BaseAdapter):
                 "action": action,
                 "metadata": {
                     "framework": "langgraph",
-                    "version": getattr(langgraph, "__version__", "unknown"),
+                    "version": version,
                     "graph_path": graph_path,
                     "protocol": "v2",
                 },
@@ -95,7 +109,14 @@ class LangGraphAdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
     async def _execute_simulation(self, node_id: str, input_data: Any) -> dict[str, Any]:
         """Fallback simulation for testing environments."""
-        import langgraph
+        try:
+            import langgraph
+
+            _ = langgraph
+        except ImportError:
+            raise ImportError(
+                "LangGraph SDK not installed. Required for industrial-grade execution."
+            ) from None
 
         handler = AESCallbackHandler(adapter_name="langgraph", identifier=node_id)
         handler.on_chain_start({}, input_data)
@@ -110,7 +131,7 @@ class LangGraphAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             "action": "final_answer",
             "metadata": {
                 "framework": "langgraph",
-                "version": getattr(langgraph, "__version__", "2.0.0"),
+                "version": "simulated",
                 "protocol": "v2",
                 "mode": "simulated",
             },

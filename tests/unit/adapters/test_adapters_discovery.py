@@ -29,6 +29,16 @@ async def test_openai_adapter_logic():
     mock_response = AsyncMock()
     mock_response.status = 401
     mock_response.text = AsyncMock(return_value="Unauthorized")
+    mock_response.json = AsyncMock(return_value={})
+
+    import aiohttp
+
+    mock_response.raise_for_status = MagicMock(
+        side_effect=aiohttp.ClientResponseError(
+            request_info=MagicMock(), history=(), status=401, message="Unauthorized"
+        )
+    )
+
     mock_response.__aenter__ = AsyncMock(return_value=mock_response)
     mock_response.__aexit__ = AsyncMock(return_value=None)
 

@@ -1,5 +1,5 @@
 import os
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -15,6 +15,7 @@ async def test_autogen_adapter():
     with patch("aiohttp.ClientSession.post") as mock_post:
         mock_response = AsyncMock()
         mock_response.status = 200
+        mock_response.raise_for_status = MagicMock()  # Synchronous in aiohttp
         mock_response.json.return_value = {"output": "done"}
         mock_post.return_value.__aenter__.return_value = mock_response
 

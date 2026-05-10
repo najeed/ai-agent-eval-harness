@@ -7,182 +7,231 @@ from ..plugins import BaseEvalPlugin
 from .common import BaseAdapter, DualNormalizationHub
 
 
-class AutoGenAdapterPlugin(BaseEvalPlugin, BaseAdapter):
+class AG2AdapterPlugin(BaseEvalPlugin, BaseAdapter):
     """
-    Industrial Adapter: Provides native Microsoft AutoGen support.
-    Supports versioned protocols (e.g., 'autogen:v1') for immutable benchmarking.
+    Industrial Adapter: AG2 (formerly AutoGen) with Forensic Trust Protocol compliance.
+    Supports legacy 'autogen' registration for backward compatibility.
     """
 
     def __init__(self):
-        BaseAdapter.__init__(self, name="autogen")
+        BaseAdapter.__init__(self, name="ag2")
 
     def on_discover_adapters(self, registry: Any):
-        """Register versioned autogen protocols."""
-        print("      [Plugin] Registering AutoGen adapters (v1) via on_discover_adapters hook.")
+        """Register the ag2:// protocol and preserve legacy autogen:// handle."""
+        print("      [Plugin] Registering AG2 adapters (v1) via on_discover_adapters hook.")
+        registry.register("ag2", self.execute_autogen_query)
         registry.register("autogen", self.execute_autogen_query)
-        registry.register("autogen:v1", self.execute_autogen_query)
 
     async def execute_autogen_query(
-        self, payload: dict[str, Any], url: str = None, span_context: dict[str, Any] | None = None
+        self, payload: dict[str, Any], endpoint: str = None, **kwargs
     ) -> dict[str, Any]:
         """
-        Calls the AutoGen agent (Remote API or Local SDK).
-        Standardizes the input and provides telemetry for multi-agent chatter.
+        Executes an AG2-based agentic workflow with standardized telemetry.
+        Supports both local SDK logic and remote API fallback.
         """
-        agent_id = payload.get("agent_id", "default_agent")
-        message = payload.get("message", "")
+        span_context = kwargs.get("span_context") or payload.get("span_context")
+        agent_id = payload.get("agent_id", payload.get("task_id", "default_agent"))
+        message = payload.get("message", payload.get("task_description", ""))
+
+        # Support both 'endpoint' (registry standard) and 'url' (legacy/unit tests)
+        url_candidate = endpoint or kwargs.get("url") or payload.get("url")
+
+        # [Industrial Hardening] Distinguish between agent names and remote URLs
+        is_explicit_remote = url_candidate and str(url_candidate).startswith("http")
+
+        # If no explicit remote URL, check if we have a default fallback URL in config
+        config_url = getattr(config, "AUTOGEN_API_URL", None)
+
+        if is_explicit_remote:
+            return await self._execute_remote_api(payload, url_candidate, span_context)
 
         try:
-            # Dynamic import for Zero-Touch Core
-            import autogen
+            # Check for real SDK
+            try:
+                import autogen
 
-            print(f"      [Adapter] Executing AutoGen initiate_chat: {agent_id}")
+                is_installed = True
+                version = getattr(autogen, "__version__", "unknown")
+            except ImportError:
+                is_installed = False
+                version = "unknown"
 
-            # Telemetry: High-Fidelity Lifecycle Signals
-            emit(
-                CoreEvents.TURN_START,
-                {"adapter": "autogen", "agent_id": agent_id, "message": message},
-                span_context=span_context,
-            )
+            # [No-Masking Policy] If SDK missing for local execution, check for fallback
+            if not is_installed:
+                if config_url and str(config_url).startswith("http"):
+                    # [Telemetry Compliance] Signal remote-fallback mode
+                    emit(
+                        CoreEvents.TURN_START,
+                        {
+                            "adapter": "autogen",
+                            "agent_id": agent_id,
+                            "message": message,
+                            "mode": "remote-fallback",
+                        },
+                        span_context=span_context,
+                    )
+                    return await self._execute_remote_api(payload, config_url, span_context)
 
-            # Telemetry: Signal start of the multi-agent 'chain'
-            emit(
-                CoreEvents.CHAIN_START,
-                {"adapter": "autogen", "agent_id": agent_id, "protocol": "v1"},
-                span_context=span_context,
-            )
+                # [Industrial Requirement] Use specific error message for diagnostic tools
+                raise ImportError(
+                    "AG2/AutoGen SDK not installed. Required for local industrial-grade execution. "
+                    "Native execution failed."
+                ) from None
 
-            # In a real environment, we would initialize actual agents here.
-            # We simulate the 'NODE_START/NODE_END' chatter signals for auditor visibility.
-            emit(
-                CoreEvents.NODE_START,
-                {"adapter": "autogen", "node_id": "assistant"},
-                span_context=span_context,
-            )
-            emit(
-                CoreEvents.NODE_END,
-                {"adapter": "autogen", "node_id": "assistant"},
-                span_context=span_context,
-            )
+            # Path to the custom logic in metadata
+            logic_path = payload.get("metadata", {}).get("logic_path")
+            if not logic_path:
+                return await self._execute_simulation(payload)
 
-            emit(
-                CoreEvents.CHAIN_END,
-                {"adapter": "autogen", "agent_id": agent_id},
-                span_context=span_context,
-            )
+            import importlib
 
-            emit(
-                CoreEvents.TURN_END,
-                {"adapter": "autogen", "agent_id": agent_id, "status": "success"},
-                span_context=span_context,
-            )
+            module_name, attr_name = logic_path.split(":")
+            module = importlib.import_module(module_name)
+            handler_func = getattr(module, attr_name)
 
-            output = f"Chat initiated with {agent_id} via AutoGen v1 Protocol"
+            print(f"      [Adapter] Executing AG2 workflow: {logic_path}")
+
+            # Execute the provided logic
+            chat_result = await handler_func()
+
+            # Extract output from chat result
+            output = ""
+            if hasattr(chat_result, "chat_history"):
+                output = chat_result.chat_history[-1].get("content", "")
+
+            action = DualNormalizationHub.normalize_text(output)
+
             return {
                 "status": "success",
                 "output": output,
-                "action": "final_answer",
+                "action": action,
                 "metadata": {
-                    "framework": "autogen",
-                    "version": getattr(autogen, "__version__", "unknown"),
-                    "protocol": "v1",
+                    "framework": "ag2",
+                    "version": version,
+                    "logic_path": logic_path,
                 },
             }
 
-        except ImportError:
-            return await self._execute_remote_fallback(
-                payload, url, agent_id, message, span_context
-            )
+        except ImportError as e:
+            emit(CoreEvents.ERROR, {"message": str(e)})
+            return {
+                "status": "error",
+                "action": "error",
+                "message": str(e),
+                "metadata": {"framework": "ag2", "mode": "failed"},
+            }
+        except Exception as e:
+            emit(CoreEvents.ERROR, {"message": f"AG2 execution failed: {e}"})
+            return {
+                "status": "error",
+                "action": "error",
+                "message": f"AG2 execution failed: {e}",
+                "metadata": {"framework": "ag2", "mode": "failed"},
+            }
 
-    async def _execute_remote_fallback(
-        self,
-        payload: dict[str, Any],
-        url: str,
-        agent_id: str,
-        message: str,
-        span_context: dict[str, Any] | None,
+    async def _execute_remote_api(
+        self, payload: dict[str, Any], url: str, span_context: dict[str, Any] = None
     ) -> dict[str, Any]:
-        """Fallback to Remote API if SDK is not installed with connection pooling and retries."""
+        """Executes AG2 via remote API."""
         from .common import SessionManager
 
-        # Telemetry: High-Fidelity Lifecycle Signals (Fallback Path)
+        agent_id = payload.get("agent_id", payload.get("task_id", "default_agent"))
+
+        # [Telemetry Compliance] Signal start of remote execution
         emit(
-            CoreEvents.TURN_START,
+            CoreEvents.CHAIN_START,
             {
                 "adapter": "autogen",
                 "agent_id": agent_id,
-                "message": message,
-                "mode": "remote-fallback",
+                "protocol": "v1",
+                "mode": "remote",
             },
             span_context=span_context,
         )
 
-        url = url or payload.get("url") or getattr(config, "AUTOGEN_API_URL", None)
-
-        if not url:
-            emit(
-                CoreEvents.ERROR,
-                {"message": "AutoGen SDK and Remote URL missing"},
-                span_context=span_context,
-            )
-            return {
-                "status": "error",
-                "action": "error",
-                "message": (
-                    "AutoGen SDK not installed and no Remote API URL provided. "
-                    "Native execution failed."
-                ),
-                "metadata": {"framework": "autogen", "mode": "failed"},
-            }
-
-        print(f"      [Adapter] Info: 'autogen' SDK not found. Using Remote API at: {url}")
-
-        emit(
-            CoreEvents.CHAIN_START,
-            {"adapter": "autogen", "agent_id": agent_id, "protocol": "v1", "mode": "remote"},
-            span_context=span_context,
-        )
+        print(f"      [Adapter] Executing AG2 Remote API: {url}")
 
         async def _call():
             session = await SessionManager.get_session()
             async with session.post(url, json=payload) as response:
                 if response.status != 200:
-                    response.raise_for_status()
-                return await response.json(), response.status
+                    res = response.raise_for_status()
+                    if hasattr(res, "__await__"):
+                        await res
+
+                json_data = response.json()
+                if hasattr(json_data, "__await__"):
+                    json_data = await json_data
+                return json_data
 
         try:
-            data, status = await self.call_with_retry(_call)
-            output = data.get("output", data)
-            # Normalize: Use full hub for dicts; text heuristics for strings
-            if isinstance(output, dict):
-                action = DualNormalizationHub.normalize(output, status)
-            else:
-                action = DualNormalizationHub.normalize_text(str(output))
+            data = await self.call_with_retry(_call)
+            output = data.get("output", "")
+            action = DualNormalizationHub.normalize_text(output)
 
-            emit(
-                CoreEvents.CHAIN_END,
-                {"adapter": "autogen", "agent_id": agent_id},
-                span_context=span_context,
-            )
-            emit(
-                CoreEvents.TURN_END,
-                {"adapter": "autogen", "agent_id": agent_id, "status": "success"},
-                span_context=span_context,
-            )
             return {
                 "status": "success",
                 "output": output,
                 "action": action,
-                "metadata": {"framework": "autogen", "mode": "remote", "protocol": "v1"},
+                "metadata": {
+                    "framework": "ag2",
+                    "mode": "remote",
+                    "endpoint": url,
+                    "protocol": "v1",
+                },
             }
         except Exception as e:
             emit(
                 CoreEvents.ERROR,
-                {"message": f"Failed to connect to AutoGen: {str(e)}"},
+                {"message": f"AG2 Remote API failed: {e}"},
                 span_context=span_context,
             )
             return {
                 "status": "error",
                 "action": "error",
-                "message": f"Failed to connect to AutoGen: {str(e)}",
+                "message": f"AG2 Remote API failed: {e}",
+                "metadata": {"framework": "ag2", "mode": "failed"},
             }
+
+    async def _execute_simulation(self, payload: dict[str, Any]) -> dict[str, Any]:
+        """Fallback simulation for testing environments."""
+        # [No-Masking] Even simulation requires SDK check if it uses SDK components
+        try:
+            import autogen
+
+            _ = autogen
+        except ImportError:
+            raise ImportError(
+                "AG2/AutoGen SDK not installed. Required for simulation parity. "
+                "Native execution failed."
+            ) from None
+
+        # [Telemetry Compliance] Signal start of simulated execution
+        agent_id = payload.get("agent_id", payload.get("task_id", "default_agent"))
+        emit(
+            CoreEvents.CHAIN_START,
+            {
+                "adapter": "autogen",
+                "agent_id": agent_id,
+                "protocol": "v1",
+                "mode": "simulated",
+            },
+        )
+        emit(
+            CoreEvents.NODE_START,
+            {
+                "adapter": "autogen",
+                "node_id": agent_id,
+            },
+        )
+
+        return {
+            "status": "success",
+            "output": "Simulation: AG2 agent completed task successfully.",
+            "action": "final_answer",
+            "metadata": {"framework": "ag2", "mode": "simulated", "protocol": "v1"},
+        }
+
+
+# Legacy alias for backward compatibility with existing test suites
+AutoGenAdapterPlugin = AG2AdapterPlugin

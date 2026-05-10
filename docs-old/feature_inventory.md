@@ -31,7 +31,7 @@ Closing the loop between production behavior and evaluation rigor.
 
 ## 4. Ecosystem & Framework Adapters
 First-class, zero-touch support for the leading AI agent frameworks.
-- **LangGraph v2 & AutoGen**: Seamless integration for chain-of-thought and graph-based agents using the modernized `v2` protocol.
+- **LangGraph v2 & AG2**: Seamless integration for chain-of-thought and graph-based agents using the modernized `v2` protocol.
 - **Google GenAI (April 2026)**: First-class support for Gemini 2.5 Flash via the official `google-genai` v1.70.0 SDK.
 - **OpenTelemetry v1.40.0**: High-fidelity observability baseline for all internal signals and events.
 - **Claude Code & xAI Grok**: Optimized adapters for the latest frontier models.

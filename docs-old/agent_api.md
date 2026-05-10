@@ -189,7 +189,7 @@ When using Ecosystem Adapters (`openai://`, `gemini://`, `claude://`), the harne
 }
 ```
 
-### Example: AutoGen Adapter Payload
+### Example: AG2 Adapter Payload
 ```json
 {
   "task_description": "...",
@@ -204,7 +204,7 @@ All ecosystem URLs are sourced from environment variables to enable zero-touch s
 | Provider | .env Key | Default Fallback |
 |---|---|---|
 | Ollama | `OLLAMA_API_URL` | `http://localhost:11434/api/chat` |
-| AutoGen | `AUTOGEN_API_URL` | `http://localhost:5002/execute_task` |
+| AG2 | `AG2_API_URL` | `http://localhost:5002/execute_task` |
 | Claude | `CLAUDE_API_URL` | `https://api.anthropic.com/v1/messages` |
 | Gemini | `GEMINI_BASE_URL` | `https://generativelanguage.googleapis.com/v1/models` |
 

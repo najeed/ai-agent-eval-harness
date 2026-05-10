@@ -259,7 +259,7 @@ There is built-in support for extending agent communication protocols without to
 Built-in Ecosystem Adapters (2026 Baseline):
 - **`langgraph://`**: Integration with LangChain's **LangGraph v2** (v2 Protocol).
 - **`crewai://`**: Support for CrewAI agent swarms.
-- **`autogen://`**: Support for Microsoft AutoGen agents.
+- **`AG2://`**: Support for Microsoft AG2 agents.
 - **`grok://`**: Native xAI Grok API integration.
 - **`ollama://`**, **`openai://`**, **`claude://`**: Direct LLM provider shims.
 - **`gemini://`**: Official **google-genai v1.70.0** SDK implementation (Default: Gemini 2.5 Flash).
@@ -278,7 +278,7 @@ class LangGraphAdapterPlugin(BaseEvalPlugin):
 If this plugin is active, scenarios can now specify an agent URL like `langgraph://my_agent_node`, and the engine will seamlessly route the task to this adapter bypassing standard HTTP mechanisms.
 
 ### Ecosystem Provider Adapters
-Providers like **OpenAI**, **Gemini**, **Claude**, **Ollama**, and **xAI Grok** are also implemented using this hook. While framework adapters (like LangGraph or AutoGen) often wrap complex logic, provider adapters typically translate AES tasks into specific LLM API calls.
+Providers like **OpenAI**, **Gemini**, **Claude**, **Ollama**, and **xAI Grok** are also implemented using this hook. While framework adapters (like LangGraph or AG2) often wrap complex logic, provider adapters typically translate AES tasks into specific LLM API calls.
 
 ## ⚖️ Extending the Judge Layer (v3.1)
 

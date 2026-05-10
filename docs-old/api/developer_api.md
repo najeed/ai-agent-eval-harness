@@ -15,7 +15,7 @@ agentv evaluate --run-id <id><path> [--agent <url>] [--protocol <p>] [--attempts
 ```
 - `--path`: (Required) Path to scenario file, directory, or `.jsonl` dataset.
 - `--agent`: Unified target. Can be a URL (HTTP), a shell command (local), or an address (socket).
-- `--protocol`: `http` (default), `local`, `socket`, `autogen`, `crewai`, `langgraph`.
+- `--protocol`: `http` (default), `local`, `socket`, `AG2`, `crewai`, `langgraph`.
 - `--attempts`: Number of pass@k trials per scenario.
 - `--limit`: Max number of scenarios to process.
 - `--seed`: Random seed for deterministic evaluation.

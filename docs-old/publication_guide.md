@@ -84,7 +84,7 @@ The harness includes built-in adapters for major AI frameworks. These often use 
 | **Ollama** | `ollama://` | (Requires local Ollama server) |
 | **LangChain** | `langchain://` | Varies by chain configuration |
 | **LangGraph** | `langgraph://` | Support for state-aware graphs |
-| **AutoGen** | `autogen://` | Multi-agent conversation hooks |
+| **AG2** | `AG2://` | Multi-agent conversation hooks |
 | **CrewAI** | `crewai://` | Role-based agent orchestration |
 
 ---

@@ -61,6 +61,10 @@ python_files = ["test_*.py"]
 pythonpath = ["."]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+    "ignore:.*_UnionGenericAlias.*:DeprecationWarning",
+    "ignore:.*asyncio.iscoroutinefunction.*:DeprecationWarning",
+]
 
 [tool.ruff]
 # Standardize on industrial 100-character line length (2026 upgrade)

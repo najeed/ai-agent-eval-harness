@@ -81,7 +81,7 @@ The harness uses a **Zero-Touch Core** design, where all major capabilities are 
 - **Observability**: Subscribe to `CoreEvents` via the `EventEmitter` for non-blocking logging.
 - **Advanced Evaluation**: Standard support for dot-notation in state verification, High-Fidelity Calculation Accuracy, and Judge Guarding (strict failure for required metrics).
 - **Secure Namespaces**: Legacy `extend_cli` is removed. Use `on_register_commands` to register commands under the `agentv plugin <name>` sub-command.
-- **Ecosystem Adapters**: Official, zero-touch support for **LangChain**, **Ollama**, **OpenAI**, **Gemini**, **Claude**, **AutoGen**, and **xAI Grok**.
+- **Ecosystem Adapters**: Official, zero-touch support for **LangChain**, **Ollama**, **OpenAI**, **Gemini**, **Claude**, **AG2**, and **xAI Grok**.
 - **Immutability**: TurnContext and EvaluationContext are frozen to prevent accidental side-effects.
 
 ---

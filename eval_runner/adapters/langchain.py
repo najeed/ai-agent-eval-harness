@@ -62,7 +62,18 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
         try:
             import importlib
 
-            import langchain
+            try:
+                import langchain
+
+                is_installed = True
+            except ImportError:
+                is_installed = False
+
+            # [No-Masking Policy] If SDK missing, fail explicitly
+            if not is_installed:
+                raise ImportError(
+                    "LangChain SDK not installed. Required for industrial-grade execution."
+                )
 
             module_name, attr_name = chain_path.split(":")
             module = importlib.import_module(module_name)
@@ -108,6 +119,14 @@ class LangChainAdapterPlugin(BaseEvalPlugin, BaseAdapter):
 
     async def _execute_simulation(self, task_id: str, input_data: Any) -> dict[str, Any]:
         """Legacy simulated path for testing environments."""
+        try:
+            import langchain
+
+            _ = langchain
+        except ImportError:
+            raise ImportError(
+                "LangChain SDK not installed. Required for industrial-grade execution."
+            ) from None
         handler = AESCallbackHandler(adapter_name="langchain", identifier=task_id)
         handler.on_chain_start({}, input_data)
         handler.on_node_start({"id": [task_id]}, input_data)

@@ -7,7 +7,7 @@ This directory supports **Cumulative Infrastructure Governance**. Files placed h
 The `adapters.d/` folder follows the tripartite taxonomy:
 - **Protocols**: Infrastructure transport (HTTP, Subprocess).
 - **Providers**: Model-specific handlers (OpenAI, Gemini).
-- **Frameworks**: High-level orchestrators (AutoGen, LangGraph).
+- **Frameworks**: High-level orchestrators (AG2, LangGraph).
 
 ## 🔀 Override Precedence
 

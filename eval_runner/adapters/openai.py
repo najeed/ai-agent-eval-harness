@@ -53,9 +53,16 @@ class OpenAIAdapterPlugin(BaseEvalPlugin, BaseAdapter):
             session = await SessionManager.get_session()
             async with session.post(base_url, json=openai_payload, headers=headers) as response:
                 if response.status != 200:
-                    # Trigger retry logic for transient codes
-                    response.raise_for_status()
-                return await response.json(), response.status
+                    # [Industrial Resilience] Trigger retry logic for transient codes
+                    res = response.raise_for_status()
+                    if hasattr(res, "__await__"):
+                        await res
+
+                json_data = response.json()
+                if hasattr(json_data, "__await__"):
+                    json_data = await json_data
+
+                return json_data, response.status
 
         try:
             data, status = await self.call_with_retry(_call)

@@ -77,7 +77,7 @@ agentv evaluate --run-id <id> --format jsonl --output reports/latest_results.jso
 - `-f, --force`: Force evaluation by bypassing existing trace/completion checks
 - `-v, --verbose`: Enable high-fidelity verbose trace logging to the console
 - `--agent`: Specify the target agent endpoint or connection identifier
-- `--protocol`: Select communication protocol (`http`, `local`, `socket`, `autogen`, etc.)
+- `--protocol`: Select communication protocol (`http`, `local`, `socket`, `AG2`, etc.)
 - `--seed`: Set a random seed for deterministic evaluation runs
 - `--per-run-logs`: Force creation of individual .jsonl traces for every attempt
 - `--master-log`: Append all results from the batch into a single `run.jsonl`
