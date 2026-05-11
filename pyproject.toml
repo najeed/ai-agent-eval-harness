@@ -18,6 +18,7 @@ dependencies = [
     "Flask==3.1.3",
     "flask-cors==6.0.2",
     "requests==2.33.1",
+    "urllib3==2.7.0",
     "Werkzeug==3.1.8",
     "jsonschema==4.26.0",
     "PyYAML==6.0.3",
@@ -36,6 +37,11 @@ dependencies = [
     "GitPython==3.1.50",
     "sqlalchemy==2.0.38",
     "python-dotenv==1.2.2",
+    "Authlib==1.7.2",
+    "langchain-openai==1.2.1",
+    "langsmith==0.8.3",
+    "lxml==6.1.0",
+    "Pillow==12.2.0",
 ]
 
 [build-system]
@@ -61,9 +67,23 @@ python_files = ["test_*.py"]
 pythonpath = ["."]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "ui: UI tests using playwright",
+    "asyncio: mark test as an asyncio test",
+]
 filterwarnings = [
     "ignore:.*_UnionGenericAlias.*:DeprecationWarning",
     "ignore:.*asyncio.iscoroutinefunction.*:DeprecationWarning",
+    "ignore:.*Pydantic V1 functionality.*:UserWarning",
+    "ignore:.*DeprecationWarning.*:DeprecationWarning:langchain.*",
+    "ignore:.*DeprecationWarning.*:DeprecationWarning:google.genai.*",
+    "ignore:.*DeprecationWarning.*:DeprecationWarning:aiohttp.*",
+    "ignore:.*jsonschema.RefResolver is deprecated.*:DeprecationWarning",
+    "ignore:.*Accessing jsonschema.__version__ is deprecated.*:DeprecationWarning",
+    "ignore:.*inspect.iscoroutinefunction.*:DeprecationWarning",
+    "ignore:.*coroutine '_wait_for_close' was never awaited.*:RuntimeWarning",
+    "ignore:.*allowed_objects.*:DeprecationWarning",
+    "ignore:.*default value of `allowed_objects`.*:UserWarning",
 ]
 
 [tool.ruff]

@@ -43,6 +43,12 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **pyarrow** | 24.0.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **httpx** | 0.28.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **GitPython** | 3.1.50 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **urllib3** | 2.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **Authlib** | 1.7.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **langchain-openai** | 1.2.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langsmith** | 0.8.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **lxml** | 6.1.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **Pillow** | 12.2.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
 
 ## 3. Obligations & Compliance Steps
 To remain compliant with these licenses, the following steps are handled automatically by this repository:

@@ -70,5 +70,6 @@ All legacy resources have been successfully migrated to the persona-based Starli
 4.  **Extender**: `plugins.md`, `api-reference.md`, `shimming.md`, `triage-engine.md`.
 5.  **Builder**: `architecture.md`, `developer-guide.md`, `core-functions.md`.
 
-> [!NOTE]
-> The `docs-old/` directory contains high-fidelity narrative guides and technical references. While modernized persona-based docs are preferred for onboarding, `docs-old` is maintained for forensic depth.
+:::note
+The `docs-old/` directory contains high-fidelity narrative guides and technical references. While modernized persona-based docs are preferred for onboarding, `docs-old` is maintained for forensic depth.
+:::

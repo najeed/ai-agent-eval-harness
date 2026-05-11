@@ -48,8 +48,9 @@ When a shim registers a custom evaluation metric (via the `on_register_simulator
 - **Trusted Shims**: Can see global `session_metadata` and infrastructure telemetry.
 - **Untrusted Shims**: Are restricted to the "Standard" context (Redacted) to prevent exfiltration of sensitive session data.
 
-> [!TIP]
-> **Performance Optimization**: Like plugins, untrusted shims incur a deep-copy cost for mutable context (history/state). Mark internal enterprise shims as `trusted` to enable direct zero-copy access for high-frequency metrics.
+:::tip
+**Performance Optimization**: Like plugins, untrusted shims incur a deep-copy cost for mutable context (history/state). Mark internal enterprise shims as `trusted` to enable direct zero-copy access for high-frequency metrics.
+:::
 
 ---
 

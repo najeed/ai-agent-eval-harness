@@ -31,7 +31,7 @@ Shims integrate directly with the **Virtual File System (VFS)** to ensure forens
 
 ## 🛠️ Adding a Custom Shim
 
-You can add new shims via the [Plugin System](/builder/developer-guide/) to keep the core immutable.
+You can add new shims via the [Plugin System](/extender/plugins/) to keep the core immutable.
 
 ### 1. Define the Simulator
 Create a class that implements the `execute(action, params)` interface.

@@ -120,8 +120,9 @@ When conflicts arise between high-level frameworks (`standards_registry`) and ex
     - **Boolean Intersection**: Enabled constraints (`true`) take precedence over disabled ones.
     - **Namespace Shrinkage**: The most specific resource scope wins (e.g., `writes: ["db:audit_log"]` over `writes: ["db:*"]`).
 
-> [!IMPORTANT]
-> If a conflict is logically irreconcilable (e.g., Framework requires data vaulting while Policy requires raw cloud export), the harness will trigger a **Governance Fault** and mark the run as **Inconclusive**.
+:::important
+If a conflict is logically irreconcilable (e.g., Framework requires data vaulting while Policy requires raw cloud export), the harness will trigger a **Governance Fault** and mark the run as **Inconclusive**.
+:::
 
 ### 🏗️ Walkthrough Part 1: Initial Setup
 We are building a **Fintech Underwriting persistence Audit**. We start with the Metadata.
@@ -365,6 +366,7 @@ Putting it all together into a production-grade file.
 }
 ```
 
-> [!TIP]
-> **Pro-Tip**: Always run `agentv aes validate your_file.json` after editing. It will catch schema errors before you waste money running a test with an invalid map!
+:::tip
+**Pro-Tip**: Always run `agentv aes validate your_file.json` after editing. It will catch schema errors before you waste money running a test with an invalid map!
+:::
 

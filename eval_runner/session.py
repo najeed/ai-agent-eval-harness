@@ -748,29 +748,45 @@ class SessionManager:
     async def _handle_multiple_tools(
         self, turn, agent_response, sandbox, history, actions, turn_ctx
     ):
-        tool_names = agent_response["tool_names"]
-        actions["used_tools"].extend(tool_names)
+        """
+        Handles parallel tool execution.
+        Supports both legacy 'tool_names' (empty params) and new 'tool_calls' (parameterized).
+        """
+        tool_calls = agent_response.get("tool_calls", [])
+        if not tool_calls and "tool_names" in agent_response:
+            # Legacy fallback
+            tool_calls = [{"tool": tn, "params": {}} for tn in agent_response["tool_names"]]
 
         all_tool_results = []
 
-        for tn in tool_names:
+        self.event_bus.emit(
+            CoreEvents.ACTION_START,
+            {"action_type": "multi_tool_execution", "tools": [c.get("tool") for c in tool_calls]},
+            span_context=turn_ctx.span_context,
+        )
+
+        for call in tool_calls:
+            tn = call.get("tool") or call.get("tool_name")
+            tp = call.get("params") or call.get("tool_params") or {}
+
+            actions["used_tools"].append(tn)
+
             # [Industrial Interception] Per-tool mutation support
             intercept_result = self.plugin_manager.trigger_interceptor(
-                "on_tool_request", turn_ctx, tn, {}
+                "on_tool_request", turn_ctx, tn, tp
             )
 
             # 1. Handle Blocking
             if intercept_result is False:
-                all_tool_results.append(
-                    {"status": "blocked", "message": f"Tool {tn} blocked by plugin."}
-                )
+                res = {"status": "blocked", "message": f"Tool {tn} blocked by plugin."}
+                all_tool_results.append(res)
                 self.event_bus.emit(
                     CoreEvents.ERROR, {"message": f"Tool call {tn} blocked by plugin."}
                 )
                 continue
 
             active_tn = tn
-            active_params = {}
+            active_params = tp
 
             # 2. Apply Mutations
             if isinstance(intercept_result, dict):
@@ -799,7 +815,6 @@ class SessionManager:
             )
 
         state_after = sandbox.state.copy()
-        # ... rest of the logic ...
 
         # O(N) Forensics: Offload state to disk snapshots
         state_after_full = await sandbox.get_full_state()
@@ -815,12 +830,14 @@ class SessionManager:
         # [Forensic Hardening] capture resource telemetry
         self._capture_telemetry()
 
-        history.append(
-            {
-                "role": "environment",
-                "content": all_tool_results,
-            }
+        self.event_bus.emit(
+            CoreEvents.ACTION_END,
+            {"action_type": "multi_tool_execution", "tools": [c.get("tool") for c in tool_calls]},
+            span_context=turn_ctx.span_context,
         )
+
+        # Record unified environment response for multi-tool execution
+        history.append({"role": "environment", "content": all_tool_results})
 
     async def _handle_hitl(
         self,

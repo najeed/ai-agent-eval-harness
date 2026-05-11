@@ -20,12 +20,15 @@ Failures are categorized into four primary industrial domains:
 
 ## 📋 The core Enum Registry
 
-The following Enums are the first-class failure codes emitted by the evaluation engine.
+The following Enums are the first-class failure codes emitted by the evaluation engine. While documented in **UPPER_CASE**, the raw forensic codes in telemetry are **lower_case**.
 
 ### Infrastructure Failures
 - `INFRA_SIMULATOR_EXCEPTION`: Internal 500 error in a World Shim (e.g., Database crash).
 - `INFRA_TIMEOUT`: Evaluation exceeded the `EVAL_MAX_TURNS` or wall-clock limit.
 - `INFRA_CONNECTION_FAILED`: Agent adapter could not reach the target endpoint.
+- `INFRA_OOM`: Out-of-Memory condition detected in the sandbox.
+- `INFRA_DISK_QUOTA`: Workspace disk usage exceeded allowed limits.
+- `INFRA_SANDBOX_FAILURE`: Containerization or isolation layer disruption.
 - `INFRA_RESOURCE_EXHAUSTED`: Hardware usage (CPU/RAM) spiked during a critical tool call.
 
 ### Logic Failures
@@ -33,6 +36,9 @@ The following Enums are the first-class failure codes emitted by the evaluation 
 - `LOGIC_REFUSAL`: Agent explicitly refused a valid mission task.
 - `LOGIC_PLANNING_ERROR`: Agent logic diverged from the required [AES DAG Path](/evaluator/aes-spec/).
 - `LOGIC_STATE_STALL`: The environment state failed to change despite the agent reporting success.
+- `LOGIC_STATE_MISMATCH`: Contradiction between agent intent and actual environment effects.
+- `LOGIC_UNCERTAINTY`: Agent expresses confusion or doubt in thoughts.
+- `LOGIC_ABANDONMENT`: Agent issues a 'finished' status but lacks task metrics.
 
 ### Policy Failures
 - `POLICY_VIOLATION`: Agent attempted an action blocked by a scenario-level guardrail.
@@ -43,6 +49,10 @@ The following Enums are the first-class failure codes emitted by the evaluation 
 - `SECURITY_PII_LEAK`: Agent exposed sensitive personal information (emails, phone numbers).
 - `SECURITY_UNAUTHORIZED_ACCESS`: Tool call made with incorrect PBAC permissions.
 - `SECURITY_SANDBOX_ESCAPE`: (Critical) Attempted filesystem access outside the managed workspace.
+
+### Forensic Parity
+- `PARITY_STATE_DIVERGENCE`: High-fidelity mismatch between expected and actual VFS/Shim state.
+- `PARITY_PROTOCOL_VIOLATION`: Agent diverged from the mandated interaction protocol.
 
 ---
 

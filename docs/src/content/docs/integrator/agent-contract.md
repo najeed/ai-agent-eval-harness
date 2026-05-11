@@ -32,16 +32,35 @@ The agent must return an **Action Object** indicating its next step.
 - **`final_answer`**: Terminates the session with a summary of accomplishment.
 - **`hitl_pause`**: Pause evaluation for human-in-the-loop intervention.
 
-### Example: Multi-Tool Call
+### Example: Multi-Tool Call (Parameterized)
 ```json
 {
   "action": "call_multiple_tools",
-  "tool_names": ["run_line_test", "check_firmware"],
-  "summary": "Performing remote diagnostics."
+  "tool_calls": [
+    {
+      "tool": "run_line_test",
+      "params": {"port": 8080}
+    },
+    {
+      "tool": "check_firmware",
+      "params": {"version": "1.4.0"}
+    }
+  ],
+  "summary": "Performing remote diagnostics with specific parameters."
 }
 ```
 :::note
-Currently, `call_multiple_tools` executes tools with empty parameters. For parameterized parallel calls, use multiple sequential `call_tool` actions or extend the `SessionManager`.
+In AES v1.6.0+, `call_multiple_tools` supports the `tool_calls` array for parameterized parallel execution. The legacy `tool_names` (string array) format is still supported for no-op parameter calls.
+:::
+
+---
+
+## 📡 Receiving Tool Outputs
+
+After an agent issues a `call_tool` or `call_multiple_tools` action, the **harness executes the tools** and returns the results to the agent in the subsequent turn's `conversation_history`. 
+
+:::important
+**Logical Direction**: The agent never returns `tool_outputs` in its own response. It only requests tool execution. The harness is the sole authoritative source of environment data and tool results.
 :::
 
 ---

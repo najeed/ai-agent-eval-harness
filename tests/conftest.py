@@ -44,7 +44,8 @@ async def reset_sessions():
     try:
         await SessionManager.close_all()
         # Small grace period to allow aiohttp's _wait_for_close to complete (AES v1.4 Hardening)
-        await asyncio.sleep(0.05)
+        # We do multiple yields to the event loop to ensure all pending tasks are processed
+        await asyncio.sleep(0.01)
     except Exception:
         pass
 
@@ -66,8 +67,8 @@ def reset_plugins():
     yield
 
 
-@pytest.fixture(autouse=True)
-def reset_environ():
+@pytest_asyncio.fixture(autouse=True)
+async def reset_environ():
     """Resets os.environ and triggers GC after each test for industrial isolation."""
     import gc
     import os
@@ -77,7 +78,6 @@ def reset_environ():
     os.environ.clear()
     os.environ.update(orig)
     # Physically purge stale references and close pending file handles (Windows Hardening)
-    import asyncio
 
     from eval_runner.simulators import BaseSimulator
 
@@ -85,19 +85,12 @@ def reset_environ():
         # Create a copy to iterate while modifying
         for sim in list(BaseSimulator._instances):
             try:
-                # Synchronous-safe cleanup for simulators that might be sync or async
                 if hasattr(sim, "cleanup"):
-                    # We use a transient loop if necessary, but simulators.py cleanup is async
-                    try:
-                        loop = asyncio.get_event_loop()
-                        if loop.is_running():
-                            loop.create_task(sim.cleanup())
-                        else:
-                            loop.run_until_complete(sim.cleanup())
-                    except Exception:
-                        pass
+                    # Properly await the async cleanup in our async fixture
+                    await sim.cleanup()
             except Exception:
                 pass
+        BaseSimulator._instances.clear()
     gc.collect()
 
 

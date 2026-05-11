@@ -14,7 +14,13 @@ class FailureCategory(StrEnum):
 
     @staticmethod
     def _generate_next_value_(name: str, start: int, count: int, last_values: list[Any]) -> str:
-        """Industrial standardization: Ensures Enum.auto() returns lowercase string names."""
+        """
+        Industrial standardization: Ensures Enum.auto() returns lowercase string names.
+
+        Nomenclature Standard:
+        - Enum Names: UPPER_CASE (used as first-class headers in documentation and code).
+        - String Values: lower_case (used as the actual forensic codes in JSON/telemetry).
+        """
         return name.lower()
 
     # --- PIPELINE STATUS ---

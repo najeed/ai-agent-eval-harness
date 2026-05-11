@@ -42,6 +42,6 @@ The suite aggregates batch results into interactive leaderboards:
 
 ## 🔌 Extensibility
 
-Developers can extend the Visual Suite using the [Plugin System](/builder/developer-guide/).
+Developers can extend the Visual Suite using the [Plugin System](/extender/plugins/).
 - **Custom Views**: Inject React components into the dashboard using JIT-Babel hydration.
 - **Custom Routes**: Use the `on_register_console_routes` hook to add proprietary monitoring or administration endpoints.

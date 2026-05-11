@@ -2,6 +2,7 @@ import asyncio
 import json
 
 import pytest
+import pytest_asyncio
 from aiohttp import web
 
 from eval_runner.adapters import sse_http_adapter
@@ -33,7 +34,7 @@ async def mock_sse_agent(request):
     return response
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def sse_server(aiohttp_server):
     app = web.Application()
     app.router.add_post("/agent", mock_sse_agent)

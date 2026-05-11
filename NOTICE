@@ -33,5 +33,11 @@ This product includes software developed by the following third-party projects:
 - Werkzeug (BSD-3-Clause)
 - httpx (BSD-3-Clause)
 - GitPython (BSD-3-Clause)
+- urllib3 (MIT)
+- Authlib (BSD-3-Clause)
+- langchain-openai (MIT)
+- langsmith (MIT)
+- lxml (BSD-3-Clause)
+- Pillow (HPND)
 
 For more information, see the LICENSES/ directory and COMPLIANCE.md.

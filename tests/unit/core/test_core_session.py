@@ -155,6 +155,64 @@ async def test_handle_multiple_tools(base_scenario, tmp_path):
     assert "t1" in actions["used_tools"]
     assert "t2" in actions["used_tools"]
     assert mock_sandbox.execute.call_count == 2
+    # Legacy check: should pass empty dicts
+    mock_sandbox.execute.assert_any_await("t1", {})
+    mock_sandbox.execute.assert_any_await("t2", {})
+
+
+@pytest.mark.asyncio
+async def test_handle_multiple_tools_parameterized(base_scenario, tmp_path):
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    mock_sandbox = AsyncMock()
+    mock_sandbox.execute.return_value = {"status": "success"}
+    mock_sandbox.state = {}
+    mock_sandbox.get_full_state.return_value = {}
+
+    agent_resp = {
+        "tool_calls": [{"tool": "t1", "params": {"p1": 1}}, {"tool": "t2", "params": {"p2": 2}}]
+    }
+    history = []
+    actions = {"used_tools": []}
+    turn_ctx = MagicMock()
+
+    await session._handle_multiple_tools(1, agent_resp, mock_sandbox, history, actions, turn_ctx)
+
+    assert "t1" in actions["used_tools"]
+    assert "t2" in actions["used_tools"]
+    assert mock_sandbox.execute.call_count == 2
+    mock_sandbox.execute.assert_any_await("t1", {"p1": 1})
+    mock_sandbox.execute.assert_any_await("t2", {"p2": 2})
+
+    # Verify history recording
+    assert len(history) == 1
+    assert history[0]["role"] == "environment"
+    assert len(history[0]["content"]) == 2
+    assert history[0]["content"][0]["status"] == "success"
+
+
+@pytest.mark.asyncio
+async def test_handle_multiple_tools_duplicate_calls(base_scenario, tmp_path):
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    mock_sandbox = AsyncMock()
+    mock_sandbox.execute.side_effect = lambda tn, tp: {"status": "success", "params": tp}
+    mock_sandbox.state = {}
+    mock_sandbox.get_full_state.return_value = {}
+
+    agent_resp = {
+        "tool_calls": [{"tool": "t1", "params": {"id": 1}}, {"tool": "t1", "params": {"id": 2}}]
+    }
+    history = []
+    actions = {"used_tools": []}
+    turn_ctx = MagicMock()
+
+    await session._handle_multiple_tools(1, agent_resp, mock_sandbox, history, actions, turn_ctx)
+
+    assert actions["used_tools"] == ["t1", "t1"]
+    assert mock_sandbox.execute.call_count == 2
+
+    results = history[0]["content"]
+    assert results[0]["params"]["id"] == 1
+    assert results[1]["params"]["id"] == 2
 
 
 @pytest.mark.asyncio
