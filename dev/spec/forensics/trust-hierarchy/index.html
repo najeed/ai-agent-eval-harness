@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" dir="ltr" data-theme="dark" data-has-toc data-has-sidebar class="astro-bguv2lll"> <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Triage Engine Specification | AgentV</title><link rel="canonical" href="https://najeed.github.io/ai-agent-eval-harness/dev/spec/taxonomy/"/><link rel="sitemap" href="/ai-agent-eval-harness/dev/sitemap-index.xml"/><link rel="shortcut icon" href="/ai-agent-eval-harness/dev/favicon.svg" type="image/svg+xml"/><meta name="generator" content="Astro v6.1.5"/><meta name="generator" content="Starlight v0.38.3"/><meta property="og:title" content="Triage Engine Specification"/><meta property="og:type" content="article"/><meta property="og:url" content="https://najeed.github.io/ai-agent-eval-harness/dev/spec/taxonomy/"/><meta property="og:locale" content="en"/><meta property="og:description" content="Authoritative technical reference for the AES v1.4 Triage Engine and Industrial Failure Taxonomy."/><meta property="og:site_name" content="AgentV"/><meta name="twitter:card" content="summary_large_image"/><meta name="description" content="Authoritative technical reference for the AES v1.4 Triage Engine and Industrial Failure Taxonomy."/><script>
+<!DOCTYPE html><html lang="en" dir="ltr" data-theme="dark" data-has-toc data-has-sidebar class="astro-bguv2lll"> <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Trust Hierarchy & State Isolation | AgentV</title><link rel="canonical" href="https://najeed.github.io/ai-agent-eval-harness/dev/spec/forensics/trust-hierarchy/"/><link rel="sitemap" href="/ai-agent-eval-harness/dev/sitemap-index.xml"/><link rel="shortcut icon" href="/ai-agent-eval-harness/dev/favicon.svg" type="image/svg+xml"/><meta name="generator" content="Astro v6.1.5"/><meta name="generator" content="Starlight v0.38.3"/><meta property="og:title" content="Trust Hierarchy &#38; State Isolation"/><meta property="og:type" content="article"/><meta property="og:url" content="https://najeed.github.io/ai-agent-eval-harness/dev/spec/forensics/trust-hierarchy/"/><meta property="og:locale" content="en"/><meta property="og:description" content="Technical specification for agent-environment trust gating and forensic state protection."/><meta property="og:site_name" content="AgentV"/><meta name="twitter:card" content="summary_large_image"/><meta name="description" content="Technical specification for agent-environment trust gating and forensic state protection."/><script>
 	window.StarlightThemeProvider = (() => {
 		const storedTheme =
 			typeof localStorage !== 'undefined' && localStorage.getItem('starlight-theme');
@@ -71,237 +71,48 @@
 		})();
 	</script> </sl-sidebar-state-persist> <div class="md:sl-hidden"> <div class="mobile-preferences sl-flex astro-wu23bvmt"> <div class="social-icons astro-wu23bvmt"> <a href="https://github.com/najeed/ai-agent-eval-harness" rel="me" class="sl-flex astro-wy4te6ga"><span class="sr-only astro-wy4te6ga">GitHub</span><svg aria-hidden="true" class="astro-wy4te6ga astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"/></svg></a> </div> <starlight-theme-select>  <label style="--sl-select-width: 6.25em" class="astro-4yphtoen"> <span class="sr-only astro-4yphtoen">Select theme</span> <svg aria-hidden="true" class="icon label-icon astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M21 14h-1V7a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3v7H3a1 1 0 0 0-1 1v2a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-2a1 1 0 0 0-1-1ZM6 7a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7H6V7Zm14 10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-1h16v1Z"/></svg> <select autocomplete="off" class="astro-4yphtoen"> <option value="dark" class="astro-4yphtoen">Dark</option><option value="light" class="astro-4yphtoen">Light</option><option value="auto" selected class="astro-4yphtoen">Auto</option> </select> <svg aria-hidden="true" class="icon caret astro-4yphtoen astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1em;"><path d="M17 9.17a1 1 0 0 0-1.41 0L12 12.71 8.46 9.17a1 1 0 1 0-1.41 1.42l4.24 4.24a1.002 1.002 0 0 0 1.42 0L17 10.59a1.002 1.002 0 0 0 0-1.42Z"/></svg> </label> </starlight-theme-select>  <script>
 	StarlightThemeProvider.updatePickers();
-</script>   </div> </div> </div> </div> </nav> <div class="main-frame astro-vrdttmbt">  <script type="module">const a=document.getElementById("starlight__sidebar"),n=a?.querySelector("sl-sidebar-state-persist"),o="sl-sidebar-state",i=()=>{let t=[];const e=n?.dataset.hash||"";try{const s=sessionStorage.getItem(o),r=JSON.parse(s||"{}");Array.isArray(r.open)&&r.hash===e&&(t=r.open)}catch{}return{hash:e,open:t,scroll:a?.scrollTop||0}},c=t=>{try{sessionStorage.setItem(o,JSON.stringify(t))}catch{}},d=()=>c(i()),l=(t,e)=>{const s=i();s.open[e]=t,c(s)};n?.addEventListener("click",t=>{if(!(t.target instanceof Element))return;const e=t.target.closest("summary")?.closest("details");if(!e)return;const s=e.querySelector("sl-sidebar-restore"),r=parseInt(s?.dataset.index||"");isNaN(r)||l(!e.open,r)});addEventListener("visibilitychange",()=>{document.visibilityState==="hidden"&&d()});addEventListener("pageHide",d);</script> <div class="lg:sl-flex astro-67yu43on"> <aside class="right-sidebar-container print:hidden astro-67yu43on"> <div class="right-sidebar astro-67yu43on"> <div class="lg:sl-hidden astro-pb3aqygn"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-doynk5tl"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-doynk5tl"><details id="starlight__mobile-toc" class="astro-doynk5tl"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-doynk5tl"><span class="toggle sl-flex astro-doynk5tl">On this page<svg aria-hidden="true" class="caret astro-doynk5tl astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></span><span class="display-current astro-doynk5tl"></span></summary><div class="dropdown astro-doynk5tl"><ul class="isMobile astro-gnoq344e" style="--depth: 0;"> <li class="astro-gnoq344e" style="--depth: 0;"> <a href="#_top" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">Overview</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#️-architecture-overview" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🏗️ Architecture Overview</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#️-industrial-failure-categories" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🏷️ Industrial Failure Categories</span> </a> <ul class="isMobile astro-gnoq344e" style="--depth: 1;"> <li class="astro-gnoq344e" style="--depth: 1;"> <a href="#infrastructure-infra_" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Infrastructure (INFRA_)</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#logic--reasoning-logic_" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Logic &amp; Reasoning (LOGIC_)</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#policy--security-policy_--security_" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Policy &amp; Security (POLICY_ / SECURITY_)</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#forensic-parity-parity_" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Forensic Parity (PARITY_)</span> </a>  </li> </ul> </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#-pii-detection--security-compliance" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🔒 PII Detection &amp; Security Compliance</span> </a> <ul class="isMobile astro-gnoq344e" style="--depth: 1;"> <li class="astro-gnoq344e" style="--depth: 1;"> <a href="#pattern-registry" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Pattern Registry</span> </a>  </li> </ul> </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#-baseline-analyzers-core" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🔬 Baseline Analyzers (Core)</span> </a> <ul class="isMobile astro-gnoq344e" style="--depth: 1;"> <li class="astro-gnoq344e" style="--depth: 1;"> <a href="#1-protocolanalyzer" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">1. ProtocolAnalyzer</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#2-loopanalyzer" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">2. LoopAnalyzer</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#3-piianalyzer" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">3. PIIAnalyzer</span> </a>  </li> </ul> </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#-extending-with-plugins" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🚀 Extending with Plugins</span> </a>  </li> </ul></div></details></nav></mobile-starlight-toc><script type="module" src="/ai-agent-eval-harness/dev/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.hwBsy0Mo.js"></script></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-pb3aqygn"><div class="sl-container astro-pb3aqygn"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">On this page</h2><ul class="astro-gnoq344e" style="--depth: 0;"> <li class="astro-gnoq344e" style="--depth: 0;"> <a href="#_top" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">Overview</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#️-architecture-overview" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🏗️ Architecture Overview</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#️-industrial-failure-categories" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🏷️ Industrial Failure Categories</span> </a> <ul class="astro-gnoq344e" style="--depth: 1;"> <li class="astro-gnoq344e" style="--depth: 1;"> <a href="#infrastructure-infra_" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Infrastructure (INFRA_)</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#logic--reasoning-logic_" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Logic &amp; Reasoning (LOGIC_)</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#policy--security-policy_--security_" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Policy &amp; Security (POLICY_ / SECURITY_)</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#forensic-parity-parity_" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Forensic Parity (PARITY_)</span> </a>  </li> </ul> </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#-pii-detection--security-compliance" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🔒 PII Detection &amp; Security Compliance</span> </a> <ul class="astro-gnoq344e" style="--depth: 1;"> <li class="astro-gnoq344e" style="--depth: 1;"> <a href="#pattern-registry" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Pattern Registry</span> </a>  </li> </ul> </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#-baseline-analyzers-core" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🔬 Baseline Analyzers (Core)</span> </a> <ul class="astro-gnoq344e" style="--depth: 1;"> <li class="astro-gnoq344e" style="--depth: 1;"> <a href="#1-protocolanalyzer" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">1. ProtocolAnalyzer</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#2-loopanalyzer" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">2. LoopAnalyzer</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#3-piianalyzer" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">3. PIIAnalyzer</span> </a>  </li> </ul> </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#-extending-with-plugins" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🚀 Extending with Plugins</span> </a>  </li> </ul></nav></starlight-toc><script type="module" src="/ai-agent-eval-harness/dev/_astro/TableOfContents.astro_astro_type_script_index_0_lang.FuRcXuRY.js"></script></div></div> </div> </aside> <div class="main-pane astro-67yu43on">  <main data-pagefind-body class="astro-bguv2lll" lang="en" dir="ltr">    <div class="content-panel astro-7nkwcw3z"> <div class="sl-container astro-7nkwcw3z"> <h1 id="_top" class="astro-j6tvhyss">Triage Engine Specification</h1> </div> </div> <div class="content-panel astro-7nkwcw3z"> <div class="sl-container astro-7nkwcw3z"> <div class="sl-markdown-content"> <p>The <strong>Triage Engine</strong> is the primary diagnostic layer of AgentV, responsible for classifying agentic deviations into actionable failure codes. In AES v1.4, the engine has transitioned to a <strong>Registry-Based Plugin Architecture</strong>, allowing for lean baseline heuristics and high-fidelity Enterprise diagnostics.</p>
-<div class="sl-heading-wrapper level-h2"><h2 id="️-architecture-overview">🏗️ Architecture Overview</h2><a class="sl-anchor-link" href="#️-architecture-overview"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “🏗️ Architecture Overview”</span></a></div>
-<p>The Triage Engine follows a tiered diagnostic pipeline:</p>
+</script>   </div> </div> </div> </div> </nav> <div class="main-frame astro-vrdttmbt">  <script type="module">const a=document.getElementById("starlight__sidebar"),n=a?.querySelector("sl-sidebar-state-persist"),o="sl-sidebar-state",i=()=>{let t=[];const e=n?.dataset.hash||"";try{const s=sessionStorage.getItem(o),r=JSON.parse(s||"{}");Array.isArray(r.open)&&r.hash===e&&(t=r.open)}catch{}return{hash:e,open:t,scroll:a?.scrollTop||0}},c=t=>{try{sessionStorage.setItem(o,JSON.stringify(t))}catch{}},d=()=>c(i()),l=(t,e)=>{const s=i();s.open[e]=t,c(s)};n?.addEventListener("click",t=>{if(!(t.target instanceof Element))return;const e=t.target.closest("summary")?.closest("details");if(!e)return;const s=e.querySelector("sl-sidebar-restore"),r=parseInt(s?.dataset.index||"");isNaN(r)||l(!e.open,r)});addEventListener("visibilitychange",()=>{document.visibilityState==="hidden"&&d()});addEventListener("pageHide",d);</script> <div class="lg:sl-flex astro-67yu43on"> <aside class="right-sidebar-container print:hidden astro-67yu43on"> <div class="right-sidebar astro-67yu43on"> <div class="lg:sl-hidden astro-pb3aqygn"><mobile-starlight-toc data-min-h="2" data-max-h="3" class="astro-doynk5tl"><nav aria-labelledby="starlight__on-this-page--mobile" class="astro-doynk5tl"><details id="starlight__mobile-toc" class="astro-doynk5tl"><summary id="starlight__on-this-page--mobile" class="sl-flex astro-doynk5tl"><span class="toggle sl-flex astro-doynk5tl">On this page<svg aria-hidden="true" class="caret astro-doynk5tl astro-c6vsoqas" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="--sl-icon-size: 1rem;"><path d="m14.83 11.29-4.24-4.24a1 1 0 1 0-1.42 1.41L12.71 12l-3.54 3.54a1 1 0 0 0 0 1.41 1 1 0 0 0 .71.29 1 1 0 0 0 .71-.29l4.24-4.24a1.002 1.002 0 0 0 0-1.42Z"/></svg></span><span class="display-current astro-doynk5tl"></span></summary><div class="dropdown astro-doynk5tl"><ul class="isMobile astro-gnoq344e" style="--depth: 0;"> <li class="astro-gnoq344e" style="--depth: 0;"> <a href="#_top" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">Overview</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#️-3-tier-trust-hierarchy" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🛡️ 3-Tier Trust Hierarchy</span> </a> <ul class="isMobile astro-gnoq344e" style="--depth: 1;"> <li class="astro-gnoq344e" style="--depth: 1;"> <a href="#trust-gating-in-sessionpy" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Trust Gating in session.py</span> </a>  </li> </ul> </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#-conditional-deep-copy-isolation" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🧬 Conditional Deep-Copy Isolation</span> </a> <ul class="isMobile astro-gnoq344e" style="--depth: 1;"> <li class="astro-gnoq344e" style="--depth: 1;"> <a href="#how-it-works" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">How it works:</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#implementation-pattern" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Implementation Pattern:</span> </a>  </li> </ul> </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#-forensic-non-repudiation" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🔒 Forensic Non-Repudiation</span> </a>  </li> </ul></div></details></nav></mobile-starlight-toc><script type="module" src="/ai-agent-eval-harness/dev/_astro/MobileTableOfContents.astro_astro_type_script_index_0_lang.hwBsy0Mo.js"></script></div><div class="right-sidebar-panel sl-hidden lg:sl-block astro-pb3aqygn"><div class="sl-container astro-pb3aqygn"><starlight-toc data-min-h="2" data-max-h="3"><nav aria-labelledby="starlight__on-this-page"><h2 id="starlight__on-this-page">On this page</h2><ul class="astro-gnoq344e" style="--depth: 0;"> <li class="astro-gnoq344e" style="--depth: 0;"> <a href="#_top" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">Overview</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#️-3-tier-trust-hierarchy" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🛡️ 3-Tier Trust Hierarchy</span> </a> <ul class="astro-gnoq344e" style="--depth: 1;"> <li class="astro-gnoq344e" style="--depth: 1;"> <a href="#trust-gating-in-sessionpy" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Trust Gating in session.py</span> </a>  </li> </ul> </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#-conditional-deep-copy-isolation" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🧬 Conditional Deep-Copy Isolation</span> </a> <ul class="astro-gnoq344e" style="--depth: 1;"> <li class="astro-gnoq344e" style="--depth: 1;"> <a href="#how-it-works" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">How it works:</span> </a>  </li><li class="astro-gnoq344e" style="--depth: 1;"> <a href="#implementation-pattern" class="astro-gnoq344e" style="--depth: 1;"> <span class="astro-gnoq344e" style="--depth: 1;">Implementation Pattern:</span> </a>  </li> </ul> </li><li class="astro-gnoq344e" style="--depth: 0;"> <a href="#-forensic-non-repudiation" class="astro-gnoq344e" style="--depth: 0;"> <span class="astro-gnoq344e" style="--depth: 0;">🔒 Forensic Non-Repudiation</span> </a>  </li> </ul></nav></starlight-toc><script type="module" src="/ai-agent-eval-harness/dev/_astro/TableOfContents.astro_astro_type_script_index_0_lang.FuRcXuRY.js"></script></div></div> </div> </aside> <div class="main-pane astro-67yu43on">  <main data-pagefind-body class="astro-bguv2lll" lang="en" dir="ltr">    <div class="content-panel astro-7nkwcw3z"> <div class="sl-container astro-7nkwcw3z"> <h1 id="_top" class="astro-j6tvhyss">Trust Hierarchy &amp; State Isolation</h1> </div> </div> <div class="content-panel astro-7nkwcw3z"> <div class="sl-container astro-7nkwcw3z"> <div class="sl-markdown-content"> <p>To ensure that industrial evaluations are both secure and non-repudiable, AgentV implements a <strong>Tiered Trust Model</strong> and <strong>Immutable State Isolation</strong>. This prevents external plugins or untrusted metrics from corrupting the evaluation trajectory.</p>
+<div class="sl-heading-wrapper level-h2"><h2 id="️-3-tier-trust-hierarchy">🛡️ 3-Tier Trust Hierarchy</h2><a class="sl-anchor-link" href="#️-3-tier-trust-hierarchy"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “🛡️ 3-Tier Trust Hierarchy”</span></a></div>
+<p>The harness classifies all components (Metrics, Plugins, Analyzers) into three trust tiers. This determines their level of access to sensitive session metadata and hardware telemetry.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th align="left">Tier</th><th align="left">Source</th><th align="left">Permissions</th></tr></thead><tbody><tr><td align="left"><strong>CORE</strong></td><td align="left">Internal <code dir="auto">eval_runner</code></td><td align="left">Full access to <code dir="auto">session_metadata</code>, <code dir="auto">resource_telemetry</code>, and internal buffers.</td></tr><tr><td align="left"><strong>TRUSTED</strong></td><td align="left">Signed Member Plugins</td><td align="left">Access to restricted system parameters. Requires cryptographic provenance.</td></tr><tr><td align="left"><strong>EXTERNAL</strong></td><td align="left">Third-party / Ad-hoc</td><td align="left">Restricted to sanitized <code dir="auto">agent_summary</code> and isolated (copied) history.</td></tr></tbody></table>
+<div class="sl-heading-wrapper level-h3"><h3 id="trust-gating-in-sessionpy">Trust Gating in <code dir="auto">session.py</code></h3><a class="sl-anchor-link" href="#trust-gating-in-sessionpy"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Trust Gating in session.py”</span></a></div>
+<p>When a metric or plugin is invoked, the <code dir="auto">SessionManager</code> checks its provenance:</p>
+<div class="expressive-code"><link rel="stylesheet" href="/ai-agent-eval-harness/dev/_astro/ec.v4551.css"><script type="module" src="/ai-agent-eval-harness/dev/_astro/ec.0vx5m.js"></script><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="python"><code><div class="ec-line"><div class="code"><span style="--0:#919F9F;--1:#5F636F"># [AES v1.6.0] Trust Gate for System Parameters</span></div></div><div class="ec-line"><div class="code"><span style="--0:#C792EA;--1:#8844AE">if</span><span style="--0:#D6DEEB;--1:#403F53"> is_trusted:</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">context_map[</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">session_metadata</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">] </span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#8EACE3;--1:#AA0982">self</span><span style="--0:#D6DEEB;--1:#403F53">.session_metadata</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">context_map[</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#ECC48D;--1:#984E4D">resource_telemetry</span><span style="--0:#D9F5DD;--1:#111111">"</span><span style="--0:#D6DEEB;--1:#403F53">] </span><span style="--0:#C792EA;--1:#8844AE">=</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#8EACE3;--1:#AA0982">self</span><span style="--0:#D6DEEB;--1:#403F53">.resource_telemetry</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="# [AES v1.6.0] Trust Gate for System Parametersif is_trusted:    context_map[&#x22;session_metadata&#x22;] = self.session_metadata    context_map[&#x22;resource_telemetry&#x22;] = self.resource_telemetry"><div></div></button></div></figure></div>
+<hr>
+<div class="sl-heading-wrapper level-h2"><h2 id="-conditional-deep-copy-isolation">🧬 Conditional Deep-Copy Isolation</h2><a class="sl-anchor-link" href="#-conditional-deep-copy-isolation"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “🧬 Conditional Deep-Copy Isolation”</span></a></div>
+<p>To prevent “Trajectory Pollution,” AgentV enforces strict memory isolation. Untrusted components never receive a direct reference to the live session state.</p>
+<div class="sl-heading-wrapper level-h3"><h3 id="how-it-works">How it works:</h3><a class="sl-anchor-link" href="#how-it-works"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “How it works:”</span></a></div>
 <ol>
-<li><strong>Baseline Heuristics (Core)</strong>: Zero-latency regular expression and procedural checks (e.g., Protocol Parity, Cyclical Loops).</li>
-<li><strong>Registry-Based Analyzers</strong>: Dynamic diagnostic modules registered via the <code dir="auto">on_diagnose_failure</code> hook.</li>
-<li><strong>High-Fidelity Intelligence (Enterprise)</strong>: Heavy analyzers using NLP clustering, hardware telemetry gradients, and intent-verification.</li>
+<li><strong>Mutable Guard</strong>: If a component is not marked as <strong>CORE</strong> and requests a mutable object (like <code dir="auto">history</code> or <code dir="auto">actual_state</code>), the harness automatically performs a <code dir="auto">copy.deepcopy()</code>.</li>
+<li><strong>Performance Optimization</strong>: Deep-copying is skipped for <strong>CORE</strong> components to minimize latency in high-frequency diagnostic loops.</li>
 </ol>
+<div class="sl-heading-wrapper level-h3"><h3 id="implementation-pattern">Implementation Pattern:</h3><a class="sl-anchor-link" href="#implementation-pattern"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Implementation Pattern:”</span></a></div>
+<div class="expressive-code"><figure class="frame not-content"><figcaption class="header"></figcaption><pre data-language="python"><code><div class="ec-line"><div class="code"><span style="--0:#C792EA;--1:#8844AE">def</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">get_isolated</span><span style="--0:#D9F5DD;--1:#111111">(</span><span style="--0:#7FDBCA;--1:#096E72">key</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#7FDBCA;--1:#096E72">data</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#7FDBCA;--1:#096E72">_params=</span><span style="--0:#D6DEEB;--1:#403F53">params, </span><span style="--0:#7FDBCA;--1:#096E72">_is_core=</span><span style="--0:#D6DEEB;--1:#403F53">is_core</span><span style="--0:#D9F5DD;--1:#111111">)</span><span style="--0:#D6DEEB;--1:#403F53">:</span></div></div><div class="ec-line"><div class="code"><span class="indent">    </span><span style="--0:#C792EA;--1:#8844AE">if</span><span style="--0:#D6DEEB;--1:#403F53"> key </span><span style="--0:#C792EA;--1:#8844AE">in</span><span style="--0:#D6DEEB;--1:#403F53"> _params </span><span style="--0:#C792EA;--1:#8844AE">and</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C792EA;--1:#8844AE">not</span><span style="--0:#D6DEEB;--1:#403F53"> _is_core </span><span style="--0:#C792EA;--1:#8844AE">and</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#C5E478;--1:#3B61B0">isinstance</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#82AAFF;--1:#3B61B0">data</span><span style="--0:#D9F5DD;--1:#111111">,</span><span style="--1:#3B61B0"><span style="--0:#82AAFF"> (</span><span style="--0:#C5E478">dict</span><span style="--0:#82AAFF">, </span><span style="--0:#C5E478">list</span><span style="--0:#82AAFF">)</span></span><span style="--0:#D6DEEB;--1:#403F53">):</span></div></div><div class="ec-line"><div class="code"><span class="indent">        </span><span style="--0:#C792EA;--1:#8844AE">return</span><span style="--0:#D6DEEB;--1:#403F53"> copy.</span><span style="--0:#B2CCD6;--1:#096E72">deepcopy</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#82AAFF;--1:#3B61B0">data</span><span style="--0:#D6DEEB;--1:#403F53">)</span></div></div><div class="ec-line"><div class="code"><span class="indent">    </span><span style="--0:#C792EA;--1:#8844AE">return</span><span style="--0:#D6DEEB;--1:#403F53"> data</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="def get_isolated(key, data, _params=params, _is_core=is_core):    if key in _params and not _is_core and isinstance(data, (dict, list)):        return copy.deepcopy(data)    return data"><div></div></button></div></figure></div>
 <hr>
-<div class="sl-heading-wrapper level-h2"><h2 id="️-industrial-failure-categories">🏷️ Industrial Failure Categories</h2><a class="sl-anchor-link" href="#️-industrial-failure-categories"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “🏷️ Industrial Failure Categories”</span></a></div>
-<p>All failures are classified using the <code dir="auto">FailureCategory</code> standard. These codes are designed to provide absolute clarity for both developers and compliance auditors.</p>
-<div class="sl-heading-wrapper level-h3"><h3 id="infrastructure-infra_">Infrastructure (<code dir="auto">INFRA_</code>)</h3><a class="sl-anchor-link" href="#infrastructure-infra_"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Infrastructure (INFRA_)”</span></a></div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th align="left">Header (Enum)</th><th align="left">Forensic Code</th><th align="left">Trigger</th></tr></thead><tbody><tr><td align="left"><code dir="auto">INFRA_SIMULATOR_EXCEPTION</code></td><td align="left"><code dir="auto">infra_simulator_exception</code></td><td align="left">Internal error or unhandled exception within a World Shim (e.g., Database crash).</td></tr><tr><td align="left"><code dir="auto">INFRA_TIMEOUT</code></td><td align="left"><code dir="auto">infra_timeout</code></td><td align="left">The evaluation run exceeded the global or task-level time budget.</td></tr><tr><td align="left"><code dir="auto">INFRA_CONNECTION_FAILED</code></td><td align="left"><code dir="auto">infra_connection_failed</code></td><td align="left">Network or service-level disruption preventing interaction with the agent endpoint.</td></tr><tr><td align="left"><code dir="auto">INFRA_OOM</code></td><td align="left"><code dir="auto">infra_oom</code></td><td align="left">Out-of-Memory condition detected in the sandbox or agent process.</td></tr><tr><td align="left"><code dir="auto">INFRA_DISK_QUOTA</code></td><td align="left"><code dir="auto">infra_disk_quota</code></td><td align="left">Workspace disk usage exceeded allowed limits.</td></tr><tr><td align="left"><code dir="auto">INFRA_SANDBOX_FAILURE</code></td><td align="left"><code dir="auto">infra_sandbox_failure</code></td><td align="left">Containerization or isolation layer disruption (e.g., daemon crash).</td></tr><tr><td align="left"><code dir="auto">INFRA_RESOURCE_EXHAUSTED</code></td><td align="left"><code dir="auto">infra_resource_exhausted</code></td><td align="left">Hardware spike (CPU > 90% or OOM) correlated with tool failure.</td></tr></tbody></table>
-<div class="sl-heading-wrapper level-h3"><h3 id="logic--reasoning-logic_">Logic &#x26; Reasoning (<code dir="auto">LOGIC_</code>)</h3><a class="sl-anchor-link" href="#logic--reasoning-logic_"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Logic &#x26; Reasoning (LOGIC_)”</span></a></div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th align="left">Header (Enum)</th><th align="left">Forensic Code</th><th align="left">Trigger</th></tr></thead><tbody><tr><td align="left"><code dir="auto">LOGIC_STALL</code></td><td align="left"><code dir="auto">logic_stall</code></td><td align="left">The agent repeated the same logic for more than 10 turns without progress.</td></tr><tr><td align="left"><code dir="auto">LOGIC_REFUSAL</code></td><td align="left"><code dir="auto">logic_refusal</code></td><td align="left">The agent explicitly refused to perform the task (often due to safety alignment).</td></tr><tr><td align="left"><code dir="auto">LOGIC_PLANNING_ERROR</code></td><td align="left"><code dir="auto">logic_planning_error</code></td><td align="left">A flaw in the agent’s strategy led to a dead-end or invalid state.</td></tr><tr><td align="left"><code dir="auto">LOGIC_STATE_MISMATCH</code></td><td align="left"><code dir="auto">logic_state_mismatch</code></td><td align="left">Contradiction between agent intent and actual environment effects.</td></tr><tr><td align="left"><code dir="auto">LOGIC_STATE_STALL</code></td><td align="left"><code dir="auto">logic_state_stall</code></td><td align="left">Environment state remains unchanged despite agent tool calls (Fuzzy No-Op).</td></tr><tr><td align="left"><code dir="auto">LOGIC_UNCERTAINTY</code></td><td align="left"><code dir="auto">logic_uncertainty</code></td><td align="left">Agent expresses confusion or doubt in thoughts/utterances.</td></tr><tr><td align="left"><code dir="auto">LOGIC_ABANDONMENT</code></td><td align="left"><code dir="auto">logic_abandonment</code></td><td align="left">Agent issues a ‘finished’ status but lacks task metrics (Soft Quit).</td></tr></tbody></table>
-<div class="sl-heading-wrapper level-h3"><h3 id="policy--security-policy_--security_">Policy &#x26; Security (<code dir="auto">POLICY_</code> / <code dir="auto">SECURITY_</code>)</h3><a class="sl-anchor-link" href="#policy--security-policy_--security_"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Policy &#x26; Security (POLICY_ / SECURITY_)”</span></a></div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th align="left">Header (Enum)</th><th align="left">Forensic Code</th><th align="left">Trigger</th></tr></thead><tbody><tr><td align="left"><code dir="auto">POLICY_VIOLATION</code></td><td align="left"><code dir="auto">policy_violation</code></td><td align="left">Agent attempted an action blocked by a scenario-level guardrail.</td></tr><tr><td align="left"><code dir="auto">POLICY_HALLUCINATION</code></td><td align="left"><code dir="auto">policy_hallucination</code></td><td align="left">The agent attempted to use non-existent tools or data.</td></tr><tr><td align="left"><code dir="auto">POLICY_DACON_LEAK</code></td><td align="left"><code dir="auto">policy_dacon_leak</code></td><td align="left">Detected exposure of internal system prompts or logic.</td></tr><tr><td align="left"><code dir="auto">SECURITY_PII_LEAK</code></td><td align="left"><code dir="auto">security_pii_leak</code></td><td align="left">Triggered when Personally Identifiable Information is detected in agent output.</td></tr><tr><td align="left"><code dir="auto">SECURITY_UNAUTHORIZED_ACCESS</code></td><td align="left"><code dir="auto">security_unauthorized_access</code></td><td align="left">The agent attempted to access unauthorized namespaces or files.</td></tr><tr><td align="left"><code dir="auto">SECURITY_SANDBOX_ESCAPE</code></td><td align="left"><code dir="auto">security_sandbox_escape</code></td><td align="left">Critical breach where the agent attempted to jailbreak the sandbox.</td></tr></tbody></table>
-<div class="sl-heading-wrapper level-h3"><h3 id="forensic-parity-parity_">Forensic Parity (<code dir="auto">PARITY_</code>)</h3><a class="sl-anchor-link" href="#forensic-parity-parity_"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Forensic Parity (PARITY_)”</span></a></div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th align="left">Header (Enum)</th><th align="left">Forensic Code</th><th align="left">Trigger</th></tr></thead><tbody><tr><td align="left"><code dir="auto">PARITY_STATE_DIVERGENCE</code></td><td align="left"><code dir="auto">parity_state_divergence</code></td><td align="left">High-fidelity mismatch between expected and actual VFS/Shim state.</td></tr><tr><td align="left"><code dir="auto">PARITY_PROTOCOL_VIOLATION</code></td><td align="left"><code dir="auto">parity_protocol_violation</code></td><td align="left">Agent diverged from the mandated interaction protocol (e.g., HTTP vs SSE).</td></tr></tbody></table>
-<hr>
-<div class="sl-heading-wrapper level-h2"><h2 id="-pii-detection--security-compliance">🔒 PII Detection &#x26; Security Compliance</h2><a class="sl-anchor-link" href="#-pii-detection--security-compliance"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “🔒 PII Detection &#x26; Security Compliance”</span></a></div>
-<p>AgentV includes a high-fidelity PII scanner designed for industrial compliance (GDPR, HIPAA, PCI DSS). The engine uses a multi-pattern registry to detect sensitive data before it is persisted to the <a href="/ai-agent-eval-harness/dev/spec/forensic-ledger-schema/">Forensic Ledger</a>.</p>
-<div class="sl-heading-wrapper level-h3"><h3 id="pattern-registry">Pattern Registry</h3><a class="sl-anchor-link" href="#pattern-registry"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “Pattern Registry”</span></a></div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<table><thead><tr><th align="left">Type</th><th align="left">Standards</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left"><strong>National</strong></td><td align="left">GDPR</td><td align="left">National IDs (SSN, Aadhar, Passport numbers).</td></tr><tr><td align="left"><strong>Financial</strong></td><td align="left">PCI DSS</td><td align="left">Credit card numbers, CVV, IBAN, and bank accounts.</td></tr><tr><td align="left"><strong>Medical</strong></td><td align="left">HIPAA</td><td align="left">MRNs (Medical Record Numbers) or Insurance IDs.</td></tr><tr><td align="left"><strong>Contact</strong></td><td align="left">GDPR</td><td align="left">Emails, physical addresses, and phone numbers.</td></tr><tr><td align="left"><strong>Digital</strong></td><td align="left">GDPR</td><td align="left">IP Addresses, MAC Addresses, and social handles.</td></tr><tr><td align="left"><strong>Crypto</strong></td><td align="left">FinCEN</td><td align="left">Bitcoin (bc1) and Ethereum (0x) wallet addresses.</td></tr></tbody></table>
-<div><p>When PII is detected, the engine emits a <code dir="auto">SECURITY_PII_LEAK</code> event. In Enterprise environments, these values are automatically redacted in the visual console while being retained as encrypted hashes in the forensic audit trail.</p></div>
-<hr>
-<div class="sl-heading-wrapper level-h2"><h2 id="-baseline-analyzers-core">🔬 Baseline Analyzers (Core)</h2><a class="sl-anchor-link" href="#-baseline-analyzers-core"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “🔬 Baseline Analyzers (Core)”</span></a></div>
-<p>The Core harness registers two analyzers by default:</p>
-<div class="sl-heading-wrapper level-h3"><h3 id="1-protocolanalyzer">1. ProtocolAnalyzer</h3><a class="sl-anchor-link" href="#1-protocolanalyzer"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “1. ProtocolAnalyzer”</span></a></div>
-<p>Maintains <strong>Protocol Affinity</strong> by verifying that the agent stays within the interaction limits defined in the tool registry. It detects state-divergence when the environment snapshot doesn’t match the expected structural effect of an action.</p>
-<div class="sl-heading-wrapper level-h3"><h3 id="2-loopanalyzer">2. LoopAnalyzer</h3><a class="sl-anchor-link" href="#2-loopanalyzer"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “2. LoopAnalyzer”</span></a></div>
-<p>Detects <strong>Cyclical Reasoning</strong> and <strong>Logical Stalls</strong>.</p>
-<ul>
-<li><strong>Fuzzy Matching</strong>: Identifies rephrased agent thoughts that indicate circular planning.</li>
-<li><strong>Action Normalization</strong>: Strips command flags (e.g., <code dir="auto">git commit -m</code>) to catch stalls where an agent repeats the same base action with jittered parameters.</li>
-<li><strong>Cycle Detection</strong>: Uses a logic-aware window (default: 10 turns) to identify if an agent is stuck in an A -> B -> A loop.</li>
-</ul>
-<div class="sl-heading-wrapper level-h3"><h3 id="3-piianalyzer">3. PIIAnalyzer</h3><a class="sl-anchor-link" href="#3-piianalyzer"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “3. PIIAnalyzer”</span></a></div>
-<p>Ensures <strong>Data Sovereignty</strong> and <strong>Regulatory Compliance</strong> by scanning all agent outputs for sensitive data. It uses the authoritative industrial pattern registry (GDPR, HIPAA, PCI DSS) to detect leaks before they are persisted to logs or dashboards.</p>
-<hr>
-<div class="sl-heading-wrapper level-h2"><h2 id="-extending-with-plugins">🚀 Extending with Plugins</h2><a class="sl-anchor-link" href="#-extending-with-plugins"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “🚀 Extending with Plugins”</span></a></div>
-<p>To add custom diagnostic depth, register a <code dir="auto">BaseForensicAnalyzer</code> using the <code dir="auto">on_diagnose_failure</code> hook.</p>
-<div class="expressive-code"><link rel="stylesheet" href="/ai-agent-eval-harness/dev/_astro/ec.v4551.css"><script type="module" src="/ai-agent-eval-harness/dev/_astro/ec.0vx5m.js"></script><figure class="frame has-title not-content"><figcaption class="header"><span class="title">MyForensicPlugin.py</span></figcaption><pre data-language="python"><code><div class="ec-line"><div class="code"><span style="--0:#C792EA;--1:#8844AE">def</span><span style="--0:#D6DEEB;--1:#403F53"> </span><span style="--0:#82AAFF;--1:#3B61B0">on_diagnose_failure</span><span style="--0:#D9F5DD;--1:#111111">(</span><span style="--0:#7FDBCA;--1:#096E72">self</span><span style="--0:#D6DEEB;--1:#403F53">, </span><span style="--0:#7FDBCA;--1:#096E72">taxonomy</span><span style="--0:#D9F5DD;--1:#111111">)</span><span style="--0:#D6DEEB;--1:#403F53">:</span></div></div><div class="ec-line"><div class="code"><span class="indent"><span style="--0:#D6DEEB;--1:#403F53">    </span></span><span style="--0:#D6DEEB;--1:#403F53">taxonomy.</span><span style="--0:#B2CCD6;--1:#096E72">register_analyzer</span><span style="--0:#D6DEEB;--1:#403F53">(</span><span style="--0:#B2CCD6;--1:#096E72">MyCustomLogicAnalyzer</span><span style="--0:#D6DEEB;--1:#403F53">())</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="def on_diagnose_failure(self, taxonomy):    taxonomy.register_analyzer(MyCustomLogicAnalyzer())"><div></div></button></div></figure></div>
-<p>For detailed implementation patterns, see the <a href="/ai-agent-eval-harness/dev/extender/forensic-analyzers/">Custom Forensic Analyzers</a> guide.</p> </div> <footer class="sl-flex astro-3yyafb3n"> <div class="meta sl-flex astro-3yyafb3n">   </div> <div class="pagination-links print:hidden astro-u2l5gyhi" dir="ltr">   </div>  </footer> </div> </div>  </main> </div> </div> </div> </div> </body></html>
+<div class="sl-heading-wrapper level-h2"><h2 id="-forensic-non-repudiation">🔒 Forensic Non-Repudiation</h2><a class="sl-anchor-link" href="#-forensic-non-repudiation"><span aria-hidden="true" class="sl-anchor-icon"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentcolor" d="m12.11 15.39-3.88 3.88a2.52 2.52 0 0 1-3.5 0 2.47 2.47 0 0 1 0-3.5l3.88-3.88a1 1 0 0 0-1.42-1.42l-3.88 3.89a4.48 4.48 0 0 0 6.33 6.33l3.89-3.88a1 1 0 1 0-1.42-1.42Zm8.58-12.08a4.49 4.49 0 0 0-6.33 0l-3.89 3.88a1 1 0 0 0 1.42 1.42l3.88-3.88a2.52 2.52 0 0 1 3.5 0 2.47 2.47 0 0 1 0 3.5l-3.88 3.88a1 1 0 1 0 1.42 1.42l3.88-3.89a4.49 4.49 0 0 0 0-6.33ZM8.83 15.17a1 1 0 0 0 1.1.22 1 1 0 0 0 .32-.22l4.92-4.92a1 1 0 0 0-1.42-1.42l-4.92 4.92a1 1 0 0 0 0 1.42Z"></path></svg></span><span class="sr-only" data-pagefind-ignore="">Section titled “🔒 Forensic Non-Repudiation”</span></a></div>
+<p>By combining the <strong>Trust Hierarchy</strong> with <strong>State Isolation</strong>, AgentV ensures that the final <code dir="auto">run.jsonl</code> trace is an accurate reflection of the agent’s decisions, unpolluted by side-effects from the evaluation infrastructure itself. This satisfies the requirements for <strong>NIST AI-100-1</strong> and <strong>GDPR Audit Trails</strong>.</p> </div> <footer class="sl-flex astro-3yyafb3n"> <div class="meta sl-flex astro-3yyafb3n">   </div> <div class="pagination-links print:hidden astro-u2l5gyhi" dir="ltr">   </div>  </footer> </div> </div>  </main> </div> </div> </div> </div> </body></html>
