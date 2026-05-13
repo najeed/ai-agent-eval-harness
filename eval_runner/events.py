@@ -11,7 +11,10 @@ state transitions without modifying the main engine loop.
 import re  # noqa: E402
 from collections.abc import Callable  # noqa: E402
 from datetime import datetime  # noqa: E402
+from enum import StrEnum  # noqa: E402
 from typing import Any  # noqa: E402
+
+from pydantic import BaseModel, Field  # noqa: E402
 
 
 def sanitize_payload(data: dict) -> dict:
@@ -197,3 +200,40 @@ class CoreEvents:
     # Infrastructure & Target Abstraction (v1.3.0)
     ROUTING_RESOLVED = "routing_resolved"
     ADAPTER_DEBUG = "adapter_debug"
+
+
+class EventStage(StrEnum):
+    """Authoritative Forensic Stages (AES v1.4)."""
+
+    IDLE = "idle"
+    GROUNDING = "grounding"
+    SYNTHESIS = "synthesis"
+    SCENARIOS = "scenarios"
+    EVALUATION = "evaluation"
+    STRESS = "stress"
+    SYSTEM = "system"
+
+
+class EventLevel(StrEnum):
+    """Forensic Severity & Type Levels."""
+
+    INFO = "info"
+    SUCCESS = "success"
+    WARNING = "warning"
+    ERROR = "error"
+    TRACE = "trace"
+    ARTIFACT = "artifact"
+
+
+class ForensicEvent(BaseModel):
+    """
+    Structured Forensic Event (Pydantic).
+    Standardized across Core/Enterprise for unified telemetry streaming.
+    """
+
+    id: str = Field(default_factory=lambda: str(int(datetime.now().timestamp() * 1000)))
+    ts: float = Field(default_factory=lambda: datetime.now().timestamp())
+    stage: EventStage
+    level: EventLevel
+    message: str
+    data: dict[str, Any] | None = None
