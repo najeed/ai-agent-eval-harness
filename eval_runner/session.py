@@ -318,7 +318,6 @@ class SessionManager:
                 task_res = await self._execute_node(
                     node, attempt_number, turns_taken, sandbox, history, actions
                 )
-                global_cumulative_history.extend(history)
 
                 if task_res.get("status") == "success":
                     turns_taken += 1
@@ -327,6 +326,9 @@ class SessionManager:
                     print(f"      [Node Failure] {node_id}: {task_res.get('message')}")
                     all_task_results.append(task_res)
                     break
+
+            # 🚀 All nodes executed. Global history is now fully captured in 'history'.
+            global_cumulative_history = list(history)
             # 🧬 Global Evaluation Pass (Industrial AES v1.6.0)
             # Process metrics defined at the scenario level (e.g. DNA_STABLE)
             global_evaluation = self.scenario.get("evaluation", {})
@@ -641,6 +643,11 @@ class SessionManager:
                         match = abs(float(actual_val) - float(expected)) < 1e-9
                     except (ValueError, TypeError):
                         match = False
+                elif mode == "contains":
+                    if isinstance(expected, list):
+                        match = any(str(e).lower() in str(actual_val).lower() for e in expected)
+                    else:
+                        match = str(expected).lower() in str(actual_val).lower()
 
                 if not match:
                     all_passed = False
@@ -761,7 +768,10 @@ class SessionManager:
 
         self.event_bus.emit(
             CoreEvents.ACTION_START,
-            {"action_type": "multi_tool_execution", "tools": [c.get("tool") for c in tool_calls]},
+            {
+                "action_type": "multi_tool_execution",
+                "tools": [c.get("tool") or c.get("tool_name") for c in tool_calls],
+            },
             span_context=turn_ctx.span_context,
         )
 
@@ -832,7 +842,10 @@ class SessionManager:
 
         self.event_bus.emit(
             CoreEvents.ACTION_END,
-            {"action_type": "multi_tool_execution", "tools": [c.get("tool") for c in tool_calls]},
+            {
+                "action_type": "multi_tool_execution",
+                "tools": [c.get("tool") or c.get("tool_name") for c in tool_calls],
+            },
             span_context=turn_ctx.span_context,
         )
 
@@ -1096,6 +1109,7 @@ class SessionManager:
             return (
                 last_content.get("summary")
                 or last_content.get("instructions")
+                or last_content.get("message")
                 or last_content.get("content")
                 or ""
             )
