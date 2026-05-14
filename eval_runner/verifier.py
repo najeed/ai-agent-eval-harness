@@ -281,7 +281,7 @@ class TraceVerifier:
         sha256_hash = cls.compute_signature(p)
         manifest["sha256"] = sha256_hash
 
-        # 5. Cryptographic Provenance
+        # 5. Cryptographic Provenance (Hybrid Approach)
         try:
             private_key = IdentityService.get_private_key(identity_id)
             # Standard: Sign the manifest content (excluding transient fields like provenance_chain)
@@ -299,6 +299,35 @@ class TraceVerifier:
                     "algorithm": "ED25519",
                 }
             )
+
+            # --- [PQC Upgrade] ---
+            if config.PQC_ENABLED:
+                pqc_client = IdentityService.get_pqc_client()
+                if pqc_client:
+                    try:
+                        # Zero-Exposure Signing (ZES) Pattern:
+                        # We hash the manifest locally (SHAKE-256) and send only the digest.
+                        shake_digest = forensics.compute_shake256_digest(manifest_bytes)
+                        pqc_signature = pqc_client.sign_digest(
+                            digest=shake_digest, identity_id=config.CYCLECORE_IDENTITY_ID
+                        )
+
+                        manifest["provenance_chain"].append(
+                            {
+                                "identity": f"{identity_id}@pqc",
+                                "role": "PQC-Evaluator",
+                                "timestamp": timestamp,
+                                "signature": pqc_signature,
+                                "algorithm": "ML-DSA-65",
+                                "provider": config.PQC_PROVIDER,
+                            }
+                        )
+                        logger.info("      [Identity] Hybrid PQC Signature attached (ML-DSA-65)")
+                    except Exception as e:
+                        logger.warning(f"      [Identity] PQC Signing failed (API Error): {e}")
+                else:
+                    logger.warning("      [Identity] PQC enabled but client not available.")
+
         except Exception as e:
             logger.warning(f"Could not cryptographically sign trace as '{identity_id}': {e}")
 
@@ -417,23 +446,51 @@ class TraceVerifier:
             except Exception as e:
                 logger.warning(f"Failed to verify governance TTL: {e}")
 
-            # 4. Cryptographic Proof
+            # 4. Cryptographic Proof (Hybrid/Chain Support)
             chain = manifest.get("provenance_chain", [])
             if not chain:
                 logger.warning("No provenance chain found in v3 manifest.")
                 return False
 
-            # Check the first signature in the chain (Evaluator)
-            last_node = chain[0]
-            identity_id = last_node.get("identity")
-            sig_hex = last_node.get("signature")
-
             manifest_to_verify = manifest.copy()
             manifest_to_verify.pop("provenance_chain", None)
             manifest_bytes = json.dumps(manifest_to_verify, sort_keys=True).encode("utf-8")
 
-            public_key = IdentityService.get_public_key(identity_id)
-            public_key.verify(bytes.fromhex(sig_hex), manifest_bytes)
+            for node in chain:
+                identity_id = node.get("identity")
+                sig_hex = node.get("signature")
+                algorithm = node.get("algorithm", "ED25519")
+
+                if algorithm == "ED25519":
+                    # Local Classical Verification
+                    public_key = IdentityService.get_public_key(identity_id)
+                    public_key.verify(bytes.fromhex(sig_hex), manifest_bytes)
+                    logger.debug(f"      [Verifier] ED25519 Signature Verified: {identity_id}")
+                elif algorithm == "ML-DSA-65":
+                    # PQC Verification (via CycleCore or local validator)
+                    pqc_client = IdentityService.get_pqc_client()
+                    if pqc_client:
+                        # ZES Verification: Hash locally and verify signature
+                        shake_digest = forensics.compute_shake256_digest(manifest_bytes)
+                        is_valid = pqc_client.verify_digest(
+                            signature=sig_hex,
+                            digest=shake_digest,
+                            identity_id=config.CYCLECORE_IDENTITY_ID,
+                        )
+                        if not is_valid:
+                            raise ValueError(f"PQC Signature Mismatch for {identity_id}")
+                        logger.debug(
+                            f"      [Verifier] ML-DSA-65 Signature Verified: {identity_id}"
+                        )
+                    else:
+                        logger.warning(
+                            f"      [Verifier] Skipping PQC verification for {identity_id} "
+                            "(PQC client not available)."
+                        )
+                else:
+                    logger.warning(
+                        f"      [Verifier] Unknown algorithm '{algorithm}' for {identity_id}"
+                    )
 
             return True
         except Exception:

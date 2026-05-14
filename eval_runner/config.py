@@ -323,6 +323,12 @@ ALLOW_SYSTEM_IDENTITY_PROVISIONING = (
     os.getenv("ALLOW_SYSTEM_IDENTITY_PROVISIONING", "false").lower() == "true"
 )
 
+# --- Post-Quantum Cryptography (PQC) ---
+PQC_ENABLED = os.getenv("PQC_ENABLED", "false").lower() == "true"
+PQC_PROVIDER = os.getenv("PQC_PROVIDER", "cyclecore")
+CYCLECORE_API_KEY = os.getenv("CYCLECORE_API_KEY", "")
+CYCLECORE_IDENTITY_ID = os.getenv("CYCLECORE_IDENTITY_ID", "default")
+
 
 def get_forensic_policy() -> dict:
     """Helper to retrieve consolidated forensic policy from registry and env."""

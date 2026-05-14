@@ -23,6 +23,39 @@ class IdentityService:
     Eliminates filesystem 'crawling' in high-level components.
     """
 
+    _pqc_client = None
+
+    @classmethod
+    def get_pqc_client(cls):
+        """
+        Resolves the PQC client based on configuration.
+        Implements lazy-loading and provider discovery.
+        """
+        if not config.PQC_ENABLED:
+            return None
+
+        if cls._pqc_client is not None:
+            return cls._pqc_client
+
+        if config.PQC_PROVIDER == "cyclecore":
+            try:
+                from cyclecore_pq.client import CycleCoreClient
+
+                cls._pqc_client = CycleCoreClient(api_key=config.CYCLECORE_API_KEY)
+                logger.info("   [Identity] CycleCore PQC Client initialized.")
+                return cls._pqc_client
+            except ImportError:
+                logger.error(
+                    "   [Identity] FAIL: 'cyclecore-pq' package not found. "
+                    "Please install it to use PQC features."
+                )
+            except Exception as e:
+                logger.error(f"   [Identity] FAIL: Failed to initialize CycleCore Client: {e}")
+        else:
+            logger.warning(f"   [Identity] Unsupported PQC Provider: {config.PQC_PROVIDER}")
+
+        return None
+
     @staticmethod
     def get_private_key(
         identity_id: str = "system_id", auto_provision: bool = True

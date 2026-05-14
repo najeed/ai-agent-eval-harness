@@ -49,6 +49,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **langsmith** | 0.8.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **Pillow** | 12.2.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
+| **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 
 ## 3. Obligations & Compliance Steps
 To remain compliant with these licenses, the following steps are handled automatically by this repository:
@@ -70,9 +71,9 @@ To remain compliant with these licenses, the following steps are handled automat
 - **Forensic Evidence Ledger**: Every signed run includes a cryptographic ledger that hashes all associated artifacts (HTML reports, trajectory plots) to prevent side-channel tampering.
 - **Seal Hash Protocol**: To ensure the non-repudiability of the certification process itself, AgentV implements a "Seal Hash" anchor. Before appending the `verification_certificate_issued` event to the trace, the engine computes a hash of the trace history. This hash is embedded within the certificate event, mathematically binding the certification to the specific execution history.
 - **Binary Trace Integrity**: To prevent cross-platform hash mismatches (e.g., Windows CRLF vs. Linux LF), all trace appends are performed in binary mode. This ensures that the physical SHA-256 signature remains consistent regardless of the host operating system.
-- **Identity Registry**: Introduced in Core v1.4, the centralized `IdentityService` manages cryptographic standard Ed25519 keys, replacing unmanaged legacy key paths.
+- **Identity Registry**: Introduced in Core v1.4, the centralized `IdentityService` manages cryptographic standard Ed25519 keys, and v1.6.2 introduces support for **Hybrid PQC Signing** (ML-DSA-65) via CycleCore for quantum-resistant non-repudiation.
 - **Environmental Provenance**: AES v1.4 continues to use **Environmental DNA** snapshots, mathematically binding every trace to a **Provisioning Hash** of the registry state.
-- **Hard Gating**: Deployment pipelines are enforced via the `agentv gate` command, which blocks promotion if cryptographic VC v3 signatures or forensic hashes fail to match the sanctioned baseline.
+- **Hard Gating**: Deployment pipelines are enforced via the `agentv gate` command, which blocks promotion if cryptographic VC v3 signatures (Classical or Hybrid) fail to match the sanctioned baseline.
 
 ### Environmental DNA & Evidence Snapshots
 - [x] **Registry Snapshots**: Every evaluation captures a point-in-time snapshot of the resolved environment registry.

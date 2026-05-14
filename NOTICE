@@ -39,5 +39,6 @@ This product includes software developed by the following third-party projects:
 - langsmith (MIT)
 - lxml (BSD-3-Clause)
 - Pillow (HPND)
+- cyclecore-pq (MIT)
 
 For more information, see the LICENSES/ directory and COMPLIANCE.md.

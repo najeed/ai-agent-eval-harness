@@ -1,6 +1,6 @@
 [project]
 name = "agentv"
-version = "1.6.0"
+version = "1.6.2"
 description = "The Enterprise-Grade Reliability Framework for AI Agents"
 readme = "README.md"
 authors = [
@@ -42,6 +42,7 @@ dependencies = [
     "langsmith==0.8.3",
     "lxml==6.1.0",
     "Pillow==12.2.0",
+    "cyclecore-pq==0.3.0",
 ]
 
 [build-system]

@@ -21,6 +21,13 @@ def compute_file_hash(file_path: Path) -> str:
     return sha256.hexdigest()
 
 
+def compute_shake256_digest(data: bytes, length: int = 32) -> bytes:
+    """Computes SHAKE-256 digest of bytes. Required for ML-DSA-65 (ZES)."""
+    shake = hashlib.shake_256()
+    shake.update(data)
+    return shake.digest(length)
+
+
 def list_diff(old: list, new: list) -> list | dict:
     """
     Computes a differential between two lists, optimized for database-style row sets.
