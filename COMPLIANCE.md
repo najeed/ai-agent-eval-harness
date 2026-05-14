@@ -119,7 +119,27 @@ The framework satisfies industrial audit requirements (NIST AI-100-1) by providi
 3. **Provisioning Provenance**: Mathematical proof of the environment state.
 4. **VC v3 Verification**: Non-repudiable Verification Certificates with chained identity support.
 
-## 5. Practical Implementation
+## 5. Hybrid PQC Protocol (AgentV v1.6.2+)
+In response to emerging quantum threats, AgentV v1.6.2 introduces a **Hybrid Post-Quantum Cryptographic (PQC)** stack for forensic signing, aligned with NIST's post-quantum standards.
+
+### Cryptographic Foundation
+- **Classical Layer**: Ed25519 (SHA-512 + Curve25519).
+- **Post-Quantum Layer**: ML-DSA-65 (Module-Lattice-based Digital Signature Algorithm).
+- **Hybrid Binding**: Signatures are chained within the `provenance_chain` of the VC v3.0.0 manifest.
+
+### Zero-Exposure Signing (ZES)
+To maintain the privacy of industrial evaluation data, AgentV implements **Zero-Exposure Signing (ZES)**:
+1.  The evaluation trace and manifest are hashed locally using **SHAKE-256**.
+2.  Only the resulting cryptographic digest is transmitted to the PQC signing provider (CycleCore).
+3.  The raw trace data never leaves the project's security jail, ensuring zero leakage of proprietary trajectories.
+
+### Policy Enforcement (Strict Mode)
+Industrial environments can enforce quantum-safe compliance via `PQC_STRICT_MODE=true`. In this mode:
+- Evaluations will be marked **NON-COMPLIANT** if PQC signing fails or the provider is unreachable.
+- Cryptographic verification (`agentv verify`) will fail if a PQC signature is expected but cannot be validated.
+- The `agentv run` and `agentv evaluate` commands support the `--pqc` flag for granular, per-run enforcement.
+
+## 6. Practical Implementation
 Developers should maintain this structure by:
 1. Updating the versions in `pyproject.toml` and this document simultaneously.
 2. Adding any new third-party dependency licenses to the `LICENSES/` directory.

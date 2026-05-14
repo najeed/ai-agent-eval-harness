@@ -267,6 +267,10 @@ Usage: agentv <command> [options]
     eval_parser.add_argument("-f", "--force", action="store_true")
     eval_parser.add_argument("-v", "--verbose", action="store_true")
     eval_parser.add_argument("--plugin", "--plugins", action="append")
+    eval_parser.add_argument("--pqc", action="store_true", default=None, help="Enable Hybrid PQC")
+    eval_parser.add_argument(
+        "--no-pqc", action="store_true", default=None, help="Disable Hybrid PQC"
+    )
 
     run_parser = subparsers.add_parser("run", help="Single scenario eval")
     run_parser.set_defaults(func=_dispatch_evaluation)
@@ -282,6 +286,10 @@ Usage: agentv <command> [options]
     run_parser.add_argument("--output")
     run_parser.add_argument("--run-log-dir")
     run_parser.add_argument("--plugin", "--plugins", action="append")
+    run_parser.add_argument("--pqc", action="store_true", default=None, help="Enable Hybrid PQC")
+    run_parser.add_argument(
+        "--no-pqc", action="store_true", default=None, help="Disable Hybrid PQC"
+    )
 
     playground_parser = subparsers.add_parser("playground", help="Interactive REPL")
     playground_parser.set_defaults(func=_dispatch_evaluation)
@@ -508,6 +516,16 @@ def main():
         if run_log_dir and isinstance(run_log_dir, str):
             os.environ["RUN_LOG_DIR"] = run_log_dir
             Path(run_log_dir).mkdir(parents=True, exist_ok=True)
+
+        # [PQC] CLI Override Logic
+        if getattr(args, "pqc", None) is True:
+            from . import config as c
+
+            c.PQC_ENABLED = True
+        elif getattr(args, "no_pqc", None) is True:
+            from . import config as c
+
+            c.PQC_ENABLED = False
 
         # Unified Functional Dispatcher
         if hasattr(args, "func") and args.func:

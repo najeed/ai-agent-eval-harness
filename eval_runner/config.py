@@ -327,7 +327,8 @@ ALLOW_SYSTEM_IDENTITY_PROVISIONING = (
 PQC_ENABLED = os.getenv("PQC_ENABLED", "false").lower() == "true"
 PQC_PROVIDER = os.getenv("PQC_PROVIDER", "cyclecore")
 CYCLECORE_API_KEY = os.getenv("CYCLECORE_API_KEY", "")
-CYCLECORE_IDENTITY_ID = os.getenv("CYCLECORE_IDENTITY_ID", "default")
+PQC_IDENTITY_ID = os.getenv("CYCLECORE_IDENTITY_ID", "default")
+PQC_STRICT_MODE = os.getenv("PQC_STRICT_MODE", "false").lower() == "true"
 
 
 def get_forensic_policy() -> dict:

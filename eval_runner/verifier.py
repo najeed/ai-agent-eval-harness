@@ -309,7 +309,7 @@ class TraceVerifier:
                         # We hash the manifest locally (SHAKE-256) and send only the digest.
                         shake_digest = forensics.compute_shake256_digest(manifest_bytes)
                         pqc_signature = pqc_client.sign_digest(
-                            digest=shake_digest, identity_id=config.CYCLECORE_IDENTITY_ID
+                            digest=shake_digest, identity_id=config.PQC_IDENTITY_ID
                         )
 
                         manifest["provenance_chain"].append(
@@ -325,11 +325,20 @@ class TraceVerifier:
                         logger.info("      [Identity] Hybrid PQC Signature attached (ML-DSA-65)")
                     except Exception as e:
                         logger.warning(f"      [Identity] PQC Signing failed (API Error): {e}")
+                        if config.PQC_STRICT_MODE:
+                            raise RuntimeError(
+                                f"PQC_STRICT_MODE Violation: Failed to secure PQC signature: {e}"
+                            ) from e
                 else:
-                    logger.warning("      [Identity] PQC enabled but client not available.")
+                    msg = "PQC enabled but client not available."
+                    logger.warning(f"      [Identity] {msg}")
+                    if config.PQC_STRICT_MODE:
+                        raise RuntimeError(f"PQC_STRICT_MODE Violation: {msg}")
 
         except Exception as e:
             logger.warning(f"Could not cryptographically sign trace as '{identity_id}': {e}")
+            if config.PQC_STRICT_MODE and "PQC_STRICT_MODE Violation" in str(e):
+                raise
 
         # 6. Save Sidecar Manifest
         sidecar_path = p.parent / "run_manifest.json"
@@ -475,7 +484,7 @@ class TraceVerifier:
                         is_valid = pqc_client.verify_digest(
                             signature=sig_hex,
                             digest=shake_digest,
-                            identity_id=config.CYCLECORE_IDENTITY_ID,
+                            identity_id=config.PQC_IDENTITY_ID,
                         )
                         if not is_valid:
                             raise ValueError(f"PQC Signature Mismatch for {identity_id}")
@@ -483,10 +492,13 @@ class TraceVerifier:
                             f"      [Verifier] ML-DSA-65 Signature Verified: {identity_id}"
                         )
                     else:
-                        logger.warning(
-                            f"      [Verifier] Skipping PQC verification for {identity_id} "
+                        msg = (
+                            f"Skipping PQC verification for {identity_id} "
                             "(PQC client not available)."
                         )
+                        logger.warning(f"      [Verifier] {msg}")
+                        if config.PQC_STRICT_MODE:
+                            raise ValueError(f"PQC_STRICT_MODE Violation: {msg}")
                 else:
                     logger.warning(
                         f"      [Verifier] Unknown algorithm '{algorithm}' for {identity_id}"
