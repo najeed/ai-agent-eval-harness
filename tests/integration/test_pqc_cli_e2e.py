@@ -20,18 +20,23 @@ class TestPQCCLI(unittest.TestCase):
         # Ensure runs directory exists for tests
         config.RUN_LOG_DIR.mkdir(parents=True, exist_ok=True)
 
-    @patch("eval_runner.cli.safe_run_async", return_value=0)
+    @patch("eval_runner.cli.safe_run_async")
     @patch("sys.exit")
     def test_run_pqc_flag_enables(self, mock_exit, mock_safe_run):
+        # Industrial Hardening: Ensure coroutines are closed to prevent RuntimeWarnings
+        # in Python 3.14+
+        # This prevents resource leaks and non-deterministic failures in forensic test suites.
+        mock_safe_run.side_effect = lambda coro: coro.close() or 0
         # Simulate 'agentv run --path scenarios/test.json --pqc'
         test_args = ["agentv", "run", "--path", "scenarios/test.json", "--pqc"]
         with patch("sys.argv", test_args):
             cli.main()
             self.assertTrue(config.PQC_ENABLED)
 
-    @patch("eval_runner.cli.safe_run_async", return_value=0)
+    @patch("eval_runner.cli.safe_run_async")
     @patch("sys.exit")
     def test_run_no_pqc_flag_disables(self, mock_exit, mock_safe_run):
+        mock_safe_run.side_effect = lambda coro: coro.close() or 0
         # Start with PQC enabled
         config.PQC_ENABLED = True
         # Simulate 'agentv run --path scenarios/test.json --no-pqc'
@@ -40,9 +45,10 @@ class TestPQCCLI(unittest.TestCase):
             cli.main()
             self.assertFalse(config.PQC_ENABLED)
 
-    @patch("eval_runner.cli.safe_run_async", return_value=0)
+    @patch("eval_runner.cli.safe_run_async")
     @patch("sys.exit")
     def test_evaluate_pqc_flag_enables(self, mock_exit, mock_safe_run):
+        mock_safe_run.side_effect = lambda coro: coro.close() or 0
         # Simulate 'agentv evaluate --path scenarios/ --pqc'
         test_args = ["agentv", "evaluate", "--path", "scenarios/", "--pqc"]
         with patch("sys.argv", test_args):

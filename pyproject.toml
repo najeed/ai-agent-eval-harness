@@ -85,6 +85,8 @@ filterwarnings = [
     "ignore:.*coroutine '_wait_for_close' was never awaited.*:RuntimeWarning",
     "ignore:.*allowed_objects.*:DeprecationWarning",
     "ignore:.*default value of `allowed_objects`.*:UserWarning",
+    "ignore:.*jsonschema.RefResolver is deprecated.*:DeprecationWarning",
+    "ignore:.*Accessing jsonschema.__version__ is deprecated.*:DeprecationWarning",
 ]
 
 [tool.ruff]
