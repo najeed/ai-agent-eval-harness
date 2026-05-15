@@ -14,7 +14,7 @@ SECRET_KEY = "harness-dev-secret-change-me-in-production"
 def generate_handoff_token():
     """Generates a short-lived JWT for frontend-to-plugin handoff."""
     payload = {
-        "exp": datetime.datetime.now(UTC) + datetime.timedelta(seconds=60),
+        "exp": datetime.datetime.now(UTC) + datetime.timedelta(hours=1),
         "iat": datetime.datetime.now(UTC),
         "sub": "admin-user",
         "scope": "console-handoff",

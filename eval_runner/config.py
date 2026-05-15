@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import sys
 import threading
 from pathlib import Path
 
@@ -17,10 +18,14 @@ logger = logging.getLogger(__name__)
 _lib_dir = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = Path(os.getenv("PROJECT_ROOT", os.path.dirname(_lib_dir))).absolute()
 
+# [Industrial Path Hardening]
+
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+
 # Diagnostic: Identify exactly which config.py is being used
 if os.getenv("DEBUG_PATHS", "true").lower() == "true":
-    import sys
-
     sys.stderr.write(f"   [Config] Loading Core Config from: {__file__}\n")
     sys.stderr.write(f"   [Config] PROJECT_ROOT: {PROJECT_ROOT}\n")
 

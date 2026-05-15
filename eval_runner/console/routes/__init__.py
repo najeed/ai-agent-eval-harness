@@ -50,6 +50,7 @@ def register_core_routes(app, nav_registry):
     from eval_runner.config import ENABLE_DEMO
 
     items = [
+        {"id": "core_heading", "title": "Core Harness", "type": "heading"},
         {"id": "dashboard", "title": "Dashboard", "path": "/", "icon": "home", "type": "internal"},
         {
             "id": "scenarios",
