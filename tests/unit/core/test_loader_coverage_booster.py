@@ -179,10 +179,12 @@ def test_load_dataset_dir_errors(tmp_path):
     f2 = d / "f2.json"
     f2.write_text("{}")
 
-    with patch("eval_runner.loader.load_single_scenario") as mock_load:
-        # First one triggers ValidationError
-        # Second one triggers Exception
-        mock_load.side_effect = [ValidationError("Validation Fail"), Exception("Unexpected Fail")]
+    def side_effect(p):
+        if p.name == "f1.json":
+            raise ValidationError("Validation Fail")
+        raise Exception("Unexpected Fail")
+
+    with patch("eval_runner.loader.load_single_scenario", side_effect=side_effect):
         with patch("builtins.print") as mock_print:
             res = loader.load_dataset(str(d))
             assert res == []
