@@ -3895,10 +3895,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#full-cryptographic-gate-ed25519" class="md-nav__link">
+  <a href="#full-cryptographic-gate-hybridpqc" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Full Cryptographic Gate (ED25519)
+        Full Cryptographic Gate (Hybrid/PQC)
       
     </span>
   </a>
@@ -3954,8 +3954,10 @@
 <hr />
 <h2 id="1-key-concepts">1. Key Concepts<a class="headerlink" href="#1-key-concepts" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Identity Registry</strong>: Centralized service (<code>IdentityService</code>) managing Ed25519 keys for evaluators and auditors.</li>
+<li><strong>Identity Registry</strong>: Centralized service (<code>IdentityService</code>) managing Ed25519 and PQC keys for evaluators and auditors.</li>
 <li><strong>Verification Certificate (VC) v3</strong>: A signed forensic manifest (<code>run_manifest.json</code>) containing hashes for the trace AND sidecar artifacts.</li>
+<li><strong>Hybrid PQC Signing</strong>: Support for quantum-resistant non-repudiation using ML-DSA-65 signatures (AgentV v1.6.2+).</li>
+<li><strong>Zero-Exposure Signing (ZES)</strong>: A privacy-first protocol where only cryptographic digests are sent for PQC signing, keeping raw data local.</li>
 <li><strong>Forensic Evidence Ledger</strong>: Part of the VC v3 that lists SHA-256 hashes of all generated artifacts to prevent side-channel tampering.</li>
 <li><strong>Identity Normalization</strong>: Automatic renaming of temporary traces (e.g., <code>tmp_*.jsonl</code>) to the <code>run.jsonl</code> during certification.</li>
 <li><strong>NIST AI-100-1 Scoring</strong>: A multi-dimensional <code>VerificationResult</code> schema incorporating a Weighted Severity Model (WSM).</li>
@@ -4039,12 +4041,13 @@ This will produce a <code>run_manifest.json</code> sidecar containing the <stron
 <p>Verifies that the trace ended in <code>SUCCESS</code> and its internal hashes match:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>agentv<span class="w"> </span>gate<span class="w"> </span>--run-id<span class="w"> </span>latest
 </code></pre></div></p>
-<h3 id="full-cryptographic-gate-ed25519">Full Cryptographic Gate (ED25519)<a class="headerlink" href="#full-cryptographic-gate-ed25519" title="Permanent link">&para;</a></h3>
-<p>Verifies the signature against a public key and matches it to a specific scenario fingerprint:
+<h3 id="full-cryptographic-gate-hybridpqc">Full Cryptographic Gate (Hybrid/PQC)<a class="headerlink" href="#full-cryptographic-gate-hybridpqc" title="Permanent link">&para;</a></h3>
+<p>Verifies the signature against public keys (Classical + PQC) and matches it to a specific scenario fingerprint. Requires <code>PQC_ENABLED=true</code> for hybrid validation:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>agentv<span class="w"> </span>gate<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span>--verify-ledger<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span>--hash<span class="w"> </span><span class="si">${</span><span class="p">{ github.sha </span><span class="si">}</span><span class="o">}</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span>--pqc<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span>--hash<span class="w"> </span><span class="si">${</span><span class="p">{ github.sha </span><span class="si">}</span><span class="o">}</span>
 </code></pre></div></p>
 <hr />
 <h2 id="6-integration-example-github-actions">6. Integration Example: GitHub Actions<a class="headerlink" href="#6-integration-example-github-actions" title="Permanent link">&para;</a></h2>
