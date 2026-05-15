@@ -6,8 +6,10 @@ The **Trust Protocol** establishes a non-repudiable forensic audit trail for AI 
 
 ## 1. Key Concepts
 
-- **Identity Registry**: Centralized service (`IdentityService`) managing Ed25519 keys for evaluators and auditors.
+- **Identity Registry**: Centralized service (`IdentityService`) managing Ed25519 and PQC keys for evaluators and auditors.
 - **Verification Certificate (VC) v3**: A signed forensic manifest (`run_manifest.json`) containing hashes for the trace AND sidecar artifacts.
+- **Hybrid PQC Signing**: Support for quantum-resistant non-repudiation using ML-DSA-65 signatures (AgentV v1.6.2+).
+- **Zero-Exposure Signing (ZES)**: A privacy-first protocol where only cryptographic digests are sent for PQC signing, keeping raw data local.
 - **Forensic Evidence Ledger**: Part of the VC v3 that lists SHA-256 hashes of all generated artifacts to prevent side-channel tampering.
 - **Identity Normalization**: Automatic renaming of temporary traces (e.g., `tmp_*.jsonl`) to the `run.jsonl` during certification.
 - **NIST AI-100-1 Scoring**: A multi-dimensional `VerificationResult` schema incorporating a Weighted Severity Model (WSM).
@@ -69,12 +71,13 @@ Verifies that the trace ended in `SUCCESS` and its internal hashes match:
 agentv gate --run-id latest
 ```
 
-### Full Cryptographic Gate (ED25519)
-Verifies the signature against a public key and matches it to a specific scenario fingerprint:
+### Full Cryptographic Gate (Hybrid/PQC)
+Verifies the signature against public keys (Classical + PQC) and matches it to a specific scenario fingerprint. Requires `PQC_ENABLED=true` for hybrid validation:
 ```bash
 agentv gate \
   --run-id <id> \
   --verify-ledger \
+  --pqc \
   --hash ${{ github.sha }}
 ```
 

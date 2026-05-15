@@ -5,14 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.2] - 2026-05-14
+## [1.6.2] - 2026-05-15
 
 ### Hybrid PQC Signing & Forensic Security
 *   **Hybrid PQC Signing (ML-DSA-65)**: Integrated the NIST-standardized Post-Quantum Cryptography (PQC) algorithm (ML-DSA-65) for non-repudiable signing. Certificates now feature a dual provenance chain: classical (ED25519) and quantum-resistant (ML-DSA-65).
 *   **Zero-Exposure Signing (ZES)**: Implemented the ZES pattern via `cyclecore-pq` (v0.3.0). Local SHAKE-256 digests are computed locally, ensuring sensitive audit data never leaves the system boundary during PQC signing.
 *   **Cryptographic Utility Expansion**: Added `compute_shake256_digest` to `forensics.py` and extended `IdentityService` to manage remote PQC providers.
-*   **Industrial Compliance Audit**: Updated `COMPLIANCE.md` and `NOTICE` to reflect the CycleCore integration and maintain MIT license transparency.
 *   **Standardized Configuration**: Introduced `PQC_ENABLED`, `PQC_PROVIDER`, and CycleCore-specific environment variables for flexible, secure-by-default deployment.
+
+### CLI & Compliance Hardening
+*   **Centralized PQC CLI Controls**: Extended the `agentv` CLI with unified `--pqc` and `--no-pqc` flags across `run`, `evaluate`, `gate`, `verify`, `certify`, and `report` commands. Implemented a centralized `_add_pqc_args` helper to ensure interface consistency.
+*   **Internalized Compliance Orchestration**: Introduced `eval_runner/compliance.py` featuring a production-grade `ComplianceService`. This internalizes the logic for PQC status verification and behavioral branching (Strict vs. Fallback modes), resolving external dependency issues in CI environments.
+*   **Industrial Test Parity**: Expanded the unit test suite with `test_pqc_cli_handlers.py` and `test_compliance_pqc.py` for hybrid-signature validation and strict-mode gating.
 
 ## [1.6.1] - 2026-05-10
 

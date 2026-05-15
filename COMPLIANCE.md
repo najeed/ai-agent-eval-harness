@@ -13,6 +13,8 @@ The AgentV Verification Framework is distributed under the **Apache License 2.0*
 ## 2. Third-Party Dependency Licenses
 The following table summarizes the licenses of our core dependencies. All used licenses are permissive (MIT, BSD, Apache 2.0).
 
+| Package | Version | License | License File |
+| :--- | :--- | :--- | :--- |
 | **aiohttp** | 3.13.5 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **Flask** | 3.1.3 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **flask-cors** | 6.0.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
@@ -138,6 +140,9 @@ Industrial environments can enforce quantum-safe compliance via `PQC_STRICT_MODE
 - Evaluations will be marked **NON-COMPLIANT** if PQC signing fails or the provider is unreachable.
 - Cryptographic verification (`agentv verify`) will fail if a PQC signature is expected but cannot be validated.
 - The `agentv run` and `agentv evaluate` commands support the `--pqc` flag for granular, per-run enforcement.
+
+> [!TIP]
+> For a deep-dive into the ZES architecture, environment variables, and troubleshooting, see the [Hybrid PQC Signing Guide](docs/src/content/docs/auditor/hybrid-signing.md).
 
 ## 6. Practical Implementation
 Developers should maintain this structure by:

@@ -36,6 +36,12 @@ def _invalidate_parser_cache():
 # --- LAZY DISPATCHERS (Zero-Touch Infrastructure) ---
 
 
+def _add_pqc_args(parser: argparse.ArgumentParser):
+    """Industrial Utility: Centralized PQC argument registration."""
+    parser.add_argument("--pqc", action="store_true", default=None, help="Enable Hybrid PQC")
+    parser.add_argument("--no-pqc", action="store_true", default=None, help="Disable Hybrid PQC")
+
+
 def _dispatch_console(args):
     from .console.app import run_server
 
@@ -267,10 +273,7 @@ Usage: agentv <command> [options]
     eval_parser.add_argument("-f", "--force", action="store_true")
     eval_parser.add_argument("-v", "--verbose", action="store_true")
     eval_parser.add_argument("--plugin", "--plugins", action="append")
-    eval_parser.add_argument("--pqc", action="store_true", default=None, help="Enable Hybrid PQC")
-    eval_parser.add_argument(
-        "--no-pqc", action="store_true", default=None, help="Disable Hybrid PQC"
-    )
+    _add_pqc_args(eval_parser)
 
     run_parser = subparsers.add_parser("run", help="Single scenario eval")
     run_parser.set_defaults(func=_dispatch_evaluation)
@@ -286,10 +289,7 @@ Usage: agentv <command> [options]
     run_parser.add_argument("--output")
     run_parser.add_argument("--run-log-dir")
     run_parser.add_argument("--plugin", "--plugins", action="append")
-    run_parser.add_argument("--pqc", action="store_true", default=None, help="Enable Hybrid PQC")
-    run_parser.add_argument(
-        "--no-pqc", action="store_true", default=None, help="Disable Hybrid PQC"
-    )
+    _add_pqc_args(run_parser)
 
     playground_parser = subparsers.add_parser("playground", help="Interactive REPL")
     playground_parser.set_defaults(func=_dispatch_evaluation)
@@ -347,6 +347,7 @@ Usage: agentv <command> [options]
     verify_parser.add_argument(
         "--path", "--run-id", dest="run_id", required=True, help="[SSOT] Mandatory Run ID"
     )
+    _add_pqc_args(verify_parser)
 
     certify_parser = subparsers.add_parser("certify", help="Generate VC")
     certify_parser.set_defaults(func=_dispatch_evaluation)
@@ -359,6 +360,7 @@ Usage: agentv <command> [options]
     certify_parser.add_argument("--policy-ref")
     certify_parser.add_argument("--ttl", type=int)
     certify_parser.add_argument("--fingerprint")
+    _add_pqc_args(certify_parser)
 
     gate_parser = subparsers.add_parser("gate", help="CI/CD Gate")
     gate_parser.set_defaults(func=_dispatch_evaluation)
@@ -367,6 +369,7 @@ Usage: agentv <command> [options]
     )
     gate_parser.add_argument("--hash")
     gate_parser.add_argument("--verify-ledger", action="store_true")
+    _add_pqc_args(gate_parser)
 
     aes_parser = subparsers.add_parser("aes", help="AES tools")
     aes_sub = aes_parser.add_subparsers(dest="aes_command")
@@ -423,6 +426,7 @@ Usage: agentv <command> [options]
     report_parser.set_defaults(func=_dispatch_analysis)
     report_parser.add_argument("--run-id", required=True)
     report_parser.add_argument("--share", action="store_true")
+    _add_pqc_args(report_parser)
 
     leaderboard_parser = subparsers.add_parser("leaderboard", help="Generate leaderboard")
     leaderboard_parser.set_defaults(func=_dispatch_analysis)
