@@ -19,24 +19,24 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **Flask** | 3.1.3 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **flask-cors** | 6.0.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **Werkzeug** | 3.1.8 | BSD | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **requests** | 2.33.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **jsonschema** | 4.26.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **sentence-transformers** | 5.4.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **numpy** | 2.4.4 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **sqlalchemy** | 2.0.38 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **datasets** | 4.8.4 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **sentence-transformers** | 5.5.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **numpy** | 2.4.5 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **sqlalchemy** | 2.0.49 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **datasets** | 4.8.5 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **PyJWT** | 2.12.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **cryptography** | 46.0.7 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **opentelemetry-api** | 1.41.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **opentelemetry-sdk** | 1.41.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **google-genai** | 2.0.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **pypdf** | 6.10.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **cryptography** | 48.0.0 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **opentelemetry-api** | 1.41.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **opentelemetry-sdk** | 1.41.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **google-genai** | 2.4.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **pypdf** | 6.11.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **streamlit** | 1.57.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **pandas** | 3.0.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **pandas** | 3.0.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pygments** | 2.20.0 | BSD-2-Clause | [BSD-2-Clause.txt](LICENSES/BSD-2-Clause.txt) |
-| **langchain-core** | 1.3.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-core** | 1.4.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **pyasn1** | 0.6.3 | BSD-2-Clause | [BSD-2-Clause.txt](LICENSES/BSD-2-Clause.txt) |
 | **python-dotenv** | 1.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
@@ -48,8 +48,8 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **urllib3** | 2.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **Authlib** | 1.7.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **langchain-openai** | 1.2.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langsmith** | 0.8.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **lxml** | 6.1.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **langsmith** | 0.8.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **lxml** | 6.1.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **Pillow** | 12.2.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 
@@ -140,9 +140,6 @@ Industrial environments can enforce quantum-safe compliance via `PQC_STRICT_MODE
 - Evaluations will be marked **NON-COMPLIANT** if PQC signing fails or the provider is unreachable.
 - Cryptographic verification (`agentv verify`) will fail if a PQC signature is expected but cannot be validated.
 - The `agentv run` and `agentv evaluate` commands support the `--pqc` flag for granular, per-run enforcement.
-
-> [!TIP]
-> For a deep-dive into the ZES architecture, environment variables, and troubleshooting, see the [Hybrid PQC Signing Guide](docs/src/content/docs/auditor/hybrid-signing.md).
 
 ## 6. Practical Implementation
 Developers should maintain this structure by:

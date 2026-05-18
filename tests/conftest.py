@@ -153,3 +153,67 @@ def isolate_plugin_registry(tmp_path, monkeypatch):
     monkeypatch.setenv("STRICT_PLUGINS", "true")
 
     return registry_file
+
+
+@pytest.fixture
+def pqc_client():
+    """
+    Conditional, environment-gated provider for the real CycleCoreClient.
+    Protects against sys.modules mock pollution from other unit/integration tests
+    by temporarily clearing the mocked cyclecore modules, performing the import,
+    and restoring the mocks for subsequent tests.
+    """
+    import os
+    import sys
+
+    if not os.getenv("CYCLECORE_API_KEY"):
+        pytest.skip("CYCLECORE_API_KEY not set; skipping live CycleCore test.")
+
+    # Save existing sys.modules to isolate from mock pollution in other test suites
+    saved_modules = {}
+    for mod_name in ["cyclecore_pq", "cyclecore_pq.client"]:
+        if mod_name in sys.modules:
+            saved_modules[mod_name] = sys.modules.pop(mod_name)
+
+    try:
+        try:
+            from cyclecore_pq.client import CycleCoreClient
+        except ImportError as e:
+            pytest.skip(f"cyclecore-pq package is not installed: {e}")
+        client = CycleCoreClient(api_key=os.getenv("CYCLECORE_API_KEY"))
+
+        # Dynamically inject sign_digest and verify_digest to match ZES interface
+        import base64
+
+        def sign_digest(digest: bytes, identity_id: str = None) -> str:
+            result = client.sign(digest)
+            return result.signature
+
+        def verify_digest(signature: str | bytes, digest: bytes, identity_id: str = None) -> bool:
+            if isinstance(signature, str):
+                try:
+                    # Try base64 decoding first
+                    sig_bytes = base64.b64decode(signature)
+                    if len(sig_bytes) < 100:
+                        raise ValueError()
+                except Exception:
+                    try:
+                        sig_bytes = bytes.fromhex(signature)
+                    except Exception:
+                        sig_bytes = signature.encode()
+            else:
+                sig_bytes = signature
+
+            try:
+                result = client.verify(digest, sig_bytes)
+                return result.valid
+            except Exception:
+                return False
+
+        client.sign_digest = sign_digest
+        client.verify_digest = verify_digest
+        return client
+    finally:
+        # Restore mock objects in sys.modules to prevent breaking other tests
+        for mod_name, mod_obj in saved_modules.items():
+            sys.modules[mod_name] = mod_obj

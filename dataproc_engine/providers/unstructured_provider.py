@@ -155,6 +155,16 @@ class UnstructuredProvider(BaseProvider):
                         return []
             else:
                 logger.error(f"Input path not found: {path}")
+                if self.allow_simulation:
+                    logger.info("Simulation mode allowed. Producing simulated document artifact.")
+                    return [
+                        self.create_simulated_artifact(
+                            id=f"sim-DOC-{hashlib.sha256(path.encode()).hexdigest()[:8]}",
+                            content="This is a simulated industrial document for testing purposes.",
+                            source_url=f"local://simulation/{os.path.basename(path)}",
+                            metadata={"type": "text/plain"},
+                        )
+                    ]
                 return []
 
         # Safety check for hashlib (requires bytes-like object)

@@ -9,14 +9,30 @@ We actively maintain and provide security updates for the following versions:
 | Latest  | :white_check_mark: |
 | < Latest| :x:                |
 
-## Industrial Security & Trust (v1.2.3)
+## Industrial Security & Trust (v1.6.2)
 
-The Evaluation Harness v1.2.3 includes advanced **Industrial Security Hardening** and a **Cryptographic Trust Protocol** to ensure the integrity of your evaluations.
+The Evaluation Harness v1.6.2 includes advanced **Industrial Security Hardening**, a **Cryptographic Trust Protocol (v3.0.0)**, and **Post-Quantum Cryptographic (PQC) Certification** to guarantee the integrity and non-repudiability of your evaluations.
 
 For detailed technical information on these features, please refer to:
+- **[COMPLIANCE.md](COMPLIANCE.md)**: Deep dive into **NIST AI RMF Alignment**, the **Weighted Severity Model (WSM)**, and our **Hybrid PQC Protocol**.
 - **[Industrial Security Hardening (R1-R3)](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md#5-industrial-security-hardening-v123)**: Details on SSRF protection, telemetry masking, and operational controls.
 - **[The Trust Protocol](docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md#6-the-trust-protocol-fingerprinting--certification)**: Overview of trace fingerprinting and the public Certification API.
-- **[Trust Protocol Technical Spec](docs-old/spec/trust_protocol_spec_v1.md)**: Deep dive into SHA-256 and ED25519 implementation for **custom extensions**.
+
+### Core Security Guarantees
+
+1. **Hybrid Post-Quantum Cryptography (PQC)**:
+   * Aligned with NIST standards, evaluations employ a dual-layer cryptographic signature scheme: a **Classical Layer (Ed25519)** coupled with a **Post-Quantum Layer (ML-DSA-65)**.
+   * Signatures are chained inside the `provenance_chain` of the **Verification Certificate (VC) v3.0.0** manifest, protecting reports against quantum-aided decryption or forgery.
+
+2. **Zero-Exposure Signing (ZES)**:
+   * To prevent any leak of proprietary trajectories, agent data, or environment configurations, the framework implements **Zero-Exposure Signing (ZES)**.
+   * Traces are hashed locally using **SHAKE-256**, and only the resulting digest is securely transmitted to post-quantum key management endpoints (such as CycleCore) for signing.
+
+3. **Strict Policy Enforcement (Fail-Closed)**:
+   * When `PQC_STRICT_MODE=true` is enabled, the pipeline enforces a strict, fail-closed policy. If the PQC validation fails or the provider is unreachable, evaluations are automatically marked **NON-COMPLIANT**, blocking promotion.
+
+4. **Hardened Sandboxed Isolation (VFS/Jails)**:
+   * Untrusted agent code is executed within structurally isolated sandboxes utilizing **Virtual File Systems (VFS)** and restricted jail environments. This ensures tight path jail enforcement, memory limits, and strict network routing restrictions to prevent jailbreak attempts.
 
 ---
 

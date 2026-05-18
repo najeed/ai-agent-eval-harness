@@ -42,7 +42,44 @@ class IdentityService:
                 from cyclecore_pq.client import CycleCoreClient
 
                 cls._pqc_client = CycleCoreClient(api_key=config.CYCLECORE_API_KEY)
-                logger.info("   [Identity] CycleCore PQC Client initialized.")
+
+                # Dynamically inject sign_digest and verify_digest to match ZES interface
+                import base64
+
+                def sign_digest(digest: bytes, identity_id: str = None) -> str:
+                    result = cls._pqc_client.sign(digest)
+                    return result.signature
+
+                def verify_digest(
+                    signature: str | bytes, digest: bytes, identity_id: str = None
+                ) -> bool:
+                    if isinstance(signature, str):
+                        try:
+                            # Try base64 decoding first
+                            sig_bytes = base64.b64decode(signature)
+                            if len(sig_bytes) < 100:
+                                raise ValueError()
+                        except Exception:
+                            try:
+                                sig_bytes = bytes.fromhex(signature)
+                            except Exception:
+                                sig_bytes = signature.encode()
+                    else:
+                        sig_bytes = signature
+
+                    try:
+                        result = cls._pqc_client.verify(digest, sig_bytes)
+                        return result.valid
+                    except Exception as e:
+                        logger.error(f"   [Identity] PQC Verification exception: {e}")
+                        return False
+
+                cls._pqc_client.sign_digest = sign_digest
+                cls._pqc_client.verify_digest = verify_digest
+
+                logger.info(
+                    "   [Identity] CycleCore PQC Client initialized with ZES interface extension."
+                )
                 return cls._pqc_client
             except ImportError:
                 logger.error(

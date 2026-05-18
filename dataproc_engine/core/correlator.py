@@ -78,19 +78,47 @@ class DataCorrelator:
 
                     # Telecom Enrichment
                     if "telecom" in entity_map:
-                        from rapidfuzz import process, utils
-
                         tel_names = list(entity_map["telecom"].keys())
-                        # Find the best match with a score threshold
-                        match = process.extractOne(
-                            fin_name, tel_names, processor=utils.default_process, score_cutoff=85
-                        )
+                        matched_name = None
+                        score = 0.0
 
-                        if match:
-                            matched_name = match[0]
+                        try:
+                            from rapidfuzz import process, utils
+
+                            # Find the best match with a score threshold
+                            match = process.extractOne(
+                                fin_name,
+                                tel_names,
+                                processor=utils.default_process,
+                                score_cutoff=85,
+                            )
+                            if match:
+                                matched_name = match[0]
+                                score = match[1]
+                        except ImportError:
+                            # Robust Fallback to standard library difflib & substring checking
+                            import difflib
+
+                            # Check substring containment (e.g. "Apple" in "Apple Inc.")
+                            for name in tel_names:
+                                if name in fin_name or fin_name in name:
+                                    matched_name = name
+                                    score = 95.0
+                                    break
+
+                            if not matched_name:
+                                matches = difflib.get_close_matches(
+                                    fin_name, tel_names, n=1, cutoff=0.5
+                                )
+                                if matches:
+                                    matched_name = matches[0]
+                                    score = 80.0  # Simulated score for fallback matches
+
+                        if matched_name:
                             tel_record = entity_map["telecom"][matched_name]
                             logger.info(
-                                f"Fuzzy Match: {fin_name} <-> {matched_name} (Score: {match[1]})"
+                                "Fuzzy Match (Fallback enabled): "
+                                f"{fin_name} <-> {matched_name} (Score: {score})"
                             )
                             fin_record.data["telecom_footprint_speed"] = tel_record.data.get(
                                 "value"
