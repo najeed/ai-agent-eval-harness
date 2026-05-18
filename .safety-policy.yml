@@ -1,0 +1,7 @@
+# Safety Policy File (AgentV v1.6.4)
+# Configures exclusions and custom parameters for the Safety CLI dependency scans.
+
+security:
+  ignore-vulnerabilities:
+    88512:
+      reason: "PostgreSQL Cloud SQL package vulnerability is not applicable as we use SQLite internally."

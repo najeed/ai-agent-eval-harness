@@ -43,9 +43,13 @@ async def reset_sessions():
 
     try:
         await SessionManager.close_all()
-        # Small grace period to allow aiohttp's _wait_for_close to complete (AES v1.4 Hardening)
-        # We do multiple yields to the event loop to ensure all pending tasks are processed
-        await asyncio.sleep(0.01)
+        # Cleanly await any pending background tasks (such as aiohttp's _wait_for_close)
+        # to ensure no unawaited coroutine warnings under Python 3.14+
+        await asyncio.sleep(0.05)
+        loop = asyncio.get_running_loop()
+        pending = [t for t in asyncio.all_tasks(loop) if t is not asyncio.current_task(loop)]
+        if pending:
+            await asyncio.wait(pending, timeout=0.1)
     except Exception:
         pass
 
@@ -124,6 +128,9 @@ pytest_plugins = []
 def pytest_configure(config):
     """Register custom markers and configure pytest-asyncio for Python 3.14+."""
     config.addinivalue_line("markers", "asyncio: mark test as an asyncio test")
+    config.addinivalue_line(
+        "markers", "live: environment-gated integration tests running against CycleCore"
+    )
 
 
 @pytest.fixture(autouse=True)
