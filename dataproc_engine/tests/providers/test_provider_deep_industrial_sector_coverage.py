@@ -321,7 +321,9 @@ async def test_unstructured_provider_deep_logic(mock_llm, tmp_path):
     p_none = UnstructuredProvider({"allow_simulation": True}, llm_manager=mock_llm)
     assert len(await p_none.extract()) > 0  # generic sim
 
-    p_fail = UnstructuredProvider({"input_uri": "nonexistent.txt"}, llm_manager=mock_llm)
+    p_fail = UnstructuredProvider(
+        {"input_uri": "nonexistent.txt", "allow_simulation": False}, llm_manager=mock_llm
+    )
     assert await p_fail.extract() == []
 
     # Integrity fail

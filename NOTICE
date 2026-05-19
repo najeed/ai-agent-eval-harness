@@ -40,5 +40,6 @@ This product includes software developed by the following third-party projects:
 - lxml (BSD-3-Clause)
 - Pillow (HPND)
 - cyclecore-pq (MIT)
+- idna (BSD-3-Clause)
 
 For more information, see the LICENSES/ directory and COMPLIANCE.md.

@@ -47,3 +47,4 @@ langchain-openai==1.2.1
 langsmith==0.8.5
 lxml==6.1.1
 Pillow==12.2.0
+idna==3.15
