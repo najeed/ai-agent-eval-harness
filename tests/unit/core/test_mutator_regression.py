@@ -214,3 +214,293 @@ async def test_async_pipeline_service():
     pipeline.register_interceptor(AsyncUpperInterceptor())
     result = await pipeline.execute("async_hello")
     assert result == "ASYNC_HELLO_CORE"
+
+
+def test_sync_pipeline_thread_local_hasattr():
+    """Verify hasattr branch in sync PipelineService registration."""
+    pipeline = PipelineService[str, str](lambda x: x, "TestSync")
+    # Access _interceptors first to populate thread local hasattr
+    _ = pipeline._interceptors
+
+    class DummyInterceptor(Interceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return True
+
+        def intercept(self, request: str, next_interceptor) -> str:
+            return next_interceptor(request)
+
+    interceptor = DummyInterceptor()
+    pipeline.register_interceptor(interceptor)
+    assert interceptor in pipeline._interceptors
+
+
+@pytest.mark.asyncio
+async def test_async_pipeline_thread_local_hasattr():
+    """Verify hasattr branch in AsyncPipelineService registration."""
+
+    async def fallback(x):
+        return x
+
+    pipeline = AsyncPipelineService[str, str](fallback, "TestAsync")
+    _ = pipeline._interceptors
+
+    class DummyAsyncInterceptor(AsyncInterceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return True
+
+        async def intercept(self, request: str, next_interceptor) -> str:
+            return await next_interceptor(request)
+
+    interceptor = DummyAsyncInterceptor()
+    pipeline.register_interceptor(interceptor)
+    assert interceptor in pipeline._interceptors
+
+
+def test_sync_pipeline_reset():
+    """Verify reset clears both global and thread-local sync interceptors."""
+    pipeline = PipelineService[str, str](lambda x: x, "TestSync")
+
+    class DummyInterceptor(Interceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return True
+
+        def intercept(self, request: str, next_interceptor) -> str:
+            return next_interceptor(request)
+
+    interceptor = DummyInterceptor()
+    pipeline.register_interceptor(interceptor)
+    _ = pipeline._interceptors
+
+    pipeline.reset()
+    assert len(pipeline._global_interceptors) == 0
+    assert len(pipeline._interceptors) == 0
+
+
+@pytest.mark.asyncio
+async def test_async_pipeline_reset():
+    """Verify reset clears both global and thread-local async interceptors."""
+
+    async def fallback(x):
+        return x
+
+    pipeline = AsyncPipelineService[str, str](fallback, "TestAsync")
+
+    class DummyAsyncInterceptor(AsyncInterceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return True
+
+        async def intercept(self, request: str, next_interceptor) -> str:
+            return await next_interceptor(request)
+
+    interceptor = DummyAsyncInterceptor()
+    pipeline.register_interceptor(interceptor)
+    _ = pipeline._interceptors
+
+    pipeline.reset()
+    assert len(pipeline._global_interceptors) == 0
+    assert len(pipeline._interceptors) == 0
+
+
+def test_sync_pipeline_override_context_manager():
+    """Verify sync override context manager registers temporarily and clears completely."""
+    pipeline = PipelineService[str, str](lambda x: x, "TestSync")
+
+    class DummyInterceptor(Interceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return True
+
+        def intercept(self, request: str, next_interceptor) -> str:
+            return next_interceptor(request)
+
+    interceptor = DummyInterceptor()
+    _ = pipeline._interceptors
+
+    with pipeline.override_interceptor(interceptor):
+        assert interceptor in pipeline._global_interceptors
+        assert interceptor in pipeline._interceptors
+
+    assert interceptor not in pipeline._global_interceptors
+    assert interceptor not in pipeline._interceptors
+
+
+@pytest.mark.asyncio
+async def test_async_pipeline_override_context_manager():
+    """Verify async override context manager registers temporarily and clears completely."""
+
+    async def fallback(x):
+        return x
+
+    pipeline = AsyncPipelineService[str, str](fallback, "TestAsync")
+
+    class DummyAsyncInterceptor(AsyncInterceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return True
+
+        async def intercept(self, request: str, next_interceptor) -> str:
+            return await next_interceptor(request)
+
+    interceptor = DummyAsyncInterceptor()
+    _ = pipeline._interceptors
+
+    async with pipeline.override_interceptor(interceptor):
+        assert interceptor in pipeline._global_interceptors
+        assert interceptor in pipeline._interceptors
+
+    assert interceptor not in pipeline._global_interceptors
+    assert interceptor not in pipeline._interceptors
+
+
+def test_sync_pipeline_recursion_protection():
+    """Verify cycle and max recursion protection in sync pipeline execution."""
+    pipeline = PipelineService[str, str](lambda x: x, "TestSync")
+
+    class DummyInterceptor(Interceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return True
+
+        def intercept(self, request: str, next_interceptor) -> str:
+            return next_interceptor(request)
+
+    for _ in range(55):
+        pipeline.register_interceptor(DummyInterceptor())
+
+    with pytest.raises(RecursionError) as exc_info:
+        pipeline.execute("start")
+    assert "pipeline depth exceeded" in str(exc_info.value)
+
+
+@pytest.mark.asyncio
+async def test_async_pipeline_recursion_protection():
+    """Verify cycle and max recursion protection in async pipeline execution."""
+
+    async def fallback(x):
+        return x
+
+    pipeline = AsyncPipelineService[str, str](fallback, "TestAsync")
+
+    class DummyAsyncInterceptor(AsyncInterceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return True
+
+        async def intercept(self, request: str, next_interceptor) -> str:
+            return await next_interceptor(request)
+
+    for _ in range(55):
+        pipeline.register_interceptor(DummyAsyncInterceptor())
+
+    with pytest.raises(RecursionError) as exc_info:
+        await pipeline.execute("start")
+    assert "pipeline depth exceeded" in str(exc_info.value)
+
+
+@pytest.mark.parametrize("exc", [RecursionError, KeyboardInterrupt, SystemExit, GeneratorExit])
+def test_sync_pipeline_control_exceptions(exc):
+    """Verify that control exceptions propagate immediately in sync pipeline."""
+    pipeline = PipelineService[str, str](lambda x: x, "TestSync")
+
+    class AbortInterceptor(Interceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return True
+
+        def intercept(self, request: str, next_interceptor) -> str:
+            raise exc("Abort")
+
+    pipeline.register_interceptor(AbortInterceptor())
+    with pytest.raises(exc):
+        pipeline.execute("start")
+
+
+def test_sync_pipeline_graceful_bypass_exception():
+    """Verify that standard exceptions are logged and bypassed gracefully in sync pipeline."""
+    pipeline = PipelineService[str, str](lambda x: x + "_core", "TestSync")
+
+    class CrashInterceptor(Interceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return True
+
+        def intercept(self, request: str, next_interceptor) -> str:
+            raise ValueError("Standard crash")
+
+    pipeline.register_interceptor(CrashInterceptor())
+    res = pipeline.execute("hello")
+    assert res == "hello_core"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("exc", [RecursionError, KeyboardInterrupt, SystemExit, GeneratorExit])
+async def test_async_pipeline_control_exceptions(exc):
+    """Verify that control exceptions propagate immediately in async pipeline."""
+
+    async def fallback(x):
+        return x
+
+    pipeline = AsyncPipelineService[str, str](fallback, "TestAsync")
+
+    class AsyncAbortInterceptor(AsyncInterceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return True
+
+        async def intercept(self, request: str, next_interceptor) -> str:
+            raise exc("Abort")
+
+    pipeline.register_interceptor(AsyncAbortInterceptor())
+    with pytest.raises(exc):
+        await pipeline.execute("start")
+
+
+@pytest.mark.asyncio
+async def test_async_pipeline_graceful_bypass_exception():
+    """Verify that standard exceptions are logged and bypassed gracefully in async pipeline."""
+
+    async def fallback(x):
+        return x + "_core"
+
+    pipeline = AsyncPipelineService[str, str](fallback, "TestAsync")
+
+    class AsyncCrashInterceptor(AsyncInterceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return True
+
+        async def intercept(self, request: str, next_interceptor) -> str:
+            raise ValueError("Standard crash")
+
+    pipeline.register_interceptor(AsyncCrashInterceptor())
+    res = await pipeline.execute("hello")
+    assert res == "hello_core"
+
+
+def test_sync_pipeline_negative_intercept():
+    """Verify skip branch when sync can_intercept returns False."""
+    pipeline = PipelineService[str, str](lambda x: x + "_core", "TestSync")
+
+    class SkipInterceptor(Interceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return False
+
+        def intercept(self, request: str, next_interceptor) -> str:
+            return "intercepted"
+
+    pipeline.register_interceptor(SkipInterceptor())
+    res = pipeline.execute("hello")
+    assert res == "hello_core"
+
+
+@pytest.mark.asyncio
+async def test_async_pipeline_negative_intercept():
+    """Verify skip branch when async can_intercept returns False."""
+
+    async def fallback(x):
+        return x + "_core"
+
+    pipeline = AsyncPipelineService[str, str](fallback, "TestAsync")
+
+    class AsyncSkipInterceptor(AsyncInterceptor[str, str]):
+        def can_intercept(self, request: str) -> bool:
+            return False
+
+        async def intercept(self, request: str, next_interceptor) -> str:
+            return "intercepted"
+
+    pipeline.register_interceptor(AsyncSkipInterceptor())
+    res = await pipeline.execute("hello")
+    assert res == "hello_core"
