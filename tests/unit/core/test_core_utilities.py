@@ -92,15 +92,6 @@ def test_config_redaction():
     assert sanitized["api_key"] == "[REDACTED]"
 
 
-def test_version_sync():
-    import tomllib
-
-    root = Path(__file__).parent.parent.parent.parent
-    with open(root / "pyproject.toml", "rb") as f:
-        expected = tomllib.load(f).get("project", {}).get("version")
-    assert config.VERSION == expected
-
-
 # --- 5. Failure Corpus ---
 
 

@@ -22,16 +22,16 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **requests** | 2.34.2 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **jsonschema** | 4.26.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **PyYAML** | 6.0.3 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **sentence-transformers** | 5.5.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **numpy** | 2.4.5 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **sentence-transformers** | 5.5.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **numpy** | 2.4.6 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **sqlalchemy** | 2.0.49 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **datasets** | 4.8.5 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **PyJWT** | 2.12.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **PyJWT** | 2.13.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **cryptography** | 48.0.0 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **opentelemetry-api** | 1.41.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **opentelemetry-sdk** | 1.41.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **google-genai** | 2.4.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
-| **pypdf** | 6.11.0 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **opentelemetry-api** | 1.42.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **opentelemetry-sdk** | 1.42.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **google-genai** | 2.6.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **pypdf** | 6.12.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **python-docx** | 1.2.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **streamlit** | 1.57.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **pandas** | 3.0.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
@@ -47,12 +47,15 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **GitPython** | 3.1.50 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **urllib3** | 2.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **Authlib** | 1.7.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
-| **langchain-openai** | 1.2.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-openai** | 1.2.2 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **langsmith** | 0.8.5 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **Pillow** | 12.2.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **idna** | 3.15 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **idna** | 3.16 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
+| **langgraph** | 1.2.1 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **ag2** | 0.13.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **ruff** | 0.15.14 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 
 ## 3. Obligations & Compliance Steps
 To remain compliant with these licenses, the following steps are handled automatically by this repository:

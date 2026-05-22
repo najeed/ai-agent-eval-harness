@@ -3,14 +3,14 @@ import json
 from eval_runner.linter import ScenarioLinter, run_lint
 
 
-def test_linter_file_not_found(tmp_path):
+def test_linter_file_not_found_extra(tmp_path):
     linter = ScenarioLinter()
     res = linter.lint(str(tmp_path / "ghost.json"))
     assert res["status"] == "fail"
     assert "File not found" in res["errors"][0]
 
 
-def test_linter_invalid_json(tmp_path):
+def test_linter_invalid_json_extra(tmp_path):
     p = tmp_path / "bad.json"
     p.write_text("{bad", encoding="utf-8")
     linter = ScenarioLinter()
@@ -105,7 +105,7 @@ def test_run_lint_cli_directory_failure(tmp_path, monkeypatch, capsys):
     assert "1 failed" in captured.out
 
 
-def test_run_lint_cli_file(tmp_path, capsys):
+def test_run_lint_cli_file_extra(tmp_path, capsys):
     p = tmp_path / "single.json"
     p.write_text('{"bad": 1}', encoding="utf-8")
     run_lint(str(p))

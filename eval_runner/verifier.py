@@ -1,6 +1,9 @@
 import json
 import logging
+import threading
 from abc import ABC, abstractmethod
+from collections.abc import Callable
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -99,6 +102,178 @@ class BaseVerifier(ABC):
         pass
 
 
+class TraceVerificationInterceptor(ABC):
+    """Abstract Base Class for Trace Verification Interceptors in the signing pipeline."""
+
+    @abstractmethod
+    def can_sign(self, format: str) -> bool:
+        """Determines if this interceptor supports the requested cryptographic signature format."""
+        pass
+
+    @abstractmethod
+    def sign(self, manifest: dict, next_signer: Callable[[dict], dict]) -> dict:
+        """Applies middleware processing (Preempt, Augment, or Post-process signing)."""
+        pass
+
+
+class CoreTraceSigner(TraceVerificationInterceptor):
+    """Core standard verifier implementation of TraceVerificationInterceptor."""
+
+    def can_sign(self, format: str) -> bool:
+        # Core supports classic (ED25519) and hybrid (PQC / ML-DSA-65) signing
+        return format in ["ED25519", "ML-DSA-65", "hybrid", "standard"]
+
+    def sign(self, manifest: dict, next_signer: Callable[[dict], dict]) -> dict:
+        from .identity import IdentityService
+
+        context = manifest.get("signing_context", {})
+        identity_id = context.get("identity_id", "system_id")
+        timestamp = context.get("timestamp")
+
+        try:
+            private_key = IdentityService.get_private_key(identity_id)
+            # Standard: Sign the manifest content (excluding transient fields like provenance_chain)
+            manifest_to_sign = manifest.copy()
+            manifest_to_sign.pop("provenance_chain", None)
+            manifest_to_sign.pop("signing_context", None)
+            manifest_bytes = json.dumps(manifest_to_sign, sort_keys=True).encode("utf-8")
+            signature = private_key.sign(manifest_bytes).hex()
+
+            manifest["provenance_chain"].append(
+                {
+                    "identity": identity_id,
+                    "role": "Evaluator",
+                    "timestamp": timestamp,
+                    "signature": signature,
+                    "algorithm": "ED25519",
+                }
+            )
+
+            # --- [PQC Upgrade] ---
+            if config.PQC_ENABLED:
+                pqc_client = IdentityService.get_pqc_client()
+                if pqc_client:
+                    try:
+                        # Zero-Exposure Signing (ZES) Pattern:
+                        # We hash the manifest locally (SHAKE-256) and send only the digest.
+                        shake_digest = forensics.compute_shake256_digest(manifest_bytes)
+                        pqc_signature = pqc_client.sign_digest(
+                            digest=shake_digest, identity_id=config.PQC_IDENTITY_ID
+                        )
+
+                        manifest["provenance_chain"].append(
+                            {
+                                "identity": f"{identity_id}@pqc",
+                                "role": "PQC-Evaluator",
+                                "timestamp": timestamp,
+                                "signature": pqc_signature,
+                                "algorithm": "ML-DSA-65",
+                                "provider": config.PQC_PROVIDER,
+                            }
+                        )
+                        logger.info("      [Identity] Hybrid PQC Signature attached (ML-DSA-65)")
+                    except Exception as e:
+                        logger.warning(f"      [Identity] PQC Signing failed (API Error): {e}")
+                        if config.PQC_STRICT_MODE:
+                            raise RuntimeError(
+                                f"PQC_STRICT_MODE Violation: Failed to secure PQC signature: {e}"
+                            ) from e
+                else:
+                    msg = "PQC enabled but client not available."
+                    logger.warning(f"      [Identity] {msg}")
+                    if config.PQC_STRICT_MODE:
+                        raise RuntimeError(f"PQC_STRICT_MODE Violation: {msg}")
+
+        except Exception as e:
+            logger.warning(f"Could not cryptographically sign trace as '{identity_id}': {e}")
+            if config.PQC_STRICT_MODE and "PQC_STRICT_MODE Violation" in str(e):
+                raise
+
+        return next_signer(manifest)
+
+
+class VerificationService:
+    """Sync Pipeline orchestrator for TraceVerificationInterceptor chain."""
+
+    def __init__(self):
+        self._lock = threading.RLock()
+        self._global_interceptors: list[TraceVerificationInterceptor] = []
+        self._core_signer = CoreTraceSigner()
+        self._local = threading.local()
+
+    @property
+    def _interceptors(self) -> list[TraceVerificationInterceptor]:
+        """Provides thread-local copy of registered interceptors to ensure thread isolation."""
+        if not hasattr(self._local, "interceptors"):
+            with self._lock:
+                self._local.interceptors = list(self._global_interceptors)
+        return self._local.interceptors
+
+    def register_interceptor(self, interceptor: TraceVerificationInterceptor):
+        """Registers an interceptor thread-safely at the head of the priority chain."""
+        with self._lock:
+            self._global_interceptors.insert(0, interceptor)
+            if hasattr(self._local, "interceptors"):
+                self._local.interceptors.insert(0, interceptor)
+
+    def reset(self):
+        """Thread-safely clears all custom interceptors."""
+        with self._lock:
+            self._global_interceptors.clear()
+            if hasattr(self._local, "interceptors"):
+                self._local.interceptors.clear()
+
+    @contextmanager
+    def override_interceptor(self, interceptor: TraceVerificationInterceptor):
+        """Context manager to safely register an interceptor temporarily and prevent leaks."""
+        self.register_interceptor(interceptor)
+        try:
+            yield
+        finally:
+            with self._lock:
+                if interceptor in self._global_interceptors:
+                    self._global_interceptors.remove(interceptor)
+                if hasattr(self._local, "interceptors") and interceptor in self._local.interceptors:
+                    self._local.interceptors.remove(interceptor)
+
+    def sign(self, manifest: dict, format: str) -> dict:
+        """Executes the signing request through the chain with error barriers."""
+
+        def make_next(index: int, depth: int) -> Callable[[dict], dict]:
+            if depth > 50:
+                raise RecursionError("Max verifier pipeline depth exceeded. Cycle detected.")
+
+            interceptors_list = self._interceptors
+            if index >= len(interceptors_list):
+                return lambda m: self._core_signer.sign(m, lambda x: x)
+
+            interceptor = interceptors_list[index]
+
+            def call_next(m: dict) -> dict:
+                if interceptor.can_sign(format):
+                    try:
+                        return interceptor.sign(m, make_next(index + 1, depth + 1))
+                    except (RecursionError, KeyboardInterrupt, SystemExit, GeneratorExit):
+                        raise
+                    except Exception as e:
+                        logger.error(
+                            f"[VerificationService] Interceptor "
+                            f"'{interceptor.__class__.__name__}' failed: {e}. "
+                            "Gracefully bypassing to next handler."
+                        )
+                        return make_next(index + 1, depth + 1)(m)
+                else:
+                    return make_next(index + 1, depth + 1)(m)
+
+            return call_next
+
+        return make_next(0, 0)(manifest)
+
+
+# Thread-safe global registry singleton
+verification_service = VerificationService()
+
+
 class TraceVerifier:
     """
     Electronic Verification and Certification Engine for evaluation traces.
@@ -175,7 +350,6 @@ class TraceVerifier:
         """
         Signs a trace file and issues a standardized Verification Certificate (VC) v3.
         """
-        from .identity import IdentityService
 
         p = Path(trace_path)
         if not utils.is_path_safe(p, config.PROJECT_ROOT):
@@ -282,63 +456,16 @@ class TraceVerifier:
         manifest["sha256"] = sha256_hash
 
         # 5. Cryptographic Provenance (Hybrid Approach)
+        manifest["signing_context"] = {
+            "identity_id": identity_id,
+            "timestamp": timestamp,
+        }
+
+        format_str = "hybrid" if config.PQC_ENABLED else "ED25519"
         try:
-            private_key = IdentityService.get_private_key(identity_id)
-            # Standard: Sign the manifest content (excluding transient fields like provenance_chain)
-            manifest_to_sign = manifest.copy()
-            manifest_to_sign.pop("provenance_chain", None)
-            manifest_bytes = json.dumps(manifest_to_sign, sort_keys=True).encode("utf-8")
-            signature = private_key.sign(manifest_bytes).hex()
-
-            manifest["provenance_chain"].append(
-                {
-                    "identity": identity_id,
-                    "role": "Evaluator",
-                    "timestamp": timestamp,
-                    "signature": signature,
-                    "algorithm": "ED25519",
-                }
-            )
-
-            # --- [PQC Upgrade] ---
-            if config.PQC_ENABLED:
-                pqc_client = IdentityService.get_pqc_client()
-                if pqc_client:
-                    try:
-                        # Zero-Exposure Signing (ZES) Pattern:
-                        # We hash the manifest locally (SHAKE-256) and send only the digest.
-                        shake_digest = forensics.compute_shake256_digest(manifest_bytes)
-                        pqc_signature = pqc_client.sign_digest(
-                            digest=shake_digest, identity_id=config.PQC_IDENTITY_ID
-                        )
-
-                        manifest["provenance_chain"].append(
-                            {
-                                "identity": f"{identity_id}@pqc",
-                                "role": "PQC-Evaluator",
-                                "timestamp": timestamp,
-                                "signature": pqc_signature,
-                                "algorithm": "ML-DSA-65",
-                                "provider": config.PQC_PROVIDER,
-                            }
-                        )
-                        logger.info("      [Identity] Hybrid PQC Signature attached (ML-DSA-65)")
-                    except Exception as e:
-                        logger.warning(f"      [Identity] PQC Signing failed (API Error): {e}")
-                        if config.PQC_STRICT_MODE:
-                            raise RuntimeError(
-                                f"PQC_STRICT_MODE Violation: Failed to secure PQC signature: {e}"
-                            ) from e
-                else:
-                    msg = "PQC enabled but client not available."
-                    logger.warning(f"      [Identity] {msg}")
-                    if config.PQC_STRICT_MODE:
-                        raise RuntimeError(f"PQC_STRICT_MODE Violation: {msg}")
-
-        except Exception as e:
-            logger.warning(f"Could not cryptographically sign trace as '{identity_id}': {e}")
-            if config.PQC_STRICT_MODE and "PQC_STRICT_MODE Violation" in str(e):
-                raise
+            manifest = verification_service.sign(manifest, format=format_str)
+        finally:
+            manifest.pop("signing_context", None)
 
         # 6. Save Sidecar Manifest
         sidecar_path = p.parent / "run_manifest.json"

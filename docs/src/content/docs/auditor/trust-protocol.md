@@ -68,12 +68,20 @@ AgentV implements a **Weighted Severity Model (WSM)** for aggregate scoring, ens
 
 ---
 
-## 5. Identity Registry & Key Management
+## 5. Identity Registry, Key Management & Signing Interceptors
 
 Core v1.4 replaces legacy file-based key loaders with the **Identity Registry** (`IdentityService`). This service abstracts private key resolution, supporting both local PEM storage and future cloud-native Vault/HSM integrations.
 
 - **`LocalFileKeyLoader` (Default)**: Handles standard PEM files in the `.aes/keys` directory.
-- **Enterprise Extensions**: Support for custom loaders (e.g., `AWSKMSKeyLoader`) that fetch keys directly from protected vaults via API.
+- **Enterprise Extensions**: Support for custom loaders that fetch keys directly from protected vaults.
+
+### ⛓️ The Cryptographic Trace Signing Pipeline (v1.6.3)
+To enable robust, customizable enterprise key routing and in-flight auditing, AgentV routes all trace signing and verification operations through a dynamic **Verifier Pipeline** inside `eval_runner/verifier.py`:
+
+1.  **`TraceVerificationInterceptor`**: An abstract interface representing custom signing and verification interceptor classes.
+2.  **`VerificationService` (`verification_service`)**: A thread-safe registry containing active trace interceptors. If a registered interceptor's `can_sign()` or `can_verify()` method returns `True`, operations are routed through that interceptor; otherwise, the pipeline falls back to standard core routines.
+3.  **KMS / HSM Gating**: Allows enterprise plugins to delegate signing to an external hardware security module (HSM) or secure KMS vault without ever exposing raw private key bytes to the local filesystem or running memory.
+4.  **WORM (Write Once, Read Many) Audit Trail Sealing**: Interceptors can write immutable execution proofs in-flight directly to `audit_chain.jsonl` as part of the sign sequence, locking results instantly against post-run tamper attempts.
 
 ---
 

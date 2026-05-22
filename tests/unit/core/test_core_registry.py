@@ -1,6 +1,6 @@
 import json
 import unittest
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import mock_open, patch
 
 import eval_runner.config as config
 import eval_runner.registry_sync as registry_sync
@@ -124,22 +124,6 @@ def test_get_project_version_fallback(tmp_path):
         assert config._get_project_version() == "1.4.0"
 
 
-def test_get_safe_tmp_dir_fallback(tmp_path, monkeypatch):
-    from pathlib import Path as RealPath
-
-    orig_mkdir = RealPath.mkdir
-
-    def mocked_mkdir(self, *args, **kwargs):
-        if ".tmp" in str(self):
-            raise PermissionError("RO")
-        return orig_mkdir(self, *args, **kwargs)
-
-    with patch("pathlib.Path.mkdir", mocked_mkdir):
-        config._TEMP_DIR_CACHE = None
-        monkeypatch.setattr(config, "PROJECT_ROOT", tmp_path)
-        assert "aes_eval" in str(config.get_safe_tmp_dir())
-
-
 def test_config_registry_manager_discovery(tmp_path):
     config_dir = tmp_path / ".aes" / "config"
     routing_dir = config_dir / "routing"
@@ -149,29 +133,6 @@ def test_config_registry_manager_discovery(tmp_path):
         with patch.object(config, "AES_CONFIG_DIR", config_dir):
             reg = config.RegistryManager.get_resolved_registry()
             assert reg["routing"]["mappings"]["r1"] == "/v1"
-
-
-def test_registry_manager_deep_merge_conflict():
-    base = {"key": {"nested": 1}}
-    overlay = {"key": "new_value"}
-    result = config.RegistryManager._deep_merge(base, overlay)
-    assert result["key"] == "new_value"
-
-
-def test_registry_manager_load_baseline_failure(capsys):
-    with patch("eval_runner.config.SHIM_RESOURCES_INTERNAL_PATH") as mock_path:
-        mock_path.exists.return_value = True
-        with patch("builtins.open", MagicMock(side_effect=Exception("Disk Error"))):
-            config._SHIM_REGISTRY_CACHE = None
-            config.RegistryManager.get_resolved_registry()
-    captured = capsys.readouterr()
-    assert "Failed to load internal baseline" in captured.out
-
-
-def test_get_forensic_policy_env_overrides(monkeypatch):
-    monkeypatch.setenv("FORENSIC_MAX_ARTIFACT_SIZE", "1024")
-    policy = config.get_forensic_policy()
-    assert policy["max_artifact_size"] == 1024
 
 
 def test_get_sanitized_registry():

@@ -61,7 +61,7 @@ async def test_socket_adapter_tcp():
         assert res["response"] == "ok"
 
 
-def test_adapter_discovery():
+def test_adapters_protocols_discovery():
     from eval_runner.engine import AgentAdapterRegistry
 
     # Force reset discovery
@@ -78,7 +78,7 @@ def test_adapter_discovery():
         assert "socket" in AgentAdapterRegistry._adapters
 
 
-def test_adapter_discovery_hooks():
+def test_adapters_protocols_discovery_hooks():
     registry = MagicMock()
 
     OpenAIAdapterPlugin().on_discover_adapters(registry)

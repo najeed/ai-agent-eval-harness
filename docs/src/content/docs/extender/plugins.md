@@ -204,6 +204,85 @@ Once registered, any scenario referencing `s3_bucket` will automatically use thi
 
 ---
 
+## ⛓️ Registering Custom Interceptors (v1.6.3)
+
+Plugins can dynamically hook into the **Cryptographic Trace Signing**, **Tool Sandbox Isolation**, and **Adversarial Scenario Mutation** pipelines at runtime. This allows extensions to intercept signing, audit sandbox operations, or inject custom adversarial perturbations.
+
+### 1. Registering a Tool Sandbox Interceptor
+Custom plugins can register a `ToolSandboxInterceptor` using `tool_sandbox_service.register_interceptor(...)` inside the `before_evaluation` hook.
+
+```python
+from eval_runner.plugins import BaseEvalPlugin
+from eval_runner.tool_sandbox import ToolSandboxInterceptor, tool_sandbox_service
+
+class SecurityAuditingInterceptor(ToolSandboxInterceptor):
+    def isolate(self, execute_fn, command, params):
+        # Intercept before execution
+        if command == "terminal" and "rm" in params.get("args", []):
+            return {"status": "blocked", "message": "Destructive terminal commands are forbidden"}
+        
+        # Call original tool execution
+        result = execute_fn(command, params)
+        
+        # Audit tool result
+        result["audited"] = True
+        return result
+
+class SecurityGatePlugin(BaseEvalPlugin):
+    def before_evaluation(self, context):
+        # Register sandbox execution interceptor
+        tool_sandbox_service.register_interceptor(SecurityAuditingInterceptor())
+```
+
+### 2. Registering a Trace Verification Interceptor
+Custom plugins can register a `TraceVerificationInterceptor` to securely sign metadata or implement a custom cryptographic verifier.
+
+```python
+from eval_runner.plugins import BaseEvalPlugin
+from eval_runner.verifier import TraceVerificationInterceptor, verification_service
+
+class CustomKmsSigner(TraceVerificationInterceptor):
+    def can_sign(self, manifest, format) -> bool:
+        return format == "enterprise-hsm"
+
+    def sign(self, manifest, format) -> dict:
+        # Call KMS API to sign manifest hash
+        signature = call_external_hsm(manifest)
+        manifest["provenance_chain"].append({
+            "identity": "hsm_signer",
+            "signature": signature
+        })
+        return manifest
+
+class EnterpriseHsmPlugin(BaseEvalPlugin):
+    def before_evaluation(self, context):
+        verification_service.register_interceptor(CustomKmsSigner())
+```
+
+### 3. Registering an Adversarial Scenario Mutator
+Custom plugins can register a `ScenarioMutator` using `mutation_service.register_provider(...)` to dynamically intercept and customize how adversarial variants are generated.
+
+```python
+from eval_runner.plugins import BaseEvalPlugin
+from eval_runner.mutator import ScenarioMutator, mutation_service
+
+class IndustrialScenarioAugmentor(ScenarioMutator):
+    def can_mutate(self, mutation_type: str) -> bool:
+        return mutation_type == "industrial_perturbation"
+
+    def mutate(self, scenario: dict, mutation_type: str, next_mutator) -> dict:
+        # Apply custom perturbation
+        modified_scenario = add_industrial_noise(scenario)
+        # Delegate to next mutator in chain
+        return next_mutator(modified_scenario, mutation_type)
+
+class ScenarioAugmentPlugin(BaseEvalPlugin):
+    def before_evaluation(self, context):
+        mutation_service.register_provider(IndustrialScenarioAugmentor())
+```
+
+---
+
 ## ⚡ Integrated Console Extension
 
 Plugins can inject custom React views and REST endpoints into the [Harness Console](/extender/api-reference/).

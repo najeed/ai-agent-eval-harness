@@ -2,7 +2,7 @@ from eval_runner.taxonomy import CausalChain, FailureCategory
 from eval_runner.triage import Confidence, TriageEngine
 
 
-def test_causal_chain_ranking():
+def test_weighted_scoring_causal_chain_ranking():
     """Verifies that the Weighted Evidence Model ranks evidence correctly."""
     history = [
         {"role": "agent", "identity": "agent_id", "content": "Doing something..."},

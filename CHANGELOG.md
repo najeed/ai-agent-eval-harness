@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.3] - 2026-05-23
+
+### Core Interceptor Pipeline & Sandbox Isolation Architecture
+*   **Dynamic Verifier Pipeline**: Introduced the `TraceVerificationInterceptor` abstract interface and thread-safe `VerificationService` registry within `eval_runner/verifier.py`. This enables hot-swapping trace signing logic and lets enterprise extensions hook into HSMs or secure KMS vaults without exposing raw private key bytes to the core environment.
+*   **Zero-Trust Sandbox Interception**: Implemented `ToolSandboxInterceptor` and a centralized `ToolSandboxService` registry within `eval_runner/tool_sandbox.py`. All tool executions (`ToolSandbox.execute`) are now routed through `tool_sandbox_service.isolate`, allowing dynamic auditing, mutation, and filtering of inputs and outputs.
+*   **Asynchronous State Isolation**: Replaced standard thread-local storage (`threading.local`) with `contextvars.ContextVar` in `ToolSandboxService` to enforce strict coroutine-local task isolation, preventing state pollution and leakage across concurrent async execution loops.
+*   **Safe Context Restoration**: Wrapped trace signing in a strict `try...finally` block within `TraceVerifier.sign_trace` to guarantee that transient metadata (`signing_context`) is popped, eliminating potential memory leaks and context leakage.
+*   **Thread-Safe Registry Reset Hooks**: Exposed formal `reset()` methods on `VerificationService` and `ToolSandboxService` to prevent state pollution between unit test files.
+*   **Comprehensive Pipeline Testing**: Delivered premium unit test suites (`test_verifier_pipeline.py` and `test_tool_sandbox_pipeline.py`) validating interceptor chaining, context manager overrides, parameter injection, auditing, and preemptive execution bypasses.
+
 ## [1.6.2] - 2026-05-15
 
 ### Hybrid PQC Signing & Forensic Security

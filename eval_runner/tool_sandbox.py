@@ -7,7 +7,11 @@ Defines the environment in which the agent's tool calls are executed.
 Updated with AbstractSandbox for pluggable implementation and lifecycle hooks.
 """
 
+import contextvars  # noqa: E402
+import threading  # noqa: E402
 from abc import ABC, abstractmethod  # noqa: E402
+from collections.abc import Callable, Coroutine  # noqa: E402
+from contextlib import asynccontextmanager  # noqa: E402
 from pathlib import Path  # noqa: E402
 from typing import Any  # noqa: E402
 
@@ -306,6 +310,124 @@ class AbstractSandbox(ABC):
         pass
 
 
+class ToolSandboxInterceptor(ABC):
+    """Abstract Base Class for Tool Sandbox Interceptors in the execution pipeline."""
+
+    @abstractmethod
+    def can_isolate(self, tool_name: str) -> bool:
+        """Determines if this interceptor can isolate or intercept the requested tool."""
+        pass
+
+    @abstractmethod
+    async def isolate_call(
+        self,
+        call_data: dict,
+        next_executor: Callable[[dict], Coroutine[None, None, dict]],
+    ) -> dict:
+        """Applies middleware processing (Preempt, Audit, or Augment tool execution)."""
+        pass
+
+
+class ToolSandboxService:
+    """Native Async Pipeline orchestrator for ToolSandboxInterceptor chain."""
+
+    def __init__(self):
+        self._lock = threading.RLock()
+        self._global_interceptors: list[ToolSandboxInterceptor] = []
+        self._local_interceptors = contextvars.ContextVar("local_interceptors", default=None)
+
+    @property
+    def _interceptors(self) -> list[ToolSandboxInterceptor]:
+        """Provides contextvars-local copy of registered interceptors to ensure
+
+        async task isolation.
+        """
+        val = self._local_interceptors.get()
+        if val is None:
+            with self._lock:
+                val = list(self._global_interceptors)
+            self._local_interceptors.set(val)
+        return val
+
+    def register_interceptor(self, interceptor: ToolSandboxInterceptor):
+        """Registers an async interceptor thread-safely at the head of the chain."""
+        with self._lock:
+            self._global_interceptors.insert(0, interceptor)
+            val = self._local_interceptors.get()
+            if val is not None:
+                val.insert(0, interceptor)
+
+    def reset(self):
+        """Thread-safely clears all custom async interceptors."""
+        with self._lock:
+            self._global_interceptors.clear()
+            self._local_interceptors.set(None)
+
+    @asynccontextmanager
+    async def override_interceptor(self, interceptor: ToolSandboxInterceptor):
+        """Async context manager to temporarily register an async interceptor.
+
+        Prevents leak pollution.
+        """
+        with self._lock:
+            self._global_interceptors.insert(0, interceptor)
+
+        current = self._interceptors
+        new_list = [interceptor] + [x for x in current if x is not interceptor]
+        token = self._local_interceptors.set(new_list)
+        try:
+            yield
+        finally:
+            self._local_interceptors.reset(token)
+            with self._lock:
+                if interceptor in self._global_interceptors:
+                    self._global_interceptors.remove(interceptor)
+
+    async def isolate(
+        self,
+        call_data: dict,
+        fallback_executor: Callable[[dict], Coroutine[None, None, dict]],
+    ) -> dict:
+        """Executes the tool call through the interceptor pipeline chain with cycle protection."""
+        tool_name = call_data.get("tool_name")
+
+        def make_next(index: int, depth: int) -> Callable[[dict], Coroutine[None, None, dict]]:
+            if depth > 50:
+                raise RecursionError("Max tool sandbox pipeline depth exceeded. Cycle detected.")
+
+            interceptors_list = self._interceptors
+            if index >= len(interceptors_list):
+                return fallback_executor
+
+            interceptor = interceptors_list[index]
+
+            async def call_next(data: dict) -> dict:
+                if interceptor.can_isolate(tool_name):
+                    try:
+                        return await interceptor.isolate_call(data, make_next(index + 1, depth + 1))
+                    except (RecursionError, KeyboardInterrupt, SystemExit, GeneratorExit):
+                        raise
+                    except Exception as e:
+                        import logging
+
+                        logging.error(
+                            f"[ToolSandboxService] Interceptor "
+                            f"'{interceptor.__class__.__name__}' failed: {e}. "
+                            "Gracefully bypassing to next handler."
+                        )
+                        return await make_next(index + 1, depth + 1)(data)
+                else:
+                    return await make_next(index + 1, depth + 1)(data)
+
+            return call_next
+
+        return await make_next(0, 0)(call_data)
+
+
+# Thread-safe global registry singleton
+tool_sandbox_service = ToolSandboxService()
+
+
 class ToolSandbox(AbstractSandbox):
     """
     Standard implementation of the tool sandbox.
@@ -313,8 +435,31 @@ class ToolSandbox(AbstractSandbox):
     """
 
     async def execute(self, tool_name: str, params: dict, agent_name: str | None = None) -> dict:
+        """Executes a tool and returns the result, routing through the
+
+        tool sandbox interceptor pipeline.
         """
-        Executes a tool based on the mock behaviors defined in the scenario.
+        call_data = {
+            "tool_name": tool_name,
+            "params": params,
+            "agent_name": agent_name,
+            "sandbox": self,
+        }
+
+        async def core_executor(data: dict) -> dict:
+            return await self._execute_core(
+                tool_name=data["tool_name"],
+                params=data["params"],
+                agent_name=data["agent_name"],
+            )
+
+        return await tool_sandbox_service.isolate(call_data, core_executor)
+
+    async def _execute_core(
+        self, tool_name: str, params: dict, agent_name: str | None = None
+    ) -> dict:
+        """Executes a tool based on the mock behaviors defined in the scenario.
+
         Updates the internal state and shared state registry.
         """
         active_agent = agent_name or self.current_agent

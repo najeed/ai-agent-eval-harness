@@ -128,7 +128,7 @@ async def test_sandbox_cleanup_persistence(tmp_path):
     assert Path(ws_dir).exists()  # Should still exist
 
 
-def test_shared_state_registry_permissions():
+def test_tool_sandbox_shared_state_registry_permissions():
     """Verify namespaced read/write permissions in SharedStateRegistry."""
     from eval_runner.tool_sandbox import SharedStateRegistry
 

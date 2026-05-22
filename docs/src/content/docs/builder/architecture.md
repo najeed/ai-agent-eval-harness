@@ -57,6 +57,32 @@ The core is a decoupled, event-driven architecture designed for enterprise hot-s
 3. **AgentAdapterRegistry**: Dynamically discovers and registers agent protocols at runtime.
 4. **ToolSandbox**: Managed execution environment with **Environmental DNA** snapshotting.
 5. **Loader & Catalog**: Supports **Path Decoupling**, enabling scenarios to be loaded via Scenario ID or physical path.
+6. **VerificationService (`verifier.py`)**: Central registry for trace signing and verification, supporting hybrid ML-DSA-65 / ED25519 signing with dynamic interceptor hot-swapping.
+7. **ToolSandboxService (`tool_sandbox.py`)**: Context-isolated registry for intercepting, auditing, and filtering tool execution requests.
+8. **MutationService (`mutator.py`)**: Orchestrates the chain of scenario mutator interceptors with concurrency safeguards for adversarial variant generation.
+
+---
+
+## ⛓️ Interceptor & Pipeline Infrastructure
+
+AgentV implements an extensible, zero-trust **Interceptor Pipeline Pattern** to allow secure runtime augmentation of cryptographic trace signing, tool sandboxing, and scenario mutation without modifying core engine logic.
+
+### 1. Cryptographic Trace Signing Pipeline
+*   **`TraceVerificationInterceptor`**: Abstract base class representing a trace verification plugin.
+*   **`VerificationService` (`verification_service`)**: Thread-safe registry that routes signing and verification requests.
+*   **Enterprise KMS/HSM Integration**: Supports dynamic hardware security module and key management service integrations where the private key bytes never touch the core environment.
+*   **WORM Audit Trail Sealing**: Enables real-time writing of cryptographic proofs into an immutable, in-flight audit chain (`audit_chain.jsonl`) as part of the signing chain.
+
+### 2. Tool Sandbox Interception Pipeline
+*   **`ToolSandboxInterceptor`**: Abstract base class for tool execution auditing, mutation, and filtering.
+*   **`ToolSandboxService` (`tool_sandbox_service`)**: Manages active tool execution interceptors.
+*   **Asynchronous Context Isolation**: Powered by `contextvars.ContextVar` to enforce strict coroutine-level task isolation in concurrent asynchronous evaluation runs, eliminating configuration leakage across threads.
+*   **Dynamic Capabilities**: Supports dynamic parameter injection, zero-trust boundary enforcement, and real-time transaction auditing.
+
+### 3. Adversarial Scenario Mutation Pipeline
+*   **`ScenarioMutator`**: Abstract base class for custom scenario generators and perturbation mutators.
+*   **`MutationService` (`mutation_service`)**: Concurrency-guarded registry that chains mutators to inject adversarial perturbations (e.g., typos, instruction injection, cognitive ambiguity).
+*   **Decoupled Extensibility**: Allows enterprise modules (like `IndustrialScenarioAugmentor`) to register custom mutation logic dynamically without modifying core perturbation routines.
 
 ---
 

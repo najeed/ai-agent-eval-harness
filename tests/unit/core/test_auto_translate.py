@@ -176,7 +176,7 @@ async def test_translate_to_scenario_api_error(ollama_stub):
         await auto_translate.translate_to_scenario("force_500", api_url=api_url)
 
 
-def test_save_scenario(tmp_path):
+def test_auto_translate_save_scenario(tmp_path):
     """Verifies that save_scenario correctly writes JSON to disk."""
     scenario = {"id": "test", "val": 1}
     out_file = tmp_path / "subdir" / "scen.json"
@@ -189,7 +189,7 @@ def test_save_scenario(tmp_path):
         assert data == scenario
 
 
-def test_save_scenario_error(tmp_path):
+def test_auto_translate_save_scenario_error(tmp_path):
     """Verifies that save_scenario handles writing errors gracefully."""
     scenario = {"id": "test"}
     bad_path = tmp_path / "a_directory"

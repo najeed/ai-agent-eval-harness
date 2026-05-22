@@ -25,9 +25,23 @@ The engine is built on a decoupled, event-driven architecture to support enterpr
 2.  **SessionManager (`session.py`)**: Individual attempt state, trajectory tracking, and tool execution.
 3.  **AgentAdapterRegistry**: Dynamic discovery of agent protocols (`http`, `langgraph`, `crewai`, etc.).
 4.  **ToolSandbox**: Managed execution environment with workspace lifecycle management.
+5.  **VerificationService (`verifier.py`)**: Manages `TraceVerificationInterceptor` chains for trace signing and validation.
+6.  **ToolSandboxService (`tool_sandbox.py`)**: Context-isolated registry for `ToolSandboxInterceptor` execution filters.
+7.  **MutationService (`mutator.py`)**: Manages `ScenarioMutator` chains for adversarial scenario variant generation.
 
-### Immutability
-`EvaluationContext` and `TurnContext` are **frozen** dataclasses. Interceptors must use `dataclasses.replace` to propagate state changes.
+### Immutability & Context Safety
+*   `EvaluationContext` and `TurnContext` are **frozen** dataclasses. Interceptors must use `dataclasses.replace` to propagate state changes.
+*   **Asynchronous Isolation**: `ToolSandboxService` leverages `contextvars.ContextVar` to secure coroutine-local state, ensuring concurrent evaluations remain safely isolated.
+*   **Testing Helpers**: Pipeline services provide temporary override context managers (`override_interceptor` / `override_provider`). These temporarily activate a mock or custom interceptor/provider and guarantee clean, atomic state restoration on exit:
+    ```python
+    # Overriding sandbox executions for testing:
+    with tool_sandbox_service.override_interceptor(my_mock_interceptor):
+        result = sandbox.execute("git", {"args": ["status"]})
+
+    # Overriding mutations temporarily:
+    with mutation_service.override_provider(my_custom_mutator):
+        mutated = mutate_scenario(scenario, "custom_mode")
+    ```
 
 ---
 
