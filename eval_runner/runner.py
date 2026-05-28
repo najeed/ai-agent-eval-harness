@@ -173,7 +173,8 @@ class DefaultRunner(BaseRunner):
         if not attempt_res:
             return False
         return all(
-            len(tr.get("metrics", [])) > 0
+            tr.get("status", "success") == "success"
+            and len(tr.get("metrics", [])) > 0
             and all(m.get("success", False) for m in tr.get("metrics", []))
             for tr in attempt_res
         )

@@ -127,10 +127,24 @@ def test_session_recovery_result_structure():
     assert "FATAL_ENGINE_ERROR" in output
 
 
+def test_resilience_reporting_attempt_success_triage_paradox():
+    """Verify that runner._is_attempt_successful rejects attempts with failure status
+    even if metrics passed.
+    """
+    from eval_runner.runner import DefaultRunner
+
+    runner = DefaultRunner()
+
+    # Scenario 1: metrics success but status failure
+    attempt_res = [{"task_id": "failed_task", "status": "failure", "metrics": [{"success": True}]}]
+    assert runner._is_attempt_successful(attempt_res) is False
+
+
 if __name__ == "__main__":
     # For manual execution
     test_reporter_success_check_empty_metrics()
     test_html_reporter_success_check_empty_metrics()
     test_triage_engine_respects_existing_tag()
     test_session_recovery_result_structure()
+    test_resilience_reporting_attempt_success_triage_paradox()
     print("RESILIENCE TESTS PASSED")

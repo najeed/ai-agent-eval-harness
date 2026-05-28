@@ -314,8 +314,10 @@ class FailureTaxonomy:
         )
 
         # 1. Pipeline Checks (Priority order)
-        if (result := cls._check_success(metrics)) is not None:
-            return result
+        status_success = not task_result or task_result.get("status", "success") == "success"
+        if status_success:
+            if (result := cls._check_success(metrics)) is not None:
+                return result
         if (result := cls._check_metrics(metrics)) is not None:
             return result
 

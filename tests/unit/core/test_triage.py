@@ -127,6 +127,23 @@ def test_triage_apply_triage_error_handling():
     TriageEngine.apply_triage(results)
 
 
+def test_triage_apply_triage_execution_failure_triage_paradox():
+    """Verify that execution failure (status: failure) prevents successful triage tags."""
+    from eval_runner.triage import TriageEngine
+
+    results = [
+        {
+            "task_id": "failed_task",
+            "status": "failure",
+            "metrics": [{"success": True}],
+            "conversation_history": [{"event": "run_end", "status": "failed"}],
+        }
+    ]
+    TriageEngine.apply_triage(results)
+    assert results[0].get("triage_tag") != "SUCCESS"
+    assert results[0].get("triage_tag") == "UNKNOWN_FAILURE"
+
+
 if __name__ == "__main__":
     test_triage_connection_error()
     test_triage_policy_violation()
@@ -136,4 +153,6 @@ if __name__ == "__main__":
     test_identify_root_cause_tool_error()
     test_identify_root_cause_fallback()
     test_identify_root_cause_metric_failure()
+    test_triage_apply_triage_error_handling()
+    test_triage_apply_triage_execution_failure_triage_paradox()
     print("ALL TESTS PASSED MANUALLY")

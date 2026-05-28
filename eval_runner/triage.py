@@ -80,6 +80,10 @@ class TriageEngine:
         # 2. Delegate to taxonomy
         category = FailureTaxonomy.classify(task_result)
 
+        # Failsafe: Ensure success category is not returned for known failures
+        if category == FailureCategory.SUCCESS:
+            category = FailureCategory.UNKNOWN_FAILURE
+
         # Standardized Industrial Output
         return str(category.name).upper()
 
@@ -202,7 +206,11 @@ class TriageEngine:
         """Adds triage tags to all failed results."""
         for result in all_results:
             metrics = result.get("metrics", [])
-            is_success = metrics and all(m.get("success", False) for m in metrics)
+            is_success = (
+                result.get("status", "success") == "success"
+                and metrics
+                and all(m.get("success", False) for m in metrics)
+            )
             result["triage_tag"] = cls.categorize_failure(result) if not is_success else "SUCCESS"
 
     # --------------------------------------------------------------------------
