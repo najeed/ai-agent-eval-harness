@@ -8,7 +8,7 @@ flask-cors==6.0.2
 
 # --- HTTP & Async ---
 requests==2.34.2
-aiohttp==3.13.5
+aiohttp==3.14.0
 httpx==0.28.1
 Werkzeug==3.1.8
 
@@ -29,7 +29,7 @@ cryptography==48.0.0
 # --- Observability & SDKs ---
 opentelemetry-api==1.42.1
 opentelemetry-sdk==1.42.1
-google-genai==2.7.0
+google-genai==2.8.0
 GitPython==3.1.50
 psutil==7.2.2
 
@@ -44,7 +44,7 @@ python-dotenv==1.2.2
 urllib3==2.7.0
 Authlib==1.7.2
 langchain-openai==1.2.2
-langsmith==0.8.8
+langsmith==0.8.9
 lxml==6.1.1
 Pillow==12.2.0
-idna==3.17
+idna==3.18
