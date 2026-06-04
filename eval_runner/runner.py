@@ -132,8 +132,6 @@ class DefaultRunner(BaseRunner):
             if attempts > 1:
                 plugins.manager.trigger("on_metrics_calculated", ctx, all_attempt_results)
 
-            plugins.manager.trigger("after_evaluation", ctx, all_attempt_results)
-
             # Calculate pass@k
             pass_at_k = self.calculate_pass_at_k(all_attempt_results, attempts)
         except Exception as e:
@@ -165,6 +163,9 @@ class DefaultRunner(BaseRunner):
             {"strategy": "pass_at_k", "status": "success" if pass_at_k > 0 else "failure"},
             span_context=ctx.span_context,
         )
+
+        # Trigger after_evaluation lifecycle hook after terminal events are emitted
+        plugins.manager.trigger("after_evaluation", ctx, all_attempt_results)
 
         return all_attempt_results
 

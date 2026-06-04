@@ -167,3 +167,27 @@ def test_get_run_status_tail_seek_error(client, console_jail):
         assert res.status_code == 200
         assert res.get_json()["status"] == "RUNNING"
     # mtime is also used, but getsize is first
+
+
+def test_stream_run_logs_success(client, console_jail):
+    run_id = "stream_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log_file = run_dir / "run.jsonl"
+    log_file.write_text('{"event": "run_start"}\n{"event": "run_end"}\n', encoding="utf-8")
+
+    res = client.get(f"/api/v1/runs/{run_id}/stream")
+    assert res.status_code == 200
+    assert res.mimetype == "text/event-stream"
+    # Read the streamed lines
+    data = res.get_data(as_text=True)
+    assert 'data: {"event": "run_start"}' in data
+    assert 'data: {"event": "run_end"}' in data
+
+
+def test_stream_run_logs_timeout(client):
+    res = client.get("/api/v1/runs/missing_run/stream")
+    assert res.status_code == 200
+    assert res.mimetype == "text/event-stream"
+    data = res.get_data(as_text=True)
+    assert "Execution log file not found" in data

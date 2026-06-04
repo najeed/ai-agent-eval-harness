@@ -144,7 +144,9 @@ def evaluate_scenario():
         except Exception as e:
             logger.error(f"Async evaluation failed: {e}")
 
-    thread = threading.Thread(target=run_wrapper, args=(scen, data.get("max_turns", 10), run_id))
+    thread = threading.Thread(
+        target=run_wrapper, args=(scen, data.get("max_turns", 10), run_id), name=f"eval-{run_id}"
+    )
     thread.daemon = True
     thread.start()
 

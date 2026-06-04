@@ -1,8 +1,11 @@
 import json
 import logging
 import os
+import threading
+import time
+from pathlib import Path
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, Response, jsonify, request
 
 from eval_runner import config
 from eval_runner.explainer import explain_trace
@@ -180,3 +183,97 @@ def get_verification_certificate(run_id):
             logger.error(f"Corrupt manifest file {vault_manifest}: {e}")
             return jsonify({"error": "Corrupt manifest found"}), 500
     return jsonify({"error": "Certificate not found"}), 404
+
+
+def is_run_alive(run_id: str) -> bool:
+    """Helper to detect if the runner is active in the process space."""
+    return any(t.name == f"eval-{run_id}" for t in threading.enumerate())
+
+
+def tail_file_generator(log_path: Path, run_id: str):
+    # 1. Wait for log creation with a 10s safety threshold
+    timeout = 10.0
+    start_time = time.time()
+    while not log_path.exists():
+        if time.time() - start_time > timeout:
+            yield 'data: {"event": "timeout", "message": "Execution log file not found"}\n\n'
+            return
+        time.sleep(0.5)
+
+    # Resolve starting inode safely
+    try:
+        last_inode = log_path.stat().st_ino
+    except OSError:
+        last_inode = None
+
+    # Track overall stream lifetime to prevent dead socket accumulation (Tab Safety)
+    stream_start = time.time()
+    max_lifetime_seconds = 3600  # 1-hour hard stop to reclaim sockets
+
+    # 2. Open and Stream
+    with open(log_path, encoding="utf-8") as f:
+        # Step A: Stream all existing historical events (Immediate Catch-Up)
+        for line in f:
+            if line.strip():
+                yield f"data: {line.strip()}\n\n"
+                if '"event": "run_end"' in line or '"event": "strategy_end"' in line:
+                    return
+
+        # Step B: Enter tail loop
+        idle_cycles = 0
+        while True:
+            # Safeguard: Terminate long-running zombie streams
+            if time.time() - stream_start > max_lifetime_seconds:
+                yield (
+                    'data: {"event": "error", '
+                    '"message": "Stream exceeded max connection lifetime"}\n\n'
+                )
+                break
+
+            # Safeguard: Check if the file was deleted or rotated
+            if not log_path.exists():
+                yield 'data: {"event": "error", "message": "Log file deleted"}\n\n'
+                break
+
+            if last_inode:
+                try:
+                    current_inode = log_path.stat().st_ino
+                    if current_inode != last_inode:
+                        yield 'data: {"event": "error", "message": "Log file rotated"}\n\n'
+                        break
+                except OSError:
+                    # Ignore transient file access errors
+                    pass
+
+            line = f.readline()
+            if not line:
+                time.sleep(0.1)
+                idle_cycles += 1
+
+                # Send heartbeat every 15 seconds to prevent gateway drops
+                if idle_cycles >= 150:
+                    yield ": heartbeat\n\n"
+                    idle_cycles = 0
+
+                    # Zombie Check: Verify if the thread is still active
+                    if not is_run_alive(run_id):
+                        yield (
+                            'data: {"event": "run_end", "status": "aborted", '
+                            '"error": "Process thread terminated abruptly"}\n\n'
+                        )
+                        break
+                continue
+
+            idle_cycles = 0
+            yield f"data: {line.strip()}\n\n"
+
+            if '"event": "run_end"' in line or '"event": "strategy_end"' in line:
+                break
+
+
+@run_bp.route("/v1/runs/<path:run_id>/stream", methods=["GET"])
+@require_permission(Permission.RUNS_READ)
+def stream_run_logs(run_id):
+    """SSE streaming endpoint for live run traces."""
+    log_path = config.RUN_LOG_DIR / run_id / "run.jsonl"
+    return Response(tail_file_generator(log_path, run_id), mimetype="text/event-stream")
