@@ -191,3 +191,209 @@ def test_stream_run_logs_timeout(client):
     assert res.mimetype == "text/event-stream"
     data = res.get_data(as_text=True)
     assert "Execution log file not found" in data
+
+
+def test_runs_route_explain_exception(client, console_jail):
+    """Test explain_run endpoint exception handling."""
+    run_id = "explain_fail"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run.jsonl").write_text("trace", encoding="utf-8")
+
+    with patch(
+        "eval_runner.console.routes.runs.explain_trace", side_effect=Exception("Explainer crash")
+    ):
+        res = client.get(f"/api/v1/explain/{run_id}")
+        assert res.status_code == 500
+        assert "Explainer crash" in res.get_json()["error"]
+
+
+def test_runs_route_list_runs_edge_cases(client, console_jail):
+    """Test runs listing edge cases including root run.jsonl skip and exceptions."""
+    # Write a root run.jsonl that should be skipped
+    (console_jail["runs"] / "run.jsonl").write_text(
+        '{"event": "run_start", "run_id": "root", "scenario": "s"}\n', encoding="utf-8"
+    )
+    # Write a normal run
+    r1_dir = console_jail["runs"] / "r1"
+    r1_dir.mkdir(parents=True, exist_ok=True)
+    (r1_dir / "run.jsonl").write_text(
+        '{"event": "run_start", "run_id": "r1", "scenario": "s"}\n', encoding="utf-8"
+    )
+
+    # Test query filter mismatch
+    res = client.get("/api/runs?q=nonexistent")
+    assert res.status_code == 200
+    assert len(res.get_json()["runs"]) == 0
+
+    # Test read exception in list_runs
+    with patch("builtins.open", side_effect=OSError("Read error")):
+        res = client.get("/api/runs")
+        assert res.status_code == 200
+        # Should gracefully skip
+        assert len(res.get_json()["runs"]) == 0
+
+
+def test_runs_route_get_status_large_file(client, console_jail):
+    """Test get_run_status with a log file larger than 128KB."""
+    run_id = "large_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    large_data = "a" * (129 * 1024)
+    (run_dir / "run.jsonl").write_text(large_data + '{"event": "run_end"}\n', encoding="utf-8")
+
+    res = client.get(f"/api/v1/runs/{run_id}")
+    assert res.status_code == 200
+    assert res.get_json()["status"] == "COMPLETED"
+
+
+def test_runs_route_get_status_stalled(client, console_jail):
+    """Test get_run_status where the run has stalled (no activity for 5 mins)."""
+    import time
+
+    run_id = "stalled_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run.jsonl").write_text('{"event": "run_start"}\n', encoding="utf-8")
+
+    fake_mtime = time.time() - 400
+    with (
+        patch("os.path.getmtime", return_value=fake_mtime),
+        patch("time.time", return_value=time.time()),
+    ):
+        res = client.get(f"/api/v1/runs/{run_id}")
+        assert res.status_code == 200
+        assert res.get_json()["status"] == "STALLED"
+
+
+def test_runs_route_get_verification_certificate_corrupt(client, console_jail):
+    """Test get_verification_certificate with a corrupt json file."""
+    run_id = "corrupt_cert"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run_manifest.json").write_text("invalid json", encoding="utf-8")
+
+    res = client.get(f"/api/v1/certificates/{run_id}")
+    assert res.status_code == 500
+    assert "Corrupt manifest found" in res.get_json()["error"]
+
+
+def test_runs_route_tail_file_generator_oserror_init(console_jail):
+    """Test tail_file_generator OSError handling on initial stat check."""
+    from eval_runner.console.routes.runs import tail_file_generator
+
+    run_id = "oserror_init_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log_file = run_dir / "run.jsonl"
+    log_file.write_text('{"event": "run_start"}\n', encoding="utf-8")
+
+    # Mock stat to throw OSError
+    with patch.object(Path, "stat", side_effect=OSError("stat failed")):
+        gen = tail_file_generator(log_file, run_id)
+        # It should stream history first
+        first_val = next(gen)
+        assert '{"event": "run_start"}' in first_val
+
+
+def test_runs_route_tail_file_generator_max_lifetime(console_jail):
+    """Test tail_file_generator when connection max lifetime is exceeded."""
+    import time
+
+    from eval_runner.console.routes.runs import tail_file_generator
+
+    run_id = "max_lifetime_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log_file = run_dir / "run.jsonl"
+    log_file.write_text('{"event": "run_start"}\n', encoding="utf-8")
+
+    gen = tail_file_generator(log_file, run_id)
+    assert '{"event": "run_start"}' in next(gen)
+
+    # Advance time mock past 1 hour to trigger lifetime check
+    with patch("time.time", return_value=time.time() + 4000):
+        res = next(gen)
+        assert "Stream exceeded max connection lifetime" in res
+
+
+def test_runs_route_tail_file_generator_file_deleted(console_jail):
+    """Test tail_file_generator when the log file is deleted mid-stream."""
+    from eval_runner.console.routes.runs import tail_file_generator
+
+    run_id = "deleted_log_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log_file = run_dir / "run.jsonl"
+    log_file.write_text('{"event": "run_start"}\n', encoding="utf-8")
+
+    gen = tail_file_generator(log_file, run_id)
+    assert '{"event": "run_start"}' in next(gen)
+
+    # Mock log_file.exists returning False to simulate deletion without Windows lock errors
+    with patch.object(Path, "exists", return_value=False):
+        res = next(gen)
+        assert "Log file deleted" in res
+
+
+def test_runs_route_tail_file_generator_file_rotated(console_jail):
+    """Test tail_file_generator when the log file is rotated mid-stream."""
+    from eval_runner.console.routes.runs import tail_file_generator
+
+    run_id = "rotated_log_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log_file = run_dir / "run.jsonl"
+    log_file.write_text('{"event": "run_start"}\n', encoding="utf-8")
+
+    gen = tail_file_generator(log_file, run_id)
+    assert '{"event": "run_start"}' in next(gen)
+
+    # Change inode value
+    original_stat = Path.stat
+
+    def mock_stat(self, *args, **kwargs):
+        st = original_stat(self, *args, **kwargs)
+
+        # Mock st_ino to return a different value to trigger rotation
+        class MockStat:
+            def __init__(self, old_st):
+                self.st_ino = old_st.st_ino + 1
+                self.st_mode = old_st.st_mode
+
+        return MockStat(st)
+
+    with patch.object(Path, "stat", mock_stat):
+        res = next(gen)
+        assert "Log file rotated" in res
+
+
+def test_runs_route_tail_file_generator_zombie_and_heartbeat(console_jail):
+    """Test tail_file_generator heartbeat and zombie process abortion."""
+    from eval_runner.console.routes.runs import tail_file_generator
+
+    run_id = "zombie_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log_file = run_dir / "run.jsonl"
+    log_file.write_text('{"event": "run_start"}\n', encoding="utf-8")
+
+    gen = tail_file_generator(log_file, run_id)
+    assert '{"event": "run_start"}' in next(gen)
+
+    # Mock time.sleep to not block
+    # Ensure is_run_alive returns False
+    with (
+        patch("time.sleep"),
+        patch("eval_runner.console.routes.runs.is_run_alive", return_value=False),
+    ):
+        # We manually drive the loop by fetching from generator.
+        # It should send a heartbeat and zombie termination message
+        # when idle_cycles reaches 150.
+        # Let's check: first result should be heartbeat
+        res1 = next(gen)
+        assert "heartbeat" in res1
+        # next result should be run_end aborted
+        res2 = next(gen)
+        assert "aborted" in res2
+        assert "Process thread terminated abruptly" in res2
