@@ -1,7 +1,7 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.15.12
+    rev: v0.15.16
     hooks:
       # Run the linter.
       - id: ruff
@@ -17,5 +17,5 @@ repos:
     rev: v2.10.0
     hooks:
       - id: pip-audit
-        additional_dependencies: ["pip>=26.1", "idna>=3.15"]
+        additional_dependencies: ["pip>=26.1.2", "idna>=3.15"]
         args: ["--desc", "on", "--ignore-vuln", "CVE-2026-6357", "--ignore-vuln", "CVE-2026-3219"]

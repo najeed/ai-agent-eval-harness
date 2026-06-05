@@ -288,8 +288,15 @@ def test_runs_route_tail_file_generator_oserror_init(console_jail):
     log_file = run_dir / "run.jsonl"
     log_file.write_text('{"event": "run_start"}\n', encoding="utf-8")
 
-    # Mock stat to throw OSError
-    with patch.object(Path, "stat", side_effect=OSError("stat failed")):
+    # Mock stat to throw OSError specifically on target log_file stat check
+    orig_stat = Path.stat
+
+    def mock_stat(self, *args, **kwargs):
+        if self.name == "run.jsonl" and "oserror_init_run" in str(self):
+            raise OSError("stat failed")
+        return orig_stat(self, *args, **kwargs)
+
+    with patch.object(Path, "stat", mock_stat):
         gen = tail_file_generator(log_file, run_id)
         # It should stream history first
         first_val = next(gen)
