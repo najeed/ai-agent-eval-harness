@@ -292,7 +292,7 @@ def test_runs_route_tail_file_generator_oserror_init(console_jail):
     orig_stat = Path.stat
 
     def mock_stat(self, *args, **kwargs):
-        if self.name == "run.jsonl" and "oserror_init_run" in str(self):
+        if self.name == "run.jsonl" and "oserror_init_run" in self.as_posix():
             raise OSError("stat failed")
         return orig_stat(self, *args, **kwargs)
 

@@ -131,7 +131,7 @@ def test_runs_route_tail_file_generator_inode_rotation_transient_oserror(console
     orig_stat = Path.stat
 
     def mock_stat(self, *args, **kwargs):
-        if self.name == "run.jsonl" and "transient_oserror_run" in str(self):
+        if self.name == "run.jsonl" and "transient_oserror_run" in self.as_posix():
             raise OSError("Transient file access error")
         return orig_stat(self, *args, **kwargs)
 
