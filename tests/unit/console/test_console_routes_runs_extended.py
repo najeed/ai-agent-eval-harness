@@ -290,9 +290,10 @@ def test_runs_route_tail_file_generator_oserror_init(console_jail):
 
     # Mock stat to throw OSError specifically on target log_file stat check
     orig_stat = Path.stat
+    target_resolved = log_file.resolve()
 
     def mock_stat(self, *args, **kwargs):
-        if self.name == "run.jsonl" and "oserror_init_run" in self.as_posix():
+        if self.resolve() == target_resolved:
             raise OSError("stat failed")
         return orig_stat(self, *args, **kwargs)
 
