@@ -290,16 +290,19 @@ def test_runs_route_tail_file_generator_oserror_init(console_jail):
 
     # Mock stat to throw OSError specifically on target log_file stat check
     orig_stat = Path.stat
+    enabled = False
 
     def mock_stat(self, *args, **kwargs):
         # Lexical matching on target filename and scenario folder name to avoid
         # stat calls and RecursionErrors
-        if self.name == "run.jsonl" and "oserror_init_run" in self.parts:
+        if enabled and self.name == "run.jsonl" and "oserror_init_run" in self.parts:
             raise OSError("stat failed")
         return orig_stat(self, *args, **kwargs)
 
     with patch.object(Path, "stat", mock_stat):
         gen = tail_file_generator(log_file, run_id)
+        # Enable the mock only when we are about to step to log_path.stat().st_ino
+        enabled = True
         # It should stream history first
         first_val = next(gen)
         assert '{"event": "run_start"}' in first_val

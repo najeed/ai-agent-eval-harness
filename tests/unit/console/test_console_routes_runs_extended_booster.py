@@ -129,11 +129,12 @@ def test_runs_route_tail_file_generator_inode_rotation_transient_oserror(console
 
     # Mock Path.stat to raise OSError when checked for rotation, but path still exists
     orig_stat = Path.stat
+    enabled = False
 
     def mock_stat(self, *args, **kwargs):
         # Lexical matching on target filename and scenario folder name to avoid
         # stat calls and RecursionErrors
-        if self.name == "run.jsonl" and "transient_oserror_run" in self.parts:
+        if enabled and self.name == "run.jsonl" and "transient_oserror_run" in self.parts:
             raise OSError("Transient file access error")
         return orig_stat(self, *args, **kwargs)
 
@@ -143,6 +144,7 @@ def test_runs_route_tail_file_generator_inode_rotation_transient_oserror(console
         patch.object(Path, "stat", mock_stat),
         patch("time.sleep", side_effect=ValueError("Stop loop")),
     ):
+        enabled = True
         with pytest.raises(ValueError, match="Stop loop"):
             next(gen)
 
