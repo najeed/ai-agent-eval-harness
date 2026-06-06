@@ -150,3 +150,53 @@ async def handle_list_metrics(args):
     except Exception as e:
         print(f"❌ [ERROR] Failed to list metrics: {e}")
         return 1
+
+
+async def handle_trend(args):
+    """Handler for 'trend' command."""
+    try:
+        from ..trend import RunTrendAnalyzer
+
+        print(f"\n[Trend] Analyzing historical runs in: {args.run_log_dir}")
+        analyzer = RunTrendAnalyzer(
+            run_log_dir=args.run_log_dir,
+            agent_name=args.agent_name,
+            window=args.window,
+            threshold=args.threshold,
+        )
+        reports = analyzer.analyze()
+
+        if not reports:
+            print("⚠️  [Trend] No matching runs or agents found to analyze.")
+            return 0
+
+        any_regression = False
+        print("\n" + "=" * 60)
+        print(f"{'AGENT PERFORMANCE TREND ANALYSIS':^60}")
+        print("=" * 60)
+
+        for r in reports:
+            print(f"Agent: {r.agent_name}")
+            print(f"  Window size: {r.window} runs")
+            print(f"  OLS Slope:   {r.slope:+.5f}")
+            print(f"  Direction:   {r.direction.upper()}")
+            print("  Run Details:")
+            for pt in r.run_points:
+                print(f"    - {pt.run_id} ({pt.timestamp}): pass_rate = {pt.pass_rate:.2%}")
+
+            if r.any_regression:
+                any_regression = True
+                print("  🚨 REGRESSION DETECTED!")
+            print("-" * 60)
+
+        if any_regression and args.exit_on_regression:
+            print(
+                "\n❌ [Trend] Regression detected under specified threshold. Exiting with code 1."
+            )
+            return 1
+
+        print("\n[OK] Trend analysis completed successfully.")
+        return 0
+    except Exception as e:
+        print(f"❌ [ERROR] Trend analysis FAILED: {e}")
+        return 1

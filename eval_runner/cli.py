@@ -188,6 +188,7 @@ Usage: agentv <command> [options]
   report         Generate stylized HTML reports from run traces
   leaderboard    Generate performance rankings from run traces
   calibrate      Measure judge agreement against human labels
+  trend          Detect pass-rate regression across sequential runs
 
 6. Trust & Verification
   verify         Verify the cryptographic integrity of a run trace
@@ -438,6 +439,14 @@ Usage: agentv <command> [options]
     calibrate_parser.add_argument("--run-id", required=True)
     calibrate_parser.add_argument("--golden")
     calibrate_parser.add_argument("--plot", action="store_true")
+
+    trend_parser = subparsers.add_parser("trend", help="Detect pass-rate regression")
+    trend_parser.set_defaults(func=_dispatch_analysis)
+    trend_parser.add_argument("--run-log-dir", "--dir", dest="run_log_dir", default="runs")
+    trend_parser.add_argument("--agent", dest="agent_name")
+    trend_parser.add_argument("--window", type=int, default=10)
+    trend_parser.add_argument("--exit-on-regression", action="store_true")
+    trend_parser.add_argument("--threshold", type=float, default=0.0)
 
     # 7. UTILITIES & ENVIRONMENT
     init_parser = subparsers.add_parser("init", help="Initialize workspace")
