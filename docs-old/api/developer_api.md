@@ -102,6 +102,7 @@ agentv gate --run-id <id> [--hash <commit_hash>] [--verify-ledger]
 | `report` | Generate a stylized HTML report from a Run ID using autonomous resolution. |
 | `explain` | AI-powered root cause diagnosis via Run ID forensic resolution. |
 | `leaderboard` | Aggregate multiple traces (`--dir`) into a performance ranking. |
+| `trend` | Detect pass-rate regression across sequential runs using OLS slope (`--run-log-dir`, `--window`, `--exit-on-regression`). |
 | `calibrate` | Measure judge agreement against human-labeled ground truth via Run ID. |
 
 ---

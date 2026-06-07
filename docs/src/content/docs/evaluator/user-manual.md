@@ -50,7 +50,7 @@ agentv run --scenario industries/finance/scenarios/loan_v1.json -v
 | :--- | :--- | :--- |
 | **Execution** | `evaluate`, `run`, `quickstart` | Running tests. |
 | **Interactive**| `playground`, `record`, `replay` | Prototyping and debugging. |
-| **Analysis** | `report`, `explain`, `leaderboard` | Viewing results. |
+| **Analysis** | `report`, `explain`, `leaderboard`, `trend` | Viewing results and detecting regression. |
 | **Diagnostics**| `doctor`, `lint`, `verify` | Environment and integrity checks. |
 
 ---

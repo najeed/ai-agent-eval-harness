@@ -75,20 +75,31 @@ markers = [
     "live: environment-gated integration tests running against CycleCore",
 ]
 filterwarnings = [
-    "ignore:.*_UnionGenericAlias.*:DeprecationWarning",
-    "ignore:.*asyncio.iscoroutinefunction.*:DeprecationWarning",
-    "ignore:.*Pydantic V1 functionality.*:UserWarning",
-    "ignore:.*DeprecationWarning.*:DeprecationWarning:langchain.*",
-    "ignore:.*DeprecationWarning.*:DeprecationWarning:google.genai.*",
-    "ignore:.*DeprecationWarning.*:DeprecationWarning:aiohttp.*",
+    # google-genai: Python 3.14 _UnionGenericAlias deprecation
+    "ignore:.*_UnionGenericAlias.*is deprecated.*:DeprecationWarning:google.*",
+    "ignore:.*_UnionGenericAlias.*is deprecated.*:DeprecationWarning",
+    # autogen: jsonschema v4.18+ RefResolver deprecation
+    "ignore:.*jsonschema.RefResolver is deprecated.*:DeprecationWarning:jsonschema.*",
     "ignore:.*jsonschema.RefResolver is deprecated.*:DeprecationWarning",
+    # autogen: jsonschema.__version__ access deprecation
     "ignore:.*Accessing jsonschema.__version__ is deprecated.*:DeprecationWarning",
-    "ignore:.*inspect.iscoroutinefunction.*:DeprecationWarning",
+    # daytona + autogen + langchain: asyncio.iscoroutinefunction Python 3.16 deprecation
+    "ignore:.*asyncio.iscoroutinefunction.*is deprecated.*:DeprecationWarning:daytona.*",
+    "ignore:.*asyncio.iscoroutinefunction.*is deprecated.*:DeprecationWarning:autogen.*",
+    "ignore:.*asyncio.iscoroutinefunction.*is deprecated.*:DeprecationWarning:langchain.*",
+    "ignore:.*asyncio.iscoroutinefunction.*is deprecated.*:DeprecationWarning",
+    # Pydantic V1 shim warnings from third-party adapters
+    "ignore:.*Pydantic V1 functionality.*:UserWarning",
+    # langchain / aiohttp internal deprecations
+    "ignore:.*DeprecationWarning.*:DeprecationWarning:langchain.*",
+    "ignore:.*DeprecationWarning.*:DeprecationWarning:aiohttp.*",
+    # asyncio internal: unawaited coroutine from aiohttp teardown
     "ignore:.*coroutine '_wait_for_close' was never awaited.*:RuntimeWarning",
+    # Pydantic allowed_objects deprecation
     "ignore:.*allowed_objects.*:DeprecationWarning",
     "ignore:.*default value of `allowed_objects`.*:UserWarning",
-    "ignore:.*jsonschema.RefResolver is deprecated.*:DeprecationWarning",
-    "ignore:.*Accessing jsonschema.__version__ is deprecated.*:DeprecationWarning",
+    # inspect.iscoroutinefunction compatibility shims
+    "ignore:.*inspect.iscoroutinefunction.*:DeprecationWarning",
 ]
 
 [tool.ruff]

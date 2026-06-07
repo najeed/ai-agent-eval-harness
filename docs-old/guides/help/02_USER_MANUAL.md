@@ -126,6 +126,7 @@ Starting with v1.6.0, the CLI can be extended by external packages (like the **A
 | **5. Reporting & Benchmarking** | | Analyze performance |
 | `report` | `--run-id`, `--share` | Generate stylized Premium HTML reports |
 | `leaderboard` | `--dir`, `--output` | Generate rankings from multiple run traces |
+| `trend` | `--run-log-dir`, `--window`, `--exit-on-regression`, `--threshold` | Detect pass-rate regression across runs |
 | `calibrate` | `--run-id`, `--plot` | Measure judge agreement vs human labels |
 | **6. Trust & Verification** | | Prove test validity |
 | `verify` | `--run-id` | Verify cryptographic integrity of a run trace |

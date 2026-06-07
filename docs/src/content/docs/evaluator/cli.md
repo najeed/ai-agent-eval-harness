@@ -70,6 +70,27 @@ Generate stylized HTML reports and Mermaid trajectory maps.
 agentv report --run-id <id> --share
 ```
 
+### `leaderboard`
+Generate performance rankings from run traces in a target directory.
+```bash
+agentv leaderboard --dir runs/ --output LEADERBOARD.md
+```
+
+### `trend`
+Detect pass-rate regression across sequential evaluation runs.
+```bash
+agentv trend \
+  --run-log-dir runs/ \
+  --window 10 \
+  --exit-on-regression \
+  --threshold 0.0
+```
+- `--run-log-dir` / `--dir`: The run log directory to scan (defaults to `runs`).
+- `--agent`: Specific agent to analyze.
+- `--window`: The trailing window of sequential runs (default: 10).
+- `--exit-on-regression`: Exit with code 1 if regression is detected.
+- `--threshold`: The regression threshold for the OLS slope (default: 0.0).
+
 ### `explain`
 AI-powered root cause diagnosis with [Tiered Confidence Scoring](/evaluator/drift/).
 

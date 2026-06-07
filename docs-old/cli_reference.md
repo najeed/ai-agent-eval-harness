@@ -143,6 +143,17 @@ Generate performance rankings across multiple run traces.
 agentv leaderboard [--dir <path>] [--output <LEADERBOARD.md>]
 ```
 
+### `trend`
+Detect pass-rate regression across sequential evaluation runs using OLS linear regression over a trailing window.
+```bash
+agentv trend [--run-log-dir <path>] [--agent <agent_name>] [--window <N>] [--exit-on-regression] [--threshold <T>]
+```
+- `--run-log-dir` / `--dir`: The run log directory to scan (defaults to `runs`).
+- `--agent`: Specific agent to analyze. If omitted, computes trends for all agents.
+- `--window`: The trailing window of sequential runs to analyze (default: 10).
+- `--exit-on-regression`: Exit with code 1 if a regression is detected.
+- `--threshold`: The regression threshold for the OLS slope (default: 0.0).
+
 ### `calibrate`
 Measure and visualize judge agreement against human-labeled ground truth.
 

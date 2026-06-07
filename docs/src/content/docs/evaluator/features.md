@@ -46,6 +46,7 @@ First-class, zero-touch support for leading AI agent frameworks.
 Scientific-grade measurement of agent capabilities.
 - **Robust Semantic Judging (Luna-Judge)**: Industrial LLM-as-Judge layer with automated regex-based score extraction, reasoning-aware parsing, and fallback Jaccard similarity heuristics.
 - **Scientific Pass Rate Metrics (Pass@k)**: Provides high-fidelity success measurement across multiple evaluation attempts.
+- **Pass-Rate Regression Trend Analysis** (`trend`): OLS linear regression over a trailing window of sequential runs to detect performance degradation over time. Integrates with CI via `--exit-on-regression`.
 - **Grounding Coverage**: Heatmaps visualizing tool and knowledge-base utilization within scenarios.
 - **Cost/Latency Analytics**: P95 latency monitoring and precise token-based costing.
 

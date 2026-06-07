@@ -75,6 +75,7 @@ Unlike legacy CLIs that use massive `if/elif` chains, AgentV uses a data-driven 
 ### 5. Reporting & Benchmarking
 - `report` — Generate stylized **Premium HTML reports** from traces
 - `leaderboard` — Performance rankings from multiple run traces
+- `trend` — Detect pass-rate regression across sequential runs (OLS slope over a sliding window)
 - `calibrate` — Measure judge agreement against human labels
 
 ### 6. Trust & Verification

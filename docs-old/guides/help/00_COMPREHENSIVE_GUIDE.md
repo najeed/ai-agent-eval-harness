@@ -30,7 +30,7 @@ AgentV CLI is organized around 8 logical intents to guide you through the full e
 - **2. Discovery**: `list`, `catalog-search`, `inspect`, `list-metrics`, `taxonomy`, `list-plugins`
 - **3. Execution**: `run`, `evaluate`, `quickstart`
 - **4. Debugging**: `replay`, `explain`, `failures search`, `playground`, `record`
-- **5. Reporting**: `report`, `leaderboard`, `calibrate`
+- **5. Reporting**: `report`, `leaderboard`, `trend`, `calibrate`
 - **6. Trust**: `verify`, `certify`, `gate`, `aes`, `lint`
 - **7. CI/CD**: `ci`, `export`, `import-drift`, `registry sync`
 - **8. Control**: `console`, `contribute`, `cleanup-runs`, `doctor`, `plugin`

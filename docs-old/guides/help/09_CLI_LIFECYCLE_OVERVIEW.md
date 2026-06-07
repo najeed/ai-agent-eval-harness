@@ -65,7 +65,8 @@ The data is in. Now you need to present it to stakeholders.
 
 1.  **`report`**: You generate a **Premium HTML report** featuring trajectory visualizations and metric heatmaps.
 2.  **`leaderboard`**: You generate performance rankings to compare the "baseline" agent against the "hardened" variant.
-3.  **`calibrate`**: You measure the agreement between the AI Judge and human auditors to ensure the evaluation is unbiased.
+3.  **`trend`**: You run a **pass-rate regression analysis** over the last N sequential runs to detect performance regressions. If the slope is negative, a CI gate can exit `1` immediately.
+4.  **`calibrate`**: You measure the agreement between the AI Judge and human auditors to ensure the evaluation is unbiased.
 
 ---
 
