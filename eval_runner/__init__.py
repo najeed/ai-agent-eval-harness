@@ -3,7 +3,17 @@ Evaluation Runner Core Package.
 """
 
 # Establish version first for package identity (SSOT)
+import asyncio
+import inspect
 import warnings
+
+# --- MONKEYPATCH DEPRECATIONS ---
+# Fix asyncio.iscoroutinefunction deprecation warning in Python 3.14+
+# by pointing it directly to inspect.iscoroutinefunction. This prevents
+# third-party packages (LangChain, AutoGen, Daytona) from raising warnings.
+if not hasattr(asyncio, "_original_iscoroutinefunction"):
+    asyncio._original_iscoroutinefunction = asyncio.iscoroutinefunction  # type: ignore[attr-defined]
+    asyncio.iscoroutinefunction = inspect.iscoroutinefunction
 
 from .config import VERSION as __version__  # noqa: F401
 
