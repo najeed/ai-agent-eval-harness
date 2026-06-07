@@ -4116,6 +4116,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#trend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        trend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#calibrate" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4448,6 +4459,15 @@
 <p>Generate performance rankings across multiple run traces.
 <div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>agentv<span class="w"> </span>leaderboard<span class="w"> </span><span class="o">[</span>--dir<span class="w"> </span>&lt;path&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--output<span class="w"> </span>&lt;LEADERBOARD.md&gt;<span class="o">]</span>
 </code></pre></div></p>
+<h3 id="trend"><code>trend</code><a class="headerlink" href="#trend" title="Permanent link">&para;</a></h3>
+<p>Detect pass-rate regression across sequential evaluation runs using OLS linear regression over a trailing window.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>agentv<span class="w"> </span>trend<span class="w"> </span><span class="o">[</span>--run-log-dir<span class="w"> </span>&lt;path&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--agent<span class="w"> </span>&lt;agent_name&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--window<span class="w"> </span>&lt;N&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--exit-on-regression<span class="o">]</span><span class="w"> </span><span class="o">[</span>--threshold<span class="w"> </span>&lt;T&gt;<span class="o">]</span>
+</code></pre></div>
+- <code>--run-log-dir</code> / <code>--dir</code>: The run log directory to scan (defaults to <code>runs</code>).
+- <code>--agent</code>: Specific agent to analyze. If omitted, computes trends for all agents.
+- <code>--window</code>: The trailing window of sequential runs to analyze (default: 10).
+- <code>--exit-on-regression</code>: Exit with code 1 if a regression is detected.
+- <code>--threshold</code>: The regression threshold for the OLS slope (default: 0.0).</p>
 <h3 id="calibrate"><code>calibrate</code><a class="headerlink" href="#calibrate" title="Permanent link">&para;</a></h3>
 <p>Measure and visualize judge agreement against human-labeled ground truth.</p>
 <hr />
@@ -4455,19 +4475,19 @@
 <p><em>Intent: I want to prove the integrity and compliance of my agent results.</em></p>
 <h3 id="verify"><code>verify</code><a class="headerlink" href="#verify" title="Permanent link">&para;</a></h3>
 <p>Verify the cryptographic integrity of a run trace using autonomous resolution.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>agentv<span class="w"> </span>verify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>agentv<span class="w"> </span>verify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 <h3 id="certify"><code>certify</code><a class="headerlink" href="#certify" title="Permanent link">&para;</a></h3>
 <p>Generate a cryptographically signed Verification Certificate (VC) for a trace.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>agentv<span class="w"> </span>certify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--identity<span class="w"> </span>system_id<span class="o">]</span><span class="w"> </span><span class="o">[</span>--status<span class="w"> </span><span class="o">{</span>pass,fail,warning<span class="o">}]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>agentv<span class="w"> </span>certify<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--identity<span class="w"> </span>system_id<span class="o">]</span><span class="w"> </span><span class="o">[</span>--status<span class="w"> </span><span class="o">{</span>pass,fail,warning<span class="o">}]</span>
 </code></pre></div></p>
 <h3 id="gate"><code>gate</code><a class="headerlink" href="#gate" title="Permanent link">&para;</a></h3>
 <p>CI/CD "Hard Gate": Enforce verification and compliance before deployment. Returns exit code 0 or 1.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>agentv<span class="w"> </span>gate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--hash<span class="w"> </span>&lt;commit_hash&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--verify-ledger<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>agentv<span class="w"> </span>gate<span class="w"> </span>--run-id<span class="w"> </span>&lt;id&gt;<span class="w"> </span><span class="o">[</span>--hash<span class="w"> </span>&lt;commit_hash&gt;<span class="o">]</span><span class="w"> </span><span class="o">[</span>--verify-ledger<span class="o">]</span>
 </code></pre></div></p>
 <h3 id="aes"><code>aes</code><a class="headerlink" href="#aes" title="Permanent link">&para;</a></h3>
 <p>AES Specification utilities (Validate/Register).
-<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>agentv<span class="w"> </span>aes<span class="w"> </span>validate<span class="w"> </span>--path<span class="w"> </span>&lt;path&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>agentv<span class="w"> </span>aes<span class="w"> </span>validate<span class="w"> </span>--path<span class="w"> </span>&lt;path&gt;
 </code></pre></div></p>
 <h3 id="lint"><code>lint</code><a class="headerlink" href="#lint" title="Permanent link">&para;</a></h3>
 <p>Static analysis for AES compliance quality and duplicate detection.</p>
@@ -4476,37 +4496,37 @@
 <p><em>Intent: I want to scale my evaluations and integrate with CI/CD pipelines.</em></p>
 <h3 id="ci"><code>ci</code><a class="headerlink" href="#ci" title="Permanent link">&para;</a></h3>
 <p>Scaffold a GitHub Actions workflow for the current environment.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>agentv<span class="w"> </span>ci<span class="w"> </span>generate
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>agentv<span class="w"> </span>ci<span class="w"> </span>generate
 </code></pre></div></p>
 <h3 id="export"><code>export</code><a class="headerlink" href="#export" title="Permanent link">&para;</a></h3>
 <p>Export execution traces to external formats (HuggingFace, CSV).
-<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>agentv<span class="w"> </span><span class="nb">export</span><span class="w"> </span>--input<span class="w"> </span>&lt;run.jsonl&gt;<span class="w"> </span>--format<span class="w"> </span>hf<span class="w"> </span>--output<span class="w"> </span>&lt;dataset.json&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>agentv<span class="w"> </span><span class="nb">export</span><span class="w"> </span>--input<span class="w"> </span>&lt;run.jsonl&gt;<span class="w"> </span>--format<span class="w"> </span>hf<span class="w"> </span>--output<span class="w"> </span>&lt;dataset.json&gt;
 </code></pre></div></p>
 <h3 id="import-drift"><code>import-drift</code><a class="headerlink" href="#import-drift" title="Permanent link">&para;</a></h3>
 <p>Convert production traces to evaluation scenarios.</p>
 <h3 id="registry"><code>registry</code><a class="headerlink" href="#registry" title="Permanent link">&para;</a></h3>
 <p>Synchronize local industry registries with remote standards.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>agentv<span class="w"> </span>registry<span class="w"> </span>sync
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>agentv<span class="w"> </span>registry<span class="w"> </span>sync
 </code></pre></div></p>
 <hr />
 <h2 id="8-maintenance-control">8. Maintenance &amp; Control<a class="headerlink" href="#8-maintenance-control" title="Permanent link">&para;</a></h2>
 <p><em>Intent: I want to manage the environment, plugins, and system health.</em></p>
 <h3 id="console"><code>console</code><a class="headerlink" href="#console" title="Permanent link">&para;</a></h3>
 <p>Launch the Visual Debugger server (Web UI &amp; REST API).
-<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>agentv<span class="w"> </span>console<span class="w"> </span><span class="o">[</span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="o">]</span><span class="w"> </span><span class="o">[</span>--port<span class="w"> </span><span class="m">5000</span><span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>agentv<span class="w"> </span>console<span class="w"> </span><span class="o">[</span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="o">]</span><span class="w"> </span><span class="o">[</span>--port<span class="w"> </span><span class="m">5000</span><span class="o">]</span>
 </code></pre></div></p>
 <h3 id="contribute"><code>contribute</code><a class="headerlink" href="#contribute" title="Permanent link">&para;</a></h3>
 <p>Start the interactive contribution wizard for the industry catalog.</p>
 <h3 id="cleanup-runs"><code>cleanup-runs</code><a class="headerlink" href="#cleanup-runs" title="Permanent link">&para;</a></h3>
 <p>Prune old traces and rotate log artifacts.
-<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>agentv<span class="w"> </span>cleanup-runs<span class="w"> </span><span class="o">[</span>--days<span class="w"> </span><span class="m">7</span><span class="o">]</span><span class="w"> </span><span class="o">[</span>--force<span class="o">]</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>agentv<span class="w"> </span>cleanup-runs<span class="w"> </span><span class="o">[</span>--days<span class="w"> </span><span class="m">7</span><span class="o">]</span><span class="w"> </span><span class="o">[</span>--force<span class="o">]</span>
 </code></pre></div></p>
 <h3 id="doctor"><code>doctor</code><a class="headerlink" href="#doctor" title="Permanent link">&para;</a></h3>
 <p>Audit the local environment for configuration markers and dependencies.</p>
 <h3 id="plugin"><code>plugin</code><a class="headerlink" href="#plugin" title="Permanent link">&para;</a></h3>
 <p>Manage external and built-in plugins (Register/Unregister/List).
-<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>agentv<span class="w"> </span>plugin<span class="w"> </span>register<span class="w"> </span>&lt;path&gt;
-<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>agentv<span class="w"> </span>plugin<span class="w"> </span>unregister<span class="w"> </span>&lt;id&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>agentv<span class="w"> </span>plugin<span class="w"> </span>register<span class="w"> </span>&lt;path&gt;
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>agentv<span class="w"> </span>plugin<span class="w"> </span>unregister<span class="w"> </span>&lt;id&gt;
 </code></pre></div></p>
 
 

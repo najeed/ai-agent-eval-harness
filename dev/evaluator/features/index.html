@@ -113,6 +113,7 @@
 <ul>
 <li><strong>Robust Semantic Judging (Luna-Judge)</strong>: Industrial LLM-as-Judge layer with automated regex-based score extraction, reasoning-aware parsing, and fallback Jaccard similarity heuristics.</li>
 <li><strong>Scientific Pass Rate Metrics (Pass@k)</strong>: Provides high-fidelity success measurement across multiple evaluation attempts.</li>
+<li><strong>Pass-Rate Regression Trend Analysis</strong> (<code dir="auto">trend</code>): OLS linear regression over a trailing window of sequential runs to detect performance degradation over time. Integrates with CI via <code dir="auto">--exit-on-regression</code>.</li>
 <li><strong>Grounding Coverage</strong>: Heatmaps visualizing tool and knowledge-base utilization within scenarios.</li>
 <li><strong>Cost/Latency Analytics</strong>: P95 latency monitoring and precise token-based costing.</li>
 </ul>
