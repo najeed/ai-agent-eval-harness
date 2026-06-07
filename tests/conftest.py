@@ -127,27 +127,10 @@ pytest_plugins = []
 
 def pytest_configure(config):
     """Register custom markers and configure pytest-asyncio for Python 3.14+."""
-    import warnings
-
     config.addinivalue_line("markers", "asyncio: mark test as an asyncio test")
     config.addinivalue_line(
         "markers", "live: environment-gated integration tests running against CycleCore"
     )
-
-    # Programmatically ignore aiohttp's unawaited _wait_for_close coroutine warning
-    warnings.filterwarnings(
-        "ignore",
-        message=".*coroutine '_wait_for_close' was never awaited.*",
-        category=RuntimeWarning,
-    )
-
-    # Programmatically ignore third-party site-packages deprecation/compatibility warnings
-    warnings.filterwarnings("ignore", category=DeprecationWarning, module="google.*")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, module="autogen.*")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, module="daytona.*")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, module="langchain_core.*")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, module="langgraph.*")
-    warnings.filterwarnings("ignore", category=UserWarning, module="langchain_core.*")
 
 
 @pytest.fixture(autouse=True)

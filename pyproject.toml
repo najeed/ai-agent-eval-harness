@@ -85,13 +85,8 @@ filterwarnings = [
     "ignore:.*Accessing jsonschema.__version__ is deprecated.*:DeprecationWarning",
     # Pydantic V1 shim warnings from third-party adapters
     "ignore:.*Pydantic V1 functionality.*:UserWarning",
-    # langchain / aiohttp internal deprecations
-    "ignore:.*DeprecationWarning.*:DeprecationWarning:langchain.*",
-    "ignore:.*DeprecationWarning.*:DeprecationWarning:aiohttp.*",
-    # Pydantic allowed_objects deprecation
-    "ignore:.*allowed_objects.*:DeprecationWarning",
-    "ignore:.*default value of `allowed_objects`.*:UserWarning",
 ]
+
 
 [tool.ruff]
 # Standardize on industrial 100-character line length (2026 upgrade)

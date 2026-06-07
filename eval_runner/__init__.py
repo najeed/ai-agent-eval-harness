@@ -22,6 +22,17 @@ from .config import VERSION as __version__  # noqa: F401
 # that mangle the console output on Python 3.14+ without impacting system stability.
 # This ensures a clean, audit-grade experience for Enterprise Trust Workflows.
 warnings.filterwarnings("ignore", message=".*compatible with Python 3.14 or greater.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="google.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="autogen.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="daytona.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="langchain_core.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="langgraph.*")
+warnings.filterwarnings("ignore", category=UserWarning, module="langchain_core.*")
+warnings.filterwarnings(
+    "ignore",
+    message=".*coroutine '_wait_for_close' was never awaited.*",
+    category=RuntimeWarning,
+)
 
 # NOTE: circular import protection. Engineers should import Engine specifically
 # from eval_runner.engine to avoid initialization races.
