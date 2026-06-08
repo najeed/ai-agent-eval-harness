@@ -71,6 +71,7 @@ def test_session_manager_routing_discovery(base_scenario, tmp_path):
 @pytest.mark.asyncio
 async def test_session_execute_tasks_success(base_scenario, tmp_path):
     session = SessionManager("test_run_456", base_scenario, log_root=tmp_path)
+    session.scenario["workflow"]["nodes"][0]["expected_outcome"] = []
 
     mock_agent_response = {"action": "completed", "tool_name": None}
 
@@ -725,3 +726,226 @@ async def test_session_tool_redirection_and_completed(base_scenario, tmp_path):
             res = await session._execute_node(node, 1, 0, mock_sandbox, [], {"used_tools": []})
             assert res["status"] == "success"
             mock_sandbox.execute.assert_awaited_with("redirected_tool", {})
+
+
+def test_session_manager_initialization_with_metadata(base_scenario, tmp_path):
+    metadata = {"custom_key": "custom_val"}
+    session = SessionManager("test_run_456", base_scenario, metadata=metadata, log_root=tmp_path)
+    assert session.session_metadata["custom_key"] == "custom_val"
+
+
+def test_session_telemetry_no_psutil(base_scenario, tmp_path):
+    with patch("eval_runner.session.psutil", None):
+        session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+        session._capture_telemetry()
+        assert len(session.resource_telemetry) == 0
+
+
+def test_session_import_error_psutil():
+    import sys
+    from importlib import reload
+
+    import eval_runner.session
+
+    with patch.dict(sys.modules, {"psutil": None}):
+        reload(eval_runner.session)
+    # Restore normal module state
+    reload(eval_runner.session)
+
+
+def test_session_plugin_reload_error(base_scenario, tmp_path):
+    from unittest.mock import PropertyMock
+
+    mock_prov = {"CustomPlugin": {"origin": "EXTERNAL", "path": "/fake/path"}}
+    with patch(
+        "eval_runner.plugins.PluginManager.provenance_map", new_callable=PropertyMock, create=True
+    ) as mock_prop:
+        mock_prop.return_value = mock_prov
+        with patch("eval_runner.plugins.PluginManager.load", side_effect=Exception("Load error")):
+            SessionManager("test_run", base_scenario, log_root=tmp_path)
+
+
+def test_session_plugin_archive_error(base_scenario, tmp_path):
+    from unittest.mock import PropertyMock
+
+    mock_prov = {"CustomPlugin": {"origin": "EXTERNAL", "path": "/fake/path"}}
+    with patch(
+        "eval_runner.plugins.PluginManager.provenance_map", new_callable=PropertyMock, create=True
+    ) as mock_prop:
+        mock_prop.return_value = mock_prov
+        with patch("eval_runner.plugins.PluginManager.load"):
+            with patch(
+                "eval_runner.forensics.ForensicCollector.archive_plugin",
+                side_effect=Exception("Archive error"),
+            ):
+                SessionManager("test_run", base_scenario, log_root=tmp_path)
+
+
+def test_session_manual_init_event(base_scenario, tmp_path):
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    session.event_bus.emit("MANUAL_INIT", {})
+    assert "init" in session.protocol_sequence
+
+
+@pytest.mark.asyncio
+async def test_session_execute_tasks_missing_node(base_scenario, tmp_path):
+    base_scenario["workflow"]["edges"] = [{"from": "node_1", "to": "node_missing"}]
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    session.scenario["workflow"]["nodes"][0]["expected_outcome"] = []
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock_agent:
+        mock_agent.return_value = {"action": "completed"}
+        with patch.object(session, "_calculate_metrics", new_callable=AsyncMock) as mock_calc:
+            mock_calc.return_value = {"status": "success", "metrics": []}
+            res = await session.execute_tasks(1)
+            assert len(res) == 2
+
+
+@pytest.mark.asyncio
+async def test_session_execute_node_throttle(base_scenario, tmp_path):
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    node = {"id": "node_1"}
+    with patch("eval_runner.config.EVAL_TURN_THROTTLE", 0.01):
+        with patch(
+            "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+        ) as mock_agent:
+            mock_agent.return_value = {"action": "completed"}
+            with patch.object(session, "_calculate_metrics", new_callable=AsyncMock) as mock_calc:
+                mock_calc.return_value = {"status": "success", "metrics": []}
+                await session._execute_node(node, 1, 0, AsyncMock(), [], {})
+
+
+@pytest.mark.asyncio
+async def test_session_execute_node_multiple_tools(base_scenario, tmp_path):
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    node = {"id": "node_1"}
+    with patch(
+        "eval_runner.engine.AgentAdapterRegistry.call_agent", new_callable=AsyncMock
+    ) as mock_agent:
+        mock_agent.side_effect = [
+            {"action": "call_multiple_tools", "tool_names": ["t1"]},
+            {"action": "completed"},
+        ]
+        mock_sandbox = AsyncMock()
+        mock_sandbox.state = {}
+        mock_sandbox.get_full_state.return_value = {}
+        with patch.object(session, "_calculate_metrics", new_callable=AsyncMock) as mock_calc:
+            mock_calc.return_value = {"status": "success", "metrics": []}
+            await session._execute_node(node, 1, 0, mock_sandbox, [], {"used_tools": []})
+            assert mock_sandbox.execute.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_verify_state_parity_shim_path_variants(base_scenario, tmp_path):
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    node = {
+        "expected_outcome": [
+            {"target": "shim:db.sub", "property": "val", "expected": "ok", "mode": "exact"},
+            {"target": "shim:db", "expected": {"sub": {"val": "ok"}, "val": "ok"}, "mode": "exact"},
+        ],
+        "timeout": 0.1,
+    }
+    mock_sandbox = AsyncMock()
+    mock_sandbox.get_active_simulators = MagicMock(return_value={"db": AsyncMock()})
+    mock_sandbox.get_active_simulators.return_value["db"].get_snapshot = AsyncMock(
+        return_value={"sub": {"val": "ok"}, "val": "ok"}
+    )
+    result = await session._verify_state_parity(node, mock_sandbox, [])
+    assert result is True
+
+
+@pytest.mark.asyncio
+async def test_verify_state_parity_contains_and_tolerance(base_scenario, tmp_path):
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    mock_sandbox = AsyncMock()
+    mock_sandbox.get_active_simulators = MagicMock(return_value={})
+    mock_sandbox.get_full_state.return_value = {"val": "hello world", "num": "invalid"}
+
+    # Contains list
+    node = {
+        "expected_outcome": [
+            {
+                "target": "state",
+                "property": "val",
+                "expected": ["hello", "missing"],
+                "mode": "contains",
+            }
+        ],
+        "timeout": 0.1,
+    }
+    assert await session._verify_state_parity(node, mock_sandbox, []) is True
+
+    # Contains str
+    node = {
+        "expected_outcome": [
+            {"target": "state", "property": "val", "expected": "hello", "mode": "contains"}
+        ],
+        "timeout": 0.1,
+    }
+    assert await session._verify_state_parity(node, mock_sandbox, []) is True
+
+    # Numerical tolerance exception branch
+    node = {
+        "expected_outcome": [
+            {"target": "state", "property": "num", "expected": 1.0, "mode": "numerical_tolerance"}
+        ],
+        "timeout": 0.1,
+    }
+    assert await session._verify_state_parity(node, mock_sandbox, []) is False
+
+
+@pytest.mark.asyncio
+async def test_multiple_tools_interceptor_mutate(base_scenario, tmp_path):
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    session.plugin_manager.trigger_interceptor = MagicMock(
+        return_value={"tool_name": "redirected", "arguments": {"p": 1}}
+    )
+    mock_sandbox = AsyncMock()
+    mock_sandbox.state = {}
+    mock_sandbox.get_full_state.return_value = {}
+    agent_resp = {"tool_names": ["t1"]}
+    await session._handle_multiple_tools(
+        1, agent_resp, mock_sandbox, [], {"used_tools": []}, MagicMock()
+    )
+    mock_sandbox.execute.assert_awaited_with("redirected", {"p": 1})
+
+
+def test_get_last_env_message_non_env(base_scenario, tmp_path):
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    assert session._get_last_env_message([{"role": "user"}]) == ""
+
+
+@pytest.mark.asyncio
+async def test_calculate_metrics_expected_outcome_resolution(base_scenario, tmp_path):
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    node = {
+        "expected_outcome": [{"target": "message", "expected": "msg_success"}],
+        "success_criteria": [{"metric": "exact_match"}],
+    }
+
+    received_criterion = None
+
+    async def dummy_metric(criterion):
+        nonlocal received_criterion
+        received_criterion = criterion
+        return 1.0
+
+    with patch("eval_runner.metrics.MetricRegistry.get", return_value=dummy_metric):
+        with patch("eval_runner.metrics.MetricRegistry.get_source", return_value="CORE"):
+            await session._calculate_metrics(node, 1, 1, [], AsyncMock(), {"used_tools": []})
+            assert received_criterion["expected"] == "msg_success"
+
+
+@pytest.mark.asyncio
+async def test_calculate_metrics_isolation(base_scenario, tmp_path):
+    session = SessionManager("test_run", base_scenario, log_root=tmp_path)
+    node = {"success_criteria": [{"metric": "external_metric"}]}
+
+    def dummy_metric(history):
+        return 1.0
+
+    with patch("eval_runner.metrics.MetricRegistry.get", return_value=dummy_metric):
+        with patch("eval_runner.metrics.MetricRegistry.get_source", return_value="EXTERNAL_PLUGIN"):
+            history = [{"role": "user"}]
+            await session._calculate_metrics(node, 1, 1, history, AsyncMock(), {"used_tools": []})

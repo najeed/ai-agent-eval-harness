@@ -282,6 +282,129 @@ class TestEnvironmentHandlers:
                 # Check that some feedback was given
                 mock_print.assert_called()
 
+    def test_list_industries_exception(self):
+        with patch("eval_runner.registry_sync.load_registry", side_effect=Exception("Failed")):
+            industries = handlers.list_industries()
+            # Falls back to standard list
+            assert "finance" in industries
+            assert "generic" in industries
+
+    def test_detect_framework_heuristic_more(self, tmp_dir):
+        # AutoGen by conversable_agent.py
+        Path("conversable_agent.py").write_text("")
+        assert handlers.detect_framework() == "AutoGen"
+        os.remove("conversable_agent.py")
+
+        # requirements.txt variants
+        req = Path("requirements.txt")
+        req.write_text("crewai==1.0")
+        assert handlers.detect_framework() == "CrewAI"
+
+        req.write_text("pyautogen==0.2")
+        assert handlers.detect_framework() == "AutoGen"
+
+        req.write_text("langchain==0.1")
+        assert handlers.detect_framework() == "LangChain"
+        os.remove("requirements.txt")
+
+        # requirements.txt read failure
+        with patch("pathlib.Path.read_text", side_effect=Exception("Read error")):
+            req.touch()
+            assert handlers.detect_framework() == "Custom"
+            os.remove("requirements.txt")
+
+        # libs/langchain
+        Path("libs/langchain").mkdir(parents=True, exist_ok=True)
+        assert handlers.detect_framework() == "LangChain"
+        Path("libs/langchain").rmdir()
+        Path("libs").rmdir()
+
+    @pytest.mark.asyncio
+    async def test_handlers_exception_branches(self, clean_args):
+        # 1. handle_analyze
+        with patch("eval_runner.analyzer.analyze_repo", side_effect=Exception("Error")):
+            clean_args.url = "http://repo"
+            assert await handlers.handle_analyze(clean_args) == 1
+
+        # 2. handle_auto_translate
+        with patch("eval_runner.auto_translate.extract_text", side_effect=Exception("Error")):
+            clean_args.input = "in"
+            assert await handlers.handle_auto_translate(clean_args) == 1
+
+        # 3. handle_init
+        with patch("eval_runner.scaffold.scaffold_benchmark", side_effect=Exception("Error")):
+            clean_args.standard = None
+            clean_args.dir = "dir"
+            clean_args.industry = "ind"
+            clean_args.protocol = "proto"
+            assert await handlers.handle_init(clean_args) == 1
+
+        # 4. handle_install
+        with patch("eval_runner.catalog.install_pack", side_effect=Exception("Error")):
+            clean_args.pack = "pack"
+            assert await handlers.handle_install(clean_args) == 1
+
+        # 5. handle_registry_sync
+        with patch("eval_runner.registry_sync.ensure_schema_sync", side_effect=Exception("Error")):
+            assert await handlers.handle_registry_sync(clean_args) == 1
+
+        # 6. handle_registry_add
+        with patch(
+            "eval_runner.registry_sync.add_standard_to_registry", side_effect=Exception("Error")
+        ):
+            clean_args.id = "id"
+            clean_args.industry = "ind"
+            assert await handlers.handle_registry_add(clean_args) == 1
+
+        # 7. handle_registry_search
+        with patch(
+            "eval_runner.handlers.scenarios.handle_catalog_search", side_effect=Exception("Error")
+        ):
+            assert await handlers.handle_registry_search(clean_args) == 1
+
+        # 8. handle_plugin_list
+        with patch("eval_runner.plugins.manager.load_plugins", side_effect=Exception("Error")):
+            assert await handlers.handle_plugin_list(clean_args) == 1
+
+        # 9. handle_plugin_register
+        with patch(
+            "eval_runner.plugins.manager.register_persistent", side_effect=Exception("Error")
+        ):
+            clean_args.path = "path"
+            assert await handlers.handle_plugin_register(clean_args) == 1
+
+        # 10. handle_plugin_unregister
+        with patch(
+            "eval_runner.plugins.manager.unregister_persistent", side_effect=Exception("Error")
+        ):
+            clean_args.name = "name"
+            assert await handlers.handle_plugin_unregister(clean_args) == 1
+
+        # 11. handle_doctor
+        with patch("eval_runner.doctor.run_doctor", side_effect=Exception("Error")):
+            assert await handlers.handle_doctor(clean_args) == 1
+
+        # 12. handle_ci_generate
+        with patch("eval_runner.scaffold.generate_github_action", side_effect=Exception("Error")):
+            assert await handlers.handle_ci_generate(clean_args) == 1
+
+        # 13. handle_cleanup_runs
+        with patch("eval_runner.cleaner.cleanup_traces", side_effect=Exception("Error")):
+            clean_args.days = 1
+            clean_args.force = True
+            assert await handlers.handle_cleanup_runs(clean_args) == 1
+
+        # 14. handle_export
+        with patch("eval_runner.exporter.HFExporter.export", side_effect=Exception("Error")):
+            clean_args.input = "in"
+            clean_args.output = "out"
+            assert await handlers.handle_export(clean_args) == 1
+
+        # 15. handle_failures_search
+        with patch("eval_runner.failure_corpus.search", side_effect=Exception("Error")):
+            clean_args.query = "q"
+            assert await handlers.handle_failures_search(clean_args) == 1
+
 
 if __name__ == "__main__":
     unittest.main()
