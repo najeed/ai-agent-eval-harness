@@ -45,6 +45,7 @@ class PipelineService(Generic[RequestT, ResponseT]):
     ):
         self._lock = threading.RLock()
         self._global_interceptors: list[Interceptor[RequestT, ResponseT]] = []
+        self._interceptor_threads: dict[Interceptor[RequestT, ResponseT], int] = {}
         self._fallback = fallback_handler
         self._service_name = service_name
         self._local = threading.local()
@@ -54,13 +55,20 @@ class PipelineService(Generic[RequestT, ResponseT]):
         """Provides thread-local copy of registered interceptors to ensure thread isolation."""
         if not hasattr(self._local, "interceptors"):
             with self._lock:
-                self._local.interceptors = list(self._global_interceptors)
+                current_thread = threading.get_ident()
+                main_thread = threading.main_thread().ident
+                self._local.interceptors = [
+                    i
+                    for i in self._global_interceptors
+                    if self._interceptor_threads.get(i) in (current_thread, main_thread)
+                ]
         return self._local.interceptors
 
     def register_interceptor(self, interceptor: Interceptor[RequestT, ResponseT]):
         """Registers an interceptor thread-safely at the head of the priority chain."""
         with self._lock:
             self._global_interceptors.insert(0, interceptor)
+            self._interceptor_threads[interceptor] = threading.get_ident()
             if hasattr(self._local, "interceptors"):
                 self._local.interceptors.insert(0, interceptor)
 
@@ -68,6 +76,7 @@ class PipelineService(Generic[RequestT, ResponseT]):
         """Thread-safely clears all custom interceptors."""
         with self._lock:
             self._global_interceptors.clear()
+            self._interceptor_threads.clear()
             if hasattr(self._local, "interceptors"):
                 self._local.interceptors.clear()
 
@@ -79,6 +88,7 @@ class PipelineService(Generic[RequestT, ResponseT]):
             yield
         finally:
             with self._lock:
+                self._interceptor_threads.pop(interceptor, None)
                 if interceptor in self._global_interceptors:
                     self._global_interceptors.remove(interceptor)
                 if hasattr(self._local, "interceptors") and interceptor in self._local.interceptors:
@@ -154,6 +164,7 @@ class AsyncPipelineService(Generic[RequestT, ResponseT]):
     ):
         self._lock = threading.RLock()
         self._global_interceptors: list[AsyncInterceptor[RequestT, ResponseT]] = []
+        self._interceptor_threads: dict[AsyncInterceptor[RequestT, ResponseT], int] = {}
         self._fallback = fallback_handler
         self._service_name = service_name
         self._local = threading.local()
@@ -163,13 +174,20 @@ class AsyncPipelineService(Generic[RequestT, ResponseT]):
         """Provides thread-local copy of registered interceptors to ensure thread isolation."""
         if not hasattr(self._local, "interceptors"):
             with self._lock:
-                self._local.interceptors = list(self._global_interceptors)
+                current_thread = threading.get_ident()
+                main_thread = threading.main_thread().ident
+                self._local.interceptors = [
+                    i
+                    for i in self._global_interceptors
+                    if self._interceptor_threads.get(i) in (current_thread, main_thread)
+                ]
         return self._local.interceptors
 
     def register_interceptor(self, interceptor: AsyncInterceptor[RequestT, ResponseT]):
         """Registers an async interceptor thread-safely at the head of the priority chain."""
         with self._lock:
             self._global_interceptors.insert(0, interceptor)
+            self._interceptor_threads[interceptor] = threading.get_ident()
             if hasattr(self._local, "interceptors"):
                 self._local.interceptors.insert(0, interceptor)
 
@@ -177,6 +195,7 @@ class AsyncPipelineService(Generic[RequestT, ResponseT]):
         """Thread-safely clears all custom async interceptors."""
         with self._lock:
             self._global_interceptors.clear()
+            self._interceptor_threads.clear()
             if hasattr(self._local, "interceptors"):
                 self._local.interceptors.clear()
 
@@ -188,6 +207,7 @@ class AsyncPipelineService(Generic[RequestT, ResponseT]):
             yield
         finally:
             with self._lock:
+                self._interceptor_threads.pop(interceptor, None)
                 if interceptor in self._global_interceptors:
                     self._global_interceptors.remove(interceptor)
                 if hasattr(self._local, "interceptors") and interceptor in self._local.interceptors:

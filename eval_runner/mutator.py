@@ -133,6 +133,7 @@ class MutationService:
     def __init__(self):
         self._lock = threading.RLock()
         self._global_providers: list[ScenarioMutator] = []
+        self._provider_threads: dict[ScenarioMutator, int] = {}
         self._core_mutator = CoreMutator()
         self._local = threading.local()
 
@@ -141,13 +142,20 @@ class MutationService:
         """Provides thread-local copy of registered providers for thread isolation."""
         if not hasattr(self._local, "providers"):
             with self._lock:
-                self._local.providers = list(self._global_providers)
+                current_thread = threading.get_ident()
+                main_thread = threading.main_thread().ident
+                self._local.providers = [
+                    p
+                    for p in self._global_providers
+                    if self._provider_threads.get(p) in (current_thread, main_thread)
+                ]
         return self._local.providers
 
     def register_provider(self, provider: ScenarioMutator):
         """Registers a provider thread-safely at the head of the chain."""
         with self._lock:
             self._global_providers.insert(0, provider)
+            self._provider_threads[provider] = threading.get_ident()
             # Synchronize thread-local view if initialized
             if hasattr(self._local, "providers"):
                 self._local.providers.insert(0, provider)
@@ -156,6 +164,7 @@ class MutationService:
         """Thread-safely clears all custom providers."""
         with self._lock:
             self._global_providers.clear()
+            self._provider_threads.clear()
             if hasattr(self._local, "providers"):
                 self._local.providers.clear()
 
@@ -167,6 +176,7 @@ class MutationService:
             yield
         finally:
             with self._lock:
+                self._provider_threads.pop(provider, None)
                 if provider in self._global_providers:
                     self._global_providers.remove(provider)
                 if hasattr(self._local, "providers") and provider in self._local.providers:

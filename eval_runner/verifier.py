@@ -198,6 +198,7 @@ class VerificationService:
     def __init__(self):
         self._lock = threading.RLock()
         self._global_interceptors: list[TraceVerificationInterceptor] = []
+        self._interceptor_threads: dict[TraceVerificationInterceptor, int] = {}
         self._core_signer = CoreTraceSigner()
         self._local = threading.local()
 
@@ -206,13 +207,20 @@ class VerificationService:
         """Provides thread-local copy of registered interceptors to ensure thread isolation."""
         if not hasattr(self._local, "interceptors"):
             with self._lock:
-                self._local.interceptors = list(self._global_interceptors)
+                current_thread = threading.get_ident()
+                main_thread = threading.main_thread().ident
+                self._local.interceptors = [
+                    i
+                    for i in self._global_interceptors
+                    if self._interceptor_threads.get(i) in (current_thread, main_thread)
+                ]
         return self._local.interceptors
 
     def register_interceptor(self, interceptor: TraceVerificationInterceptor):
         """Registers an interceptor thread-safely at the head of the priority chain."""
         with self._lock:
             self._global_interceptors.insert(0, interceptor)
+            self._interceptor_threads[interceptor] = threading.get_ident()
             if hasattr(self._local, "interceptors"):
                 self._local.interceptors.insert(0, interceptor)
 
@@ -220,6 +228,7 @@ class VerificationService:
         """Thread-safely clears all custom interceptors."""
         with self._lock:
             self._global_interceptors.clear()
+            self._interceptor_threads.clear()
             if hasattr(self._local, "interceptors"):
                 self._local.interceptors.clear()
 
@@ -231,6 +240,7 @@ class VerificationService:
             yield
         finally:
             with self._lock:
+                self._interceptor_threads.pop(interceptor, None)
                 if interceptor in self._global_interceptors:
                     self._global_interceptors.remove(interceptor)
                 if hasattr(self._local, "interceptors") and interceptor in self._local.interceptors:
