@@ -413,3 +413,89 @@ async def test_security_simulator_logic():
 
     # Cleanup
     await sec.cleanup()
+
+
+@pytest.mark.asyncio
+async def test_git_simulator_extra_coverage(tmp_path):
+    git = simulators.GitSimulator()
+    git.terminal_jail = tmp_path
+
+    # 1. git_add with no repo
+    with patch.object(git, "_get_repo", return_value=None):
+        res = await git.execute("git_add", {"files": ["x"]})
+        assert res["status"] == "error"
+
+    # 2. git.cleanup with self._repo present
+    git._repo = MagicMock()
+    await git.cleanup()
+    assert git._repo is None
+
+
+@pytest.mark.asyncio
+async def test_api_simulator_timeout_type_error():
+    api = simulators.ApiSimulator()
+    mock_str = MagicMock()
+    mock_str.replace.side_effect = TypeError("mocked type error")
+    with patch("os.getenv", return_value=mock_str):
+        res = await api.execute("GET", {"path": "/api/v1/health"})
+        assert res["status"] == "success"
+
+
+@pytest.mark.asyncio
+async def test_database_simulator_extra_coverage(tmp_path):
+    db = simulators.DatabaseSimulator()
+    db.terminal_jail = tmp_path
+
+    # 1. CREATE TABLE trigger creation
+    res = await db.execute("database_query", {"query": "CREATE TABLE test_table (id INTEGER)"})
+    assert res["status"] == "success"
+
+    # 2. Table with no columns
+    with patch("sqlalchemy.inspect") as mock_inspect:
+        mock_inspector = MagicMock()
+        mock_inspector.get_table_names.return_value = ["empty_table"]
+        mock_inspector.get_columns.return_value = []
+        mock_inspect.return_value = mock_inspector
+        db._provision_forensic_log(db._get_engine())
+
+    # 3. get_snapshot when _engine is None
+    with patch.object(db, "_get_engine"):
+        db._engine = None
+        snap = await db.get_snapshot()
+        assert snap["engine"] == "mock"
+
+
+@pytest.mark.asyncio
+async def test_terminal_simulator_extra_coverage(tmp_path):
+    term = simulators.TerminalSimulator()
+
+    # 1. Execute empty command
+    res = await term.execute("terminal_execute", {})
+    assert res["status"] == "error"
+
+    # 2. No terminal jail path
+    res = await term.execute("terminal_execute", {"cmd": "ls"})
+    assert res["status"] == "error"
+
+    # 3. Successful cd command
+    term.terminal_jail = tmp_path
+    term.state["cwd"] = str(tmp_path)
+    res = await term.execute("terminal_execute", {"cmd": "cd ."})
+    assert res["status"] == "success"
+
+    # 4. execute directly with command string (ls)
+    res = await term.execute("ls", {})
+    assert "status" in res
+
+
+@pytest.mark.asyncio
+async def test_miscellaneous_shims_on_poll_and_execute():
+    social = simulators.SocialMediaSimulator()
+    assert await social.on_poll("unknown", {}) is False
+
+    cicd = simulators.CICDSimulator()
+    assert await cicd.on_poll("unknown", {}) is False
+
+    iot = simulators.IoTSimulator()
+    res = await iot.execute("unknown", {})
+    assert res["status"] == "error"
