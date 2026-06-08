@@ -39,7 +39,7 @@ dependencies = [
     "python-dotenv==1.2.2",
     "Authlib==1.7.2",
     "langchain-openai==1.2.2",
-    "langsmith==0.8.10",
+    "langsmith==0.8.11",
     "lxml==6.1.1",
     "Pillow==12.2.0",
     "cyclecore-pq==0.3.0",
