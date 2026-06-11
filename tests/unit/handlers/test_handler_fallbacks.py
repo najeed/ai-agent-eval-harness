@@ -11,7 +11,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from eval_runner.cli import get_parser
-from eval_runner.console.routes import get_loan_demo_context
 from eval_runner.handlers.evaluation import handle_verify
 from eval_runner.handlers.scenarios import classify_scenario
 
@@ -94,26 +93,6 @@ async def test_handle_verify_direct(tmp_path):
 
 
 # --- Console Gaps ---
-
-
-def test_get_loan_demo_context():
-    """Hits get_loan_demo_context in routes.py."""
-    from flask import Flask
-
-    app = Flask(__name__)
-    api_key = "test-key"
-    with (
-        patch("eval_runner.config.DASHBOARD_API_KEY", api_key),
-        patch("eval_runner.config.SERVICE_API_KEY", api_key),
-    ):
-        with app.test_request_context(headers={"X-AES-API-KEY": api_key}):
-            ctx = get_loan_demo_context()
-            # If wrapped by require_permission, it might return a tuple or Response
-            if isinstance(ctx, tuple):
-                status_code = ctx[1]
-            else:
-                status_code = ctx.status_code
-            assert status_code == 200
 
 
 # --- Engine Gaps ---

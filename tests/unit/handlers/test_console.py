@@ -114,7 +114,8 @@ def test_plugin_blueprint_registration(client):
     assert response.get_json()["status"] == "active"
 
 
-def test_evaluate_endpoint(client):
+@patch("threading.Thread")
+def test_evaluate_endpoint(mock_thread, client):
     """Test that the evaluation endpoint is functional."""
     # Use the sample agent demo scenario which is guaranteed to exist
     response = client.post(

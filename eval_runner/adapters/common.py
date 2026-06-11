@@ -39,6 +39,7 @@ class SessionManager:
                     connector = aiohttp.TCPConnector(limit=100, ttl_dns_cache=300)
                     cls._session = aiohttp.ClientSession(
                         connector=connector,
+                        connector_owner=True,
                         timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT),
                     )
         return cls._session
@@ -47,7 +48,15 @@ class SessionManager:
     async def close_all(cls):
         """Cleanly closes all pooled connections and resets state."""
         if cls._session and not cls._session.closed:
+            connector = cls._session.connector
             await cls._session.close()
+            if connector:
+                try:
+                    res = connector.close()
+                    if asyncio.iscoroutine(res):
+                        await res
+                except Exception:
+                    pass
         cls._session = None
         cls._lock = asyncio.Lock()
 

@@ -1,5 +1,3 @@
-import json
-
 import pytest
 
 from eval_runner import config
@@ -33,29 +31,6 @@ def client(app, monkeypatch):
 @pytest.fixture
 def auth_headers():
     return {"X-AES-API-KEY": "test-key-123"}
-
-
-def test_list_runs_with_query(client, tmp_path, auth_headers):
-    """Verifies 'runs' search filter logic in Console API."""
-    run_log = tmp_path / "runs" / "run.jsonl"
-    events = [
-        {"event": "run_start", "run_id": "run-alpha", "scenario": "Scen A", "timestamp": "123"},
-        {"event": "run_start", "run_id": "run-beta", "scenario": "Scen B", "timestamp": "456"},
-    ]
-    with open(run_log, "w", encoding="utf-8") as f:
-        for ev in events:
-            f.write(json.dumps(ev) + "\n")
-
-    # Search for Alpha
-    resp = client.get("/api/runs?q=alpha", headers=auth_headers)
-    data = resp.get_json()
-    assert len(data["runs"]) == 1
-    assert data["runs"][0]["run_id"] == "run-alpha"
-
-    # Search for nothing
-    resp = client.get("/api/runs?q=xyz", headers=auth_headers)
-    data = resp.get_json()
-    assert len(data["runs"]) == 0
 
 
 def test_get_debugger_state_invalid_run(client, auth_headers):

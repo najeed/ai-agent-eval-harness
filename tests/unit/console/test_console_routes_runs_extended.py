@@ -64,6 +64,13 @@ def test_explain_run_404(client):
 
 def test_list_runs_fragment_vs_vault(client, console_jail):
     runs_dir = console_jail["runs"]
+    # Clear runs_dir to avoid module-scope pollution from previous tests
+    for item in list(runs_dir.iterdir()):
+        if item.is_dir():
+            rmtree_resilient(item)
+        else:
+            item.unlink()
+
     # 1. Fragment
     (runs_dir / "fragment.jsonl").write_text(
         '{"event": "run_start", "run_id": "f1", "scenario": "Scen1", "timestamp": "t1"}\n',
@@ -119,6 +126,7 @@ def test_get_run_status_running(client, console_jail):
 def test_get_verification_certificate_reports(client, console_jail):
     run_id = "cert_1"
     cert_path = console_jail["reports"] / "certificates" / "cert_1_vc.json"
+    cert_path.parent.mkdir(parents=True, exist_ok=True)
     cert_path.write_text('{"cert": "ok"}', encoding="utf-8")
 
     res = client.get(f"/api/v1/certificates/{run_id}")

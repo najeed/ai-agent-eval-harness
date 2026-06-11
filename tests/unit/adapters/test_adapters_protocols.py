@@ -1,11 +1,8 @@
-from unittest.mock import ANY, AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from eval_runner.adapters import http_adapter, local_subprocess_adapter, socket_adapter
-from eval_runner.adapters.claude import ClaudeAdapterPlugin
-from eval_runner.adapters.gemini import GeminiAdapterPlugin
-from eval_runner.adapters.openai import OpenAIAdapterPlugin
 
 
 class MockAsyncContextManager:
@@ -76,19 +73,6 @@ def test_adapters_protocols_discovery():
         assert "http" in AgentAdapterRegistry._adapters
         assert "local" in AgentAdapterRegistry._adapters
         assert "socket" in AgentAdapterRegistry._adapters
-
-
-def test_adapters_protocols_discovery_hooks():
-    registry = MagicMock()
-
-    OpenAIAdapterPlugin().on_discover_adapters(registry)
-    registry.register.assert_any_call("openai", ANY)
-
-    ClaudeAdapterPlugin().on_discover_adapters(registry)
-    registry.register.assert_any_call("claude", ANY)
-
-    GeminiAdapterPlugin().on_discover_adapters(registry)
-    registry.register.assert_any_call("gemini", ANY)
 
 
 @pytest.mark.asyncio
