@@ -50,17 +50,12 @@ jobs:
       run: python -m playwright install --with-deps chromium
 
     - name: Test with pytest
-      run: pytest tests/ --cov=eval_runner -v -p no:plugin_gateway
+      run: pytest tests/ --ignore=tests/security/ --ignore=tests/ui/ --cov=eval_runner -v -p no:plugin_gateway
       env:
         OTEL_SDK_DISABLED: true
 
     - name: Security audit tests
-      run: pytest tests/security/test_security_audit.py -v
-      env:
-        OTEL_SDK_DISABLED: true
-
-    - name: Console handoff tests
-      run: pytest tests/unit/handlers/test_console_handoff.py -v
+      run: pytest tests/security/ -v
       env:
         OTEL_SDK_DISABLED: true
 

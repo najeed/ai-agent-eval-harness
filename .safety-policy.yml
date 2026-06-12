@@ -1,7 +1,9 @@
-# Safety Policy File (AgentV v1.6.4)
+# Safety Policy File (AgentV v1.6.3)
 # Configures exclusions and custom parameters for the Safety CLI dependency scans.
 
 security:
   ignore-vulnerabilities:
     88512:
       reason: "PostgreSQL Cloud SQL package vulnerability is not applicable as we use SQLite internally."
+    SFTY-20250331-30014:
+      reason: "PyTorch memory corruption issue in jit script compiler is not relevant for eval harness operations."
