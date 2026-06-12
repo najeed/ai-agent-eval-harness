@@ -27,7 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
           pip install -r requirements.txt
-          pip install pip-audit bandit safety
+          pip install pip-audit bandit
 
       - name: Run pip-audit
         # CVE-2026-3219, CVE-2026-6357, PYSEC-2026-196 (pip), PYSEC-2026-139, and CVE-2025-3000 are unpatchable or have no fix versions listed yet.
@@ -36,9 +36,6 @@ jobs:
 
       - name: Run Bandit
         run: bandit -r . -ll
-
-      - name: Run Safety
-        run: safety scan
 
   container-security:
     needs: python-security

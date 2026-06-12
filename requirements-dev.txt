@@ -1,3 +1,4 @@
+-i https://pkgs.safetycli.com/repository/agentv/project/ai-agent-eval-harness/pypi/simple/
 # requirements-dev.txt
 # Development and testing dependencies for AgentV contributors.
 # Install with: pip install -r requirements-dev.txt
