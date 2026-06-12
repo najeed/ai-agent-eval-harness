@@ -617,9 +617,6 @@ class FailureTaxonomy:
 
         # Take the first token ignoring path components if it looks like a binary
         parts = s.split()
-        if not parts:
-            return ""
-
         first_token = parts[0].split("/")[-1].split("\\")[-1]
         return first_token.lower().replace("'", "").replace('"', "")
 

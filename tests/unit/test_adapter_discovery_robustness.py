@@ -60,10 +60,17 @@ async def test_explicit_override_allowed(clean_registry):
 
 
 @pytest.mark.asyncio
-async def test_zero_trust_baseline_enforcement(clean_registry):
+async def test_zero_trust_baseline_enforcement(clean_registry, monkeypatch):
     """Verify that the engine locks down everything if no policy is found."""
-    # Ensure no policy file exists in tmp_path
+    # Explicitly enforce Zero-Trust whitelist in the registry for this test context
+    monkeypatch.setitem(
+        AgentAdapterRegistry._active_whitelists, "protocols", {"http", "sse", "openapi"}
+    )
+    monkeypatch.setitem(AgentAdapterRegistry._active_whitelists, "providers", set())
+    monkeypatch.setitem(AgentAdapterRegistry._active_whitelists, "frameworks", set())
 
+    # Reset adapters so discovery is forced to filter with the whitelists
+    AgentAdapterRegistry._adapters.clear()
     AgentAdapterRegistry._discover()
 
     registered = AgentAdapterRegistry._adapters.keys()

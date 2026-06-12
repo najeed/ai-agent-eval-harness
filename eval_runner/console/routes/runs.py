@@ -82,8 +82,6 @@ def list_runs():
     # 2. Vault Scan
     log_paths = list(config.RUN_LOG_DIR.glob("*/run.jsonl"))
     for p in log_paths:
-        if p.name == "run.jsonl" and p.parent == config.RUN_LOG_DIR:
-            continue
         try:
             with open(p, encoding="utf-8") as f:
                 event = json.loads(f.readline())

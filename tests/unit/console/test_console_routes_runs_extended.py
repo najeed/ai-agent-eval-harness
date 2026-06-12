@@ -1,5 +1,6 @@
 import os
 import tempfile
+import time
 from pathlib import Path
 from unittest.mock import patch
 
@@ -257,7 +258,6 @@ def test_runs_route_get_status_large_file(client, console_jail):
 
 def test_runs_route_get_status_stalled(client, console_jail):
     """Test get_run_status where the run has stalled (no activity for 5 mins)."""
-    import time
 
     run_id = "stalled_run"
     run_dir = console_jail["runs"] / run_id
@@ -319,7 +319,6 @@ def test_runs_route_tail_file_generator_oserror_init(console_jail):
 
 def test_runs_route_tail_file_generator_max_lifetime(console_jail):
     """Test tail_file_generator when connection max lifetime is exceeded."""
-    import time
 
     from eval_runner.console.routes.runs import tail_file_generator
 
@@ -418,3 +417,111 @@ def test_runs_route_tail_file_generator_zombie_and_heartbeat(console_jail):
         res2 = next(gen)
         assert "aborted" in res2
         assert "Process thread terminated abruptly" in res2
+
+
+def test_runs_route_list_metrics(client):
+    """Test GET /api/v1/metrics (Line 25)"""
+    from eval_runner.metrics import MetricRegistry
+
+    with patch.object(MetricRegistry, "list_metrics", return_value=["m1", "m2"]):
+        res = client.get("/api/v1/metrics")
+        assert res.status_code == 200
+        assert res.get_json()["metrics"] == ["m1", "m2"]
+
+
+def test_runs_route_list_runs_skip_vault_root(client, console_jail):
+    """Test skipped root file in list_runs vault scan (Line 86)"""
+    # Create run.jsonl directly in RUN_LOG_DIR
+    log_file = console_jail["runs"] / "run.jsonl"
+    log_file.write_text(
+        '{"event": "run_start", "run_id": "root_run", "scenario": "s"}\n', encoding="utf-8"
+    )
+
+    # Since master log glob *.jsonl reads log files in RUN_LOG_DIR, list_runs
+    # WILL find root_run via Master Log scan. But it should NOT process it in
+    # vault scan. The way to check if vault scan ignored it is that it does
+    # NOT have a "path" key.
+    res = client.get("/api/runs")
+    assert res.status_code == 200
+    data = res.get_json()["runs"]
+    # If it was processed by vault scan, it would have 'path' key.
+    # Check that no run has 'path' of run.jsonl
+    for run in data:
+        if run["run_id"] == "root_run":
+            assert "path" not in run
+
+    # Cleanup
+    log_file.unlink()
+
+
+def test_runs_route_get_run_status_not_found_extra(client):
+    """Test get_run_status 404 error (Line 162)"""
+    res = client.get("/api/v1/runs/nonexistent_run_id_xyz")
+    assert res.status_code == 404
+    assert res.get_json()["error"] == "Run not found"
+
+
+def test_runs_route_get_verification_certificate_corrupt_first_check(client, console_jail):
+    """Test corrupt certificate file path handling (Lines 173-175)"""
+    run_id = "corrupt_cert_direct"
+    cert_path = console_jail["reports"] / "certificates" / f"{run_id}_vc.json"
+    cert_path.write_text("invalid json direct", encoding="utf-8")
+
+    res = client.get(f"/api/v1/certificates/{run_id}")
+    assert res.status_code == 500
+    assert res.get_json()["error"] == "Corrupt certificate found"
+
+    # Cleanup
+    cert_path.unlink()
+
+
+def test_runs_route_is_run_alive_helper():
+    """Test is_run_alive helper with threads (Line 190)"""
+    import threading
+
+    from eval_runner.console.routes.runs import is_run_alive
+
+    # Search for a thread name that doesn't exist
+    assert not is_run_alive("definitely_not_alive_thread_12345")
+
+    # Search for a mock thread that matches
+    mock_thread = threading.Thread(name="eval-alive_thread_12345")
+    with patch("threading.enumerate", return_value=[mock_thread]):
+        assert is_run_alive("alive_thread_12345")
+
+
+def test_runs_route_tail_file_generator_inode_rotation_transient_oserror(console_jail):
+    """Test tail_file_generator with transient OSError in rotation check (Line 243)"""
+    from eval_runner.console.routes.runs import tail_file_generator
+
+    run_id = "transient_oserror_run"
+    run_dir = console_jail["runs"] / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log_file = run_dir / "run.jsonl"
+    log_file.write_text('{"event": "run_start"}\n', encoding="utf-8")
+
+    gen = tail_file_generator(log_file, run_id)
+    assert '{"event": "run_start"}' in next(gen)
+
+    # Mock Path.stat to raise OSError when checked for rotation, but path still exists
+    orig_stat = Path.stat
+    import inspect
+
+    def mock_stat(self, *args, **kwargs):
+        # Lexical matching on target filename and scenario folder name to avoid
+        # stat calls and RecursionErrors
+        if self.name == "run.jsonl" and "transient_oserror_run" in self.parts:
+            # Only fail if not called during existence check (like log_path.exists())
+            caller_names = [frame.function for frame in inspect.stack()]
+            if "exists" not in caller_names:
+                raise OSError("Transient file access error")
+        return orig_stat(self, *args, **kwargs)
+
+    # In Python 3.12+, raising StopIteration in a generator results in RuntimeError.
+    # Let's raise custom ValueError so we can catch it.
+    with (
+        patch.object(Path, "stat", mock_stat),
+        patch("time.sleep", side_effect=ValueError("Stop loop")),
+    ):
+        with pytest.raises(ValueError, match="Stop loop"):
+            next(gen)

@@ -1,13 +1,9 @@
-"""
-Consolidated Taxonomy & Forensic Test Suite for AgentV Evaluation Harness.
-Verifies failure classification, root-cause diagnosis, causal chain assembly,
-and behavioral DNA heuristics (stalls, loops, hallucinations, protocol violations).
-"""
-
+import importlib
 from unittest.mock import patch
 
 import pytest
 
+from eval_runner import taxonomy
 from eval_runner.taxonomy import (
     BaseForensicAnalyzer,
     CausalChain,
@@ -15,6 +11,8 @@ from eval_runner.taxonomy import (
     FailureCategory,
     FailureTaxonomy,
 )
+
+importlib.reload(taxonomy)
 
 # --- 1. Base Classification & Category Behavior ---
 

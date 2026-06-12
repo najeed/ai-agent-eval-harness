@@ -60,14 +60,12 @@ def test_triage_engine_categorize_failure():
     )
 
     # 3. classify returns SUCCESS -> maps to UNKNOWN_FAILURE
-    with patch(
-        "eval_runner.taxonomy.FailureTaxonomy.classify", return_value=FailureCategory.SUCCESS
-    ):
+    with patch("eval_runner.triage.FailureTaxonomy.classify", return_value=FailureCategory.SUCCESS):
         assert TriageEngine.categorize_failure({}) == "UNKNOWN_FAILURE"
 
     # 4. classify returns POLICY_VIOLATION -> maps to POLICY_VIOLATION
     with patch(
-        "eval_runner.taxonomy.FailureTaxonomy.classify",
+        "eval_runner.triage.FailureTaxonomy.classify",
         return_value=FailureCategory.POLICY_VIOLATION,
     ):
         assert TriageEngine.categorize_failure({}) == "POLICY_VIOLATION"
