@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.4] - 2026-06-13
+
+### Trend Analyzer & Concurrency Hardening
+*   **Trend Analyzer for Historical Runs**: Introduced a new trend analysis engine (`eval_runner/trend.py`) and CLI integration (`eval_runner/handlers/analysis.py`) to aggregate and graph metrics (such as performance indices, failure rates, and attribution shifts) over time across historical test runs.
+*   **Thread & Context Isolation**: Hardened concurrent async execution loops in `mutator.py`, `pipeline.py`, and `verifier.py` with strict context-local validation to guarantee robust isolation and prevent cross-run state pollution under highly concurrent workloads.
+*   **Robustness & Zero-Trust Verification Tests**: Expanded the test suite to verify Zero-Trust baseline boundaries and safeguard registry mocking against import mismatches or module-level caching issues under pytest.
+
 ## [1.6.3] - 2026-05-23
 
 ### Core Interceptor Pipeline & Sandbox Isolation Architecture

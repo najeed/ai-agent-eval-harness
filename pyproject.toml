@@ -1,6 +1,6 @@
 [project]
 name = "agentv"
-version = "1.6.3"
+version = "1.6.4"
 description = "The Enterprise-Grade Reliability Framework for AI Agents"
 readme = "README.md"
 authors = [
