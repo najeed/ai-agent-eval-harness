@@ -1,4 +1,4 @@
-name: Python safety scan workflow for AI Agent Eval Harness
+name: Safety scan
 
 on:
   push:  # Run on every push to any branch

@@ -151,3 +151,173 @@ def test_run_lint_cli_dir(tmp_path, capsys):
     captured = capsys.readouterr()
     assert "scen.json" in captured.out
     assert "Linting complete" in captured.out
+
+
+def test_linter_non_dict_non_list_top_level(linter, tmp_path):
+    """A file whose root is a scalar (not dict/list) should fail with type error."""
+    p = tmp_path / "scalar.json"
+    p.write_text("42")
+    res = linter.lint(str(p))
+    assert res["status"] == "fail"
+    assert any("JSON object" in e for e in res["errors"])
+    assert res["tier"] == "UNRANKED"
+
+
+def test_linter_non_dict_metadata(linter, tmp_path):
+    """Metadata that is not a dict produces an error."""
+    p = tmp_path / "badmeta.json"
+    data = {
+        "aes_version": 1.4,
+        "industry": "test",
+        "metadata": "just-a-string",
+        "workflow": {"nodes": [{"id": "n1", "task_description": "ok"}], "edges": []},
+        "complexity_level": "low",
+    }
+    p.write_text(json.dumps(data))
+    res = linter.lint(str(p))
+    assert res["status"] == "fail"
+    assert any("Metadata must be a JSON object" in e for e in res["errors"])
+
+
+def test_linter_workflow_missing_nodes_array(linter, tmp_path):
+    """A workflow dict that has no 'nodes' key (or non-list) should fail."""
+    p = tmp_path / "nonodes.json"
+    data = {
+        "aes_version": 1.4,
+        "industry": "test",
+        "metadata": {"id": "s1"},
+        "workflow": {"edges": []},  # no 'nodes' key
+        "complexity_level": "low",
+    }
+    p.write_text(json.dumps(data))
+    res = linter.lint(str(p))
+    assert res["status"] == "fail"
+    assert any("nodes" in e for e in res["errors"])
+
+
+def test_linter_node_missing_id_or_task_description(linter, tmp_path):
+    """A node without an id or task_description gets an error entry."""
+    p = tmp_path / "badnode.json"
+    data = {
+        "aes_version": 1.4,
+        "industry": "test",
+        "metadata": {"id": "s1", "attribution": "a", "version": "1"},
+        "workflow": {
+            "nodes": [{"task_description": "missing id"}],  # no id
+            "edges": [],
+        },
+        "complexity_level": "low",
+    }
+    p.write_text(json.dumps(data))
+    res = linter.lint(str(p))
+    assert res["status"] == "fail"
+    assert any("missing 'id'" in e for e in res["errors"])
+
+
+def test_linter_expected_outcome_not_a_list(linter, tmp_path):
+    """expected_outcome that is not a list triggers an AES v1.4 violation error."""
+    p = tmp_path / "badoutcome.json"
+    data = {
+        "aes_version": 1.4,
+        "industry": "test",
+        "metadata": {"id": "s1", "attribution": "a", "version": "1"},
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "n1",
+                    "task_description": "ok",
+                    "expected_outcome": "should-be-a-list",  # string, not list
+                }
+            ],
+            "edges": [],
+        },
+        "complexity_level": "low",
+    }
+    p.write_text(json.dumps(data))
+    res = linter.lint(str(p))
+    assert res["status"] == "fail"
+    assert any("must be an array" in e for e in res["errors"])
+
+
+def test_linter_expected_outcome_empty_list(linter, tmp_path):
+    """An empty expected_outcome list triggers a warning (score deduction)."""
+    p = tmp_path / "emptyoutcome.json"
+    data = {
+        "aes_version": 1.4,
+        "industry": "test",
+        "metadata": {"id": "s1", "attribution": "a", "version": "1"},
+        "workflow": {
+            "nodes": [
+                {
+                    "id": "n1",
+                    "task_description": "ok",
+                    "expected_outcome": [],  # empty
+                }
+            ],
+            "edges": [],
+        },
+        "complexity_level": "low",
+    }
+    p.write_text(json.dumps(data))
+    res = linter.lint(str(p))
+    assert any("empty expected_outcome" in w for w in res["warnings"])
+    assert res["score"] < 100
+
+
+def test_linter_edges_not_a_list(linter, tmp_path):
+    """edges being a non-list value triggers an error."""
+    p = tmp_path / "badedges.json"
+    data = {
+        "aes_version": 1.4,
+        "industry": "test",
+        "metadata": {"id": "s1", "attribution": "a", "version": "1"},
+        "workflow": {
+            "nodes": [{"id": "n1", "task_description": "ok"}],
+            "edges": "not-a-list",
+        },
+        "complexity_level": "low",
+    }
+    p.write_text(json.dumps(data))
+    res = linter.lint(str(p))
+    assert any("edges" in e for e in res["errors"])
+
+
+def test_linter_edge_missing_from_or_to(linter, tmp_path):
+    """An edge dict with missing 'from' or 'to' keys produces an error."""
+    p = tmp_path / "missingedge.json"
+    data = {
+        "aes_version": 1.4,
+        "industry": "test",
+        "metadata": {"id": "s1", "attribution": "a", "version": "1"},
+        "workflow": {
+            "nodes": [{"id": "n1", "task_description": "ok"}],
+            "edges": [{"from": "n1"}],  # missing 'to'
+        },
+        "complexity_level": "low",
+    }
+    p.write_text(json.dumps(data))
+    res = linter.lint(str(p))
+    assert any("missing 'from' or 'to'" in e for e in res["errors"])
+
+
+def test_linter_find_duplicates_skips_invalid_json(linter, tmp_path):
+    """find_duplicates silently skips files that cannot be parsed as JSON."""
+    p_good = tmp_path / "good.json"
+    p_bad = tmp_path / "bad.json"
+    p_good.write_text(json.dumps({"workflow": {"nodes": [{"id": "n1"}]}}))
+    p_bad.write_text("{corrupted")
+
+    dups = linter.find_duplicates(str(tmp_path))
+    # No duplicates; bad file was skipped without raising
+    assert isinstance(dups, list)
+
+
+def test_run_lint_dir_with_failing_scenario(tmp_path, capsys):
+    """Directory lint with a failing file prints the ❌ prefix."""
+    p = tmp_path / "fail.json"
+    # A JSON list in a non-index.json file triggers a fail
+    p.write_text("[]")
+    run_lint(str(tmp_path))
+    captured = capsys.readouterr()
+    assert "❌" in captured.out or "fail.json" in captured.out
+    assert "Linting complete" in captured.out
