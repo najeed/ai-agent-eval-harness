@@ -27,7 +27,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **sqlalchemy** | 2.0.50 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **datasets** | 5.0.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **PyJWT** | 2.13.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **cryptography** | 48.0.1 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
+| **cryptography** | 49.0.0 | Apache 2.0 / BSD | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **opentelemetry-api** | 1.42.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **opentelemetry-sdk** | 1.42.1 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **google-genai** | 2.8.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
@@ -36,7 +36,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **streamlit** | 1.57.0 | Apache 2.0 | [Apache-2.0.txt](LICENSES/Apache-2.0.txt) |
 | **pandas** | 3.0.3 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **pygments** | 2.20.0 | BSD-2-Clause | [BSD-2-Clause.txt](LICENSES/BSD-2-Clause.txt) |
-| **langchain-core** | 1.4.6 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langchain-core** | 1.4.7 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **pyasn1** | 0.6.3 | BSD-2-Clause | [BSD-2-Clause.txt](LICENSES/BSD-2-Clause.txt) |
 | **python-dotenv** | 1.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **psutil** | 7.2.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
@@ -48,7 +48,7 @@ The following table summarizes the licenses of our core dependencies. All used l
 | **urllib3** | 2.7.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **Authlib** | 1.7.2 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **langchain-openai** | 1.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
-| **langsmith** | 0.8.14 | MIT | [MIT.txt](LICENSES/MIT.txt) |
+| **langsmith** | 0.8.15 | MIT | [MIT.txt](LICENSES/MIT.txt) |
 | **lxml** | 6.1.1 | BSD-3-Clause | [BSD-3-Clause.txt](LICENSES/BSD-3-Clause.txt) |
 | **Pillow** | 12.2.0 | HPND | [HPND.txt](LICENSES/HPND.txt) |
 | **cyclecore-pq** | 0.3.0 | MIT | [MIT.txt](LICENSES/MIT.txt) |
