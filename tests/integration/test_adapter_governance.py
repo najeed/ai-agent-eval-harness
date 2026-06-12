@@ -18,9 +18,17 @@ def clean_registry(tmp_path, monkeypatch):
                 return {"adapters": json.load(f).get("adapters", {})}
         return {}
 
-    from eval_runner.config import RegistryManager
+    import sys
 
-    monkeypatch.setattr(RegistryManager, "get_resolved_registry", mock_get_resolved_registry)
+    for mod_name in list(sys.modules.keys()):
+        if mod_name.endswith(".config") or "eval_runner.config" in mod_name:
+            mod = sys.modules[mod_name]
+            if hasattr(mod, "_SHIM_REGISTRY_CACHE"):
+                monkeypatch.setattr(mod, "_SHIM_REGISTRY_CACHE", None)
+            if hasattr(mod, "RegistryManager"):
+                monkeypatch.setattr(
+                    mod.RegistryManager, "get_resolved_registry", mock_get_resolved_registry
+                )
 
     yield
     AgentAdapterRegistry.reset()
