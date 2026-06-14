@@ -1,4 +1,3 @@
--i https://pkgs.safetycli.com/repository/agentv/project/ai-agent-eval-harness/pypi/simple/
 # requirements.txt
 # Core runtime dependencies for AgentV.
 # Install with: pip install -r requirements.txt
@@ -44,7 +43,7 @@ python-dotenv==1.2.2
 # --- Security Patches ---
 urllib3==2.7.0
 Authlib==1.7.2
-langchain-openai==1.3.0
+langchain-openai==1.3.2
 langsmith==0.8.15
 lxml==6.1.1
 Pillow==12.2.0
