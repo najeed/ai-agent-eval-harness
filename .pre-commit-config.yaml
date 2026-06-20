@@ -17,5 +17,5 @@ repos:
     rev: v2.10.0
     hooks:
       - id: pip-audit
-        additional_dependencies: ["pip>=26.1.2", "idna>=3.15"]
+        additional_dependencies: ["pip>=26.1.2", "idna>=3.15", "msgpack>=1.2.1"]
         args: ["--desc", "on", "--ignore-vuln", "CVE-2026-6357", "--ignore-vuln", "CVE-2026-3219"]
