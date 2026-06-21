@@ -1542,7 +1542,7 @@ const App = () => {
 
             // Authoritative Babel Transpilation (Standalone Mode)
             const transpiled = window.Babel.transform(code, {
-                presets: ['env', 'react'],
+                presets: ['env', ['react', { runtime: 'classic' }]],
                 filename: src
             }).code;
 
