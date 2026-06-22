@@ -281,6 +281,18 @@ def cleanup_runs():
                 elif item.is_file() and item.suffix in (".jsonl", ".json"):
                     item.unlink()
                     count += 1
+
+        # Trigger plugin hooks for cleanup
+        from eval_runner.plugins import manager
+
+        for plugin in manager.plugins:
+            method = getattr(plugin, "on_cleanup_runs", None)
+            if method and callable(method):
+                try:
+                    method()
+                except Exception as pe:
+                    logger.warning(f"Plugin cleanup failed for {plugin.__class__.__name__}: {pe}")
+
         return jsonify(
             {"status": "success", "message": f"Pruned {count} historical traces.", "count": count}
         )
