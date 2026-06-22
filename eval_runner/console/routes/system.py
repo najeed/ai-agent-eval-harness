@@ -163,6 +163,12 @@ def read_doc(filename):
         return jsonify({"error": "Unauthorized Access"}), 403
 
     if not target.exists():
+        if not filename.endswith(".md"):
+            fallback_target = (docs_dir / f"{filename}.md").resolve()
+            if is_path_safe(fallback_target, docs_dir) and fallback_target.exists():
+                target = fallback_target
+
+    if not target.exists():
         return jsonify({"error": "Not Found"}), 404
 
     with open(target, encoding="utf-8") as f:
@@ -272,7 +278,7 @@ def cleanup_runs():
 
                     shutil.rmtree(item)
                     count += 1
-                elif item.name == "run.jsonl":
+                elif item.is_file() and item.suffix in (".jsonl", ".json"):
                     item.unlink()
                     count += 1
         return jsonify(
