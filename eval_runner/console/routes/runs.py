@@ -64,8 +64,8 @@ def list_runs():
                 for line in f:
                     event = json.loads(line.strip())
                     if event.get("event") == "run_start":
-                        rid = event.get("run_id")
-                        scenario = event.get("scenario")
+                        rid = event.get("run_id") or ""
+                        scenario = event.get("scenario") or ""
                         if query and query not in rid.lower() and query not in scenario.lower():
                             continue
                         runs.append(
@@ -84,20 +84,36 @@ def list_runs():
     for p in log_paths:
         try:
             with open(p, encoding="utf-8") as f:
-                event = json.loads(f.readline())
-                if event.get("event") == "run_start":
-                    rid = event.get("run_id")
-                    scenario = event.get("scenario")
-                    if query and query not in rid.lower() and query not in scenario.lower():
-                        continue
-                    runs.append(
-                        {
-                            "run_id": rid,
-                            "scenario": scenario,
-                            "timestamp": event.get("timestamp"),
-                            "path": str(p.relative_to(config.RUN_LOG_DIR)),
-                        }
-                    )
+                first_line = f.readline()
+                if not first_line.strip():
+                    continue
+                event = json.loads(first_line)
+                rid = event.get("run_id") or p.parent.name or ""
+                scenario = event.get("scenario")
+
+                if not scenario and rid.startswith("run-"):
+                    # Parse scenario out from run-scenario_name-timestamp
+                    parts = rid.split("-")
+                    if len(parts) > 2:
+                        scenario = "-".join(parts[1:-1])
+                    else:
+                        scenario = parts[1]
+                elif not scenario:
+                    scenario = rid
+
+                scenario = scenario or ""
+                if query and query not in rid.lower() and query not in scenario.lower():
+                    continue
+
+                timestamp = event.get("timestamp") or event.get("_ts_iso") or ""
+                runs.append(
+                    {
+                        "run_id": rid,
+                        "scenario": scenario,
+                        "timestamp": timestamp,
+                        "path": str(p.relative_to(config.RUN_LOG_DIR)),
+                    }
+                )
         except Exception as e:
             logger.warning(f"Skipping malformed or inaccessible vault trace {p}: {e}")
             continue

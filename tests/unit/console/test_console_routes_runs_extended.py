@@ -465,6 +465,7 @@ def test_runs_route_get_verification_certificate_corrupt_first_check(client, con
     """Test corrupt certificate file path handling (Lines 173-175)"""
     run_id = "corrupt_cert_direct"
     cert_path = console_jail["reports"] / "certificates" / f"{run_id}_vc.json"
+    cert_path.parent.mkdir(parents=True, exist_ok=True)
     cert_path.write_text("invalid json direct", encoding="utf-8")
 
     res = client.get(f"/api/v1/certificates/{run_id}")

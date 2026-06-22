@@ -155,6 +155,8 @@ def test_system_route_info_agent_providers(client):
     catalog.scenarios = {}
 
     with (
+        patch("eval_runner.config.GOOGLE_API_KEY", None),
+        patch("eval_runner.config.ANTHROPIC_API_KEY", None),
         patch("eval_runner.config.OPENAI_API_KEY", "key"),
         patch("eval_runner.config.AGENT_API_URLS", ["http://localhost:11434"]),
         patch("eval_runner.catalog.ScenarioCatalog.load_index") as mock_load_index,

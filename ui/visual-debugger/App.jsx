@@ -1119,7 +1119,7 @@ const ReportsView = ({ onViewReport, searchQuery = "", apiFetch }) => {
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                 </div>
             ) : (
-                <div className="bg-[#161b22] border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                <div className="bg-[#161b22] border border-slate-800 rounded-2xl overflow-x-auto shadow-xl">
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-slate-800/30 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] border-b border-slate-800">
@@ -1135,7 +1135,7 @@ const ReportsView = ({ onViewReport, searchQuery = "", apiFetch }) => {
                                     <td className="px-6 py-4 text-xs text-slate-400 font-mono">
                                         {new Date(run.timestamp).toLocaleString()}
                                     </td>
-                                    <td className="px-6 py-4 text-xs font-bold text-slate-200">
+                                    <td className="px-6 py-4 text-xs font-bold text-slate-200 break-all max-w-xs">
                                         {run.run_id}
                                     </td>
                                     <td className="px-6 py-4 text-xs text-slate-400">
