@@ -340,6 +340,14 @@ def debugger_state():
                 # Try direct run_id.jsonl
                 trace_path = config.RUN_LOG_DIR / f"{run_id}.jsonl"
 
+            if not trace_path.exists():
+                # Recursive glob fallback for nested subdirectories (e.g. runs/demo/)
+                matches = list(config.RUN_LOG_DIR.glob(f"**/{run_id}/run.jsonl")) + list(
+                    config.RUN_LOG_DIR.glob(f"**/{run_id}.jsonl")
+                )
+                if matches:
+                    trace_path = matches[0]
+
             if trace_path.exists():
                 try:
                     trace = []

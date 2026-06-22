@@ -34,6 +34,13 @@ async def parse_markdown_to_scenario(markdown_text: str) -> dict[str, Any]:
             "nodes": [],
             "edges": [],
         },
+        "evaluation": {
+            "consensus": {
+                "strategy": "Majority_Vote",
+                "min_judges": 1,
+                "judge_panel": ["Luna-1"],
+            }
+        },
     }
 
     # 1. Extract Title (H1)

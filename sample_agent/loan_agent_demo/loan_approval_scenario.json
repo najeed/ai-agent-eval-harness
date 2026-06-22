@@ -1,7 +1,7 @@
 {
   "aes_version": 1.4,
   "metadata": {
-    "id": "scenario-070f55f3",
+    "id": "scenario-581cd0ef",
     "compliance_level": "Standard",
     "capabilities": [],
     "name": "Loan Approval Agent"
@@ -43,11 +43,12 @@
     ]
   },
   "evaluation": {
-    "metrics": [
-      {
-        "metric": "tool_call_correctness",
-        "threshold": 0.8
-      }
-    ]
+    "consensus": {
+      "strategy": "Majority_Vote",
+      "min_judges": 1,
+      "judge_panel": [
+        "Luna-1"
+      ]
+    }
   }
 }
