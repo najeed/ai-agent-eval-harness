@@ -3,7 +3,11 @@
   "title": "AgentV Run Trace Specification (v1.5.0)",
   "description": "Formal schema for high-fidelity evaluation event streams (run.jsonl).",
   "type": "object",
-  "required": ["event", "timestamp", "_seq"],
+  "required": [
+    "event",
+    "timestamp",
+    "_seq"
+  ],
   "properties": {
     "event": {
       "type": "string",
@@ -31,70 +35,213 @@
     {
       "title": "Run Start",
       "properties": {
-        "event": { "const": "run_start" },
-        "scenario": { "type": "string" },
-        "k_attempts": { "type": "integer" }
+        "event": {
+          "const": "run_start"
+        },
+        "scenario": {
+          "type": "string"
+        },
+        "k_attempts": {
+          "type": "integer"
+        }
       },
-      "required": ["scenario"]
+      "required": [
+        "scenario"
+      ]
     },
     {
       "title": "Phase Boundaries",
       "properties": {
-        "event": { "enum": ["phase_start", "phase_end"] },
-        "phase": { "type": "string" },
-        "span_context": { "type": "string" }
+        "event": {
+          "enum": [
+            "phase_start",
+            "phase_end"
+          ]
+        },
+        "phase": {
+          "type": "string"
+        },
+        "span_context": {
+          "type": "string"
+        }
       },
-      "required": ["phase"]
+      "required": [
+        "phase"
+      ]
+    },
+    {
+      "title": "Maneuver Boundaries",
+      "properties": {
+        "event": {
+          "enum": [
+            "maneuver_start",
+            "maneuver_end"
+          ]
+        },
+        "node_id": {
+          "type": "string"
+        },
+        "task": {
+          "type": "string"
+        }
+      }
     },
     {
       "title": "Agent Interaction Cycle",
       "properties": {
-        "event": { "enum": ["turn_start", "turn_end", "step_start", "step_end"] },
-        "turn": { "type": "integer" },
-        "role": { "enum": ["user", "agent", "system"] },
-        "content": { "type": "string" }
+        "event": {
+          "enum": [
+            "turn_start",
+            "turn_end",
+            "step_start",
+            "step_end"
+          ]
+        },
+        "turn": {
+          "type": "integer"
+        },
+        "role": {
+          "enum": [
+            "user",
+            "agent",
+            "system"
+          ]
+        },
+        "content": {
+          "type": "string"
+        }
       }
     },
     {
       "title": "Strategy Lifecycle",
       "properties": {
-        "event": { "enum": ["strategy_start", "strategy_end"] },
-        "strategy": { "type": "string" }
+        "event": {
+          "enum": [
+            "strategy_start",
+            "strategy_end"
+          ]
+        },
+        "strategy": {
+          "type": "string"
+        }
       }
     },
     {
       "title": "Capability Execution",
       "properties": {
-        "event": { "enum": ["tool_call", "tool_response"] },
-        "tool": { "type": "string" },
-        "args": { "type": "object" },
-        "status": { "type": "string" }
+        "event": {
+          "enum": [
+            "tool_call",
+            "tool_response",
+            "tool_result"
+          ]
+        },
+        "tool": {
+          "type": "string"
+        },
+        "args": {
+          "type": "object"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "title": "Additional Telemetry Boundaries",
+      "properties": {
+        "event": {
+          "enum": [
+            "chain_start",
+            "chain_end",
+            "node_start",
+            "node_end",
+            "subtask_start",
+            "subtask_end",
+            "action_start",
+            "action_end",
+            "routing_resolved"
+          ]
+        },
+        "chain_id": {
+          "type": "string"
+        },
+        "node_id": {
+          "type": "string"
+        },
+        "subtask_id": {
+          "type": "string"
+        },
+        "task_description": {
+          "type": "string"
+        },
+        "action_name": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        }
       }
     },
     {
       "title": "World State Change",
       "properties": {
-        "event": { "const": "world_state_change" },
-        "state": { "type": "object" },
-        "shared_state": { "type": "object" }
+        "event": {
+          "const": "world_state_change"
+        },
+        "state": {
+          "type": "object"
+        },
+        "shared_state": {
+          "type": "object"
+        }
       }
     },
     {
       "title": "Outcome Summary",
       "description": "The terminal outcome event (run_end) and summary result.",
       "properties": {
-        "event": { "const": "run_end" },
-        "status": { "enum": ["success", "failure", "error", "cancelled"] },
-        "pass_at_k": { "type": "number" },
-        "successful_attempts": { "type": "integer" },
-        "total_attempts": { "type": "integer" },
+        "event": {
+          "const": "run_end"
+        },
+        "status": {
+          "enum": [
+            "success",
+            "failure",
+            "error",
+            "cancelled"
+          ]
+        },
+        "pass_at_k": {
+          "type": "number"
+        },
+        "successful_attempts": {
+          "type": "integer"
+        },
+        "total_attempts": {
+          "type": "integer"
+        },
         "metrics": {
           "type": "object",
           "properties": {
-            "pass_rate": { "type": "number" },
-            "tool_correctness": { "type": "number" },
-            "avg_latency": { "type": "number" },
-            "total_tokens": { "type": "integer" }
+            "pass_rate": {
+              "type": "number"
+            },
+            "tool_correctness": {
+              "type": "number"
+            },
+            "avg_latency": {
+              "type": "number"
+            },
+            "total_tokens": {
+              "type": "integer"
+            }
           }
         }
       }
@@ -102,9 +249,19 @@
     {
       "title": "System Diagnostics",
       "properties": {
-        "event": { "enum": ["adapter_debug", "other", "error"] },
-        "message": { "type": "string" },
-        "level": { "type": "string" }
+        "event": {
+          "enum": [
+            "adapter_debug",
+            "other",
+            "error"
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "level": {
+          "type": "string"
+        }
       }
     }
   ]

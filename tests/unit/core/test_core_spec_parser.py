@@ -200,3 +200,56 @@ def test_save_scenario_json_native(tmp_path):
     path = tmp_path / "scenario.json"
     save_scenario_json({"test": True}, path)
     assert path.exists()
+
+
+@pytest.mark.asyncio
+async def test_parse_markdown_schema_compliance():
+    from pathlib import Path
+
+    md = """
+# PRD: Schema Compliance App
+**Industry:** Fintech
+**Use Case:** Compliance Check
+**Core Function:** Auto Validation
+
+## Overview
+Validates that generated JSON conforms to the actual JSON schema.
+
+## Tasks
+### 1. Verification
+Verify the user's details.
+
+## Topology
+**Validator:** writes to [logs]
+
+## Policies
+- **Retries:** {"count": 3}
+"""
+    scenario = await spec_parser.parse_markdown_to_scenario(md)
+
+    # Run JSON schema validation
+    import json
+
+    from jsonschema import validate
+    from referencing import Registry, Resource
+
+    project_root = Path(__file__).parent.parent.parent.parent
+    schema_path = project_root / "spec" / "aes" / "aes.schema.json"
+
+    assert schema_path.exists(), f"Schema file not found at {schema_path}"
+
+    with open(schema_path, encoding="utf-8") as f:
+        schema = json.load(f)
+
+    defs_dir = schema_path.parent / "definitions"
+    registry = Registry()
+    if defs_dir.exists():
+        for fpath in defs_dir.glob("*.json"):
+            with open(fpath) as f_def:
+                registry = registry.with_resource(
+                    uri=f"definitions/{fpath.name}",
+                    resource=Resource.from_contents(json.load(f_def)),
+                )
+
+    # Validate the generated scenario dictionary. It should not raise ValidationError
+    validate(instance=scenario, schema=schema, registry=registry)

@@ -38,7 +38,7 @@ def certify_env(tmp_path, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_handle_certify_with_fingerprint(certify_env, capsys):
-    """Verify Pillar 2: Behavioral Fingerprint persistence."""
+    """Verify Pillar 2: Behavioral Fingerprint persistence and VC schema compliance."""
     fingerprint = "industrial_v1_baseline"
     args = Namespace(
         run_id=certify_env["run_id"],
@@ -46,6 +46,11 @@ async def test_handle_certify_with_fingerprint(certify_env, capsys):
         metadata=None,
         private_key=None,
         fingerprint=fingerprint,
+        identity="system_id",
+        status="pass",
+        score=1.0,
+        policy_ref="NIST-800-53",
+        ttl=30,
     )
 
     result = await evaluation.handle_certify(args)
@@ -53,12 +58,25 @@ async def test_handle_certify_with_fingerprint(certify_env, capsys):
 
     # Verify Physical Manifest Content
     import json
+    from pathlib import Path
+
+    from jsonschema import validate
 
     sidecar_path = certify_env["trace_path"].parent / "run_manifest.json"
     with open(sidecar_path, encoding="utf-8") as f:
         manifest = json.load(f)
 
     assert manifest.get("behavioral_fingerprint_id") == fingerprint
+
+    # Schema validation of sidecar manifest
+    project_root = Path(__file__).parent.parent.parent.parent
+    vc_schema_path = project_root / "spec" / "vc" / "vc.schema.json"
+    assert vc_schema_path.exists()
+
+    with open(vc_schema_path, encoding="utf-8") as sf:
+        schema = json.load(sf)
+
+    validate(instance=manifest, schema=schema)
 
 
 @pytest.mark.asyncio
@@ -76,7 +94,17 @@ async def test_handle_certify_missing_trace(certify_env, capsys):
 async def test_handle_certify_success(certify_env, capsys):
     """Test certify succeeds and creates a physical manifest."""
     # Use the established run-id
-    args = Namespace(run_id=certify_env["run_id"], path=None, metadata=None, private_key=None)
+    args = Namespace(
+        run_id=certify_env["run_id"],
+        path=None,
+        metadata=None,
+        private_key=None,
+        identity="system_id",
+        status="pass",
+        score=1.0,
+        policy_ref="NIST-800-53",
+        ttl=30,
+    )
 
     result = await evaluation.handle_certify(args)
     assert result == 0
@@ -91,3 +119,21 @@ async def test_handle_certify_success(certify_env, capsys):
 
     assert sidecar.exists(), "Sidecar manifest missing"
     assert vault.exists(), "Vault certificate missing"
+
+    # Schema validation of generated VC in vault
+    import json
+    from pathlib import Path
+
+    from jsonschema import validate
+
+    project_root = Path(__file__).parent.parent.parent.parent
+    vc_schema_path = project_root / "spec" / "vc" / "vc.schema.json"
+    assert vc_schema_path.exists()
+
+    with open(vc_schema_path, encoding="utf-8") as sf:
+        schema = json.load(sf)
+
+    with open(vault, encoding="utf-8") as vf:
+        vc_data = json.load(vf)
+
+    validate(instance=vc_data, schema=schema)

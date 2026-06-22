@@ -152,23 +152,144 @@ async def test_run_evaluate_complex_branches(tmp_path, monkeypatch):
 
 # --- aes validation missing ---
 @pytest.mark.asyncio
-async def test_handle_aes_validate_complex(tmp_path, monkeypatch):
+async def test_handle_aes_validate_real(tmp_path, monkeypatch):
+    import json
+
     from eval_runner.handlers.scenarios import handle_aes_validate
 
     monkeypatch.chdir(tmp_path)
 
-    # Dir containing valid/invalid files
-    test_dir = tmp_path / "test"
-    test_dir.mkdir()
-    (test_dir / "valid.aes.yaml").write_text("{}", encoding="utf-8")
+    # 1. Valid scenario
+    valid_file = tmp_path / "valid.json"
+    valid_file.write_text(
+        json.dumps(
+            {
+                "aes_version": 1.4,
+                "metadata": {
+                    "name": "Valid Scenario",
+                    "id": "valid_id",
+                    "compliance_level": "Standard",
+                },
+                "workflow": {"nodes": [], "edges": []},
+                "evaluation": {
+                    "consensus": {
+                        "strategy": "Majority_Vote",
+                        "min_judges": 1,
+                        "judge_panel": ["Luna-1"],
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
 
-    args = parse_args(["aes", "validate", "--path", str(test_dir)])
+    # 2. Invalid scenario (missing required workflow)
+    invalid_file = tmp_path / "invalid.json"
+    invalid_file.write_text(
+        json.dumps(
+            {
+                "aes_version": 1.4,
+                "metadata": {"name": "Invalid Scenario"},
+            }
+        ),
+        encoding="utf-8",
+    )
 
-    with patch("json.loads", return_value={}), patch("yaml.safe_load", return_value={}):
-        # 1. Validation error branch
-        with patch("jsonschema.validate", side_effect=Exception("ValidationError")):
-            await handle_aes_validate(args)
+    # Test valid scenario validate
+    args_valid = parse_args(["aes", "validate", "--path", str(valid_file)])
+    res_valid = await handle_aes_validate(args_valid)
+    assert res_valid == 0
 
-        # 2. Success branch
-        with patch("jsonschema.validate"):
-            await handle_aes_validate(args)
+    # Test invalid scenario validate
+    args_invalid = parse_args(["aes", "validate", "--path", str(invalid_file)])
+    res_invalid = await handle_aes_validate(args_invalid)
+    assert res_invalid == 1
+
+
+@pytest.mark.asyncio
+async def test_handle_run_and_evaluate_trace_schema_validation(tmp_path, monkeypatch):
+    import json
+    from pathlib import Path
+
+    from jsonschema import validate
+
+    from eval_runner.handlers.evaluation import handle_run
+
+    monkeypatch.chdir(tmp_path)
+
+    # Setup custom log directory in tmp_path
+    log_dir = tmp_path / "runs"
+    log_dir.mkdir()
+    monkeypatch.setattr("eval_runner.config.RUN_LOG_DIR", log_dir)
+    monkeypatch.setenv("RUN_LOG_DIR", str(log_dir))
+
+    scenario_file = tmp_path / "test_scenario.json"
+    scenario_file.write_text(
+        json.dumps(
+            {
+                "aes_version": 1.4,
+                "metadata": {
+                    "name": "Run Schema Test",
+                    "id": "run_schema_test",
+                    "compliance_level": "Standard",
+                },
+                "workflow": {
+                    "nodes": [
+                        {
+                            "id": "task-1",
+                            "task_description": "Do something",
+                            "success_criteria": [{"metric": "generic_accuracy", "threshold": 0.5}],
+                        }
+                    ],
+                    "edges": [],
+                },
+                "evaluation": {
+                    "consensus": {
+                        "strategy": "Majority_Vote",
+                        "min_judges": 1,
+                        "judge_panel": ["Luna-1"],
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    # Mock a minimal agent response for the local protocol
+    async def mock_call_agent(*args, **kwargs):
+        return {"action": "final_answer", "summary": "Successfully completed task"}
+
+    args_run = parse_args(
+        [
+            "run",
+            "--scenario",
+            str(scenario_file),
+            "--run-id",
+            "test-run-schema-compliance",
+            "--attempts",
+            "1",
+            "--run-log-dir",
+            str(log_dir),
+        ]
+    )
+
+    with patch("eval_runner.engine.AgentAdapterRegistry.call_agent", side_effect=mock_call_agent):
+        res = await handle_run(args_run)
+        assert res == 0
+
+    # Verify run.jsonl conforms to spec/runs/runs.schema.json
+    trace_path = log_dir / "test-run-schema-compliance" / "run.jsonl"
+    assert trace_path.exists()
+
+    project_root = Path(__file__).parent.parent.parent.parent
+    runs_schema_path = project_root / "spec" / "runs" / "runs.schema.json"
+    assert runs_schema_path.exists()
+
+    with open(runs_schema_path, encoding="utf-8") as sf:
+        schema = json.load(sf)
+
+    with open(trace_path, encoding="utf-8") as tf:
+        for line in tf:
+            if line.strip():
+                event = json.loads(line)
+                validate(instance=event, schema=schema)

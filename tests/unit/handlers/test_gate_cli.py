@@ -71,6 +71,24 @@ async def test_handle_gate_success(gate_env, capsys):
     captured = capsys.readouterr()
     assert "[GATE] SUCCESS" in captured.out
 
+    # Schema validation of manifest used by gate
+    import json
+    from pathlib import Path
+
+    from jsonschema import validate
+
+    project_root = Path(__file__).parent.parent.parent.parent
+    vc_schema_path = project_root / "spec" / "vc" / "vc.schema.json"
+    assert vc_schema_path.exists()
+
+    with open(vc_schema_path, encoding="utf-8") as sf:
+        schema = json.load(sf)
+
+    with open(gate_env["manifest_path"], encoding="utf-8") as mf:
+        manifest_data = json.load(mf)
+
+    validate(instance=manifest_data, schema=schema)
+
 
 @pytest.mark.asyncio
 async def test_handle_gate_hash_mismatch(gate_env, capsys):

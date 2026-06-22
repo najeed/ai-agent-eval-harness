@@ -68,7 +68,13 @@ async def test_handle_report_missing_trace(capsys, tmp_path, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_handle_mutate_all_types(tmp_path, monkeypatch):
-    """Hits mutate branches. Forensic: v1.2 Numerical Schema."""
+    """Hits mutate branches and verifies JSON schema compliance of the output.
+
+    Forensic: v1.2 Numerical Schema.
+    """
+    from jsonschema import validate
+    from referencing import Registry, Resource
+
     monkeypatch.chdir(tmp_path)
     input_file = Path("input.json")
     input_file.write_text(
@@ -77,10 +83,33 @@ async def test_handle_mutate_all_types(tmp_path, monkeypatch):
                 "aes_version": 1.4,
                 "metadata": {"name": "Test", "id": "test_mutate", "compliance_level": "Standard"},
                 "workflow": {"nodes": [{"id": "t1", "task_description": "task"}], "edges": []},
-                "evaluation": {"consensus": {"strategy": "Majority_Vote", "min_judges": 1}},
+                "evaluation": {
+                    "consensus": {
+                        "strategy": "Majority_Vote",
+                        "min_judges": 1,
+                        "judge_panel": ["Luna-1"],
+                    }
+                },
             }
         )
     )
+
+    project_root = Path(__file__).parent.parent.parent.parent
+    schema_path = project_root / "spec" / "aes" / "aes.schema.json"
+    assert schema_path.exists()
+
+    with open(schema_path, encoding="utf-8") as f:
+        schema = json.load(f)
+
+    defs_dir = schema_path.parent / "definitions"
+    registry = Registry()
+    if defs_dir.exists():
+        for fpath in defs_dir.glob("*.json"):
+            with open(fpath) as f_def:
+                registry = registry.with_resource(
+                    uri=f"definitions/{fpath.name}",
+                    resource=Resource.from_contents(json.load(f_def)),
+                )
 
     for mtype in ["typo", "injection"]:
         out_file = Path("mutated.json")
@@ -90,6 +119,11 @@ async def test_handle_mutate_all_types(tmp_path, monkeypatch):
         args = MagicMock(input="input.json", type=mtype, output=None)
         await scenarios.handle_mutate(args)
         assert out_file.exists()
+
+        # Schema validate mutated output scenario
+        with open(out_file, encoding="utf-8") as f:
+            mutated_scenario = json.load(f)
+        validate(instance=mutated_scenario, schema=schema, registry=registry)
 
 
 @pytest.mark.asyncio

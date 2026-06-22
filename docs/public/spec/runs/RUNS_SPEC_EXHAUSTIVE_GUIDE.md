@@ -1,6 +1,6 @@
 # Runs Specification Masterclass: Forensic Traces & the Unified Specification
 
-This guide provides an exhaustive inventory of the **AgentV Runs Specification** (v1.6.0). It details how high-fidelity event streams (`run.jsonl`) are governed by the **Trace Specification** and how they anchor the industrial forensic chain.
+This guide provides an exhaustive inventory of the **AgentV Runs Specification** (v1.5.0). It details how high-fidelity event streams (`run.jsonl`) are governed by the **Trace Specification** and how they anchor the industrial forensic chain.
 
 ---
 
@@ -27,6 +27,25 @@ Every line in `run.jsonl` conforms to `spec/runs/runs.schema.json`.
 | `run_id` | String | Unique ID linking this event to the session vault. |
 | `_seq` | Integer | Monotonic sequence number used to ensure stream integrity. |
 | `data` / Payload | Object | Event-specific fields (e.g., `scenario` for starts, `metrics` for ends). |
+
+### Core Telemetry Event Types
+
+The execution engine records several categories of structured events:
+
+#### 1. Lifecycle & Flow Boundaries
+* **Scenario / Phase**: `run_start`, `run_end`, `phase_start`, `phase_end`
+* **Maneuver Boundaries**: `maneuver_start`, `maneuver_end` (demarcates multi-turn tactical maneuvers or sub-scenarios)
+* **Execution & Telemetry Boundaries**:
+  * **Chains**: `chain_start`, `chain_end`
+  * **Nodes**: `node_start`, `node_end`
+  * **Subtasks**: `subtask_start`, `subtask_end`
+  * **Actions**: `action_start`, `action_end`
+  * **Routing**: `routing_resolved`
+
+#### 2. Capability Execution (Tool Interfacing)
+* `tool_call`: Dispatched when the agent requests tool invocation.
+* `tool_response`: Dispatched when tool execution succeeds/fails.
+* `tool_result`: Dispatched when raw verification outputs or evaluation metrics are registered for a tool.
 
 > **Forensic Integrity**: The trace file is the "Flight Recorder". If a run ends in a crash, the JSONL preserves the state up to the last nanosecond.
 

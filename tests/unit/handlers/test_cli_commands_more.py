@@ -54,6 +54,59 @@ async def test_handle_spec_to_eval_exceptions(tmp_path, monkeypatch):
         assert res == 1
 
 
+@pytest.mark.asyncio
+async def test_handle_spec_to_eval_success(tmp_path, monkeypatch):
+    from pathlib import Path
+
+    from jsonschema import validate
+    from referencing import Registry, Resource
+
+    from eval_runner.handlers.scenarios import handle_spec_to_eval
+
+    monkeypatch.chdir(tmp_path)
+
+    input_file = tmp_path / "real.md"
+    input_file.write_text(
+        "# Demo Scenario\n"
+        "**Industry:** Fintech\n"
+        "**Use Case:** Test\n"
+        "**Core Function:** Check\n"
+        "## Tasks\n"
+        "### 1. Check\n"
+        "Verify details",
+        encoding="utf-8",
+    )
+
+    output_file = tmp_path / "output.json"
+    args = parse_args(["spec-to-eval", "--input", str(input_file), "--output", str(output_file)])
+
+    res = await handle_spec_to_eval(args)
+    assert res == 0
+    assert output_file.exists()
+
+    with open(output_file, encoding="utf-8") as f:
+        scenario = json.load(f)
+
+    project_root = Path(__file__).parent.parent.parent.parent
+    schema_path = project_root / "spec" / "aes" / "aes.schema.json"
+    assert schema_path.exists()
+
+    with open(schema_path, encoding="utf-8") as f:
+        schema = json.load(f)
+
+    defs_dir = schema_path.parent / "definitions"
+    registry = Registry()
+    if defs_dir.exists():
+        for fpath in defs_dir.glob("*.json"):
+            with open(fpath) as f_def:
+                registry = registry.with_resource(
+                    uri=f"definitions/{fpath.name}",
+                    resource=Resource.from_contents(json.load(f_def)),
+                )
+
+    validate(instance=scenario, schema=schema, registry=registry)
+
+
 # --- handle_mutate ---
 @pytest.mark.asyncio
 async def test_handle_mutate_exceptions(tmp_path, monkeypatch):
