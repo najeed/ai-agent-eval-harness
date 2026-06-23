@@ -10,18 +10,13 @@ import threading
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Coroutine
 from contextlib import asynccontextmanager, contextmanager
-from typing import Generic, TypeVar
-
-RequestT = TypeVar("RequestT")
-ResponseT = TypeVar("ResponseT")
-
 
 # ==========================================
 # 1. Synchronous Pipeline Service
 # ==========================================
 
 
-class Interceptor(Generic[RequestT, ResponseT], ABC):
+class Interceptor[RequestT, ResponseT](ABC):
     """Abstract base class for type-safe synchronous pipeline interceptors."""
 
     @abstractmethod
@@ -37,7 +32,7 @@ class Interceptor(Generic[RequestT, ResponseT], ABC):
         pass
 
 
-class PipelineService(Generic[RequestT, ResponseT]):
+class PipelineService[RequestT, ResponseT]:
     """Sync Pipeline orchestrator with thread-safety and exception barriers."""
 
     def __init__(
@@ -136,7 +131,7 @@ class PipelineService(Generic[RequestT, ResponseT]):
 # ==========================================
 
 
-class AsyncInterceptor(Generic[RequestT, ResponseT], ABC):
+class AsyncInterceptor[RequestT, ResponseT](ABC):
     """Abstract base class for type-safe native asynchronous pipeline interceptors."""
 
     @abstractmethod
@@ -154,7 +149,7 @@ class AsyncInterceptor(Generic[RequestT, ResponseT], ABC):
         pass
 
 
-class AsyncPipelineService(Generic[RequestT, ResponseT]):
+class AsyncPipelineService[RequestT, ResponseT]:
     """Native Async Pipeline orchestrator supporting awaitable dynamic interceptors."""
 
     def __init__(
