@@ -38,6 +38,7 @@ class EvaluationContext:
         default_factory=lambda: {"policies": {}, "tools": {}}
     )
     span_context: dict[str, Any] | None = None
+    otel_context: Any | None = None
 
     def __post_init__(self):
         # Deep-copy and freeze mutable dict fields to prevent Prototype Pollution
@@ -58,6 +59,7 @@ class TurnContext:
     agent_response: dict[str, Any] | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
     span_context: dict[str, Any] | None = None
+    otel_context: Any | None = None
 
     def __post_init__(self):
         # Convert history list to tuple if passed as list

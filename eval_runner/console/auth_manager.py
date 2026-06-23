@@ -58,6 +58,11 @@ class AuthManager(ABC):
         pass
 
     @abstractmethod
+    def verify_token(self, token: str) -> dict | None:
+        """Verify OAuth2/OIDC JWT Bearer token."""
+        pass
+
+    @abstractmethod
     def has_permission(self, user: dict, permission_node: str) -> bool:
         """Check if a user has the required granular permission node."""
         pass
@@ -68,6 +73,8 @@ class StaticKeyProvider(AuthManager):
 
     def __init__(self, key: str):
         self.key = key
+        self._jwks_client = None
+        self._jwks_url_cached = None
 
     def authenticate(self, credentials: str) -> dict | None:
         if not self.key or credentials != self.key:
@@ -80,6 +87,63 @@ class StaticKeyProvider(AuthManager):
             "permissions": Permission.ADMIN(),
             "type": "static-root",
         }
+
+    def verify_token(self, token: str) -> dict | None:
+        """
+        Verify OAuth2/OIDC JWT Bearer token.
+        If config.OIDC_JWKS_URL is set, verifies signature against the JWKS endpoint.
+        Otherwise, falls back to checking if the token matches the static Master Key.
+        """
+        from .. import config
+
+        if config.OIDC_JWKS_URL:
+            try:
+                import jwt
+
+                if not self._jwks_client or self._jwks_url_cached != config.OIDC_JWKS_URL:
+                    self._jwks_client = jwt.PyJWKClient(
+                        config.OIDC_JWKS_URL,
+                        cache_jwk_set=True,
+                        cache_lifetime=config.OIDC_JWKS_CACHE_TTL,
+                    )
+                    self._jwks_url_cached = config.OIDC_JWKS_URL
+
+                signing_key = self._jwks_client.get_signing_key_from_jwt(token)
+
+                kwargs = {
+                    "algorithms": ["RS256", "RS384", "RS512", "ES256", "ES384", "ES512"],
+                    "leeway": 10,  # [Hardening] Allow minor clock desynchronization skew
+                }
+                if config.OIDC_AUDIENCE:
+                    kwargs["audience"] = config.OIDC_AUDIENCE
+                if config.OIDC_ISSUER:
+                    kwargs["issuer"] = config.OIDC_ISSUER
+
+                payload = jwt.decode(token, signing_key.key, **kwargs)
+
+                permissions = payload.get("permissions", [])
+                if not permissions:
+                    roles = payload.get("roles", [])
+                    if "admin" in roles or "system-admin" in roles:
+                        permissions = Permission.ADMIN()
+                    else:
+                        scope = payload.get("scope", "")
+                        if scope:
+                            permissions = scope.split(" ")
+
+                return {
+                    "id": payload.get("sub", "unknown-oidc-user"),
+                    "email": payload.get("email", ""),
+                    "name": payload.get("name", payload.get("preferred_username", "OIDC User")),
+                    "permissions": permissions,
+                    "type": "oidc-sso",
+                }
+            except Exception as e:
+                if os.getenv("DEBUG", "false").lower() == "true":
+                    print(f"   [Auth] JWT Verification failed: {e}")
+                return None
+
+        return self.authenticate(token)
 
     def has_permission(self, user: dict, permission_node: str) -> bool:
         """Strict PBAC implementation: Verifies granular permissions node."""
@@ -100,6 +164,32 @@ def get_auth_provider() -> AuthManager:
     return StaticKeyProvider(config.SERVICE_API_KEY)
 
 
+def extract_credentials_from_context(headers: dict, args: dict) -> tuple[str | None, str | None]:
+    """
+    Extracts Bearer token and/or API Key from headers and query parameters.
+    Returns (bearer_token, api_key).
+    """
+
+    # Case-insensitive header helper
+    def get_header(name: str) -> str | None:
+        name_lower = name.lower()
+        for k, v in headers.items():
+            if k.lower() == name_lower:
+                return v
+        return None
+
+    auth_header = get_header("Authorization")
+    bearer_token = None
+    if auth_header and auth_header.startswith("Bearer "):
+        bearer_token = auth_header[7:].strip()
+
+    api_key = get_header("X-AES-API-KEY") or get_header("X-API-Key") or args.get("apiKey")
+    if api_key:
+        api_key = api_key.strip()
+
+    return bearer_token, api_key
+
+
 def require_permission(permission_node: str):
     """
     Unified decorator for Session-based (Browser) and Header-based (CLI) Auth.
@@ -107,11 +197,13 @@ def require_permission(permission_node: str):
     """
     from functools import wraps
 
-    from flask import jsonify, request, session
-
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
+            from flask import current_app, jsonify, request, session
+
+            from .. import config
+
             # [INDUSTRIAL DIAGNOSTIC]: Log all permission checks for forensic auditing
             print(
                 f"   [Auth] Checking permission '{permission_node}' for path: {request.path}",
@@ -121,10 +213,6 @@ def require_permission(permission_node: str):
             user = session.get("user")
 
             # --- INDUSTRIAL DEMO HARNESS (Local Trust v1.6.0) ---
-            from flask import current_app
-
-            from .. import config
-
             # [HARDENING] Skip Local Trust if we are running in a TEST environment (AgentV v1.6.0)
             is_testing = current_app.config.get("TESTING", False)
 
@@ -155,16 +243,20 @@ def require_permission(permission_node: str):
                 ), 403
 
             # 2. Check Header or Query (CLI / Debug Support)
-            api_key = (
-                request.headers.get("X-AES-API-KEY")
-                or request.headers.get("X-API-Key")
-                or request.args.get("apiKey")
+            bearer_token, api_key = extract_credentials_from_context(
+                dict(request.headers), dict(request.args)
             )
 
-            if api_key:
-                # [Hardening] Trim whitespace to prevent 401s from invisible formatting
-                # in .env/headers
-                api_key = api_key.strip()
+            if bearer_token:
+                user = provider.verify_token(bearer_token)
+                if user:
+                    if provider.has_permission(user, permission_node):
+                        return f(*args, **kwargs)
+                    return jsonify(
+                        {"error": f"Forbidden: Permission '{permission_node}' required"}
+                    ), 403
+
+            elif api_key:
                 user = provider.authenticate(api_key)
                 if user:
                     if provider.has_permission(user, permission_node):
@@ -173,7 +265,7 @@ def require_permission(permission_node: str):
                         {"error": f"Forbidden: Permission '{permission_node}' required"}
                     ), 403
 
-            if not api_key and not user:
+            if not bearer_token and not api_key and not user:
                 print(
                     f"   [Auth] 401 Unauthorized - No session and no key "
                     f"(Node: {permission_node}, Path: {request.path})",
@@ -185,6 +277,11 @@ def require_permission(permission_node: str):
                 print(
                     f"   [Auth] 401 Unauthorized - Invalid key: {key_hint} "
                     f"(Len: {len(api_key)}) for {request.path}",
+                    flush=True,
+                )
+            elif bearer_token and not user:
+                print(
+                    f"   [Auth] 401 Unauthorized - Invalid Bearer Token for {request.path}",
                     flush=True,
                 )
 

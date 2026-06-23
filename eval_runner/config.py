@@ -531,6 +531,12 @@ SERVICE_API_KEY = os.getenv("SERVICE_API_KEY", os.getenv("DASHBOARD_API_KEY"))
 # See: docs-old/guides/07_SECURITY_AND_AUTHENTICATION.md for setup instructions.
 DASHBOARD_API_KEY = os.getenv("DASHBOARD_API_KEY")
 
+# --- OIDC / SSO Configuration ---
+OIDC_JWKS_URL = os.getenv("OIDC_JWKS_URL")
+OIDC_ISSUER = os.getenv("OIDC_ISSUER")
+OIDC_AUDIENCE = os.getenv("OIDC_AUDIENCE")
+OIDC_JWKS_CACHE_TTL = int(os.getenv("OIDC_JWKS_CACHE_TTL", "3600"))
+
 # Industrial Feature Toggles (v1.2.4)
 DEBUG_MODE = os.getenv("DEBUG", "false").lower() == "true"
 

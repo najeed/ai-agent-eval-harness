@@ -173,12 +173,57 @@ class AgentAdapterRegistry:
             "input_payload": getattr(turn_ctx, "input_payload", {}),
         }
 
+        # Resolve OpenTelemetry child span context
+        child_otel_ctx = None
+        span = None
+        parent_context = getattr(turn_ctx, "otel_context", None)
+        try:
+            from opentelemetry import trace
+            from opentelemetry.trace import propagation
+
+            tracer = trace.get_tracer("agentv")
+            span = tracer.start_span(
+                name=f"agentv.call_agent.{protocol}",
+                context=parent_context,
+            )
+            span.set_attribute("agentv.protocol", protocol)
+            span.set_attribute("agentv.endpoint", endpoint or "local")
+
+            child_otel_ctx = trace.set_span_in_context(span, parent_context)
+            if turn_ctx:
+                # Store the child context back on the turn context
+                object.__setattr__(turn_ctx, "otel_context", child_otel_ctx)
+
+            carrier = {}
+            propagation.inject(carrier, context=child_otel_ctx)
+            if "traceparent" in carrier:
+                payload["span_context"] = {"traceparent": carrier["traceparent"]}
+                if turn_ctx:
+                    object.__setattr__(turn_ctx, "span_context", payload["span_context"])
+        except Exception:
+            pass
+
         # 3. Execution (with Industrial Protection)
         try:
-            return await adapter_func(payload, endpoint=endpoint)
+            response = await adapter_func(payload, endpoint=endpoint)
+            if span and span.is_recording():
+                span.set_attribute("agentv.action", response.get("action", "unknown"))
+            return response
         except Exception as e:
+            if span and span.is_recording():
+                try:
+                    span.record_exception(e)
+                    span.set_status(trace.StatusCode.ERROR)
+                except Exception:
+                    pass
             sys.stderr.write(f"      [Dispatcher Error] {protocol} failed: {str(e)}\n")
             raise
+        finally:
+            if span and span.is_recording():
+                try:
+                    span.end()
+                except Exception:
+                    pass
 
 
 async def run_evaluation(
@@ -200,10 +245,12 @@ async def run_evaluation(
 
     # Load internal plugins if not already loaded (like FlightRecorder and ReportingPlugin)
     from .flight_recorder import FlightRecorderPlugin
+    from .otel_bridge import OTelTelemetryBridge
     from .reporting_plugin import ReportingPlugin
 
     plugins.manager.register(FlightRecorderPlugin(), origin="CORE")
     plugins.manager.register(ReportingPlugin(), origin="CORE")
+    plugins.manager.register(OTelTelemetryBridge(), origin="CORE")
 
     runner = DefaultRunner()
     results = await runner.run(

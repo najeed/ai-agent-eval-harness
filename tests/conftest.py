@@ -68,6 +68,12 @@ def reset_plugins():
     reset()
     MetricRegistry.reset()
     reset_universal_registry()
+    try:
+        from eval_runner.otel_bridge import OTelTelemetryBridge
+
+        OTelTelemetryBridge._subscribed = False
+    except ImportError:
+        pass
     yield
 
 

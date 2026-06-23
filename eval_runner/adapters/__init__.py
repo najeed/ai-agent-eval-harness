@@ -8,6 +8,7 @@ Also acts as a package container for ecosystem-specific adapters.
 
 import asyncio
 import json
+import re
 import shlex
 from typing import Any, Dict, Optional  # noqa: F401, UP035
 
@@ -15,15 +16,25 @@ import aiohttp
 
 from .. import config
 
+# W3C traceparent standard regex: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
+TRACEPARENT_REGEX = re.compile(r"^00-[a-f0-9]{32}-[a-f0-9]{16}-[a-f0-9]{2}$")
+
 
 async def http_adapter(payload: dict, endpoint: str, **kwargs):
     """Call an agent over HTTP (default)."""
     from .common import SessionManager
 
     session = await SessionManager.get_session()
+    headers = {}
+    if payload.get("span_context") and "traceparent" in payload["span_context"]:
+        tp = payload["span_context"]["traceparent"]
+        if isinstance(tp, str) and TRACEPARENT_REGEX.match(tp):
+            headers["traceparent"] = tp
+
     async with session.post(
         endpoint,
         json=payload,
+        headers=headers,
         timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT),
     ) as response:
         response.raise_for_status()
@@ -103,10 +114,16 @@ async def sse_http_adapter(payload: dict, endpoint: str, **kwargs):
     from .common import SessionManager
 
     session = await SessionManager.get_session()
+    headers = {"Accept": "text/event-stream"}
+    if payload.get("span_context") and "traceparent" in payload["span_context"]:
+        tp = payload["span_context"]["traceparent"]
+        if isinstance(tp, str) and TRACEPARENT_REGEX.match(tp):
+            headers["traceparent"] = tp
+
     async with session.post(
         endpoint,
         json=payload,
-        headers={"Accept": "text/event-stream"},
+        headers=headers,
         timeout=aiohttp.ClientTimeout(total=config.DEFAULT_ADAPTER_TIMEOUT),
     ) as response:
         response.raise_for_status()
