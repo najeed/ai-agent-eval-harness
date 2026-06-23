@@ -6,7 +6,7 @@
 [![Full Test Coverage](https://img.shields.io/badge/Full%20Test%20Coverage-86%25-brightgreen.svg)](TESTING.md)
 [![Utility Stack](https://img.shields.io/badge/Utility%20Coverage-92%25-brightgreen.svg)](eval_runner/utils.py)
 [![Works with AgentV](https://raw.githubusercontent.com/najeed/ai-agent-eval-harness/main/docs-old/assets/badges/works-with-agentv.svg)](https://github.com/najeed/ai-agent-eval-harness)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Industrial Trust Protocol](https://img.shields.io/badge/Trust%20Protocol-VC%20v3.0.0-gold.svg)](../spec/trust_protocol_spec_v1.md)
 [![Security Audit](https://img.shields.io/badge/Security-Audit--Verified-brightgreen.svg)](tests/security/test_security_audit.py)
@@ -121,7 +121,7 @@ The harness is organized into the following key components:
 
 ### Prerequisites
 
--   **Python 3.11+**
+-   **Python 3.12+**
 -   **pip**
 
 > [!IMPORTANT]

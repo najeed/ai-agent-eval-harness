@@ -7,6 +7,7 @@ authors = [
     { name = "Najeed Khan", email = "agentv@agentvos.ai" }
 ]
 license = { text = "Apache-2.0" }
+requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
@@ -91,7 +92,7 @@ filterwarnings = [
 [tool.ruff]
 # Standardize on industrial 100-character line length (2026 upgrade)
 line-length = 100
-target-version = "py311"
+target-version = "py312"
 
 [tool.ruff.lint]
 # Select E (Error), F (Pyflakes), UP (Upgrade), B (Bugbear), I (Isort)

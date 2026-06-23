@@ -8,7 +8,7 @@ Welcome to the **dataproc-engine**, a modular and extensible framework for gener
 - [Target Schema](scenario_schema.md)
 
 ### Prerequisites
-- Python 3.11+
+- Python 3.12+
 - Pip or Poetry
 
 ### Setup Steps

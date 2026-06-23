@@ -116,8 +116,8 @@ async def run_doctor(show_registry: bool = False):
 
     # 1. Python Version
     py_ver = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-    if sys.version_info < (3, 11):  # noqa: UP036
-        print(f"  ❌ Python version {py_ver} is too old. Requires 3.11+")
+    if sys.version_info < (3, 12):  # noqa: UP036
+        print(f"  ❌ Python version {py_ver} is too old. Requires 3.12+")
     else:
         print(f"  ✔ Python version OK ({py_ver})")
 
