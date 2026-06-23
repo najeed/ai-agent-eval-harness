@@ -46,11 +46,15 @@ class FlightRecorderPlugin(BaseEvalPlugin):
 
         # [Event Duplication Remediation]
         # Only subscribe to the global event bus once (Singleton Pattern)
-        if not FlightRecorderPlugin._subscribed:
-            from . import events
+        from . import events
 
+        global_bus = events.EventEmitter.get_global()
+        is_already_subbed = any(
+            hasattr(sub, "__self__") and isinstance(sub.__self__, FlightRecorderPlugin)
+            for sub in global_bus._subscribers
+        )
+        if not is_already_subbed:
             events.subscribe(self.handle_event)
-            FlightRecorderPlugin._subscribed = True
             print("   [FlightRecorder] Registered singleton event listener.")
 
     def _enforce_safety_floor(self):
