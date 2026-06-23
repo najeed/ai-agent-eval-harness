@@ -94,6 +94,30 @@ Industrial environments require granular control over who can perform which fore
 
 ---
 
-## 🔐 Authentication Extensions
+## 🔐 Enterprise SSO & OIDC Authentication
 
-Plugins can subclass `AuthManager` to integrate with **Okta** or **Azure AD** using the [Plugin System](/extender/plugins/).
+AgentV supports out-of-the-box **OAuth2/OIDC JWT Bearer Token validation** alongside its standard static API keys. This enables seamless integration with identity providers like Okta, Azure AD, or Keycloak.
+
+### ⚙️ Configuration Properties
+The OIDC layer is configured using the following environment variables:
+
+| Environment Variable | Purpose | Example Value |
+| :--- | :--- | :--- |
+| `OIDC_JWKS_URL` | The JSON Web Key Set URL to fetch public signing keys. | `https://auth.example.com/.well-known/jwks.json` |
+| `OIDC_ISSUER` | Optional. Issuer (`iss`) claim to validate in the JWT. | `https://auth.example.com` |
+| `OIDC_AUDIENCE` | Optional. Audience (`aud`) claim to validate in the JWT. | `agentv-service` |
+| `OIDC_JWKS_CACHE_TTL` | Cache TTL in seconds for public keys (Default: `3600`). | `3600` |
+
+### 🛡️ Token Validation & Hardening Guardrails
+1. **Dynamic JWKS Caching**: The core validation engine caches and reuses `PyJWKClient` instances, preventing redundant network round-trips to key servers and mitigating rate-limiting or DDoS vectors.
+2. **Clock-Skew Tolerance**: Incorporates a 10-second validation `leeway` to accommodate minor clock synchronization differences between servers.
+3. **Multi-Algorithm Filtering**: Restricts signatures to safe cryptographic configurations (`RS256`, `RS384`, `RS512`, `ES256`, `ES384`, `ES512`) during decode.
+4. **Granular PBAC Mapping**: Token scopes (`scope`), roles (`roles`), or custom permissions arrays are parsed to map standard or custom granular permission nodes (e.g. `scenarios:read`).
+
+### 📡 Request Header Extraction
+Credentials are extracted using a decoupled, case-insensitive helper which supports:
+- `Authorization: Bearer <JWT>` headers.
+- `X-AES-API-KEY` or `X-API-Key` custom headers (matched case-insensitively).
+- `apiKey` URL query parameters.
+
+For custom authentication mappings, plugins can subclass `AuthManager` using the [Plugin System](/extender/plugins/).

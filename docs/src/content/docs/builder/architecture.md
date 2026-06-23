@@ -60,6 +60,7 @@ The core is a decoupled, event-driven architecture designed for enterprise hot-s
 6. **VerificationService (`verifier.py`)**: Central registry for trace signing and verification, supporting hybrid ML-DSA-65 / ED25519 signing with dynamic interceptor hot-swapping.
 7. **ToolSandboxService (`tool_sandbox.py`)**: Context-isolated registry for intercepting, auditing, and filtering tool execution requests.
 8. **MutationService (`mutator.py`)**: Orchestrates the chain of scenario mutator interceptors with concurrency safeguards for adversarial variant generation.
+9. **OTel Telemetry Bridge (`otel_bridge.py`)**: standard observer plugin that maps core event signals (`CoreEvents.TOOL_CALL`, `CoreEvents.RUN_START`, `CoreEvents.ERROR`, etc.) to OpenTelemetry spans, enforcing context-bound parent/child trace context propagation.
 
 ---
 
@@ -107,6 +108,11 @@ The heart of the system is the **Global Event Bus**. Every state transition in t
 - `PHASE` / `SUBTASK` / `ACTION`: **Behavioral DNA** markers for forensic analysis.
 - `TOOL_CALL` / `TOOL_RESULT`: Interaction with World Shims.
 - `HITL_PAUSE`: Request for human intervention.
+
+### 🧬 OpenTelemetry Telemetry Bridge
+The framework couples the event bus to OpenTelemetry tracing via the `OTelTelemetryBridge` observer.
+- **Span Mapping**: Core events are automatically recorded onto the active OTel spans as structured span events (e.g., `tool.call` recording parameters).
+- **Context Preservation**: Execution spans are bound to evaluation/turn context scopes (`otel_context`), avoiding global state leaks and facilitating W3C `traceparent` injection into outbound HTTP/SSE requests.
 
 ---
 

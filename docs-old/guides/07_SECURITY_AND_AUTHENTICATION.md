@@ -156,13 +156,22 @@ For professional and high-compliance environments, the harness uses a **Permissi
 - **`OPERATOR`**: Adds `eval:trigger`, `index:refresh`, `demo:execute`, and `debugger:event`.
 - **`ADMIN`**: Full control including `scenarios:write`, `scenarios:delete`, `debugger:reset`, and `system:config`.
 
-#### SSO Implementation (SAML/OIDC)
-Plugins can subclass `AuthManager` to integrate with **Okta**, **Azure AD**, or other OIDC providers. This allows you to:
-- Map custom extensions groups (e.g., `Harness-SuperUser`) to granular permission nodes (e.g., `EVAL_TRIGGER`).
-- Define custom extensions permission strings (e.g., `governance:audit:export`) for protected plugin routes.
-- Enforce multi-factor authentication (MFA).
+#### SSO & OIDC Token Validation (Out-of-the-Box)
+The harness provides native support for validating standard **OAuth2/OIDC JWT Bearer Tokens** from identity providers (e.g. Okta, Azure AD).
 
-For technical details on extending authentication, see the [Developer Guide](help/03_DEVELOPER_GUIDE.md#11-extending-authentication--pbac).
+##### Configuration Parameters
+Set the following environment variables to configure OIDC:
+- `OIDC_JWKS_URL`: The public JWKS key server endpoint.
+- `OIDC_ISSUER`: Optional. Issuer claim to enforce.
+- `OIDC_AUDIENCE`: Optional. Audience claim to enforce.
+- `OIDC_JWKS_CACHE_TTL`: Optional. Public key caching expiration limit (defaults to `3600`).
+
+##### Hardening Features
+- **JWKS Client Caching**: Reuses `PyJWKClient` instances to minimize external network lookups.
+- **Clock-Skew Tolerance**: Tolerates up to 10 seconds of server clock drift.
+- **Header Case-Insensitivity**: Case-insensitively parses standard `Authorization: Bearer <JWT>` and custom headers.
+
+For extending authentication, plugins can subclass `AuthManager`. For details, see the [Developer Guide](help/03_DEVELOPER_GUIDE.md#11-extending-authentication--pbac).
 
 ---
 

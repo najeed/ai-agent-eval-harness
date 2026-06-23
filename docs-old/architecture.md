@@ -60,7 +60,7 @@ The harness orchestration flows through 8 logical intents, moving from design-ti
 | **Execution** | `runner.py`, `session.py` | Orchestrates the eval loop with pass@k and multi-agent support. |
 | **Debugging** | `explainer.py`, `triage.py` | Automated root cause isolation and step-by-step trace analysis. |
 | **Reporting** | `reporting_plugin.py` | Generates Premium HTML reports and behavioral DNA heatmaps. |
-| **Trust** | `verifier.py`, `auth_manager.py` | Cryptographic signatures (ED25519) and PBAC security nodes. |
+| **Trust** | `verifier.py`, `auth_manager.py`, `otel_bridge.py` | Cryptographic signatures (ED25519), PBAC security nodes, and OpenTelemetry mappings. |
 | **CI/CD** | `drift_importer.py` | "Semantic Bridge": Convert production traces to evaluation rigor. |
 | **Control** | `cli.py`, `console/` | Industrial control surface and Visual Debugger backend. |
 
@@ -68,8 +68,10 @@ The harness orchestration flows through 8 logical intents, moving from design-ti
 
 ## 🧠 Core Principles
 
-### 1. Passive Observation (`EventEmitter`)
+### 1. Passive Observation & OpenTelemetry Bridge
 The core engine is built around a central `EventEmitter` (`eval_runner/events.py`). Every state transition—from a tool call to an agent response—is emitted as an event. This allows plugins to observe the system's behavior without modifying core logic.
+
+The system incorporates an **OpenTelemetry Telemetry Bridge (`otel_bridge.py`)** that dynamically intercepts these event signals (such as `CoreEvents.TOOL_CALL` and `CoreEvents.ERROR`) and maps them to standard OpenTelemetry span conventions. By coupling spans directly to context scopes (`otel_context` on contexts), AgentV enables seamless parent/child trace context propagation and distributed tracing (`traceparent`) injection in HTTP/SSE adapters.
 
 ### 2. Forensic DNA & Integrity
 To satisfy high-stakes regulatory audits, every evaluation captures an immutable **Environmental DNA** snapshot:
