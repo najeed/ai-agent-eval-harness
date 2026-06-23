@@ -3287,13 +3287,41 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#sso-implementation-samloidc" class="md-nav__link">
+  <a href="#sso-oidc-token-validation-out-of-the-box" class="md-nav__link">
     <span class="md-ellipsis">
       
-        SSO Implementation (SAML/OIDC)
+        SSO &amp; OIDC Token Validation (Out-of-the-Box)
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="SSO &amp; OIDC Token Validation (Out-of-the-Box)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hardening-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardening Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -4474,13 +4502,41 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#sso-implementation-samloidc" class="md-nav__link">
+  <a href="#sso-oidc-token-validation-out-of-the-box" class="md-nav__link">
     <span class="md-ellipsis">
       
-        SSO Implementation (SAML/OIDC)
+        SSO &amp; OIDC Token Validation (Out-of-the-Box)
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="SSO &amp; OIDC Token Validation (Out-of-the-Box)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hardening-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardening Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -4710,12 +4766,21 @@ If the <code>DASHBOARD_API_KEY</code> is not set in the environment, the harness
 <li><strong><code>OPERATOR</code></strong>: Adds <code>eval:trigger</code>, <code>index:refresh</code>, <code>demo:execute</code>, and <code>debugger:event</code>.</li>
 <li><strong><code>ADMIN</code></strong>: Full control including <code>scenarios:write</code>, <code>scenarios:delete</code>, <code>debugger:reset</code>, and <code>system:config</code>.</li>
 </ul>
-<h4 id="sso-implementation-samloidc">SSO Implementation (SAML/OIDC)<a class="headerlink" href="#sso-implementation-samloidc" title="Permanent link">&para;</a></h4>
-<p>Plugins can subclass <code>AuthManager</code> to integrate with <strong>Okta</strong>, <strong>Azure AD</strong>, or other OIDC providers. This allows you to:
-- Map custom extensions groups (e.g., <code>Harness-SuperUser</code>) to granular permission nodes (e.g., <code>EVAL_TRIGGER</code>).
-- Define custom extensions permission strings (e.g., <code>governance:audit:export</code>) for protected plugin routes.
-- Enforce multi-factor authentication (MFA).</p>
-<p>For technical details on extending authentication, see the <a href="../help/03_DEVELOPER_GUIDE/#11-extending-authentication--pbac">Developer Guide</a>.</p>
+<h4 id="sso-oidc-token-validation-out-of-the-box">SSO &amp; OIDC Token Validation (Out-of-the-Box)<a class="headerlink" href="#sso-oidc-token-validation-out-of-the-box" title="Permanent link">&para;</a></h4>
+<p>The harness provides native support for validating standard <strong>OAuth2/OIDC JWT Bearer Tokens</strong> from identity providers (e.g. Okta, Azure AD).</p>
+<h5 id="configuration-parameters">Configuration Parameters<a class="headerlink" href="#configuration-parameters" title="Permanent link">&para;</a></h5>
+<p>Set the following environment variables to configure OIDC:
+- <code>OIDC_JWKS_URL</code>: The public JWKS key server endpoint.
+- <code>OIDC_ISSUER</code>: Optional. Issuer claim to enforce.
+- <code>OIDC_AUDIENCE</code>: Optional. Audience claim to enforce.
+- <code>OIDC_JWKS_CACHE_TTL</code>: Optional. Public key caching expiration limit (defaults to <code>3600</code>).</p>
+<h5 id="hardening-features">Hardening Features<a class="headerlink" href="#hardening-features" title="Permanent link">&para;</a></h5>
+<ul>
+<li><strong>JWKS Client Caching</strong>: Reuses <code>PyJWKClient</code> instances to minimize external network lookups.</li>
+<li><strong>Clock-Skew Tolerance</strong>: Tolerates up to 10 seconds of server clock drift.</li>
+<li><strong>Header Case-Insensitivity</strong>: Case-insensitively parses standard <code>Authorization: Bearer &lt;JWT&gt;</code> and custom headers.</li>
+</ul>
+<p>For extending authentication, plugins can subclass <code>AuthManager</code>. For details, see the <a href="../help/03_DEVELOPER_GUIDE/#11-extending-authentication--pbac">Developer Guide</a>.</p>
 <hr />
 <h2 id="troubleshooting-401-unauthorized-errors">🛠️ Troubleshooting 401 Unauthorized Errors<a class="headerlink" href="#troubleshooting-401-unauthorized-errors" title="Permanent link">&para;</a></h2>
 <p>If you encounter a <code>401 Unauthorized</code> error when accessing the Visual Debugger or API, follow these steps:</p>

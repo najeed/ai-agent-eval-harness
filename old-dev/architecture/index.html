@@ -965,10 +965,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-passive-observation-eventemitter" class="md-nav__link">
+  <a href="#1-passive-observation-opentelemetry-bridge" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Passive Observation (EventEmitter)
+        1. Passive Observation &amp; OpenTelemetry Bridge
       
     </span>
   </a>
@@ -3964,10 +3964,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-passive-observation-eventemitter" class="md-nav__link">
+  <a href="#1-passive-observation-opentelemetry-bridge" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Passive Observation (EventEmitter)
+        1. Passive Observation &amp; OpenTelemetry Bridge
       
     </span>
   </a>
@@ -4111,8 +4111,8 @@
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Trust</strong></td>
-<td style="text-align: left;"><code>verifier.py</code>, <code>auth_manager.py</code></td>
-<td style="text-align: left;">Cryptographic signatures (ED25519) and PBAC security nodes.</td>
+<td style="text-align: left;"><code>verifier.py</code>, <code>auth_manager.py</code>, <code>otel_bridge.py</code></td>
+<td style="text-align: left;">Cryptographic signatures (ED25519), PBAC security nodes, and OpenTelemetry mappings.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>CI/CD</strong></td>
@@ -4128,8 +4128,9 @@
 </table>
 <hr />
 <h2 id="core-principles">🧠 Core Principles<a class="headerlink" href="#core-principles" title="Permanent link">&para;</a></h2>
-<h3 id="1-passive-observation-eventemitter">1. Passive Observation (<code>EventEmitter</code>)<a class="headerlink" href="#1-passive-observation-eventemitter" title="Permanent link">&para;</a></h3>
+<h3 id="1-passive-observation-opentelemetry-bridge">1. Passive Observation &amp; OpenTelemetry Bridge<a class="headerlink" href="#1-passive-observation-opentelemetry-bridge" title="Permanent link">&para;</a></h3>
 <p>The core engine is built around a central <code>EventEmitter</code> (<code>eval_runner/events.py</code>). Every state transition—from a tool call to an agent response—is emitted as an event. This allows plugins to observe the system's behavior without modifying core logic.</p>
+<p>The system incorporates an <strong>OpenTelemetry Telemetry Bridge (<code>otel_bridge.py</code>)</strong> that dynamically intercepts these event signals (such as <code>CoreEvents.TOOL_CALL</code> and <code>CoreEvents.ERROR</code>) and maps them to standard OpenTelemetry span conventions. By coupling spans directly to context scopes (<code>otel_context</code> on contexts), AgentV enables seamless parent/child trace context propagation and distributed tracing (<code>traceparent</code>) injection in HTTP/SSE adapters.</p>
 <h3 id="2-forensic-dna-integrity">2. Forensic DNA &amp; Integrity<a class="headerlink" href="#2-forensic-dna-integrity" title="Permanent link">&para;</a></h3>
 <p>To satisfy high-stakes regulatory audits, every evaluation captures an immutable <strong>Environmental DNA</strong> snapshot:
 - <strong>Registry Snapshots</strong>: The <code>ToolSandbox</code> captures the resolved state of all resources at the moment of initialization.
