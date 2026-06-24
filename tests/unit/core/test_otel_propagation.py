@@ -89,10 +89,12 @@ async def test_traceparent_injection_in_http_adapter():
 
     mock_session = mock.Mock()
     mock_response = mock.AsyncMock()
+    mock_response.raise_for_status = mock.MagicMock()  # aiohttp raise_for_status is sync
     mock_response.json = mock.AsyncMock(return_value={"status": "ok"})
 
     mock_post_context = mock.MagicMock()
-    mock_post_context.__aenter__.return_value = mock_response
+    mock_post_context.__aenter__ = mock.AsyncMock(return_value=mock_response)
+    mock_post_context.__aexit__ = mock.AsyncMock(return_value=False)
     mock_session.post.return_value = mock_post_context
 
     patch_path = "eval_runner.adapters.common.SessionManager.get_session"
@@ -113,6 +115,7 @@ async def test_traceparent_injection_in_sse_adapter():
 
     mock_session = mock.Mock()
     mock_response = mock.AsyncMock()
+    mock_response.raise_for_status = mock.MagicMock()  # aiohttp raise_for_status is sync
 
     async def mock_content_iter():
         yield b'data: {"content": "hello"}\n'
@@ -120,7 +123,8 @@ async def test_traceparent_injection_in_sse_adapter():
 
     mock_response.content = mock_content_iter()
     mock_post_context = mock.MagicMock()
-    mock_post_context.__aenter__.return_value = mock_response
+    mock_post_context.__aenter__ = mock.AsyncMock(return_value=mock_response)
+    mock_post_context.__aexit__ = mock.AsyncMock(return_value=False)
     mock_session.post.return_value = mock_post_context
 
     patch_path = "eval_runner.adapters.common.SessionManager.get_session"

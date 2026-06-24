@@ -18,7 +18,7 @@ async def test_doctor_success(capsys, tmp_path, monkeypatch):
     from collections import namedtuple
 
     VersionInfo = namedtuple("VersionInfo", ["major", "minor", "micro"])
-    mock_ver = VersionInfo(major=3, minor=11, micro=0)
+    mock_ver = VersionInfo(major=3, minor=12, micro=0)
 
     # Setup real isolated environment
     monkeypatch.chdir(tmp_path)
