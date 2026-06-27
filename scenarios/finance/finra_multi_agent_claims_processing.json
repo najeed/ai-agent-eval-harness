@@ -1,0 +1,111 @@
+{
+  "aes_version": 1.4,
+  "metadata": {
+    "name": "Multi-Agent Claims Processing and Suitability Assessment",
+    "industry": "finance",
+    "attribution": "Compliance Team",
+    "version": "1.0",
+    "compliance_level": "Platinum",
+    "capabilities": [
+      "multi_agent_routing",
+      "financial_suitability_check",
+      "regulatory_compliance_gate"
+    ],
+    "standards_registry": [
+      "FINRA-Rule-2111",
+      "FINRA-Rule-4511"
+    ],
+    "id": "finra_multi_agent_claims_processing"
+  },
+  "description": "Evaluates a multi-agent workflow (Claim Intaker, Suitability Auditor, Compliance Reviewer) executing a complex client dispute claim and transaction reversal, strictly gated by FINRA Rule 2111 (Suitability) and Rule 4511 (Recordkeeping).",
+  "complexity_level": "high",
+  "industry": "finance",
+  "workflow": {
+    "nodes": [
+      {
+        "id": "step_1_claim_intake",
+        "task_description": "Claim Intake Agent must capture a client's dispute claiming an unauthorized high-yield bond transaction ($150,000) that conflicts with their conservative investment profile. It must invoke 'register_client_dispute' and pass the claim details to the Suitability Auditor agent.",
+        "expected_outcome": [
+          {
+            "target": "message",
+            "property": "claims_status",
+            "expected": "registered",
+            "mode": "exact"
+          },
+          {
+            "target": "tool_calls",
+            "property": "registered_fields",
+            "expected": [
+              "client_profile_risk_level",
+              "disputed_asset_class",
+              "disputed_amount"
+            ],
+            "mode": "contains"
+          }
+        ]
+      },
+      {
+        "id": "step_2_suitability_audit",
+        "task_description": "Suitability Auditor Agent must evaluate the disputed transaction against FINRA Rule 2111 (Suitability). It must fetch the client profile ('get_client_profile') and transaction details ('get_transaction_details'), calculate the suitability variance, flag it as 'unsuitable' if risk mismatch exceeds thresholds, and document the regulatory rationale.",
+        "expected_outcome": [
+          {
+            "target": "message",
+            "property": "suitability_ruling",
+            "expected": "unsuitable",
+            "mode": "exact"
+          },
+          {
+            "target": "message",
+            "property": "finra_rule_citation",
+            "expected": "Rule 2111",
+            "mode": "contains"
+          }
+        ]
+      },
+      {
+        "id": "step_3_compliance_signoff_and_recordkeeping",
+        "task_description": "Compliance Reviewer Agent must approve the reversal transaction and execute 'record_regulatory_compliance_ledger' under FINRA Rule 4511 (Recordkeeping), capturing the full audit trail of the dispute, suitability analysis, and refund authorization.",
+        "expected_outcome": [
+          {
+            "target": "message",
+            "property": "ledger_status",
+            "expected": "archived",
+            "mode": "exact"
+          },
+          {
+            "target": "tool_calls",
+            "property": "archival_retention_period_years",
+            "expected": 6,
+            "mode": "exact"
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "from": "step_1_claim_intake",
+        "to": "step_2_suitability_audit"
+      },
+      {
+        "from": "step_2_suitability_audit",
+        "to": "step_3_compliance_signoff_and_recordkeeping"
+      }
+    ]
+  },
+  "evaluation": {
+    "metrics": [
+      {
+        "metric": "multi_agent_routing_correctness",
+        "threshold": 1.0
+      },
+      {
+        "metric": "regulatory_compliance_gate_compliance",
+        "threshold": 1.0
+      },
+      {
+        "metric": "tool_call_correctness",
+        "threshold": 1.0
+      }
+    ]
+  }
+}

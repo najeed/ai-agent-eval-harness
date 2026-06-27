@@ -27,9 +27,9 @@ PyJWT==2.13.0
 cryptography==49.0.0
 
 # --- Observability & SDKs ---
-opentelemetry-api==1.42.1
-opentelemetry-sdk==1.42.1
-google-genai==2.9.0
+opentelemetry-api==1.43.0
+opentelemetry-sdk==1.43.0
+google-genai==2.10.0
 GitPython==3.1.50
 psutil==7.2.2
 
@@ -44,7 +44,7 @@ python-dotenv==1.2.2
 urllib3==2.7.0
 Authlib==1.7.2
 langchain-openai==1.3.3
-langsmith==0.9.1
+langsmith==0.9.3
 lxml==6.1.1
 Pillow==12.2.0
 idna==3.18
