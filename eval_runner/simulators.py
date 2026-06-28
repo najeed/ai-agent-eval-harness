@@ -92,16 +92,14 @@ class ShimResultProxy(dict):
     """
     Result wrapper proxy that shields internal metadata (like signing keys or raw telemetry DNA)
     from direct guest execution contexts. Inherits from dict for backward compatibility.
+
+    All raw result keys are passed through transparently to the guest payload. The security
+    boundary is the ``_secure_metadata`` side-channel, which is never exposed via normal dict
+    access; callers must explicitly call ``get_secure_metadata()`` to retrieve it.
     """
 
     def __init__(self, result: dict[str, Any], metadata: dict[str, Any] | None = None):
-        guest_payload = {
-            "status": result.get("status", "success"),
-            "message": result.get("message", ""),
-            "stdout": result.get("stdout", ""),
-            "stderr": result.get("stderr", ""),
-        }
-        super().__init__(guest_payload)
+        super().__init__(result)
         self._secure_metadata = metadata or {}
 
     def get_secure_metadata(self) -> dict[str, Any]:

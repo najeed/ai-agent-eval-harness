@@ -475,24 +475,28 @@ class ToolSandbox(AbstractSandbox):
                 if tool_name.startswith(f"{sim_name}_"):
                     raw_result = await simulator.execute(tool_name, params)
 
-                    # Quiesce phase with strict timeout (5.0s)
-                    try:
-                        import asyncio
-                        import logging
+                    # Quiesce phase with strict timeout (5.0s).
+                    # Guard with hasattr so third-party shims that don't subclass
+                    # BaseSimulator are silently skipped rather than generating errors.
+                    if hasattr(simulator, "quiesce"):
+                        try:
+                            import asyncio
+                            import logging
 
-                        await asyncio.wait_for(simulator.quiesce(), timeout=5.0)
-                    except TimeoutError:
-                        import logging
+                            await asyncio.wait_for(simulator.quiesce(), timeout=5.0)
+                        except TimeoutError:
+                            import logging
 
-                        logging.getLogger(__name__).warning(
-                            f"Quiescence timeout for {simulator.__class__.__name__}. Proceeding."
-                        )
-                    except Exception as e:
-                        import logging
+                            logging.getLogger(__name__).warning(
+                                f"Quiescence timeout for "
+                                f"{simulator.__class__.__name__}. Proceeding."
+                            )
+                        except Exception as e:
+                            import logging
 
-                        logging.getLogger(__name__).error(
-                            f"Error during quiescence for {simulator.__class__.__name__}: {e}"
-                        )
+                            logging.getLogger(__name__).error(
+                                f"Error during quiescence for {simulator.__class__.__name__}: {e}"
+                            )
 
                     # Wrap simulator result in ShimResultProxy
                     from .simulators import ShimResultProxy

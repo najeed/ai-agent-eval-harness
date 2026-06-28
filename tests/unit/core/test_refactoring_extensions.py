@@ -134,16 +134,19 @@ def test_triage_custom_classifier():
 def test_shim_result_proxy():
     from eval_runner.simulators import ShimResultProxy
 
-    raw_result = {"status": "success", "message": "Executed successfully", "dna": "sec_dna_123"}
-    metadata = {"key": "sec_key"}
+    raw_result = {"status": "success", "message": "Executed successfully", "custom_key": "data"}
+    metadata = {"signing_key": "sec_key"}
     proxy = ShimResultProxy(raw_result, metadata=metadata)
 
-    # Dict behavior compatibility
+    # All raw result keys are transparently accessible (backward-compatible dict view)
     assert proxy["status"] == "success"
     assert proxy["message"] == "Executed successfully"
-    assert "dna" not in proxy  # DNA is shielded from dict traversal
+    assert proxy["custom_key"] == "data"  # simulator-specific keys pass through
 
-    # Secure metadata retrieval
+    # Secure metadata is NOT accessible via standard dict traversal
+    assert "signing_key" not in proxy
+
+    # Secure metadata is retrievable via the explicit side-channel only
     assert proxy.get_secure_metadata() == metadata
 
 
