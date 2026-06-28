@@ -88,6 +88,27 @@ class SubprocessJailProvider(BaseJailProvider):
         pass
 
 
+class ShimResultProxy(dict):
+    """
+    Result wrapper proxy that shields internal metadata (like signing keys or raw telemetry DNA)
+    from direct guest execution contexts. Inherits from dict for backward compatibility.
+    """
+
+    def __init__(self, result: dict[str, Any], metadata: dict[str, Any] | None = None):
+        guest_payload = {
+            "status": result.get("status", "success"),
+            "message": result.get("message", ""),
+            "stdout": result.get("stdout", ""),
+            "stderr": result.get("stderr", ""),
+        }
+        super().__init__(guest_payload)
+        self._secure_metadata = metadata or {}
+
+    def get_secure_metadata(self) -> dict[str, Any]:
+        """Provides secure metadata/keys to the auditing/verifier context only."""
+        return self._secure_metadata
+
+
 class BaseSimulator:
     """Base class for all world shims with state management."""
 
@@ -151,6 +172,10 @@ class BaseSimulator:
         """[Turn 5] Explicit cleanup (e.g. closing browser, DB sessions)."""
         if hasattr(BaseSimulator, "_instances"):
             BaseSimulator._instances.discard(self)
+
+    async def quiesce(self) -> None:
+        """Lifecycle method to settle asynchronous tasks, database flushes, and pending I/O."""
+        pass
 
     async def on_poll(self, condition: str, params: dict[str, Any]) -> bool:
         """

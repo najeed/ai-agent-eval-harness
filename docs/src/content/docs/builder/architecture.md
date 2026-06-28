@@ -55,7 +55,7 @@ The core is a decoupled, event-driven architecture designed for enterprise hot-s
 1. **Runner (`runner.py`)**: Orchestrates the high-level loop and multi-attempt (`pass@k`) logic.
 2. **SessionManager (`session.py`)**: Manages individual attempts, trajectories, and tool execution.
 3. **AgentAdapterRegistry**: Dynamically discovers and registers agent protocols at runtime.
-4. **ToolSandbox**: Managed execution environment with **Environmental DNA** snapshotting.
+4. **ToolSandbox**: Managed execution environment with **Environmental DNA** snapshotting. Exposes pluggable `BaseJailProvider` sandboxing execution layers and a `SimulatorMiddleware` registry.
 5. **Loader & Catalog**: Supports **Path Decoupling**, enabling scenarios to be loaded via Scenario ID or physical path.
 6. **VerificationService (`verifier.py`)**: Central registry for trace signing and verification, supporting hybrid ML-DSA-65 / ED25519 signing with dynamic interceptor hot-swapping.
 7. **ToolSandboxService (`tool_sandbox.py`)**: Context-isolated registry for intercepting, auditing, and filtering tool execution requests.
@@ -100,7 +100,7 @@ AgentV enforces a **Singleton Process Guard** to ensure that industrial evaluati
 
 ## 📡 The `EventEmitter` Bus
 
-The heart of the system is the **Global Event Bus**. Every state transition in the engine is emitted as a structured event, allowing plugins to observe behavior without modifying core code.
+The heart of the system is the **Global Event Bus**. Every state transition in the engine is emitted as a structured event, allowing plugins to observe behavior without modifying core code. Subscribers can execute synchronously or asynchronously in dedicated background thread pools to minimize evaluation latency drag.
 
 ### Core Events
 - `RUN_START` / `RUN_END`: Entire evaluation lifecycle.

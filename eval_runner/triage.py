@@ -7,6 +7,7 @@ Categorizes and explains evaluation failures using a weighted evidence model.
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Any
 
@@ -100,6 +101,35 @@ class TriageReport:
             "confidence": self.confidence,
             "suggestion": self.suggestion,
         }
+
+
+class VerificationResult:
+    """
+    Standard result of a witness validation assertion.
+    """
+
+    def __init__(self, verified: bool, explanation: str, metadata: dict[str, Any] | None = None):
+        self.verified = verified
+        self.explanation = explanation
+        self.metadata = metadata or {}
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "verified": self.verified,
+            "explanation": self.explanation,
+            "metadata": self.metadata,
+        }
+
+
+class BaseWitness(ABC):
+    """
+    Abstract base class for lazy witness validation assertion engines.
+    """
+
+    @abstractmethod
+    async def verify(self, context: TriageContext) -> VerificationResult:
+        """Perform validation assertion check on the triage context and state artifacts."""
+        pass
 
 
 class TriageEngine:

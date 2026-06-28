@@ -69,9 +69,9 @@ The harness orchestration flows through 8 logical intents, moving from design-ti
 ## 🧠 Core Principles
 
 ### 1. Passive Observation & OpenTelemetry Bridge
-The core engine is built around a central `EventEmitter` (`eval_runner/events.py`). Every state transition—from a tool call to an agent response—is emitted as an event. This allows plugins to observe the system's behavior without modifying core logic.
+The core engine is built around a central `EventEmitter` (`eval_runner/events.py`). Every state transition—from a tool call to an agent response—is emitted as an event. This allows plugins to observe the system's behavior without modifying core logic. Subscribers can execute synchronously or asynchronously in dedicated background thread pools to minimize evaluation latency drag.
 
-The system incorporates an **OpenTelemetry Telemetry Bridge (`otel_bridge.py`)** that dynamically intercepts these event signals (such as `CoreEvents.TOOL_CALL` and `CoreEvents.ERROR`) and maps them to standard OpenTelemetry span conventions. By coupling spans directly to context scopes (`otel_context` on contexts), AgentV enables seamless parent/child trace context propagation and distributed tracing (`traceparent`) injection in HTTP/SSE adapters.
+The system incorporates an **OpenTelemetry Telemetry Bridge (`otel_bridge.py`)** that dynamically intercepts these event signals (such as `CoreEvents.TOOL_CALL` and `CoreEvents.ERROR`) and maps them to standard OpenTelemetry span conventions. By coupling spans directly to context scopes (`otel_context` on contexts), AgentV enables seamless parent/child trace context propagation across threads and distributed tracing (`traceparent`) injection in HTTP/SSE adapters.
 
 ### 2. Forensic DNA & Integrity
 To satisfy high-stakes regulatory audits, every evaluation captures an immutable **Environmental DNA** snapshot:
@@ -79,7 +79,7 @@ To satisfy high-stakes regulatory audits, every evaluation captures an immutable
 - **Asymmetric Trust**: Traces are signed with private keys and verified via public keys (VC v3 manifest), enabling non-repudiable audit trails.
 
 ### 3. Industrial Sandbox
-The `ToolSandbox` provides a state-aware execution environment with automated workspace lifecycle management and granular governance policies.
+The `ToolSandbox` provides a state-aware execution environment with automated workspace lifecycle management and granular governance policies. It supports dynamic `SimulatorMiddleware` pipelines, pluggable execution sandboxes via the `BaseJailProvider` interface, a 5.0-second timeout-guarded `quiesce()` settling lifecycle, and backward-compatible memory partitioning via `ShimResultProxy`.
 
 ---
 

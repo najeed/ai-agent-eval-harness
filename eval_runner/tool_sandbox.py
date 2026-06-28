@@ -473,7 +473,34 @@ class ToolSandbox(AbstractSandbox):
             active_simulators = self.get_active_simulators()
             for sim_name, simulator in active_simulators.items():
                 if tool_name.startswith(f"{sim_name}_"):
-                    return await simulator.execute(tool_name, params)
+                    raw_result = await simulator.execute(tool_name, params)
+
+                    # Quiesce phase with strict timeout (5.0s)
+                    try:
+                        import asyncio
+                        import logging
+
+                        await asyncio.wait_for(simulator.quiesce(), timeout=5.0)
+                    except TimeoutError:
+                        import logging
+
+                        logging.getLogger(__name__).warning(
+                            f"Quiescence timeout for {simulator.__class__.__name__}. Proceeding."
+                        )
+                    except Exception as e:
+                        import logging
+
+                        logging.getLogger(__name__).error(
+                            f"Error during quiescence for {simulator.__class__.__name__}: {e}"
+                        )
+
+                    # Wrap simulator result in ShimResultProxy
+                    from .simulators import ShimResultProxy
+
+                    secure_metadata = {"dna_hash": self.provisioning_hash}
+                    if "dna" in raw_result:
+                        secure_metadata.update(raw_result["dna"])
+                    return ShimResultProxy(raw_result, metadata=secure_metadata)
 
         # Record hit for Tool/KB access
         self.grounding_hits["tools"][tool_name] = self.grounding_hits["tools"].get(tool_name, 0) + 1

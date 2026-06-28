@@ -71,3 +71,29 @@ These events track the lifecycle of the evaluation run.
 ### `SANDBOX_EVENT`
 - **Trigger**: Emitted during sandbox lifecycle transitions.
 - **Payload**: `action` (create/teardown/limit), `resource_id`.
+
+---
+
+## ⚡ Asynchronous Subscription & Concurrency
+
+To prevent "eval-drag"—where intensive telemetry logging, compliance checking, or database updates slow down the agent's turn latency—AgentV's central `EventEmitter` supports asynchronous subscriber callbacks.
+
+### Execution Modes
+1. **Asynchronous Coroutine Execution:** When an event is emitted within an active event loop, async subscriber callbacks are wrapped in task wrappers (`asyncio.create_task`) and run non-blockingly.
+2. **Threaded Execution:** Synchronous subscriber callbacks are offloaded to an internal thread pool executor (`concurrent.futures.ThreadPoolExecutor`) to avoid blocking the main execution loop.
+
+### OpenTelemetry Trace Propagation
+The event system automatically captures and attaches the active OpenTelemetry tracing context (`otel_context`) to background execution threads and async tasks, ensuring parent-child span alignment is preserved across turn boundaries.
+
+### Synchronization with `flush()`
+If an evaluation session or test requires waiting for all scheduled asynchronous subscriber actions to complete (for example, to write final audit trails before terminating the runner process), invoke `events.flush()`:
+
+```python
+from eval_runner.events import EventEmitter
+
+# Emit event (schedules background tasks)
+EventEmitter.get_instance().emit("CUSTOM_COMPLIANCE_CHECK", {"run_id": "xyz"})
+
+# Block until all scheduled background tasks complete
+EventEmitter.get_instance().flush(timeout=5.0)
+```

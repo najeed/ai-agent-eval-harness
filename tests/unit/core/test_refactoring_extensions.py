@@ -128,3 +128,105 @@ def test_triage_custom_classifier():
 
     # Reset/clean classifier registry after test
     TriageEngine._classifiers.remove(custom_classifier)
+
+
+# 4. Test ShimResultProxy
+def test_shim_result_proxy():
+    from eval_runner.simulators import ShimResultProxy
+
+    raw_result = {"status": "success", "message": "Executed successfully", "dna": "sec_dna_123"}
+    metadata = {"key": "sec_key"}
+    proxy = ShimResultProxy(raw_result, metadata=metadata)
+
+    # Dict behavior compatibility
+    assert proxy["status"] == "success"
+    assert proxy["message"] == "Executed successfully"
+    assert "dna" not in proxy  # DNA is shielded from dict traversal
+
+    # Secure metadata retrieval
+    assert proxy.get_secure_metadata() == metadata
+
+
+# 5. Test Deterministic Quiescence & Timeout Guard
+class DummyQuiesceSimulator(BaseSimulator):
+    def __init__(self, hang=False, raise_err=False, *args, **kwargs):
+        super().__init__({}, *args, **kwargs)
+        self.hang = hang
+        self.raise_err = raise_err
+        self.quiesced = False
+
+    async def handle_dummy_quiesce_action(self, params):
+        return {"status": "success"}
+
+    async def quiesce(self):
+        if self.raise_err:
+            raise ValueError("Simulated quiesce crash")
+        if self.hang:
+            import asyncio
+
+            await asyncio.sleep(10.0)
+        self.quiesced = True
+
+
+@pytest.mark.asyncio
+async def test_quiesce_timeout_guard():
+    from eval_runner.tool_sandbox import ToolSandbox
+
+    # Non-hanging simulator should quiesce successfully
+    sim_ok = DummyQuiesceSimulator(hang=False)
+    scenario = {
+        "tools": {},
+        "id": "test_scenario",
+        "initial_state": {},
+        "agent_topology": {},
+        "enabled_shims": ["dummy_quiesce"],
+    }
+    sandbox = ToolSandbox(scenario)
+    sandbox._simulator_cache = {"dummy_quiesce": sim_ok}
+
+    # Executes tool and triggers quiesce
+    res = await sandbox.execute("dummy_quiesce_action", {})
+    assert sim_ok.quiesced
+    assert res["status"] == "success"
+
+    # Hanging simulator should timeout gracefully at 5s, yielding without blocking
+    sim_hang = DummyQuiesceSimulator(hang=True)
+    sandbox._simulator_cache = {"dummy_quiesce": sim_hang}
+
+    import time
+
+    start = time.time()
+    # Executing should time out after 5.0 seconds
+    res_hang = await sandbox.execute("dummy_quiesce_action", {})
+    end = time.time()
+    assert (end - start) < 6.0  # Assert it timed out around 5s and didn't hang for 10s
+    assert not sim_hang.quiesced
+    assert res_hang["status"] == "success"
+
+    # Crashing quiesce simulator should log an error and yield without raising
+    sim_fail = DummyQuiesceSimulator(raise_err=True)
+    sandbox._simulator_cache = {"dummy_quiesce": sim_fail}
+    res_fail = await sandbox.execute("dummy_quiesce_action", {})
+    assert not sim_fail.quiesced
+    assert res_fail["status"] == "success"
+
+
+# 6. Test BaseWitness Abstract Class
+def test_base_witness():
+    from eval_runner.triage import BaseWitness, VerificationResult
+
+    class DummyWitness(BaseWitness):
+        async def verify(self, context):
+            return VerificationResult(
+                verified=True, explanation="Everything checks out", metadata={"fs_status": "clean"}
+            )
+
+    witness = DummyWitness()
+    import asyncio
+
+    context = TriageContext(conversation_history=[])
+    res = asyncio.run(witness.verify(context))
+    assert res.verified
+    assert res.explanation == "Everything checks out"
+    assert res.metadata["fs_status"] == "clean"
+    assert res.to_dict()["verified"] is True
